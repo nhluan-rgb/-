@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>九州工場 生産進捗管理 v3.1</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{--ink:#17212b;--muted:#6b7785;--line:#dfe5ea;--paper:#fff;--bg:#f3f5f7;--nav:#142b3a;--blue:#1d6fa5;--cyan:#22a6a1;--green:#2d8b57;--orange:#d9822b;--red:#c8473d;--purple:#7457a6}
+    *{box-sizing:border-box}body{margin:0;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:16px}
+    button,input,select{font:inherit}.app{min-height:100vh;display:block}.side{display:none}.brand{display:flex;gap:11px;align-items:center;padding:0 8px}.mark{width:38px;height:38px;border:1px solid #ffffff55;border-radius:10px;display:grid;place-items:center;font-weight:800;background:#ffffff10}.brand b{display:block;font-size:15px}.brand small{color:#a8bdc9}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#c5d2da;text-align:left;padding:11px 12px;border-radius:7px;cursor:pointer}.nav button.active,.nav button:hover{background:#ffffff12;color:#fff}.nav .ico{display:inline-block;width:25px}.side-foot{margin-top:auto;border-top:1px solid #ffffff20;padding:16px 8px 0;color:#a8bdc9;font-size:12px}.main{min-width:0}.top{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}.top h1{font-size:23px;margin:0}.top p{font-size:14px;color:var(--muted);margin:3px 0 0}.actions{display:flex;gap:9px}.btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 13px;cursor:pointer}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.content{padding:26px 32px 40px;max-width:none;margin:0}.notice{background:#eaf4fb;color:#285b7b;border:1px solid #c8e1f0;border-radius:8px;padding:10px 13px;margin-bottom:16px;display:flex;justify-content:space-between;gap:15px}.notice button{border:0;background:none;color:#285b7b;cursor:pointer}.kpis{display:none}.kpi{background:#fff;border:1px solid var(--line);border-radius:9px;padding:16px;position:relative;overflow:hidden}.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--k)}.kpi .label{color:var(--muted);font-size:12px}.kpi .value{font-size:27px;font-weight:750;line-height:1.25;margin-top:6px}.kpi .sub{font-size:11px;color:var(--muted);margin-top:3px}.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:0}.panel{background:#fff;border:1px solid var(--line);border-radius:9px}.panel-head{height:50px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px}.panel-head h2{font-size:17px;margin:0}.panel-body{padding:16px}.bars{display:grid;gap:11px}.bar-row{display:grid;grid-template-columns:180px 1fr 70px;gap:18px;align-items:center;font-size:28px;font-weight:700}.track{height:14px;background:#edf1f4;border-radius:10px;overflow:hidden}.fill{height:100%;border-radius:10px}.donut-wrap{display:flex;align-items:center;justify-content:space-evenly;gap:40px;min-height:320px}.donut{width:240px;height:240px;border-radius:50%;position:relative;background:conic-gradient(var(--green) 0 73.9%,var(--orange) 73.9% 80%,var(--blue) 80% 87%,var(--purple) 87% 91%,#8b98a3 91%)}.donut:after{content:"";position:absolute;inset:42px;border-radius:50%;background:#fff}.donut-center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center}.donut-center b{font-size:42px}.donut-center small{color:var(--muted);font-size:18px}.legend{display:grid;gap:12px;font-size:16px}.dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:7px}.work{margin-top:14px}.filters{padding:13px 16px;display:flex;gap:9px;flex-wrap:wrap;border-bottom:1px solid var(--line)}.filters input,.filters select{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#fff;min-width:145px}.filters input{min-width:265px}.table-wrap{overflow:auto;max-height:570px}table{width:100%;border-collapse:collapse;white-space:nowrap}th{position:sticky;top:0;background:#f7f9fa;color:#596672;font-size:13px;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);z-index:1}td{padding:12px 14px;border-bottom:1px solid #edf0f2;font-size:14px}tr:hover td{background:#f8fbfd}.code{font-family:ui-monospace,Consolas,monospace;color:#245e84}.status{display:inline-flex;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:650}.s-done{background:#e3f3e9;color:#267044}.s-new{background:#edf0f3;color:#55616c}.s-weld{background:#e9edfb;color:#5269aa}.s-paint{background:#f2eafd;color:#7254a0}.s-cut{background:#e1f3f5;color:#25747a}.s-cancel{background:#fde9e7;color:#a43c34}.late{color:var(--red);font-weight:700}.empty{color:#9aa4ad}.footer-note{padding:11px 16px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}.only-mobile{display:none}
+    .ship-summary{display:grid;grid-template-columns:1.2fr repeat(4,1fr);gap:12px;margin-bottom:14px}.ship-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:15px 17px;cursor:pointer;text-align:left;position:relative}.ship-card:hover,.ship-card.active{border-color:var(--blue);box-shadow:0 0 0 2px #1d6fa51a}.ship-card.active:after{content:"表示中";position:absolute;right:12px;top:10px;color:var(--blue);font-size:10px;font-weight:700}.ship-card .day{font-size:18px;font-weight:700;color:#5f6f7f}.ship-card .ship-value{font-size:30px;font-weight:750;margin:5px 0 2px}.ship-card .ship-sub{font-size:13px;color:var(--muted)}.ship-card.ng{background:#b00020;border-color:#b00020;color:#fff}.ship-card.ng .day,.ship-card.ng .ship-value,.ship-card.ng .ship-sub{color:#fff}.ship-card.ng:hover{background:#8e001a;border-color:#8e001a}.ship-card.overdue{background:#d46b08;border-color:#d46b08;color:#fff}.ship-card.overdue .day,.ship-card.overdue .ship-value,.ship-card.overdue .ship-sub{color:#fff}.ship-card.overdue:hover{background:#b85a05;border-color:#b85a05}.ship-card.overdue.active{background:#d46b08;border-color:#d46b08;box-shadow:0 0 0 2px #d46b0830}.ship-card.overdue.active:after{color:#fff}.quick{display:flex;gap:5px}.quick button{border:1px solid var(--line);background:#fff;padding:8px 11px;cursor:pointer}.quick button:first-child{border-radius:6px 0 0 6px}.quick button:last-child{border-radius:0 6px 6px 0}.quick button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+    @media(max-width:1050px){.grid{grid-template-columns:1fr}.ship-summary{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:680px){.app{display:block}.side{display:none}.top{padding:0 15px}.top p{display:none}.content{padding:14px}.kpis{grid-template-columns:1fr 1fr}.kpi .value{font-size:22px}.actions .btn:not(.primary){display:none}.filters input{min-width:100%;width:100%}.donut-wrap{flex-direction:column}.only-mobile{display:inline}.ship-summary{grid-template-columns:1fr 1fr}.ship-card .ship-value{font-size:21px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
+  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v3.1</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
+  <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
+    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成（NG）</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 出荷</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
+    <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
+    <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全出荷日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全出荷日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:var(--green)"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:var(--orange)"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#8b98a3"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:var(--red)"></span>キャンセル <b id="lCancel">93</b></div></div></div><div id="completeMessage" style="display:none;text-align:center;margin:10px 16px 4px;padding:14px 8px;border-top:2px solid #2E7D32;border-bottom:2px solid #2E7D32;color:#2E7D32;font-weight:700;font-size:24px;line-height:1.5">
+今日出荷分が完了しました。<br>お疲れ様でした！
+</div></div></section>
+    <section class="panel work"><div class="panel-head"><h2>製造指示一覧</h2><span id="resultCount" style="font-size:11px;color:var(--muted)">表示 15件</span></div><div class="filters"><input id="search" placeholder="指示番号・品番・品名・規格・得意先を検索"/><div class="quick"><button type="button" data-quick="today-ng">本日未完成 NG</button><button type="button" data-quick="today">本日出荷</button><button type="button" data-quick="tomorrow">明日</button><button type="button" data-quick="overdue">製造期限切れ</button><button type="button" data-quick="specified">指定日</button></div><select id="statusFilter"><option value="">すべての進捗</option></select><select id="ownerFilter"><option value="">すべての担当者</option></select><select id="deadlineFilter"><option value="">すべての納期</option><option value="late">期限超過</option><option value="soon">7日以内</option></select></div><div class="table-wrap"><table><thead><tr><th>製造指示番号</th><th>得意先</th><th>品番 / 品名</th><th>規格</th><th>数量（点）</th><th>出荷日</th><th>製造期限</th><th>進捗</th><th>担当者</th><th>配送便</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="footer-note">※ NG判定：出荷日が本日で、進捗が「完成」以外の製造指示です。数量の単位は「点」です。</div></section>
+  </div></main>
+</div>
+<script>
+const sample=[
+['26-J0056603-001-771','カンサイ　日進商会★','DC0000N','Sﾀﾞｲﾏ ｶﾊﾞｰ',1,'2026-06-18','完成','志田','店頭渡し'],
+['26-J0047415-001-771','イシグロ　福岡','IBG0000C','鉄 防球ガード 焼付',1,'2026-06-17','ｷｬﾝｾﾙ','林(秀)','ヤマックス　ｽﾎﾟｯﾄ便'],
+['26-J0054238-001-771','栗田電機　松山★','SP0000SNP','SUS PBﾄｸ 平',15,'2026-06-17','完成','古川','福山通運　九州発送'],
+['26-J0055121-001-771','日本電設資材　福岡★','ZG0000','ZN 架台',1,'2026-06-17','完成','金光','福山通運　九州発送'],
+['26-J0056156-001-771','富士商会　大村★','ZE2020X2','ZN PB 水切',8,'2026-06-17','完成','金光','佐川急便'],
+['26-J0060451-001-771','ナンリツ　本社営業部★','IE6060SG','鉄 PB 平',2,'2026-07-22','溶接','服部','福山通運　九州発送'],
+['26-J0061120-002-771','岡本電機　福山★','IP1510XG','鉄 PB 水切',3,'2026-07-23','切断','古川','福山通運　九州発送'],
+['26-J0062088-001-771','かごしま電工　南★','SE2020XC','SUS PB 水切 焼付',1,'2026-07-24','塗装','志田','佐川急便'],
+['26-J0062560-001-771','正和電材　佐世保★','ZE1515X2','ZN PB 水切',5,'2026-07-25','未着手','','佐川急便'],
+['26-J0063151-001-771','宮地電機　徳島','DE2015SN','Sﾀﾞｲﾏ PB 平',15,'2026-07-27','CAD/CAM','樋口','福山通運　九州発送'],
+['26-J0063822-001-771','栗田電機　四国中央★','IG0000C','鉄 架台 焼付',1,'2026-07-28','曲げ','森田','福山通運　九州発送'],
+['26-J0064102-003-771','カンサイ　久留米★','ZP0000S','ZN PBﾄｸ 平',7,'2026-07-29','組立','倉重','佐川急便'],
+['26-J0064801-001-771','富士商会　大村★','DC0000N','Sﾀﾞｲﾏ ｶﾊﾞｰ',2,'2026-08-01','仕上','坂元','店頭渡し'],
+['26-J0065210-001-771','日本電設資材　福岡★','ZG0000','ZN 架台',4,'2026-08-04','未着手','','福山通運　九州発送'],
+['26-J0066008-001-771','岡本電機　福山★','IE4040SG','鉄 PB 平',6,'2026-08-07','溶接','山口','福山通運　九州発送']
+].map((r,i)=>({id:r[0],client:r[1],part:r[2],name:r[3],standard:['ｱｰｽ','穴加工','ｺﾞﾑﾊﾟｯｷﾝ付','さび止め','L65×65×6t'][i%5],qty:r[4],due:r[5],status:r[6],owner:r[7],ship:r[8],shipDate:['2026-07-20','2026-07-21','2026-07-22','2026-07-20','2026-07-21'][i%5]}));
+let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
+let csvLoading=false;
+
+function formatLocalDate(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function getShipDates(){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const tomorrow=new Date(today);
+  tomorrow.setDate(today.getDate()+1);
+  const after=new Date(today);
+  after.setDate(today.getDate()+2);
+  return {
+    today:formatLocalDate(today),
+    tomorrow:formatLocalDate(tomorrow),
+    after:formatLocalDate(after)
+  };
+}
+function isOverdueItem(r){
+  const today=getShipDates().today;
+  const status=String(r.status||'');
+  return Boolean(r.due)&&r.due<today&&status!=='完成'&&!status.includes('ｷｬﾝｾﾙ')&&!status.includes('キャンセル');
+}
+function updateShipLabels(){
+  const dates=getShipDates();
+  const cards=document.querySelectorAll('.ship-card .day');
+  if(cards.length>=5){
+    cards[1].textContent=`本日 ${dates.today} 出荷`;
+    cards[2].textContent=`明日 ${dates.tomorrow} 出荷`;
+    cards[3].textContent='⚠ 製造期限切れ';
+    cards[4].textContent=`指定日 ${specifiedShipDate||dates.today} 製造期限`;
+  }
+  const input=$('specifiedDate');
+  if(input && !input.value){
+    input.value=dates.today;
+    specifiedShipDate=dates.today;
+  }
+}
+
+const summary={完成:2661,未着手:218,溶接:211,塗装:133,'ｷｬﾝｾﾙ':93,切断:80,'CAD/CAM':71,曲げ:59,組立:56,仕上:20};
+const $=id=>document.getElementById(id), fmt=n=>Number(n||0).toLocaleString('ja-JP');
+function showNotice(html){
+  let notice=$('notice');
+  if(!notice){
+    notice=document.createElement('div');
+    notice.id='notice';
+    notice.className='notice';
+    const content=document.querySelector('.content');
+    if(content) content.insertBefore(notice,content.firstChild);
+  }
+  if(notice) notice.innerHTML=html;
+}
+const excelDate=v=>{
+  if(!v)return'';
+  if(v instanceof Date)return formatLocalDate(v);
+  if(typeof v==='number'){
+    const d=new Date(Math.round((v-25569)*86400000));
+    return formatLocalDate(d);
+  }
+  const s=String(v).trim().replaceAll('/','-');
+
+  // YYYY-M-D
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(m)return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+
+  // M-D-YY or M-D-YYYY, produced by SheetJS date formatting
+  m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{2}|\d{4})$/);
+  if(m){
+    let y=m[3].length===2?`20${m[3]}`:m[3];
+    return `${y}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;
+  }
+
+  return s.slice(0,10);
+};
+function normalize(o){
+  const qty=Number(String(o['数量']||0).replaceAll(',','').trim())||0;
+  return{
+    id:String(o['製造指示番号']||'').trim(),
+    client:String(o['得意先']||'').trim(),
+    part:String(o['品番']||'').trim(),
+    name:String(o['品名']||'').trim(),
+    standard:String(o['規格']||'').trim(),
+    qty,
+    due:excelDate(o['製造期限']),
+    shipDate:excelDate(o['出荷日']),
+    status:String(o['進捗']||'').trim(),
+    owner:String(o['担当者']||'').trim(),
+    ship:String(o['配送便']||'').trim()
+  };
+}
+function statusClass(s){if(s==='完成')return's-done';if(s==='未着手')return's-new';if(s==='溶接')return's-weld';if(s==='塗装')return's-paint';if(s==='切断')return's-cut';if(s.includes('ｷｬﾝｾﾙ')||s.includes('キャンセル'))return's-cancel';return's-new'}
+function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='today-ng'?rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):rows.filter(r=>(shipFilter==='specified'?r.due===specifiedShipDate:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'本日出荷・未完成 NG','today':'本日出荷','tomorrow':'明日出荷','overdue':'製造期限切れ','specified':'指定日製造期限'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='today-ng'||shipFilter==='overdue'){
+  const processOrder=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];
+  const processColors=['#1d6fa5','#22a6a1','#d9822b','#7457a6','#a65d9f','#527a96','#2d8b57','#8b98a3'];
+  const processData=processOrder
+    .map((name,i)=>({name,count:chartCounts[name]||0,color:processColors[i]}))
+    .filter(x=>x.count>0);
+  let start=0;
+  const segments=processData.map(x=>{
+    const end=start+(chartTotal?x.count/chartTotal*100:0);
+    const seg=`${x.color} ${start}% ${end}%`;
+    start=end;
+    return seg;
+  });
+  $('donutRate').textContent=chartTotal?processData.length+'工程':'0工程';
+  $('donut').querySelector('small').textContent='工程別';
+  $('donut').style.background=segments.length?`conic-gradient(${segments.join(',')})`:'#edf1f4';
+  $('chartLegend').innerHTML=processData.map(x=>{
+    const pct=chartTotal?x.count/chartTotal*100:0;
+    return `<div><span class="dot" style="background:${x.color}"></span>${x.name} <b>${fmt(x.count)}件（${pct.toFixed(1)}%）</b></div>`;
+  }).join('')||'<div style="color:var(--muted)">対象データなし</div>';
+}else{
+  $('donutRate').textContent=chartRate.toFixed(1)+'%';
+  $('donut').querySelector('small').textContent='完成率';
+  $('donut').style.background=chartEffective?`conic-gradient(var(--green) 0 ${cp1}%,var(--orange) ${cp1}% ${cp2}%,#8b98a3 ${cp2}% 100%)`:'#edf1f4';
+  $('chartLegend').innerHTML=`<div><span class="dot" style="background:var(--green)"></span>完成 <b id="lDone">${fmt(chartDone)}</b></div><div><span class="dot" style="background:var(--orange)"></span>進行中 <b id="lActive">${fmt(chartActive)}</b></div><div><span class="dot" style="background:#8b98a3"></span>未着手 <b id="lNew">${fmt(chartNew)}</b></div><div style="color:var(--muted)"><span class="dot" style="background:var(--red)"></span>キャンセル <b id="lCancel">${fmt(chartCancel)}</b> <small>※完成率対象外</small></div>`;
+}$('workTitle').textContent=`工程別の仕掛状況（${chartLabels[shipFilter]||'全出荷日'}）`;
+$('progressTitle').textContent=(shipFilter==='today-ng'||shipFilter==='overdue')
+  ? '工程別進捗'
+  : `全体進捗（${chartLabels[shipFilter]||'全出荷日'}）`;$('progressCount').textContent=`${fmt(chartTotal)}件`;let work=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];let max=Math.max(...work.map(x=>chartCounts[x]||0),1);$('bars').innerHTML=work.map((x,i)=>`<div class="bar-row"><span>${x}</span><div class="track"><div class="fill" style="width:${(chartCounts[x]||0)/max*100}%;background:${['#1d6fa5','#22a6a1','#d9822b','#7457a6','#a65d9f','#527a96','#2d8b57','#8b98a3'][i]}"></div></div><b>${fmt(chartCounts[x]||0)}</b></div>`).join('');let shipStat=k=>{let x=rows.filter(r=>r.shipDate===dates[k]);return`${fmt(x.length)}件（${fmt(x.reduce((a,r)=>a+r.qty,0))}点）`},ng=rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'));$('shipToday').textContent=shipStat('today');$('shipTomorrow').textContent=shipStat('tomorrow');let overdueRows=rows.filter(isOverdueItem);$('shipOverdue').textContent=`${fmt(overdueRows.length)}件（${fmt(overdueRows.reduce((a,r)=>a+r.qty,0))}点）`;let sx=rows.filter(r=>r.due===specifiedShipDate);$('shipSpecified').textContent=`${fmt(sx.length)}件（${fmt(sx.reduce((a,r)=>a+r.qty,0))}点）`;
+$('shipNg').textContent=`${fmt(ng.length)}件（${fmt(ng.reduce((a,r)=>a+r.qty,0))}点）`;
+
+const ngCard=document.querySelector('[data-ship="today-ng"]');
+const completeMessage=document.getElementById('completeMessage');
+
+if(ng.length===0){
+  ngCard.classList.remove('ng');
+  ngCard.style.background='#00C853';
+  ngCard.style.borderColor='#00C853';
+  ngCard.style.color='#fff';
+  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
+}else{
+  ngCard.classList.add('ng');
+  ngCard.style.background='';
+  ngCard.style.borderColor='';
+  ngCard.style.color='';
+  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='');
+}
+
+const overdueCard=document.querySelector('[data-ship="overdue"]');
+if(overdueRows.length===0){
+  overdueCard.classList.remove('overdue');
+  overdueCard.style.background='#00C853';
+  overdueCard.style.borderColor='#00C853';
+  overdueCard.style.color='#fff';
+  overdueCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
+}else{
+  overdueCard.classList.add('overdue');
+  overdueCard.style.background='';
+  overdueCard.style.borderColor='';
+  overdueCard.style.color='';
+  overdueCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='');
+}
+
+if(completeMessage){
+  if(shipFilter==='overdue'&&overdueRows.length>0){
+    completeMessage.style.display='block';
+    completeMessage.style.color='#d32f2f';
+    completeMessage.style.borderTopColor='#d32f2f';
+    completeMessage.style.borderBottomColor='#d32f2f';
+    completeMessage.innerHTML='製造期限切れを出さないように心掛けましょう。';
+  }else if(shipFilter==='overdue'&&overdueRows.length===0){
+    completeMessage.style.display='block';
+    completeMessage.style.color='#2E7D32';
+    completeMessage.style.borderTopColor='#2E7D32';
+    completeMessage.style.borderBottomColor='#2E7D32';
+    completeMessage.innerHTML='製造期限切れはありません。<br>この状態を維持しましょう！';
+  }else if(ng.length===0){
+    completeMessage.style.display='block';
+    completeMessage.style.color='#2E7D32';
+    completeMessage.style.borderTopColor='#2E7D32';
+    completeMessage.style.borderBottomColor='#2E7D32';
+    completeMessage.innerHTML='今日出荷分が完了しました。<br>お疲れ様でした！';
+  }else{
+    completeMessage.style.display='none';
+  }
+}
+}
+function refreshFilters(){let ss=[...new Set(rows.map(r=>r.status).filter(Boolean))],oo=[...new Set(rows.map(r=>r.owner).filter(Boolean))];$('statusFilter').innerHTML='<option value="">すべての進捗</option>'+ss.map(x=>`<option>${x}</option>`).join('');$('ownerFilter').innerHTML='<option value="">すべての担当者</option>'+oo.map(x=>`<option>${x}</option>`).join('')}
+function renderTable(){let q=$('search').value.toLowerCase(),s=$('statusFilter').value,o=$('ownerFilter').value,d=$('deadlineFilter').value,today=new Date(),soon=new Date(),shipDates=getShipDates();today.setHours(0,0,0,0);soon.setTime(today.getTime());soon.setDate(today.getDate()+7);soon.setHours(23,59,59,999);let list=rows.filter(r=>{let due=new Date(r.due+'T00:00:00'),late=due<today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ'),isNg=r.shipDate===shipDates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'),shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):(shipFilter==='specified'?r.due===specifiedShipDate:r.shipDate===shipDates[shipFilter]));return shipOk&&(!q||[r.id,r.client,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon))});$('resultCount').textContent=`表示 ${fmt(list.length)}件`;$('tbody').innerHTML=list.slice(0,500).map(r=>{let late=new Date(r.due+'T00:00:00')<today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ'),todayNg=r.shipDate===shipDates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル');return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td>${r.client}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}${todayNg?' NG':''}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`}).join('')||'<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>'}
+function render(){renderStats();refreshFilters();renderTable()}
+function captureUiState(){
+  return {
+    shipFilter,
+    specifiedShipDate,
+    search:$('search')?.value||'',
+    status:$('statusFilter')?.value||'',
+    owner:$('ownerFilter')?.value||'',
+    deadline:$('deadlineFilter')?.value||'',
+    scrollTop:document.querySelector('.table-wrap')?.scrollTop||0
+  };
+}
+function restoreUiState(state){
+  if(!state)return;
+  shipFilter=state.shipFilter||'today-ng';
+  specifiedShipDate=state.specifiedShipDate||getShipDates().today;
+
+  if($('specifiedDate')) $('specifiedDate').value=specifiedShipDate;
+  if($('search')) $('search').value=state.search||'';
+
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+    const value=x.dataset.ship||x.dataset.quick;
+    x.classList.toggle('active',value===shipFilter);
+  });
+
+  if($('statusFilter')) $('statusFilter').value=state.status||'';
+  if($('ownerFilter')) $('ownerFilter').value=state.owner||'';
+  if($('deadlineFilter')) $('deadlineFilter').value=state.deadline||'';
+
+  renderTable();
+
+  const wrap=document.querySelector('.table-wrap');
+  if(wrap) wrap.scrollTop=state.scrollTop||0;
+}
+['search','statusFilter','ownerFilter','deadlineFilter'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',renderTable));
+document.querySelectorAll('[data-ship],[data-quick]').forEach(b=>b.addEventListener('click',()=>{
+  const v=b.dataset.ship||b.dataset.quick;
+  shipFilter=v;
+  localStorage.setItem('shipFilter',shipFilter);
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+    x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)===shipFilter);
+  });
+  renderStats();
+  renderTable();
+}));
+$('specifiedDate').addEventListener('click',e=>e.stopPropagation());
+$('specifiedDate').addEventListener('change',e=>{
+  specifiedShipDate=e.target.value;
+  shipFilter='specified';
+  localStorage.setItem('shipFilter',shipFilter);
+  localStorage.setItem('specifiedShipDate',specifiedShipDate);
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)==='specified'));
+  updateShipLabels();
+  renderStats();
+  renderTable();
+});
+
+async function loadSharedCsv(showMessage=true){
+  // Không cho nhiều lần tải CSV chạy chồng lên nhau.
+  if(csvLoading) return;
+  csvLoading=true;
+
+  // Chỉ lưu các bộ lọc phụ; tuyệt đối không chụp/gán lại shipFilter.
+  const currentSearch=$('search')?.value||'';
+  const currentStatus=$('statusFilter')?.value||'';
+  const currentOwner=$('ownerFilter')?.value||'';
+  const currentDeadline=$('deadlineFilter')?.value||'';
+  const currentScroll=document.querySelector('.table-wrap')?.scrollTop||0;
+
+  try{
+    const response=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok) throw new Error('HTTP '+response.status);
+
+    const buffer=await response.arrayBuffer();
+    let csvText='';
+
+    try{
+      csvText=new TextDecoder('shift-jis').decode(buffer);
+    }catch(_){
+      csvText=new TextDecoder('utf-8').decode(buffer);
+    }
+
+    if(!csvText.includes('製造指示番号')&&!csvText.includes('得意先')){
+      csvText=new TextDecoder('utf-8').decode(buffer);
+    }
+
+    csvText=csvText.replace(/^\uFEFF/,'');
+    const book=XLSX.read(csvText,{type:'string',cellDates:false,raw:true});
+    const sheet=book.Sheets[book.SheetNames[0]];
+    const raw=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:true});
+    const loaded=raw.map(normalize).filter(r=>r.id||r.name);
+
+    if(!loaded.length){
+      throw new Error('SCV.csv に有効なデータがありません');
+    }
+
+    // Chỉ thay dữ liệu. Không thay shipFilter, không quay về today-ng.
+    rows=loaded;
+    fullStats=false;
+
+    $('updated').textContent=new Date().toLocaleString('ja-JP');
+    updateShipLabels();
+
+    // Cập nhật biểu đồ và bảng bằng chính mục đang được chọn tại thời điểm này.
+    renderStats();
+    refreshFilters();
+
+    if($('search')) $('search').value=currentSearch;
+    if($('statusFilter')) $('statusFilter').value=currentStatus;
+    if($('ownerFilter')) $('ownerFilter').value=currentOwner;
+    if($('deadlineFilter')) $('deadlineFilter').value=currentDeadline;
+
+    document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+      const value=x.dataset.ship||x.dataset.quick;
+      x.classList.toggle('active',value===shipFilter);
+    });
+
+    renderTable();
+
+    const wrap=document.querySelector('.table-wrap');
+    if(wrap) wrap.scrollTop=currentScroll;
+
+    if(showMessage){
+      showNotice(`<span>✓ SCV.csv から ${fmt(rows.length)}件を読み込みました。30秒ごとに自動更新します。</span><button onclick="this.parentElement.remove()">×</button>`);
+    }
+  }catch(err){
+    console.error(err);
+    if(showMessage){
+      showNotice(`<span>⚠ SCV.csv を読み込めません。GitHub上のファイル名が正確に「SCV.csv」か確認してください。</span><button onclick="this.parentElement.remove()">×</button>`);
+    }
+  }finally{
+    csvLoading=false;
+  }
+}
+
+$('refresh').addEventListener('click',()=>loadSharedCsv(true));
+
+const validShipFilters=['today-ng','today','tomorrow','overdue','specified'];
+const savedFilter=localStorage.getItem('shipFilter');
+shipFilter=validShipFilters.includes(savedFilter)?savedFilter:'today-ng';
+localStorage.setItem('shipFilter',shipFilter);
+
+const savedSpecifiedDate=localStorage.getItem('specifiedShipDate');
+if(savedSpecifiedDate){
+  specifiedShipDate=savedSpecifiedDate;
+  const specifiedInput=$('specifiedDate');
+  if(specifiedInput) specifiedInput.value=savedSpecifiedDate;
+}
+
+document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+  const value=x.dataset.ship||x.dataset.quick;
+  x.classList.toggle('active',value===shipFilter);
+});
+
+updateShipLabels();
+render();
+loadSharedCsv(true);
+setInterval(()=>{ if(!csvLoading) loadSharedCsv(false); },30000);
+
+</script>
+</body>
+</html>
