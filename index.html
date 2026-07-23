@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>九州工場 生産進捗管理 v3.7</title>
+  <title>九州工場 生産進捗管理 v4.3</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root{--ink:#17212b;--muted:#6b7785;--line:#dfe5ea;--paper:#fff;--bg:#f3f5f7;--nav:#142b3a;--blue:#1d6fa5;--cyan:#22a6a1;--green:#2d8b57;--orange:#d9822b;--red:#c8473d;--purple:#7457a6}
@@ -630,12 +630,73 @@
   .game-clock b{font-size:36px!important}
 }
 
+
+/* v4.3：旧background.pngを撤去／上部バナーを工程欄と同系統のガラス表示へ */
+.evolution-stage{
+  background:none!important;
+  background-image:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+.evolution-stage:before,.evolution-stage:after{display:none!important}
+.game-banner{
+  margin:0 0 12px!important;
+  padding:16px 22px!important;
+  min-height:118px!important;
+  border:2px solid rgba(255,255,255,.62)!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,rgba(18,42,53,.76),rgba(30,72,72,.58))!important;
+  color:#fff!important;
+  box-shadow:0 5px 0 rgba(12,38,31,.5),inset 0 1px 0 rgba(255,255,255,.42)!important;
+  backdrop-filter:blur(12px) saturate(125%);
+  -webkit-backdrop-filter:blur(12px) saturate(125%);
+}
+.game-banner-main{
+  color:#fff!important;
+  font-size:25px!important;
+  line-height:1.42!important;
+  text-shadow:0 2px 3px rgba(0,0,0,.82)!important;
+}
+.game-banner-main strong{
+  display:inline-block;
+  margin-top:4px;
+  color:#fff8c7!important;
+  font-size:29px!important;
+  line-height:1.4!important;
+}
+.game-banner.success{
+  background:linear-gradient(135deg,rgba(20,105,60,.82),rgba(42,147,81,.66))!important;
+  border-color:rgba(225,255,223,.8)!important;
+}
+.game-banner.late{
+  background:linear-gradient(135deg,rgba(130,69,18,.84),rgba(183,105,29,.68))!important;
+  border-color:rgba(255,230,174,.8)!important;
+}
+.game-clock{
+  min-width:230px!important;
+  padding:13px 17px!important;
+  background:rgba(12,22,25,.86)!important;
+  border:2px solid rgba(255,255,255,.5)!important;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.35),0 3px 0 rgba(0,0,0,.42)!important;
+}
+.game-clock small{font-size:15px!important}
+.game-clock b{font-size:44px!important}
+.evolution-world{margin-top:0!important}
+.evolution-visual{border-radius:0!important}
+@media(max-width:1300px){
+  .game-banner{min-height:auto!important}
+  .game-clock{min-width:205px!important}
+  .game-clock b{font-size:36px!important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v4.1 BOSS EVOLUTION</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v4.3 BOSS EVOLUTION</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 出荷</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
