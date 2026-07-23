@@ -1,0 +1,2563 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>九州工場 生産進捗管理 v5.2 FINAL EVOLUTION BG</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{--ink:#17212b;--muted:#6b7785;--line:#dfe5ea;--paper:#fff;--bg:#f3f5f7;--nav:#142b3a;--blue:#1d6fa5;--cyan:#22a6a1;--green:#2d8b57;--orange:#d9822b;--red:#c8473d;--purple:#7457a6}
+    *{box-sizing:border-box}body{margin:0;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:16px}
+    button,input,select{font:inherit}.app{min-height:100vh;display:block}.side{display:none}.brand{display:flex;gap:11px;align-items:center;padding:0 8px}.mark{width:38px;height:38px;border:1px solid #ffffff55;border-radius:10px;display:grid;place-items:center;font-weight:800;background:#ffffff10}.brand b{display:block;font-size:15px}.brand small{color:#a8bdc9}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#c5d2da;text-align:left;padding:11px 12px;border-radius:7px;cursor:pointer}.nav button.active,.nav button:hover{background:#ffffff12;color:#fff}.nav .ico{display:inline-block;width:25px}.side-foot{margin-top:auto;border-top:1px solid #ffffff20;padding:16px 8px 0;color:#a8bdc9;font-size:12px}.main{min-width:0}.top{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px}.top h1{font-size:23px;margin:0}.top p{font-size:14px;color:var(--muted);margin:3px 0 0}.actions{display:flex;gap:9px}.btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 13px;cursor:pointer}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.content{padding:26px 32px 40px;max-width:none;margin:0}.notice{background:#eaf4fb;color:#285b7b;border:1px solid #c8e1f0;border-radius:8px;padding:10px 13px;margin-bottom:16px;display:flex;justify-content:space-between;gap:15px}.notice button{border:0;background:none;color:#285b7b;cursor:pointer}.kpis{display:none}.kpi{background:#fff;border:1px solid var(--line);border-radius:9px;padding:16px;position:relative;overflow:hidden}.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--k)}.kpi .label{color:var(--muted);font-size:12px}.kpi .value{font-size:27px;font-weight:750;line-height:1.25;margin-top:6px}.kpi .sub{font-size:11px;color:var(--muted);margin-top:3px}.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:0}.panel{background:#fff;border:1px solid var(--line);border-radius:9px}.panel-head{height:50px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px}.panel-head h2{font-size:17px;margin:0}.panel-body{padding:16px}.bars{display:grid;gap:11px}.bar-row{display:grid;grid-template-columns:180px 1fr 70px;gap:18px;align-items:center;font-size:28px;font-weight:700}.track{height:14px;background:#edf1f4;border-radius:10px;overflow:hidden}.fill{height:100%;border-radius:10px}.donut-wrap{display:flex;align-items:center;justify-content:space-evenly;gap:40px;min-height:320px}.donut{width:240px;height:240px;border-radius:50%;position:relative;background:conic-gradient(var(--green) 0 73.9%,var(--orange) 73.9% 80%,var(--blue) 80% 87%,var(--purple) 87% 91%,#8b98a3 91%)}.donut:after{content:"";position:absolute;inset:42px;border-radius:50%;background:#fff}.donut-center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center}.donut-center b{font-size:42px}.donut-center small{color:var(--muted);font-size:18px}.legend{display:grid;gap:12px;font-size:16px}.dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:7px}.work{margin-top:14px}.filters{padding:13px 16px;display:flex;gap:9px;flex-wrap:wrap;border-bottom:1px solid var(--line)}.filters input,.filters select{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#fff;min-width:145px}.filters input{min-width:265px}.table-wrap{overflow:auto;max-height:570px}table{width:100%;border-collapse:collapse;white-space:nowrap}th{position:sticky;top:0;background:#f7f9fa;color:#596672;font-size:13px;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);z-index:1}td{padding:12px 14px;border-bottom:1px solid #edf0f2;font-size:14px}tr:hover td{background:#f8fbfd}.code{font-family:ui-monospace,Consolas,monospace;color:#245e84}.status{display:inline-flex;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:650}.s-done{background:#e3f3e9;color:#267044}.s-new{background:#edf0f3;color:#55616c}.s-weld{background:#e9edfb;color:#5269aa}.s-paint{background:#f2eafd;color:#7254a0}.s-cut{background:#e1f3f5;color:#25747a}.s-cancel{background:#fde9e7;color:#a43c34}.late{color:var(--red);font-weight:700}.empty{color:#9aa4ad}.footer-note{padding:11px 16px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}.only-mobile{display:none}
+    .ship-summary{display:grid;grid-template-columns:1.2fr repeat(4,1fr);gap:12px;margin-bottom:14px}.ship-card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:15px 17px;cursor:pointer;text-align:left;position:relative}.ship-card:hover,.ship-card.active{border-color:var(--blue);box-shadow:0 0 0 2px #1d6fa51a}.ship-card.active:after{content:"表示中";position:absolute;right:12px;top:10px;color:var(--blue);font-size:10px;font-weight:700}.ship-card .day{font-size:18px;font-weight:700;color:#5f6f7f}.ship-card .ship-value{font-size:30px;font-weight:750;margin:5px 0 2px}.ship-card .ship-sub{font-size:13px;color:var(--muted)}.ship-card.ng{background:#b00020;border-color:#b00020;color:#fff}.ship-card.ng .day,.ship-card.ng .ship-value,.ship-card.ng .ship-sub{color:#fff}.ship-card.ng:hover{background:#8e001a;border-color:#8e001a}.ship-card.overdue{background:#d46b08;border-color:#d46b08;color:#fff}.ship-card.overdue .day,.ship-card.overdue .ship-value,.ship-card.overdue .ship-sub{color:#fff}.ship-card.overdue:hover{background:#b85a05;border-color:#b85a05}.ship-card.overdue.active{background:#d46b08;border-color:#d46b08;box-shadow:0 0 0 2px #d46b0830}.ship-card.overdue.active:after{color:#fff}.quick{display:flex;gap:5px}.quick button{border:1px solid var(--line);background:#fff;padding:8px 11px;cursor:pointer}.quick button:first-child{border-radius:6px 0 0 6px}.quick button:last-child{border-radius:0 6px 6px 0}.quick button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+
+    /* 本日出荷・未完成専用ゲーム画面：イラスト風 */
+    .ng-game{display:none;min-height:320px}
+    .ng-game.show{display:block}
+    .game-stage{
+      position:relative;overflow:hidden;border-radius:14px;padding:16px;
+      background:
+        radial-gradient(circle at 15% 18%,#ffffffcc 0 5%,transparent 6%),
+        radial-gradient(circle at 24% 22%,#ffffffaa 0 7%,transparent 8%),
+        linear-gradient(180deg,#28a7ef 0%,#77d5ff 50%,#b8edff 51%,#64c15d 76%,#3d9345 100%);
+      border:2px solid #1680c5;
+      box-shadow:inset 0 -7px 0 #2c7137;
+      min-height:510px
+    }
+    .game-stage:before{
+      content:"";position:absolute;left:-4%;right:-4%;bottom:104px;height:145px;
+      background:
+        radial-gradient(ellipse at 7% 100%,#2f8440 0 35%,transparent 36%),
+        radial-gradient(ellipse at 28% 100%,#4eaa4f 0 34%,transparent 35%),
+        radial-gradient(ellipse at 52% 100%,#318e42 0 37%,transparent 38%),
+        radial-gradient(ellipse at 78% 100%,#53ad55 0 35%,transparent 36%),
+        radial-gradient(ellipse at 97% 100%,#2d7d3b 0 40%,transparent 41%);
+      opacity:.95
+    }
+    .game-stage:after{
+      content:"";position:absolute;left:0;right:0;bottom:0;height:120px;
+      background:linear-gradient(180deg,#62ba51,#3d8e42);
+      border-top:4px solid #78d068
+    }
+    .game-banner{
+      position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;
+      gap:18px;padding:14px 20px;margin-bottom:12px;border-radius:14px;
+      background:linear-gradient(180deg,#ffe56f,#ffc43a);
+      border:3px solid #8d5a00;color:#5f3500;
+      box-shadow:0 4px 0 #6f4600, inset 0 2px 0 #fff8b0
+    }
+    .game-banner-main{font-size:25px;font-weight:900;line-height:1.35;text-shadow:0 1px 0 #fff}
+    .game-banner-main strong{font-size:35px}
+    .game-clock{
+      min-width:185px;text-align:center;padding:10px 14px;border-radius:10px;
+      background:linear-gradient(180deg,#3b2a1e,#1d1713);color:#fff5c2;
+      border:3px solid #8a5a24;box-shadow:inset 0 0 0 2px #2a1b10
+    }
+    .game-clock small{display:block;color:#ffe6a3;font-size:12px}
+    .game-clock b{font-size:28px;letter-spacing:.04em}
+    .game-world{
+      position:relative;z-index:3;display:grid;grid-template-columns:210px 1fr 210px;
+      gap:14px;align-items:end;min-height:290px
+    }
+    .worker-zone,.treasure-zone{
+      text-align:center;color:#fff;font-weight:800;text-shadow:0 2px 3px #18405a
+    }
+    .worker-char{font-size:92px;filter:drop-shadow(0 6px 2px #0004);line-height:1}
+    .worker-msg{margin-top:6px;background:#ffffffdf;color:#1f5f89;border:2px solid #fff;
+      border-radius:20px;padding:7px 10px;text-shadow:none}
+    .boss-card{
+      text-align:center;color:#fff;padding:10px 16px 14px;
+      background:linear-gradient(180deg,#5c2f87cc,#271542e8);
+      border:3px solid #e0b6ff;border-radius:20px;
+      box-shadow:0 8px 0 #20102f, inset 0 0 0 2px #7d4ca6
+    }
+    .boss-label{
+      display:inline-block;font-size:17px;font-weight:900;letter-spacing:.08em;
+      color:#fff3a2;background:#c31e28;padding:5px 20px;border-radius:20px;
+      border:2px solid #6f0910
+    }
+    .boss-face{font-size:90px;line-height:1.05;margin:4px 0;filter:drop-shadow(0 6px 2px #0005)}
+    .boss-name{font-size:18px;font-weight:800}
+    .boss-hp-value{font-size:44px;font-weight:900;margin:4px 0 2px;color:#fff8a8}
+    .boss-points{font-size:18px;color:#f2dfff}
+    .boss-track{height:22px;border-radius:20px;background:#1c2c4f;overflow:hidden;margin:11px 0 7px;
+      border:3px solid #6c3a14;box-shadow:inset 0 0 0 2px #0f1726}
+    .boss-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#ff3b30,#ffb000);
+      transition:width .4s ease}
+    .boss-goal{font-size:14px;color:#fff3b0}
+    .treasure{font-size:86px;filter:drop-shadow(0 6px 2px #0004);line-height:1}
+    .target-flag{
+      margin:0 auto 8px;width:max-content;background:#e32b2b;color:#fff;
+      padding:8px 14px;border-radius:7px;border:3px solid #8f1111;
+      box-shadow:0 4px 0 #711010;text-shadow:none
+    }
+    .mission-card{
+      position:relative;z-index:4;margin-top:14px;border:4px solid #6d3e12;border-radius:14px;
+      padding:12px;background:linear-gradient(180deg,#9a5c24,#6f3f16);
+      box-shadow:0 5px 0 #3e210c
+    }
+    .mission-title{
+      color:#fff1b8;font-size:18px;font-weight:900;margin-bottom:10px;
+      text-align:center;text-shadow:0 2px 1px #3f210d
+    }
+    .mission-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+    .mission-row{
+      display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;
+      padding:10px;border-radius:10px;background:#fff9e9;border:2px solid #a96a22;
+      box-shadow:inset 0 -3px 0 #ead5ad
+    }
+    .mission-row.priority{background:#fff0e9;border-color:#e64c38}
+    .mission-name{font-weight:850}
+    .mission-count{font-weight:900;text-align:right;font-size:18px}
+    .mission-track{grid-column:1/-1;height:11px;background:#dfe7ea;border-radius:10px;overflow:hidden}
+    .mission-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#187fb4,#42b8e8)}
+    .mission-status{grid-column:1/-1;justify-self:end;text-align:center;font-size:12px;font-weight:900;
+      padding:4px 8px;border-radius:15px;background:#e8f1f8;color:#245e84}
+    .mission-status.hot{background:#fde7e4;color:#b3261e}
+    .mission-status.clear{background:#e1f4e7;color:#267044}
+    .goal-result{
+      position:relative;z-index:5;display:none;margin-top:14px;padding:18px;border-radius:14px;text-align:center;
+      font-weight:800;line-height:1.55;border-width:3px;border-style:solid;
+      box-shadow:0 4px 0 #0002
+    }
+    .goal-result.show{display:block}
+    .goal-result.success{background:#dff7dc;border-color:#2e9b58;color:#1f6f3d}
+    .goal-result.late{background:#fff0dc;border-color:#dc8b2d;color:#8a5519}
+    .goal-result .face{font-size:58px;display:block;line-height:1}
+    .goal-result .headline{font-size:28px}
+    .goal-result .detail{font-size:18px}
+    @media(max-width:1200px){
+      .game-world{grid-template-columns:150px 1fr 150px}
+      .worker-char,.treasure{font-size:70px}
+      .mission-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:1050px){
+      .game-world{grid-template-columns:1fr}
+      .worker-zone,.treasure-zone{display:none}
+    }
+    @media(max-width:680px){
+      .game-banner{align-items:flex-start;flex-direction:column}
+      .game-banner-main{font-size:20px}
+      .game-banner-main strong{font-size:27px}
+      .game-clock{width:100%}
+      .mission-list{grid-template-columns:1fr}
+    }
+    @media(max-width:1050px){.grid{grid-template-columns:1fr}.ship-summary{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:680px){.app{display:block}.side{display:none}.top{padding:0 15px}.top p{display:none}.content{padding:14px}.kpis{grid-template-columns:1fr 1fr}.kpi .value{font-size:22px}.actions .btn:not(.primary){display:none}.filters input{min-width:100%;width:100%}.donut-wrap{flex-direction:column}.only-mobile{display:inline}.ship-summary{grid-template-columns:1fr 1fr}.ship-card .ship-value{font-size:21px}}
+  
+    /* 修正版：本日出荷・未完成ではゲームを必ず全幅表示 */
+    .grid.ng-layout{grid-template-columns:1fr !important}
+    .grid.ng-layout > .panel:first-child{display:none !important}
+    .grid.ng-layout > .panel:nth-child(2){grid-column:1/-1 !important}
+    .grid.ng-layout > .panel:nth-child(2) .panel-body{padding:10px}
+    .runner-world{position:relative;z-index:4;margin-top:14px;border:4px solid #6d3e12;border-radius:14px;padding:14px 12px 12px;background:linear-gradient(180deg,#d9a85b,#b8732b);box-shadow:0 5px 0 #3e210c;overflow:hidden}
+    .runner-title{text-align:center;color:#fff5c6;font-size:20px;font-weight:900;text-shadow:0 2px 1px #5a310f;margin-bottom:12px}
+    .runner-track{display:grid;grid-template-columns:repeat(8,minmax(105px,1fr)) 105px;gap:8px;align-items:stretch}
+    .runner-stage{position:relative;min-height:165px;padding:9px 7px 10px;border-radius:10px;background:#fff9ea;border:2px solid #a86b25;box-shadow:inset 0 -3px 0 #ead5ad;text-align:center}
+    .runner-stage:not(:last-child)::after{content:"➜";position:absolute;right:-16px;top:51%;z-index:5;color:#47301d;font-size:24px;font-weight:900}
+    .runner-stage.monster-stage{background:#fff0ef;border-color:#d84b3c}
+    .runner-stage.goal-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e7f6ff;border-color:#2a83bd}
+    .runner-label{font-size:14px;font-weight:900;margin-bottom:4px;color:#332314}
+    .runner-count{font-size:22px;font-weight:900;margin-bottom:5px}
+    .runner-people{min-height:78px;display:flex;align-content:flex-start;justify-content:center;flex-wrap:wrap;gap:2px;overflow:hidden}
+    .runner-person{display:inline-block;font-size:18px;line-height:1;animation:runnerBob .8s ease-in-out infinite alternate}
+    .runner-person:nth-child(2n){animation-delay:.15s}.runner-person:nth-child(3n){animation-delay:.3s}
+    .runner-monster{display:inline-block;font-size:20px;line-height:1;animation:monsterPulse .7s ease-in-out infinite alternate}
+    .runner-more{width:100%;font-size:12px;font-weight:900;color:#7b4c19;margin-top:4px}
+    .runner-zero{font-size:34px;color:#2e8b57;font-weight:900;padding-top:16px}
+    .runner-gate{font-size:58px;line-height:1}.runner-goal-text{font-size:15px;font-weight:900;color:#1d5f8b;margin-top:6px}
+    @keyframes runnerBob{from{transform:translateY(1px)}to{transform:translateY(-5px)}}
+    @keyframes monsterPulse{from{transform:scale(1)}to{transform:scale(1.1)}}
+    @media(max-width:1300px){.runner-track{grid-template-columns:repeat(4,minmax(130px,1fr))}.runner-stage:nth-child(4n):not(:last-child)::after{display:none}}
+    @media(max-width:760px){.runner-track{grid-template-columns:repeat(2,minmax(130px,1fr))}.runner-stage:nth-child(2n):not(:last-child)::after{display:none}}
+
+  
+    .game-banner.success{
+      background:linear-gradient(180deg,#c9f7d5,#82dfa0);
+      border-color:#21884c;color:#135d32;
+      box-shadow:0 4px 0 #176739,inset 0 2px 0 #effff4
+    }
+    .game-banner.late{
+      background:linear-gradient(180deg,#ffe0af,#ffb85c);
+      border-color:#c56d13;color:#77400b;
+      box-shadow:0 4px 0 #994d08,inset 0 2px 0 #fff4df
+    }
+    .game-banner.success .game-banner-main,
+    .game-banner.late .game-banner-main{line-height:1.4}
+
+  
+    /* v3.5 GAME：既存機能を維持したまま本日未完成画面だけ改善 */
+    .grid.ng-layout{grid-template-columns:1fr !important}
+    .grid.ng-layout > .panel:first-child{display:none !important}
+    .grid.ng-layout > .panel:nth-child(2){grid-column:1/-1 !important}
+
+    .game-stage{
+      background-image:
+        linear-gradient(180deg,rgba(66,180,245,.08),rgba(78,194,104,.10)),
+        url("assets/background.png") !important;
+      background-size:cover !important;
+      background-position:center bottom !important;
+      min-height:650px
+    }
+    .game-stage:before,.game-stage:after{display:none !important}
+
+    .game-world{
+      grid-template-columns:minmax(180px,.7fr) minmax(520px,2.5fr) minmax(180px,.7fr) !important;
+      gap:18px !important;
+      align-items:center !important;
+      min-height:330px !important
+    }
+    .boss-card{
+      background:linear-gradient(145deg,rgba(116,92,210,.96),rgba(58,126,205,.96)) !important;
+      border:5px solid #ffd75a !important;
+      box-shadow:0 7px 0 #8b6210,0 12px 24px #19487866 !important;
+      border-radius:24px !important;
+      padding:12px 22px 16px !important;
+      color:#fff !important
+    }
+    .boss-label{
+      background:linear-gradient(#e74242,#bc1d25) !important;
+      border:3px solid #7b1217 !important;
+      color:#fff8ad !important;
+      font-size:22px !important;
+      padding:6px 30px !important
+    }
+    .boss-asset-main{
+      display:block !important;
+      width:210px !important;
+      height:190px !important;
+      object-fit:contain !important;
+      margin:2px auto 0 !important;
+      filter:drop-shadow(0 10px 5px #16335d80) !important
+    }
+    .boss-name{font-size:22px !important;font-weight:900 !important}
+    .boss-hp-value{font-size:52px !important;color:#fff78a !important}
+    .boss-points{font-size:20px !important}
+    .boss-track{height:29px !important;border:3px solid #79510a !important}
+    .boss-goal{font-size:15px !important;color:#fff8bf !important}
+
+    .worker-asset-main{
+      width:170px !important;height:180px !important;object-fit:contain !important;
+      filter:drop-shadow(0 7px 4px #195f7955)
+    }
+    .castle-asset-main{
+      width:180px !important;height:220px !important;object-fit:contain !important;
+      filter:drop-shadow(0 7px 4px #195f7955)
+    }
+
+    .runner-world{
+      background:linear-gradient(180deg,rgba(171,105,38,.96),rgba(100,53,15,.97)) !important;
+      border-color:#713b0b !important;
+      padding:13px !important
+    }
+    .runner-title{font-size:21px !important;margin-bottom:11px !important}
+    .runner-track{
+      display:grid !important;
+      grid-template-columns:repeat(8,minmax(105px,1fr)) minmax(110px,.9fr) !important;
+      gap:8px !important;
+      align-items:stretch !important
+    }
+    .runner-stage{
+      min-height:180px !important;
+      height:180px !important;
+      padding:8px 6px !important;
+      display:flex !important;
+      flex-direction:column !important;
+      align-items:center !important
+    }
+    .runner-label{font-size:14px !important;min-height:22px}
+    .runner-count{font-size:24px !important}
+    .runner-assets{
+      flex:1;min-height:95px !important;display:flex !important;
+      justify-content:center !important;align-content:flex-start !important;
+      align-items:flex-end !important;flex-wrap:wrap !important;gap:2px !important
+    }
+    .runner-worker-img,.runner-monster-img{
+      width:34px;height:40px;object-fit:contain;
+      filter:drop-shadow(0 3px 2px #0004)
+    }
+    .runner-worker-img{animation:runnerBob .8s ease-in-out infinite alternate}
+    .runner-monster-img{animation:monsterPulse .7s ease-in-out infinite alternate}
+    .runner-gate-img{width:88px;height:105px;object-fit:contain;margin-top:4px}
+
+    /* 上部の出荷カードは従来通りクリック可能 */
+    .ship-card{pointer-events:auto !important;cursor:pointer !important}
+    .ship-card input{pointer-events:auto !important}
+
+    @media(max-width:1300px){
+      .runner-track{grid-template-columns:repeat(4,minmax(130px,1fr)) !important}
+      .runner-stage{height:165px !important;min-height:165px !important}
+      .game-world{grid-template-columns:150px 1fr 150px !important}
+      .boss-asset-main{width:175px !important;height:160px !important}
+    }
+
+  
+    /* v3.4：討伐進捗を直感化／各工程1人のWORKERが大型BOSSを攻撃 */
+    .progress-track{
+      background:rgba(255,255,255,.38) !important;
+      border-color:#fff3a2 !important;
+      overflow:hidden
+    }
+    .progress-fill{
+      background:linear-gradient(90deg,#ff3f34,#ff7a1a,#ffb000) !important;
+      box-shadow:inset 0 1px 3px #fff9 !important;
+      transition:width .8s ease !important
+    }
+    .runner-world{padding:16px 18px 18px !important}
+    .runner-title{font-size:23px !important}
+    .runner-track{
+      display:grid !important;
+      grid-template-columns:minmax(0,1fr) 270px !important;
+      gap:18px !important;
+      align-items:stretch !important
+    }
+    .battle-workers{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(105px,1fr));
+      gap:9px;
+      align-items:stretch
+    }
+    .battle-process{
+      position:relative;
+      min-height:245px;
+      border-radius:17px;
+      padding:10px 5px 8px;
+      background:linear-gradient(180deg,#fffdf2,#fff5d4);
+      border:3px solid #d39736;
+      box-shadow:0 5px 0 #8b4d16;
+      overflow:hidden;
+      text-align:center
+    }
+    .battle-process.active-worker{border-color:#e49b25}
+    .battle-process.clear-worker{background:linear-gradient(180deg,#effff2,#d8f6dd);border-color:#58ac69}
+    .battle-process-name{font-size:16px;font-weight:900;color:#3b2c20;white-space:nowrap}
+    .battle-process-count{font-size:30px;font-weight:1000;color:#172232;margin:5px 0 2px}
+    .battle-worker-wrap{position:relative;height:150px;display:flex;align-items:flex-end;justify-content:center}
+    .battle-worker{width:92px;height:130px;object-fit:contain;filter:drop-shadow(0 6px 4px #0004);animation:workerFire .65s ease-in-out infinite alternate}
+    .battle-bullet{
+      position:absolute;right:-23px;bottom:67px;width:50px;height:24px;object-fit:contain;
+      animation:shootRight .9s linear infinite;filter:drop-shadow(0 2px 2px #0005);z-index:4
+    }
+    .battle-clear{
+      position:absolute;right:8px;top:44px;width:42px;height:42px;border-radius:50%;
+      background:#28aa5e;color:#fff;font-size:30px;font-weight:1000;line-height:42px;
+      box-shadow:0 3px 0 #15783d
+    }
+    .battle-boss-target{
+      position:relative;
+      min-height:245px;
+      border-radius:20px;
+      background:linear-gradient(180deg,#f5d9ff,#d89df4);
+      border:4px solid #8f3eb2;
+      box-shadow:0 7px 0 #57236c;
+      text-align:center;
+      padding:8px 10px 10px;
+      overflow:hidden
+    }
+    .battle-boss-title{font-size:21px;font-weight:1000;color:#5d176e}
+    .battle-boss-large{
+      display:block;width:205px;height:165px;object-fit:contain;margin:-2px auto -4px;
+      filter:drop-shadow(0 10px 5px #42194c77);animation:bossHit .55s ease-in-out infinite alternate
+    }
+    .battle-boss-remain{font-size:30px;font-weight:1000;color:#d82732}
+    .battle-hit{
+      position:absolute;right:8px;top:92px;transform:rotate(9deg);
+      color:#fff500;font-size:21px;font-weight:1000;text-shadow:2px 2px 0 #d61c1c,-2px -2px 0 #d61c1c
+    }
+    @keyframes shootRight{
+      0%{transform:translateX(-20px) scale(.75);opacity:0}
+      20%{opacity:1}
+      100%{transform:translateX(82px) scale(1.05);opacity:0}
+    }
+    @keyframes workerFire{
+      from{transform:translateX(-2px) rotate(-1deg)}
+      to{transform:translateX(3px) rotate(1deg)}
+    }
+    @keyframes bossHit{
+      from{transform:translateX(0) rotate(0)}
+      to{transform:translateX(4px) rotate(1deg);filter:drop-shadow(0 10px 5px #42194c77) brightness(1.12)}
+    }
+    @media(max-width:1450px){
+      .battle-workers{grid-template-columns:repeat(4,minmax(120px,1fr))}
+      .runner-track{grid-template-columns:minmax(0,1fr) 230px !important}
+      .battle-process{min-height:205px}
+      .battle-worker-wrap{height:110px}
+      .battle-worker{width:76px;height:100px}
+      .battle-boss-large{width:175px;height:145px}
+    }
+
+
+    .boss-card.boss-defeated{
+      background:linear-gradient(145deg,#55c978,#2fa05c) !important;
+      border-color:#fff39b !important;
+      box-shadow:0 7px 0 #287c47,0 12px 24px #19487866 !important
+    }
+    .boss-card.boss-defeated .boss-asset-main{
+      opacity:.45;
+      filter:grayscale(1) drop-shadow(0 8px 4px #16335d55) !important;
+      transform:rotate(8deg) scale(.94)
+    }
+    .boss-card.boss-defeated .boss-label::after{
+      content:"　撃破！";
+      color:#fff45f
+    }
+
+
+    /* v3.6：1件につき1人のWORKERを表示（最大15人＋超過人数） */
+    .battle-worker-wrap{
+      height:160px !important;
+      display:flex !important;
+      align-content:center !important;
+      align-items:center !important;
+      justify-content:center !important;
+      flex-wrap:wrap !important;
+      gap:1px !important;
+      padding:4px 2px 20px !important;
+      overflow:visible !important
+    }
+    .battle-worker-wrap.has-workers{position:relative}
+    .battle-worker-unit{
+      position:relative;
+      display:inline-block;
+      width:29px;
+      height:43px;
+      flex:0 0 29px;
+      animation:workerFire .65s ease-in-out infinite alternate;
+      animation-delay:var(--worker-delay)
+    }
+    .battle-worker-unit .battle-worker{
+      width:29px !important;
+      height:43px !important;
+      object-fit:contain !important;
+      animation:none !important;
+      filter:drop-shadow(0 3px 2px #0004) !important
+    }
+    .battle-worker-unit .battle-bullet{
+      position:absolute !important;
+      right:-10px !important;
+      bottom:18px !important;
+      width:20px !important;
+      height:10px !important;
+      object-fit:contain !important;
+      animation:shootRight .9s linear infinite !important;
+      animation-delay:var(--worker-delay) !important;
+      z-index:4 !important
+    }
+    .battle-worker-more{
+      position:absolute;
+      left:50%;
+      bottom:1px;
+      transform:translateX(-50%);
+      min-width:72px;
+      padding:2px 8px;
+      border-radius:12px;
+      background:#7a4317;
+      color:#fff4b5;
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
+      box-shadow:0 2px 0 #4d2709
+    }
+    .battle-process-count{margin-bottom:0 !important}
+    .battle-clear{
+      position:static !important;
+      width:48px !important;
+      height:48px !important;
+      line-height:48px !important;
+      margin:auto !important
+    }
+    @media(max-width:1450px){
+      .battle-worker-wrap{height:135px !important}
+      .battle-worker-unit{width:25px;height:37px;flex-basis:25px}
+      .battle-worker-unit .battle-worker{width:25px !important;height:37px !important}
+      .battle-worker-unit .battle-bullet{width:17px !important;height:9px !important;bottom:15px !important}
+    }
+
+
+    /* v3.7：工程カラーを全画面で統一 */
+    .battle-process{
+      --process-color:#78909C;
+      --process-soft:#ECEFF1;
+      background:linear-gradient(180deg,#fff,var(--process-soft)) !important;
+      border-color:var(--process-color) !important;
+      box-shadow:0 5px 0 color-mix(in srgb,var(--process-color) 68%,#493016) !important
+    }
+    .battle-process.process-0{--process-color:#F4C430;--process-soft:#FFF8CC} /* CAD/CAM 黄 */
+    .battle-process.process-1{--process-color:#F57C00;--process-soft:#FFF0D9} /* 切断 オレンジ */
+    .battle-process.process-2{--process-color:#EC6CB9;--process-soft:#FDE4F3} /* 曲げ ピンク */
+    .battle-process.process-3{--process-color:#E53935;--process-soft:#FFE2E0} /* 溶接 赤 */
+    .battle-process.process-4{--process-color:#B0BEC5;--process-soft:#F3F6F7} /* 仕上 薄灰 */
+    .battle-process.process-5{--process-color:#43A047;--process-soft:#E3F4E5} /* 塗装 緑 */
+    .battle-process.process-6{--process-color:#7E57C2;--process-soft:#EEE5FA} /* 組立 紫 */
+
+    .battle-process-name{
+      color:color-mix(in srgb,var(--process-color) 76%,#24180f) !important
+    }
+    .battle-process.active-worker .battle-process-count{
+      color:color-mix(in srgb,var(--process-color) 78%,#172232) !important
+    }
+    .battle-process.clear-worker{
+      background:linear-gradient(180deg,#F2FFF5,#DDF6E3) !important;
+      border-color:#2FA35A !important
+    }
+    .battle-process.clear-worker .battle-process-name,
+    .battle-process.clear-worker .battle-process-count{color:#237342 !important}
+
+    /* 工程別棒グラフの色見本 */
+    :root{
+      --status-done:#00A67E;
+      --status-active:#1976D2;
+      --status-new:#B0BEC5;
+      --status-cancel:#455A64
+    }
+
+
+/* v4.2 BOSS EVOLUTION：本日出荷・未完成画面のみ */
+.evolution-stage{min-height:720px!important}
+.evolution-world{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.65fr);gap:18px;margin-top:14px;position:relative;z-index:4;min-height:430px}
+.evolution-visual{position:relative;min-height:430px;border:5px solid #ffd85a;border-radius:24px;overflow:hidden;background-size:cover;background-position:center;box-shadow:0 8px 0 #855e0e,0 14px 28px #183e6580;isolation:isolate}
+.evolution-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.14),rgba(0,0,0,.02) 50%,rgba(0,0,0,.3));z-index:0}
+.evolution-boss-image{position:absolute;z-index:2;left:50%;bottom:8px;transform:translateX(-50%);width:min(48%,430px);height:88%;object-fit:contain;filter:drop-shadow(0 12px 10px #0009);transition:opacity .35s ease,transform .35s ease}
+.evolution-copy{position:absolute;z-index:3;left:18px;right:18px;bottom:16px;text-align:center;color:#fff;text-shadow:0 3px 5px #000,0 0 12px #000}
+.evolution-stage-name{font-size:34px;font-weight:1000;color:#ffe96a;letter-spacing:.04em}
+.evolution-message{margin-top:5px;font-size:21px;font-weight:900;line-height:1.45}
+
+.boss-status-card{min-height:430px;border:5px solid #f6d45b;border-radius:24px;background:linear-gradient(145deg,rgba(18,31,63,.97),rgba(36,62,112,.97));box-shadow:0 8px 0 #14264e,0 14px 28px #08152a99;padding:26px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;position:relative;overflow:hidden}
+.boss-status-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.15),transparent 45%);pointer-events:none}
+.boss-status-card>*{position:relative;z-index:1}
+.boss-status-label{padding:9px 34px;border-radius:99px;background:linear-gradient(#2f72d7,#174caa);border:2px solid #9cc7ff;color:#fff;font-size:21px;font-weight:1000;letter-spacing:.09em;box-shadow:0 5px 0 #0e347b;text-shadow:0 2px 2px #082454}
+.boss-status-card .boss-name{font-size:25px;margin-top:22px;color:#fff;font-weight:1000;text-shadow:0 3px 4px #000}
+.boss-status-card .boss-hp-value{font-size:68px;line-height:1.05;color:#fff36e;margin-top:8px;font-weight:1000;text-shadow:3px 3px 0 #7a4e00,0 0 12px #ffd84d99}
+.boss-status-card .boss-points{font-size:23px;color:#dbe8ff;font-weight:900;text-shadow:0 2px 3px #000}
+.boss-status-card .boss-track{width:100%;margin-top:24px;height:38px;border:4px solid #fff;border-radius:99px;background:#dce7f5;box-shadow:inset 0 3px 7px #5e7697,0 4px 0 #0a1934;overflow:hidden}
+.boss-status-card .boss-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#ff2f35,#ff7a17,#ffc400);box-shadow:inset 0 2px 3px #fff8;transition:width .8s ease}
+.boss-status-card .boss-goal{font-size:23px;color:#fff;margin-top:16px;font-weight:1000;text-shadow:0 2px 3px #000}
+.boss-status-message{margin-top:19px;border-radius:16px;padding:14px 24px;background:#ffe477;border:3px solid #fff3b0;color:#633b00;font-size:23px;font-weight:1000;box-shadow:0 5px 0 #a96b00;text-shadow:0 1px 0 #fff8}
+.boss-status-card[data-stage="100"],.boss-status-card[data-stage="80"]{background:linear-gradient(145deg,rgba(67,13,18,.98),rgba(126,28,23,.97));border-color:#ffb23f;box-shadow:0 8px 0 #64130f,0 14px 28px #250504aa}
+.boss-status-card[data-stage="60"]{background:linear-gradient(145deg,rgba(60,48,24,.98),rgba(112,86,35,.97));border-color:#ffe07a;box-shadow:0 8px 0 #5f4517,0 14px 28px #2a1e08aa}
+.boss-status-card[data-stage="40"]{background:linear-gradient(145deg,rgba(24,63,42,.98),rgba(48,108,66,.97));border-color:#b8ee8a;box-shadow:0 8px 0 #1d5d35,0 14px 28px #0a2817aa}
+.boss-status-card[data-stage="20"]{background:linear-gradient(145deg,rgba(23,69,100,.98),rgba(44,123,158,.97));border-color:#a8ecff;box-shadow:0 8px 0 #1a5878,0 14px 28px #08293aaa}
+.boss-status-card.boss-defeated{background:linear-gradient(145deg,#1d773e,#39b861);border-color:#fff17a;box-shadow:0 8px 0 #176130,0 14px 28px #082d16aa}
+.boss-status-card.boss-defeated .boss-status-label{background:linear-gradient(#35c567,#1d9649);border-color:#bfffd0;box-shadow:0 5px 0 #136b33}
+.boss-status-card.boss-defeated .boss-hp-value{color:#fff;text-shadow:0 3px 4px #075522}
+
+.evolution-runner-world{margin-top:16px!important;padding-top:16px!important}
+.evolution-runner-world .runner-title{display:none!important}
+.evolution-runner-world .runner-track{grid-template-columns:minmax(0,1fr) 250px!important}
+.evolution-support-card{min-height:245px;border-radius:20px;background:linear-gradient(180deg,#f5ddff,#d8a8ef);border:4px solid #8a41b3;box-shadow:0 7px 0 #54236d;text-align:center;padding:12px 10px;color:#5b176e;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.evolution-support-title{font-size:22px;font-weight:1000}
+.evolution-support-stage{margin-top:12px;font-size:18px;font-weight:900}
+.evolution-support-count{margin-top:12px;font-size:32px;font-weight:1000;color:#e02d3a}
+.evolution-support-message{margin-top:10px;font-size:18px;font-weight:900;line-height:1.45}
+.evolution-support-card.complete{background:linear-gradient(180deg,#e9fff0,#bfefcc);border-color:#44aa62;box-shadow:0 7px 0 #267b40;color:#226a39}
+.evolution-support-card.complete .evolution-support-count{color:#238b49}
+@media(max-width:1300px){.evolution-world{grid-template-columns:1fr}.boss-status-card{min-height:300px}.evolution-visual{min-height:380px}.evolution-runner-world .runner-track{grid-template-columns:1fr!important}.evolution-support-card{min-height:180px}.evolution-boss-image{width:min(55%,360px)}}
+
+
+/* v4.2 FINAL：未完成画面のみ／左側フル背景・大型BOSS・動機づけ一言 */
+.game-clock{
+  min-width:235px!important;
+  padding:12px 20px!important;
+  border-width:4px!important;
+  border-radius:17px!important
+}
+.game-clock small{font-size:15px!important;font-weight:900!important}
+.game-clock b{font-size:42px!important;line-height:1.05!important;letter-spacing:.055em!important}
+
+.evolution-world{
+  grid-template-columns:minmax(0,1.45fr) minmax(380px,.55fr)!important;
+  gap:16px!important;
+  min-height:500px!important;
+  overflow:hidden
+}
+.evolution-visual{
+  min-height:500px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  overflow:hidden!important
+}
+.evolution-overlay,.evolution-copy{display:none!important}
+.evolution-boss-image{
+  width:min(92%,820px)!important;
+  height:99%!important;
+  max-width:none!important;
+  bottom:-2%!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 16px 13px #000c)!important;
+  transform:translateX(-50%) scale(1.05)!important
+}
+
+/* 下段：茶色を廃止し、背景と一体化したガラス表示 */
+.evolution-runner-world{
+  background:rgba(255,255,255,.16)!important;
+  border:2px solid rgba(255,255,255,.52)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 5px 14px rgba(10,45,66,.24)!important;
+  backdrop-filter:blur(7px)!important;
+  -webkit-backdrop-filter:blur(7px)!important;
+  border-radius:18px!important;
+  padding:14px!important
+}
+.evolution-runner-world:before,.evolution-runner-world:after{display:none!important}
+.evolution-runner-world .runner-track{gap:10px!important}
+
+/* 右下のBOSS進化カードは紫を維持 */
+.evolution-support-card{
+  background:linear-gradient(180deg,#f5ddff,#d8a8ef)!important;
+  border:4px solid #8a41b3!important;
+  box-shadow:0 7px 0 #54236d!important;
+  color:#5b176e!important
+}
+.evolution-support-card.complete{
+  background:linear-gradient(180deg,#e9fff0,#bfefcc)!important;
+  border-color:#44aa62!important;
+  box-shadow:0 7px 0 #267b40!important;
+  color:#226a39!important
+}
+
+/* 上部の一言を読みやすく */
+.game-banner-main{font-size:24px!important;line-height:1.35!important}
+.game-banner-main strong{font-size:30px!important}
+
+@media(max-width:1300px){
+  .evolution-world{grid-template-columns:1fr!important}
+  .evolution-visual{min-height:460px!important}
+  .evolution-boss-image{width:min(88%,650px)!important;height:98%!important}
+  .game-clock{min-width:205px!important}
+  .game-clock b{font-size:36px!important}
+}
+
+
+/* v4.3：旧background.pngを撤去／上部バナーを工程欄と同系統のガラス表示へ */
+.evolution-stage{
+  background:none!important;
+  background-image:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+.evolution-stage:before,.evolution-stage:after{display:none!important}
+.game-banner{
+  margin:0 0 12px!important;
+  padding:16px 22px!important;
+  min-height:118px!important;
+  border:2px solid rgba(255,255,255,.62)!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,rgba(18,42,53,.76),rgba(30,72,72,.58))!important;
+  color:#fff!important;
+  box-shadow:0 5px 0 rgba(12,38,31,.5),inset 0 1px 0 rgba(255,255,255,.42)!important;
+  backdrop-filter:blur(12px) saturate(125%);
+  -webkit-backdrop-filter:blur(12px) saturate(125%);
+}
+.game-banner-main{
+  color:#fff!important;
+  font-size:25px!important;
+  line-height:1.42!important;
+  text-shadow:0 2px 3px rgba(0,0,0,.82)!important;
+}
+.game-banner-main strong{
+  display:inline-block;
+  margin-top:4px;
+  color:#fff8c7!important;
+  font-size:29px!important;
+  line-height:1.4!important;
+}
+.game-banner.success{
+  background:linear-gradient(135deg,rgba(20,105,60,.82),rgba(42,147,81,.66))!important;
+  border-color:rgba(225,255,223,.8)!important;
+}
+.game-banner.late{
+  background:linear-gradient(135deg,rgba(130,69,18,.84),rgba(183,105,29,.68))!important;
+  border-color:rgba(255,230,174,.8)!important;
+}
+.game-clock{
+  min-width:230px!important;
+  padding:13px 17px!important;
+  background:rgba(12,22,25,.86)!important;
+  border:2px solid rgba(255,255,255,.5)!important;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.35),0 3px 0 rgba(0,0,0,.42)!important;
+}
+.game-clock small{font-size:15px!important}
+.game-clock b{font-size:44px!important}
+.evolution-world{margin-top:0!important}
+.evolution-visual{border-radius:0!important}
+@media(max-width:1300px){
+  .game-banner{min-height:auto!important}
+  .game-clock{min-width:205px!important}
+  .game-clock b{font-size:36px!important}
+}
+
+
+/* v4.4：BOSS背景を完全フル表示／BOSS拡大 */
+.evolution-world{
+  grid-template-columns:minmax(0,1.48fr) minmax(380px,.52fr)!important;
+  gap:14px!important;
+  min-height:540px!important;
+  width:100%!important;
+  overflow:hidden!important;
+}
+.evolution-visual{
+  position:relative!important;
+  min-height:540px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  overflow:hidden!important;
+}
+.evolution-boss-image{
+  width:min(98%,980px)!important;
+  height:108%!important;
+  max-width:none!important;
+  left:50%!important;
+  bottom:-7%!important;
+  object-fit:contain!important;
+  transform:translateX(-50%) scale(1.12)!important;
+  transform-origin:center bottom!important;
+  filter:drop-shadow(0 18px 16px rgba(0,0,0,.82))!important;
+}
+.evolution-stage,
+.evolution-stage .evolution-world,
+.evolution-stage .evolution-visual{
+  background-color:transparent!important;
+}
+@media(max-width:1300px){
+  .evolution-world{grid-template-columns:1fr!important;min-height:auto!important}
+  .evolution-visual{min-height:500px!important}
+  .evolution-boss-image{
+    width:min(96%,760px)!important;
+    height:104%!important;
+    bottom:-5%!important;
+  }
+}
+
+
+/* v4.5：bg_xxx を未完成ミッション全体へフル表示 */
+.evolution-stage{
+  position:relative!important;
+  width:100%!important;
+  min-height:760px!important;
+  padding:12px!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  background-attachment:scroll!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+.evolution-stage::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  background:linear-gradient(
+    180deg,
+    rgba(5,18,30,.10) 0%,
+    rgba(5,18,30,.04) 48%,
+    rgba(5,18,30,.22) 100%
+  )!important;
+  pointer-events:none!important;
+}
+.evolution-stage > *{
+  position:relative!important;
+  z-index:1!important;
+}
+
+/* 左側は別背景を持たず、全体背景をそのまま見せる */
+.evolution-visual{
+  background-image:none!important;
+  background-color:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  min-height:540px!important;
+}
+
+/* 上部メッセージ・右STATUS・下工程は背景上の半透明パネル */
+.evolution-message-banner{
+  background:rgba(50,70,76,.82)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+}
+.boss-status-card{
+  background:rgba(15,58,83,.88)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+}
+.evolution-runner-world{
+  background:rgba(255,255,255,.18)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  border-color:rgba(255,255,255,.42)!important;
+}
+
+/* BOSSをさらに大きくし、下端まで見せる */
+.evolution-boss-image{
+  width:min(100%,1060px)!important;
+  height:116%!important;
+  max-height:none!important;
+  bottom:-13%!important;
+  object-fit:contain!important;
+  transform:translateX(-50%) scale(1.18)!important;
+  transform-origin:center bottom!important;
+}
+
+@media(max-width:1300px){
+  .evolution-stage{min-height:auto!important}
+  .evolution-visual{min-height:500px!important}
+  .evolution-boss-image{
+    width:min(98%,820px)!important;
+    height:108%!important;
+    bottom:-8%!important;
+    transform:translateX(-50%) scale(1.08)!important;
+  }
+}
+
+
+/* v4.6：背景消失を修正／BOSSをv4.5の75%へ縮小 */
+.evolution-stage{
+  background-image:var(--evolution-bg)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+
+/* v4.5比 75% */
+.evolution-boss-image{
+  width:min(75%,795px)!important;
+  height:87%!important;
+  bottom:-7%!important;
+  transform:translateX(-50%) scale(1)!important;
+  object-fit:contain!important;
+  transform-origin:center bottom!important;
+}
+
+@media(max-width:1300px){
+  .evolution-boss-image{
+    width:min(74%,615px)!important;
+    height:81%!important;
+    bottom:-5%!important;
+    transform:translateX(-50%) scale(1)!important;
+  }
+}
+
+
+/* ================================
+   v5.2 FINAL EVOLUTION BG：未完成以外のGAME表示
+   ================================ */
+.standard-game{display:none}
+.standard-game.show{display:block}
+.grid.standard-layout{grid-template-columns:1fr!important}
+.grid.standard-layout>div:first-child{display:none!important}
+.grid.standard-layout>div:last-child{grid-column:1/-1!important}
+.grid.standard-layout>div:last-child>.panel-head{display:none!important}
+.grid.standard-layout>div:last-child>.panel-body{padding:0!important}
+
+.standard-stage{
+  padding:14px;
+  border-radius:18px;
+  overflow:hidden;
+  background:
+    linear-gradient(rgba(8,35,52,.12),rgba(8,35,52,.20)),
+    url("assets/background.png") center/cover no-repeat;
+}
+.standard-banner{
+  min-height:116px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:18px 24px;
+  border:2px solid rgba(255,255,255,.55);
+  border-radius:18px;
+  background:rgba(45,66,73,.78);
+  color:#fff;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 5px 0 rgba(18,36,43,.50);
+}
+.standard-banner-title{
+  font-size:19px;
+  font-weight:900;
+  color:#fff4c2;
+  margin-bottom:8px;
+}
+.standard-banner-message{
+  font-size:27px;
+  line-height:1.35;
+  font-weight:900;
+  text-shadow:0 2px 2px rgba(0,0,0,.65);
+}
+.standard-clock{
+  width:230px;
+  min-width:230px;
+  padding:10px 14px;
+  border:3px solid rgba(255,255,255,.25);
+  border-radius:16px;
+  background:rgba(12,27,31,.92);
+  color:#fff5bd;
+  text-align:center;
+  box-shadow:0 4px 0 rgba(0,0,0,.45);
+}
+.standard-clock small{display:block;font-weight:800}
+.standard-clock b{display:block;font-size:38px;line-height:1.05;margin:4px 0}
+
+.standard-world{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(400px,.55fr);
+  gap:14px;
+  margin-top:14px;
+  min-height:510px;
+}
+.standard-visual{
+  position:relative;
+  overflow:hidden;
+  min-height:510px;
+  border-radius:16px;
+  border:2px solid rgba(255,255,255,.58);
+  background:
+    linear-gradient(90deg,rgba(0,25,35,.15),rgba(0,25,35,.05)),
+    url("assets/background.png") center/cover no-repeat;
+}
+.standard-visual::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(3,24,35,.72) 0%,rgba(3,24,35,.28) 46%,rgba(3,24,35,.04) 72%);
+}
+.standard-visual-overlay{
+  position:absolute;
+  z-index:2;
+  left:5%;
+  top:50%;
+  transform:translateY(-50%);
+  max-width:55%;
+  color:#fff;
+  text-shadow:0 3px 5px rgba(0,0,0,.85);
+}
+.standard-tab-name{font-size:30px;font-weight:900;color:#fff4b0}
+.standard-total{font-size:78px;font-weight:1000;line-height:1.05;margin-top:16px}
+.standard-points{font-size:25px;font-weight:800;margin-top:6px}
+.standard-visual-message{
+  margin-top:22px;
+  padding:10px 16px;
+  border-left:6px solid #ffe477;
+  background:rgba(0,0,0,.34);
+  font-size:22px;
+  font-weight:900;
+  line-height:1.45;
+}
+
+.standard-donut-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:3px solid rgba(255,232,125,.92);
+  border-radius:20px;
+  padding:24px 22px;
+  background:rgba(18,66,92,.90);
+  color:#fff;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  box-shadow:0 6px 0 rgba(8,33,49,.55);
+}
+.standard-donut-label{
+  padding:8px 28px;
+  border-radius:999px;
+  background:linear-gradient(#2d81de,#1450a8);
+  border:1px solid #8ec4ff;
+  box-shadow:0 4px 0 #0a3a76;
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.animated-donut{
+  --done:0%;
+  --active:0%;
+  --new:0%;
+  position:relative;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  margin:26px auto 18px;
+  background:conic-gradient(
+    #00A67E 0 var(--done),
+    #1976D2 var(--done) var(--active),
+    #B0BEC5 var(--active) var(--new),
+    #455A64 var(--new) 100%
+  );
+  box-shadow:
+    0 0 0 8px rgba(255,255,255,.12),
+    0 0 30px rgba(0,203,165,.28);
+  transition:filter .5s ease;
+}
+.animated-donut::after{
+  content:"";
+  position:absolute;
+  inset:36px;
+  border-radius:50%;
+  background:rgba(248,252,255,.96);
+  box-shadow:inset 0 0 25px rgba(28,75,104,.18);
+}
+.animated-donut.complete{
+  animation:donutCompleteGlow 1.8s ease-in-out infinite alternate;
+}
+.animated-donut-center{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  display:grid;
+  place-content:center;
+  text-align:center;
+  color:#132a38;
+}
+.animated-donut-center b{font-size:48px;line-height:1}
+.animated-donut-center small{font-size:17px;margin-top:8px;color:#667b88}
+.donut-orbit{
+  position:absolute;
+  z-index:4;
+  width:16px;
+  height:16px;
+  left:calc(50% - 8px);
+  top:-8px;
+  border-radius:50%;
+  background:#fff7a5;
+  box-shadow:0 0 14px 5px rgba(255,244,104,.75);
+  transform-origin:8px 148px;
+  animation:donutOrbit 5s linear infinite;
+}
+.standard-legend{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 20px;
+  width:100%;
+  max-width:360px;
+  font-size:17px;
+  font-weight:800;
+}
+.standard-legend>div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:7px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.10);
+}
+.standard-legend .dot{
+  width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;
+}
+.standard-progress-message{
+  margin-top:18px;
+  min-width:260px;
+  padding:11px 18px;
+  border-radius:14px;
+  background:#ffe783;
+  color:#6b4510;
+  text-align:center;
+  font-size:19px;
+  font-weight:900;
+  box-shadow:0 5px 0 #b77a12;
+}
+.standard-progress-message.complete{
+  background:#bdf5cf;
+  color:#126a38;
+  box-shadow:0 5px 0 #2d9b59;
+}
+
+.standard-runner-world{
+  margin-top:14px;
+  padding:14px;
+  border:2px solid rgba(255,255,255,.48);
+  border-radius:18px;
+  background:rgba(255,255,255,.22);
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+}
+.standard-runner-track .battle-workers{
+  grid-template-columns:repeat(8,minmax(100px,1fr))!important;
+}
+.standard-summary-card{
+  --process-color:#1976D2;
+  --process-soft:#e8f3ff;
+  min-height:245px;
+  border:3px solid var(--process-color);
+  border-radius:17px;
+  padding:12px 8px;
+  background:linear-gradient(180deg,#fff,var(--process-soft));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  justify-content:space-between;
+  box-shadow:0 5px 0 color-mix(in srgb,var(--process-color) 65%,#344552);
+}
+.standard-summary-card.complete{--process-color:#22a85a;--process-soft:#dff7e6}
+.standard-summary-title{font-size:18px;font-weight:900}
+.standard-summary-rate{font-size:38px;font-weight:1000;color:var(--process-color)}
+.standard-summary-message{font-size:15px;font-weight:800;line-height:1.45}
+
+@keyframes donutOrbit{to{transform:rotate(360deg)}}
+@keyframes donutCompleteGlow{
+  from{filter:drop-shadow(0 0 4px rgba(77,255,159,.35))}
+  to{filter:drop-shadow(0 0 18px rgba(77,255,159,.90))}
+}
+
+@media(max-width:1350px){
+  .standard-world{grid-template-columns:1fr}
+  .standard-visual{min-height:420px}
+  .standard-runner-track .battle-workers{grid-template-columns:repeat(4,minmax(120px,1fr))!important}
+}
+
+
+/* =========================================
+   v5.2 FINAL
+   4 TAB KHÁC: dùng nền tiến hóa bg_100~bg_0
+   Không Boss; 未完成 giữ nguyên
+   ========================================= */
+.standard-stage{
+  --standard-evolution-bg:url("assets/bg_100.png");
+  background-image:
+    linear-gradient(rgba(7,31,43,.16),rgba(7,31,43,.22)),
+    var(--standard-evolution-bg)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  transition:background-image .45s ease-in-out!important;
+}
+
+.standard-visual{
+  background-image:
+    linear-gradient(90deg,rgba(3,27,40,.68) 0%,rgba(3,27,40,.24) 58%,rgba(3,27,40,.06) 100%),
+    var(--standard-evolution-bg)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  transition:background-image .45s ease-in-out!important;
+}
+
+.standard-visual::after{
+  background:
+    linear-gradient(90deg,rgba(2,19,30,.52) 0%,rgba(2,19,30,.16) 58%,transparent 100%)!important;
+}
+
+.standard-visual-overlay{
+  max-width:58%!important;
+  padding:28px 30px!important;
+  border:1px solid rgba(255,255,255,.30)!important;
+  border-radius:20px!important;
+  background:rgba(5,31,45,.48)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.23),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+
+.standard-stage[data-evolution="0"] .standard-visual-overlay{
+  background:rgba(255,255,255,.60)!important;
+  color:#183243!important;
+  text-shadow:0 1px 1px rgba(255,255,255,.8)!important;
+}
+.standard-stage[data-evolution="0"] .standard-tab-name{color:#174d72!important}
+.standard-stage[data-evolution="0"] .standard-visual-message{
+  color:#17384d!important;
+  background:rgba(255,255,255,.55)!important;
+  text-shadow:none!important;
+}
+
+/* v5.3：工程カードを選ぶと、左側にその工程の滞留品を直接表示 */
+.battle-process[data-process],
+.standard-summary-card[data-overview]{
+  cursor:pointer;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+.battle-process[data-process]:hover,
+.battle-process[data-process]:focus-visible,
+.standard-summary-card[data-overview]:hover,
+.standard-summary-card[data-overview]:focus-visible{
+  transform:translateY(-4px);
+  filter:brightness(1.04);
+  outline:none;
+}
+.battle-process[data-process].process-selected{
+  box-shadow:
+    0 0 0 5px rgba(255,255,255,.96),
+    0 0 0 9px var(--process-color),
+    0 8px 18px rgba(0,0,0,.30)!important;
+  transform:translateY(-5px);
+}
+.battle-process .battle-process-name{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-height:50px!important;
+  margin:0 0 5px!important;
+  padding:7px 5px!important;
+  border:2px solid rgba(255,255,255,.72)!important;
+  border-radius:13px!important;
+  background:var(--process-color)!important;
+  color:#fff!important;
+  font-size:clamp(23px,1.65vw,30px)!important;
+  font-weight:1000!important;
+  line-height:1.05!important;
+  letter-spacing:.02em!important;
+  text-shadow:0 2px 2px rgba(0,0,0,.32)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.48),
+    0 4px 0 color-mix(in srgb,var(--process-color) 66%,#263238)!important;
+}
+.battle-process.clear-worker .battle-process-name{
+  color:#fff!important;
+}
+.battle-process.process-0 .battle-process-name,
+.battle-process.process-4 .battle-process-name{
+  color:#263238!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.62)!important;
+}
+.battle-process.clear-worker{
+  background:linear-gradient(180deg,#536169,#303b41)!important;
+  border-color:#253137!important;
+  box-shadow:0 5px 0 #182126!important;
+}
+.battle-process.clear-worker .battle-process-name{
+  background:#263238!important;
+  border-color:#89979e!important;
+  color:#f2f5f6!important;
+  text-shadow:0 2px 2px rgba(0,0,0,.55)!important;
+  box-shadow:inset 0 1px 0 #ffffff26,0 4px 0 #151d21!important;
+}
+.battle-process.clear-worker .battle-process-count{
+  visibility:hidden!important;
+}
+.battle-process.clear-worker .process-symbol{
+  animation:none!important;
+  transform:none!important;
+  opacity:.25!important;
+  filter:grayscale(1) brightness(.78)!important;
+  border-color:#9aa6ac!important;
+  background:#d9dfe2!important;
+  box-shadow:none!important;
+}
+.battle-process.clear-worker[data-process]:hover,
+.battle-process.clear-worker[data-process]:focus-visible{
+  transform:none!important;
+  filter:none!important;
+}
+.process-complete-stamp{
+  position:absolute;
+  z-index:5;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) rotate(-5deg);
+  min-width:118px;
+  padding:8px 15px 7px;
+  border:5px double #f1f4f5;
+  border-radius:5px;
+  background:rgba(31,42,48,.92);
+  color:#f7f9fa;
+  font-size:34px;
+  font-weight:1000;
+  line-height:1;
+  letter-spacing:.16em;
+  text-align:center;
+  text-indent:.16em;
+  text-shadow:0 2px 2px #000;
+  box-shadow:0 4px 0 #151d21,0 7px 16px rgba(0,0,0,.34);
+}
+.battle-process .battle-process-count{
+  min-height:39px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:30px!important;
+  line-height:1!important;
+}
+.standard-summary-title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:50px;
+  padding:7px 5px;
+  border:2px solid rgba(255,255,255,.72);
+  border-radius:13px;
+  background:var(--process-color);
+  color:#fff;
+  font-size:clamp(23px,1.65vw,30px)!important;
+  font-weight:1000;
+  line-height:1.05;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
+    0 4px 0 color-mix(in srgb,var(--process-color) 66%,#263238);
+}
+.battle-worker-wrap.process-symbol-wrap{
+  position:relative!important;
+  height:160px!important;
+  padding:8px 4px!important;
+  overflow:hidden!important;
+}
+.process-symbol{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:112px;
+  height:112px;
+  border:3px solid color-mix(in srgb,var(--process-color) 72%,#fff);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 32% 24%,rgba(255,255,255,.98),rgba(255,255,255,.62) 58%,var(--process-soft));
+  color:var(--process-color);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 7px 14px color-mix(in srgb,var(--process-color) 24%,transparent);
+  animation:processSymbolFloat 1.8s ease-in-out infinite alternate;
+}
+.process-symbol svg{
+  width:86px;
+  height:86px;
+  overflow:visible;
+  filter:drop-shadow(0 4px 3px rgba(20,36,45,.18));
+}
+.process-symbol .symbol-fill{
+  fill:color-mix(in srgb,var(--process-color) 18%,#fff);
+}
+.process-symbol .symbol-line{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.process-symbol .symbol-solid{fill:currentColor}
+.process-symbol-wrap .battle-clear{
+  position:absolute!important;
+  right:12px!important;
+  bottom:12px!important;
+  z-index:3;
+  width:42px!important;
+  height:42px!important;
+  margin:0!important;
+  line-height:42px!important;
+  border:3px solid #fff;
+  font-size:26px!important;
+}
+@keyframes processSymbolFloat{
+  from{transform:translateY(3px) scale(.98)}
+  to{transform:translateY(-3px) scale(1.02)}
+}
+@media(max-width:1450px){
+  .battle-worker-wrap.process-symbol-wrap{height:135px!important}
+  .process-symbol{width:94px;height:94px;border-radius:20px}
+  .process-symbol svg{width:72px;height:72px}
+}
+.standard-visual-overlay.process-detail{
+  left:3%!important;
+  width:94%!important;
+  max-width:94%!important;
+  padding:18px 20px!important;
+  background:rgba(5,31,45,.90)!important;
+  color:#fff!important;
+  text-shadow:none!important;
+}
+.process-backlog-panel[hidden]{display:none!important}
+.process-backlog-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:10px;
+}
+.process-backlog-kicker{
+  color:#ffe77d;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.process-backlog-title{
+  margin-top:2px;
+  font-size:29px;
+  font-weight:1000;
+  line-height:1.15;
+}
+.process-backlog-summary{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.process-backlog-count{
+  padding:8px 14px;
+  border-radius:12px;
+  background:#ffe783;
+  color:#68420d;
+  font-size:18px;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.process-backlog-close{
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:12px;
+  padding:8px 13px;
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+}
+.process-backlog-close:hover{background:rgba(255,255,255,.26)}
+.process-backlog-table-wrap{
+  max-height:320px;
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:12px;
+  background:rgba(244,250,253,.96);
+  box-shadow:inset 0 1px 0 #fff;
+}
+.process-backlog-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  color:#173044;
+  font-size:14px;
+}
+.process-backlog-table th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:8px 9px;
+  background:#dbeaf2;
+  color:#26475a;
+  text-align:left;
+  white-space:nowrap;
+  border-bottom:1px solid #aec5d1;
+}
+.process-backlog-table td{
+  padding:8px 9px;
+  background:rgba(255,255,255,.94);
+  border-bottom:1px solid #d8e3e9;
+  vertical-align:middle;
+}
+.process-backlog-table tr:last-child td{border-bottom:0}
+.process-backlog-table .backlog-code{font-weight:900;color:#175f93;white-space:nowrap}
+.process-backlog-table .backlog-product{min-width:210px}
+.process-backlog-table .backlog-product b,
+.process-backlog-table .backlog-product small{display:block}
+.process-backlog-table .backlog-product small{margin-top:2px;color:#5c6f7b}
+.process-backlog-table .backlog-qty{font-weight:1000;white-space:nowrap}
+.process-backlog-table .backlog-date{white-space:nowrap}
+.process-backlog-empty{
+  padding:62px 20px;
+  color:#1c6541;
+  text-align:center;
+  font-size:24px;
+  font-weight:1000;
+}
+.evolution-visual.has-process-detail::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:3;
+  background:rgba(5,31,45,.82);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+.evolution-visual.has-process-detail .evolution-boss-image{opacity:.12!important}
+.ng-process-backlog{
+  position:absolute;
+  z-index:4;
+  inset:22px;
+  padding:18px 20px;
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:18px;
+  background:rgba(5,31,45,.88);
+  color:#fff;
+  overflow:hidden;
+}
+@media(max-width:1350px){
+  .process-backlog-table-wrap{max-height:245px}
+  .process-backlog-title{font-size:24px}
+  .process-backlog-header{align-items:flex-start}
+  .process-backlog-summary{flex-direction:column;align-items:stretch}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
+  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v4.6 BOSS EVOLUTION</small></p></div><div class="actions"><a class="btn" href="welding.html" style="text-decoration:none;color:#c83d32;border-color:#efb0aa;font-weight:800">🔥 溶接工程</a><button class="btn primary" id="refresh">更新</button></div></header>
+  <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
+    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 出荷</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
+    <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
+    <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全出荷日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全出荷日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
+
+<div id="standardGame" class="standard-game">
+  <div class="standard-stage">
+    <div class="standard-banner">
+      <div>
+        <div class="standard-banner-title" id="standardBannerTitle">生産進捗ミッション</div>
+        <div class="standard-banner-message" id="standardBannerMessage">一件ずつ、確実に完成へ進めましょう。</div>
+      </div>
+      <div class="standard-clock">
+        <small>現在時刻</small>
+        <b id="standardClock">--:--:--</b>
+        <small id="standardDate">----</small>
+      </div>
+    </div>
+
+    <div class="standard-world">
+      <section class="standard-visual" aria-label="生産進捗イメージ">
+        <div class="standard-visual-overlay">
+          <div id="standardOverview">
+            <div class="standard-tab-name" id="standardTabName">本日出荷</div>
+            <div class="standard-total"><span id="standardTotal">0</span>件</div>
+            <div class="standard-points">（<span id="standardPoints">0</span>点）</div>
+            <div class="standard-visual-message" id="standardVisualMessage">今日も安全第一で進めましょう。</div>
+          </div>
+          <div id="standardProcessBacklog" class="process-backlog-panel" hidden></div>
+        </div>
+      </section>
+
+      <section class="standard-donut-card">
+        <div class="standard-donut-label">全体進捗</div>
+        <div class="animated-donut" id="animatedDonut">
+          <div class="animated-donut-center">
+            <b id="animatedDonutRate">0.0%</b>
+            <small>完成率</small>
+          </div>
+          <span class="donut-orbit" aria-hidden="true"></span>
+        </div>
+        <div class="standard-legend" id="standardLegend"></div>
+        <div class="standard-progress-message" id="standardProgressMessage">対象データを集計しています。</div>
+      </section>
+    </div>
+
+    <div class="standard-runner-world">
+      <div id="standardRunnerTrack" class="standard-runner-track"></div>
+    </div>
+  </div>
+</div>
+
+<div id="ngGame" class="ng-game">
+  <div class="game-stage evolution-stage" id="evolutionStage">
+    <div class="game-banner" id="gameBanner">
+      <div class="game-banner-main" id="gameBannerMessage">📣 今日もみんなで力を合わせよう！<br><strong>🔥 15:00までの全件完成を目指そう！💪</strong></div>
+      <div class="game-clock"><small>現在時刻</small><b id="gameClock">--:--:--</b><small id="gameDate">----</small></div>
+    </div>
+
+    <div class="evolution-world">
+      <section class="evolution-visual" id="evolutionVisual">
+        <img id="evolutionBossImage" class="evolution-boss-image" src="assets/boss_100.png" alt="BOSS進化">
+        <div id="ngProcessBacklog" class="process-backlog-panel ng-process-backlog" hidden></div>
+      </section>
+
+      <section class="boss-status-card" id="bossStatusCard">
+        <div class="boss-status-label">BOSS STATUS</div>
+        <div class="boss-name">本日出荷・未完成</div>
+        <div class="boss-hp-value">残り <span id="bossCount">0</span>件</div>
+        <div class="boss-points">（<span id="bossPoints">0</span>点）</div>
+        <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
+        <div class="boss-goal">❤️ BOSS HP <span id="bossHpText">100%</span></div>
+        <div id="bossStatusMessage" class="boss-status-message">残り0件で人間完成！</div>
+      </section>
+    </div>
+
+    <div class="runner-world evolution-runner-world">
+      <div id="runnerTrack" class="runner-track"></div>
+    </div>
+  </div>
+  <div id="goalResult" class="goal-result" aria-live="polite"></div>
+</div>
+<div id="completeMessage" style="display:none;text-align:center;margin:10px 16px 4px;padding:14px 8px;border-top:2px solid #2E7D32;border-bottom:2px solid #2E7D32;color:#2E7D32;font-weight:700;font-size:24px;line-height:1.5">
+今日出荷分が完了しました。<br>お疲れ様でした！
+</div></div></section>
+    <section class="panel work"><div class="panel-head"><h2>製造指示一覧</h2><span id="resultCount" style="font-size:11px;color:var(--muted)">表示 15件</span></div><div class="filters"><input id="search" placeholder="指示番号・品番・品名・規格・得意先を検索"/><div class="quick"><button type="button" data-quick="today-ng">本日未完成</button><button type="button" data-quick="today">本日出荷</button><button type="button" data-quick="tomorrow">明日</button><button type="button" data-quick="overdue">製造期限切れ</button><button type="button" data-quick="specified">指定日</button></div><select id="statusFilter"><option value="">すべての進捗</option></select><select id="ownerFilter"><option value="">すべての担当者</option></select><select id="deadlineFilter"><option value="">すべての納期</option><option value="late">期限超過</option><option value="soon">7日以内</option></select></div><div class="table-wrap"><table><thead><tr><th>製造指示番号</th><th>得意先</th><th>品番 / 品名</th><th>規格</th><th>数量（点）</th><th>出荷日</th><th>製造期限</th><th>進捗</th><th>担当者</th><th>配送便</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="footer-note">※ 未完成判定：出荷日が本日で、進捗が「完成」以外の製造指示です。数量の単位は「点」です。</div></section>
+  </div></main>
+</div>
+<script src="game.js"></script>
+<script>
+const sample=[
+['26-J0056603-001-771','カンサイ　日進商会★','DC0000N','Sﾀﾞｲﾏ ｶﾊﾞｰ',1,'2026-06-18','完成','志田','店頭渡し'],
+['26-J0047415-001-771','イシグロ　福岡','IBG0000C','鉄 防球ガード 焼付',1,'2026-06-17','ｷｬﾝｾﾙ','林(秀)','ヤマックス　ｽﾎﾟｯﾄ便'],
+['26-J0054238-001-771','栗田電機　松山★','SP0000SNP','SUS PBﾄｸ 平',15,'2026-06-17','完成','古川','福山通運　九州発送'],
+['26-J0055121-001-771','日本電設資材　福岡★','ZG0000','ZN 架台',1,'2026-06-17','完成','金光','福山通運　九州発送'],
+['26-J0056156-001-771','富士商会　大村★','ZE2020X2','ZN PB 水切',8,'2026-06-17','完成','金光','佐川急便'],
+['26-J0060451-001-771','ナンリツ　本社営業部★','IE6060SG','鉄 PB 平',2,'2026-07-22','溶接','服部','福山通運　九州発送'],
+['26-J0061120-002-771','岡本電機　福山★','IP1510XG','鉄 PB 水切',3,'2026-07-23','切断','古川','福山通運　九州発送'],
+['26-J0062088-001-771','かごしま電工　南★','SE2020XC','SUS PB 水切 焼付',1,'2026-07-24','塗装','志田','佐川急便'],
+['26-J0062560-001-771','正和電材　佐世保★','ZE1515X2','ZN PB 水切',5,'2026-07-25','未着手','','佐川急便'],
+['26-J0063151-001-771','宮地電機　徳島','DE2015SN','Sﾀﾞｲﾏ PB 平',15,'2026-07-27','CAD/CAM','樋口','福山通運　九州発送'],
+['26-J0063822-001-771','栗田電機　四国中央★','IG0000C','鉄 架台 焼付',1,'2026-07-28','曲げ','森田','福山通運　九州発送'],
+['26-J0064102-003-771','カンサイ　久留米★','ZP0000S','ZN PBﾄｸ 平',7,'2026-07-29','組立','倉重','佐川急便'],
+['26-J0064801-001-771','富士商会　大村★','DC0000N','Sﾀﾞｲﾏ ｶﾊﾞｰ',2,'2026-08-01','仕上','坂元','店頭渡し'],
+['26-J0065210-001-771','日本電設資材　福岡★','ZG0000','ZN 架台',4,'2026-08-04','未着手','','福山通運　九州発送'],
+['26-J0066008-001-771','岡本電機　福山★','IE4040SG','鉄 PB 平',6,'2026-08-07','溶接','山口','福山通運　九州発送']
+].map((r,i)=>({id:r[0],client:r[1],part:r[2],name:r[3],standard:['ｱｰｽ','穴加工','ｺﾞﾑﾊﾟｯｷﾝ付','さび止め','L65×65×6t'][i%5],qty:r[4],due:r[5],status:r[6],owner:r[7],ship:r[8],shipDate:['2026-07-20','2026-07-21','2026-07-22','2026-07-20','2026-07-21'][i%5]}));
+let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
+let selectedProcess='',currentChartRows=[],currentChartLabel='生産進捗';
+let csvLoading=false;
+
+function formatLocalDate(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function getShipDates(){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const tomorrow=new Date(today);
+  tomorrow.setDate(today.getDate()+1);
+  const after=new Date(today);
+  after.setDate(today.getDate()+2);
+  return {
+    today:formatLocalDate(today),
+    tomorrow:formatLocalDate(tomorrow),
+    after:formatLocalDate(after)
+  };
+}
+function isOverdueItem(r){
+  const today=getShipDates().today;
+  const status=String(r.status||'');
+  return Boolean(r.due)&&r.due<today&&status!=='完成'&&!status.includes('ｷｬﾝｾﾙ')&&!status.includes('キャンセル');
+}
+function updateShipLabels(){
+  const dates=getShipDates();
+  const cards=document.querySelectorAll('.ship-card .day');
+  if(cards.length>=5){
+    cards[1].textContent=`本日 ${dates.today} 出荷`;
+    cards[2].textContent=`明日 ${dates.tomorrow} 出荷`;
+    cards[3].textContent='⚠ 製造期限切れ';
+    cards[4].textContent=`指定日 ${specifiedShipDate||dates.today} 製造期限`;
+  }
+  const input=$('specifiedDate');
+  if(input && !input.value){
+    input.value=dates.today;
+    specifiedShipDate=dates.today;
+  }
+}
+
+const summary={完成:2661,未着手:218,溶接:211,塗装:133,'ｷｬﾝｾﾙ':93,切断:80,'CAD/CAM':71,曲げ:59,組立:56,仕上:20};
+const $=id=>document.getElementById(id), fmt=n=>Number(n||0).toLocaleString('ja-JP');
+function showNotice(html){
+  let notice=$('notice');
+  if(!notice){
+    notice=document.createElement('div');
+    notice.id='notice';
+    notice.className='notice';
+    const content=document.querySelector('.content');
+    if(content) content.insertBefore(notice,content.firstChild);
+  }
+  if(notice) notice.innerHTML=html;
+}
+const excelDate=v=>{
+  if(!v)return'';
+  if(v instanceof Date)return formatLocalDate(v);
+  if(typeof v==='number'){
+    const d=new Date(Math.round((v-25569)*86400000));
+    return formatLocalDate(d);
+  }
+  const s=String(v).trim().replaceAll('/','-');
+
+  // YYYY-M-D
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(m)return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+
+  // M-D-YY or M-D-YYYY, produced by SheetJS date formatting
+  m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{2}|\d{4})$/);
+  if(m){
+    let y=m[3].length===2?`20${m[3]}`:m[3];
+    return `${y}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;
+  }
+
+  return s.slice(0,10);
+};
+function normalize(o){
+  const qty=Number(String(o['数量']||0).replaceAll(',','').trim())||0;
+  return{
+    id:String(o['製造指示番号']||'').trim(),
+    client:String(o['得意先']||'').trim(),
+    part:String(o['品番']||'').trim(),
+    name:String(o['品名']||'').trim(),
+    standard:String(o['規格']||'').trim(),
+    qty,
+    due:excelDate(o['製造期限']),
+    shipDate:excelDate(o['出荷日']),
+    status:String(o['進捗']||'').trim(),
+    owner:String(o['担当者']||'').trim(),
+    ship:String(o['配送便']||'').trim()
+  };
+}
+function statusClass(s){if(s==='完成')return's-done';if(s==='未着手')return's-new';if(s==='溶接')return's-weld';if(s==='塗装')return's-paint';if(s==='切断')return's-cut';if(s.includes('ｷｬﾝｾﾙ')||s.includes('キャンセル'))return's-cancel';return's-new'}
+
+function getTodayCompletionKey(){
+  return `todayNgCompletedAt:${getShipDates().today}`;
+}
+function getOrRecordTodayCompletion(ngCount){
+  const key=getTodayCompletionKey();
+  if(ngCount>0){
+    localStorage.removeItem(key);
+    return null;
+  }
+  let saved=localStorage.getItem(key);
+  if(!saved){
+    saved=new Date().toISOString();
+    localStorage.setItem(key,saved);
+  }
+  const d=new Date(saved);
+  return Number.isNaN(d.getTime())?new Date():d;
+}
+function updateGameClock(){
+  const clock=$('gameClock');
+  const date=$('gameDate');
+  if(!clock||!date)return;
+  const now=new Date();
+  clock.textContent=now.toLocaleTimeString('ja-JP',{hour12:false});
+  date.textContent=now.toLocaleDateString('ja-JP',{
+    year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'
+  });
+}
+
+setInterval(updateGameClock,1000);
+function updateStandardClock(){
+  const now=new Date();
+  const clock=$('standardClock');
+  const date=$('standardDate');
+  if(clock) clock.textContent=now.toLocaleTimeString('ja-JP',{hour12:false});
+  if(date) date.textContent=now.toLocaleDateString('ja-JP',{
+    year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'
+  });
+}
+setInterval(updateStandardClock,1000);
+
+
+
+let standardDonutAnimation=null;
+let standardDonutState={done:0,active:0,newp:0,rate:0};
+
+function animateStandardDonut(doneEnd,activeEnd,newEnd,rateEnd){
+  const donut=$('animatedDonut');
+  const rateEl=$('animatedDonutRate');
+  if(!donut||!rateEl)return;
+  if(standardDonutAnimation) cancelAnimationFrame(standardDonutAnimation);
+
+  const start={...standardDonutState};
+  const target={done:doneEnd,active:activeEnd,newp:newEnd,rate:rateEnd};
+  const startTime=performance.now();
+  const duration=900;
+
+  const frame=now=>{
+    const t=Math.min(1,(now-startTime)/duration);
+    const eased=1-Math.pow(1-t,3);
+    const cur={
+      done:start.done+(target.done-start.done)*eased,
+      active:start.active+(target.active-start.active)*eased,
+      newp:start.newp+(target.newp-start.newp)*eased,
+      rate:start.rate+(target.rate-start.rate)*eased
+    };
+    donut.style.setProperty('--done',`${cur.done}%`);
+    donut.style.setProperty('--active',`${cur.active}%`);
+    donut.style.setProperty('--new',`${cur.newp}%`);
+    rateEl.textContent=`${cur.rate.toFixed(1)}%`;
+    if(t<1){
+      standardDonutAnimation=requestAnimationFrame(frame);
+    }else{
+      standardDonutState=target;
+      standardDonutAnimation=null;
+    }
+  };
+  standardDonutAnimation=requestAnimationFrame(frame);
+}
+
+const STANDARD_MESSAGE_INTERVAL=180000;
+const standardMessageGroups={
+  today:[
+    context=>context.total===0
+      ? '本日出荷の対象はありません。先の仕事を落ち着いて準備しましょう。'
+      : `本日出荷は完成まであと${fmt(context.remaining)}件です。安全を守り、確実に送り出しましょう。`,
+    context=>context.rate>=100
+      ? '本日出荷は全件完成です。素早く丁寧な仕事をありがとうございました。'
+      : '今日お客様を待たせないために、工程間の声掛けを大切にしましょう。',
+    context=>context.total===0
+      ? '今日の出荷に余裕があります。設備と作業環境を整える良い時間です。'
+      : `本日分の完成率は${context.rate.toFixed(1)}%です。一件ずつ品質を確認して進めましょう。`,
+    context=>'今日届ける一品一品に、九州工場の技術と誠意を込めましょう。',
+    context=>'本日の最後の出荷まで、焦らず・省略せず・安全第一で取り組みましょう。'
+  ],
+  tomorrow:[
+    context=>context.total===0
+      ? '明日出荷の対象はありません。次の予定を先回りして確認しましょう。'
+      : `明日出荷は完成まであと${fmt(context.remaining)}件です。今日の準備が明日の安心につながります。`,
+    context=>context.rate>=100
+      ? '明日出荷はすべて準備完了です。早めの対応に心から感謝します。'
+      : '明日の出荷を気持ちよく迎えられるよう、今できる仕事を確実に進めましょう。',
+    context=>context.total===0
+      ? '明日分に余裕がある今こそ、品質確認と改善に時間を使いましょう。'
+      : `明日分の完成率は${context.rate.toFixed(1)}%です。遅れの芽を今日のうちに摘み取りましょう。`,
+    context=>'前日の丁寧な段取りが、出荷当日の安全と余裕を生み出します。',
+    context=>'次工程が迷わず動けるよう、明日分の情報共有を早めに行いましょう。'
+  ],
+  overdue:[
+    context=>context.total===0
+      ? '製造期限切れはありません。この良い状態を全員で守り続けましょう。'
+      : `期限切れ解消まであと${fmt(context.remaining)}件です。優先順位を合わせて取り組みましょう。`,
+    context=>context.total===0
+      ? '期限を守る毎日の積み重ねが、お客様からの信頼を強くしています。'
+      : '遅れている仕事ほど、慌てず原因と次の行動を明確にして進めましょう。',
+    context=>context.total===0
+      ? '先を見た段取りと早めの相談が、期限切れゼロを支えています。'
+      : `現在の期限切れ対象は${fmt(context.total)}件です。困り事を抱え込まず、すぐ共有しましょう。`,
+    context=>'問題を見える化できたことが改善の第一歩です。チームで解決につなげましょう。',
+    context=>'責めるのではなく助け合い、期限と品質の両方を取り戻しましょう。'
+  ],
+  specified:[
+    context=>context.total===0
+      ? '指定日の対象はありません。別の日を選んで予定を確認できます。'
+      : `指定日の完成まであと${fmt(context.remaining)}件です。必要な支援を早めに確認しましょう。`,
+    context=>context.rate>=100
+      ? '指定日の製造分は全件完成です。計画的な取り組みをありがとうございました。'
+      : '選んだ期日に間に合うよう、残り工程と担当をもう一度確認しましょう。',
+    context=>context.total===0
+      ? '対象がない日も、前後の負荷を確認するとより良い計画につながります。'
+      : `指定日分の完成率は${context.rate.toFixed(1)}%です。工程のつながりを意識して進めましょう。`,
+    context=>'予定を見える化し、早めに助けを求めることが安定した生産をつくります。',
+    context=>'選択した期日の仕事を、全員の協力で安全に次工程へつなげましょう。'
+  ]
+};
+let standardMessageTimer=null;
+let standardMessageKey='';
+let standardMessageIndex=0;
+let standardMessageContext={total:0,remaining:0,rate:0};
+let standardMessageElement=null;
+
+function stopStandardMessageRotation(){
+  if(standardMessageTimer){
+    clearInterval(standardMessageTimer);
+    standardMessageTimer=null;
+  }
+  standardMessageKey='';
+  standardMessageElement=null;
+}
+
+function renderStandardRotatingMessage(){
+  if(!standardMessageElement)return;
+  const lines=standardMessageGroups[standardMessageKey]||standardMessageGroups.today;
+  const createLine=lines[standardMessageIndex%lines.length];
+  standardMessageElement.textContent=createLine(standardMessageContext);
+}
+
+function startStandardMessageRotation(element,filter,context){
+  if(!element)return;
+  const key=standardMessageGroups[filter]?filter:'today';
+  standardMessageContext=context;
+
+  // CSV được tải lại mỗi 30 giây: chỉ cập nhật số liệu trong câu,
+  // không khởi động lại bộ đếm 3 phút và không nhảy sang câu khác.
+  if(standardMessageTimer&&standardMessageElement===element&&standardMessageKey===key){
+    renderStandardRotatingMessage();
+    return;
+  }
+
+  stopStandardMessageRotation();
+  standardMessageElement=element;
+  standardMessageKey=key;
+  standardMessageIndex=0;
+  renderStandardRotatingMessage();
+  standardMessageTimer=setInterval(()=>{
+    const lines=standardMessageGroups[standardMessageKey]||standardMessageGroups.today;
+    standardMessageIndex=(standardMessageIndex+1)%lines.length;
+    renderStandardRotatingMessage();
+  },STANDARD_MESSAGE_INTERVAL);
+}
+
+function processSymbol(processName){
+  const symbols={
+    'CAD/CAM':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <rect class="symbol-fill" x="16" y="18" width="88" height="64" rx="8"/>
+      <rect class="symbol-line" x="16" y="18" width="88" height="64" rx="8"/>
+      <path class="symbol-line" d="M38 101h44M52 82v19M68 82v19M29 36h62M35 49h22v19H35zM67 49h19M67 60h19M67 70h12"/>
+    </svg>`,
+    '切断':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="symbol-fill" cx="58" cy="58" r="35"/>
+      <path class="symbol-line" d="M58 13v12M58 91v12M13 58h12M91 58h12M26 26l9 9M81 81l9 9M90 26l-9 9M35 81l-9 9"/>
+      <circle class="symbol-line" cx="58" cy="58" r="31"/>
+      <circle class="symbol-line" cx="58" cy="58" r="8"/>
+      <path class="symbol-line" d="M79 37L37 79M86 86h22"/>
+    </svg>`,
+    '曲げ':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path class="symbol-line" d="M19 30h43c18 0 29 11 29 29v35"/>
+      <path class="symbol-line" d="M20 48h38c9 0 15 6 15 15v32"/>
+      <path class="symbol-line" d="M13 21l10 9-10 9M82 101l9-10 9 10"/>
+      <circle class="symbol-solid" cx="73" cy="48" r="5"/>
+    </svg>`,
+    '溶接':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path class="symbol-line" d="M16 89h88M25 71h70M49 71l12-22 13 22"/>
+      <path class="symbol-line" d="M39 20l18 27M28 29l9 8M69 22l-5 13M82 36l-12 7"/>
+      <path class="symbol-solid" d="M58 42l6-14 5 14 14 6-14 5-5 14-6-14-14-5z"/>
+    </svg>`,
+    '仕上':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="symbol-fill" cx="49" cy="67" r="27"/>
+      <circle class="symbol-line" cx="49" cy="67" r="27"/>
+      <circle class="symbol-line" cx="49" cy="67" r="8"/>
+      <path class="symbol-line" d="M68 47l21-21 13 13-21 21M74 82l24 14"/>
+      <path class="symbol-solid" d="M91 56l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"/>
+      <path class="symbol-line" d="M18 99h58"/>
+    </svg>`,
+    '塗装':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path class="symbol-fill" d="M18 49h48v27H18z"/>
+      <path class="symbol-line" d="M18 49h48v27H18zM66 55h18l12 9-12 8H66M33 76v22h21V76M29 40h25M21 31h40"/>
+      <circle class="symbol-solid" cx="102" cy="47" r="4"/>
+      <circle class="symbol-solid" cx="107" cy="62" r="5"/>
+      <circle class="symbol-solid" cx="101" cy="79" r="4"/>
+    </svg>`,
+    '組立':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path class="symbol-line" d="M21 87l28-28M39 37a19 19 0 0 0 24 24L96 94l10-10-33-33a19 19 0 0 0-24-24l12 12-10 10z"/>
+      <path class="symbol-fill" d="M18 78l14-14 24 24-14 14z"/>
+      <path class="symbol-line" d="M18 78l14-14 24 24-14 14z"/>
+      <circle class="symbol-line" cx="88" cy="32" r="12"/>
+    </svg>`
+  };
+  return `<div class="process-symbol" aria-hidden="true">${symbols[processName]||''}</div>`;
+}
+
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>"']/g,char=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[char]);
+}
+
+function buildProcessBacklogMarkup(processName){
+  const backlog=currentChartRows
+    .filter(row=>row.status===processName)
+    .slice()
+    .sort((a,b)=>
+      String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||
+      String(a.due||'9999-99-99').localeCompare(String(b.due||'9999-99-99'))||
+      String(a.id||'').localeCompare(String(b.id||''))
+    );
+  const points=backlog.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const body=backlog.length
+    ? `<div class="process-backlog-table-wrap"><table class="process-backlog-table">
+        <thead><tr>
+          <th>製造指示番号</th><th>得意先</th><th>品番・品名 / 規格</th>
+          <th>数量</th><th>出荷日</th><th>製造期限</th><th>担当者</th>
+        </tr></thead>
+        <tbody>${backlog.map(row=>`<tr>
+          <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
+          <td>${escapeHtml(row.client||'—')}</td>
+          <td class="backlog-product">
+            <b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'')}</b>
+            <small>規格：${escapeHtml(row.standard||'—')}</small>
+          </td>
+          <td class="backlog-qty">${fmt(row.qty)}点</td>
+          <td class="backlog-date">${escapeHtml(row.shipDate||'—')}</td>
+          <td class="backlog-date">${escapeHtml(row.due||'—')}</td>
+          <td>${escapeHtml(row.owner||'未設定')}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`
+    : '<div class="process-backlog-table-wrap"><div class="process-backlog-empty">✓ この工程の滞留品はありません</div></div>';
+  return `<div class="process-backlog-header">
+      <div>
+        <div class="process-backlog-kicker">${escapeHtml(currentChartLabel)}・工程別滞留品</div>
+        <div class="process-backlog-title">${escapeHtml(processName)}</div>
+      </div>
+      <div class="process-backlog-summary">
+        <div class="process-backlog-count">${fmt(backlog.length)}件（${fmt(points)}点）</div>
+        <button type="button" class="process-backlog-close" data-process-close>× 全体表示へ戻る</button>
+      </div>
+    </div>${body}`;
+}
+
+function renderSelectedProcessBacklog(){
+  document.querySelectorAll('.battle-process[data-process]').forEach(card=>{
+    const selected=Boolean(selectedProcess)&&card.dataset.process===selectedProcess;
+    card.classList.toggle('process-selected',selected);
+    card.setAttribute('aria-pressed',String(selected));
+  });
+
+  const standardOverlay=document.querySelector('.standard-visual-overlay');
+  const standardOverview=$('standardOverview');
+  const standardDetail=$('standardProcessBacklog');
+  const ngVisual=$('evolutionVisual');
+  const ngDetail=$('ngProcessBacklog');
+
+  if(!selectedProcess){
+    if(standardOverlay) standardOverlay.classList.remove('process-detail');
+    if(standardOverview) standardOverview.hidden=false;
+    if(standardDetail) standardDetail.hidden=true;
+    if(ngVisual) ngVisual.classList.remove('has-process-detail');
+    if(ngDetail) ngDetail.hidden=true;
+    return;
+  }
+
+  const markup=buildProcessBacklogMarkup(selectedProcess);
+  if(shipFilter==='today-ng'){
+    if(standardOverlay) standardOverlay.classList.remove('process-detail');
+    if(standardOverview) standardOverview.hidden=false;
+    if(standardDetail) standardDetail.hidden=true;
+    if(ngVisual) ngVisual.classList.add('has-process-detail');
+    if(ngDetail){
+      ngDetail.innerHTML=markup;
+      ngDetail.hidden=false;
+    }
+  }else{
+    if(ngVisual) ngVisual.classList.remove('has-process-detail');
+    if(ngDetail) ngDetail.hidden=true;
+    if(standardOverlay) standardOverlay.classList.add('process-detail');
+    if(standardOverview) standardOverview.hidden=true;
+    if(standardDetail){
+      standardDetail.innerHTML=markup;
+      standardDetail.hidden=false;
+    }
+  }
+}
+
+function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDone,chartActive,chartNew,chartCancel,chartRate,chartEffective){
+  const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
+  const tabName=chartLabels[shipFilter]||'生産進捗';
+  const totalPoints=chartRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const remaining=Math.max(0,chartActive+chartNew);
+
+  // Hình nền của tất cả các tab tiêu chuẩn phải bám theo đúng trạng thái
+  // tiến hóa hiện tại của ô 本日出荷・未完成.
+  // Chỉ 未完成 được quyền quyết định bg_100 -> bg_0.
+  const todayDates=getShipDates();
+  const todayNgRows=rows.filter(row=>
+    row.shipDate===todayDates.today &&
+    row.status!=='完成' &&
+    !row.status.includes('ｷｬﾝｾﾙ') &&
+    !row.status.includes('キャンセル')
+  );
+  const sharedStartBossKey=`todayNgStart:${todayDates.today}`;
+  const sharedSavedBossStart=Number(localStorage.getItem(sharedStartBossKey)||0);
+  if(!sharedSavedBossStart || todayNgRows.length>sharedSavedBossStart){
+    localStorage.setItem(sharedStartBossKey,String(Math.max(todayNgRows.length,1)));
+  }
+  const sharedStartBoss=Math.max(
+    Number(localStorage.getItem(sharedStartBossKey)||todayNgRows.length),
+    todayNgRows.length,
+    1
+  );
+  const sharedBossHpPercent=todayNgRows.length===0
+    ? 0
+    : Math.max(0,Math.min(100,todayNgRows.length/sharedStartBoss*100));
+  const standardEvolution=window.BossEvolution
+    ? window.BossEvolution.getStage(sharedBossHpPercent)
+    : sharedBossHpPercent>=80
+      ? {key:'100',background:'bg_100.png'}
+      : sharedBossHpPercent>=60
+        ? {key:'80',background:'bg_80.png'}
+        : sharedBossHpPercent>=40
+          ? {key:'60',background:'bg_60.png'}
+          : sharedBossHpPercent>=20
+            ? {key:'40',background:'bg_40.png'}
+            : sharedBossHpPercent>0
+              ? {key:'20',background:'bg_20.png'}
+              : {key:'0',background:'bg_0.png'};
+  const standardStage=document.querySelector('.standard-stage');
+  if(standardStage){
+    standardStage.style.setProperty(
+      '--standard-evolution-bg',
+      `url("assets/${standardEvolution.background}")`
+    );
+    standardStage.dataset.evolution=standardEvolution.key||'100';
+  }
+
+  if($('standardTabName')) $('standardTabName').textContent=tabName;
+  if($('standardTotal')) $('standardTotal').textContent=fmt(chartTotal);
+  if($('standardPoints')) $('standardPoints').textContent=fmt(totalPoints);
+  if($('standardBannerTitle')) $('standardBannerTitle').textContent=`${tabName} ミッション`;
+  startStandardMessageRotation($('standardBannerMessage'),shipFilter,{
+    total:chartTotal,
+    remaining,
+    rate:chartRate
+  });
+  if($('standardVisualMessage')) $('standardVisualMessage').textContent=
+    chartRate>=100?'今日の協力に感謝します。次の仕事も安全第一で進めましょう。':
+    '一人ひとりの丁寧な仕事が、全体の流れと品質を支えています。';
+
+  const doneEnd=chartEffective?chartDone/chartEffective*100:0;
+  const activeEnd=doneEnd+(chartEffective?chartActive/chartEffective*100:0);
+  const newEnd=activeEnd+(chartEffective?chartNew/chartEffective*100:0);
+  animateStandardDonut(doneEnd,activeEnd,newEnd,chartRate);
+
+  const donut=$('animatedDonut');
+  if(donut) donut.classList.toggle('complete',chartTotal>0&&chartRate>=100);
+
+  if($('standardLegend')){
+    $('standardLegend').innerHTML=`
+      <div><span><span class="dot" style="background:#00A67E"></span>完成</span><b>${fmt(chartDone)}</b></div>
+      <div><span><span class="dot" style="background:#1976D2"></span>進行中</span><b>${fmt(chartActive)}</b></div>
+      <div><span><span class="dot" style="background:#B0BEC5"></span>未着手</span><b>${fmt(chartNew)}</b></div>
+      <div><span><span class="dot" style="background:#455A64"></span>キャンセル</span><b>${fmt(chartCancel)}</b></div>`;
+  }
+
+  const progressMessage=$('standardProgressMessage');
+  if(progressMessage){
+    progressMessage.classList.toggle('complete',chartTotal>0&&chartRate>=100);
+    progressMessage.textContent=chartTotal===0
+      ? '対象データなし'
+      : chartRate>=100
+        ? '全件完成！ お疲れ様でした！'
+        : `完成まであと${fmt(remaining)}件`;
+  }
+
+  const workers=processOrder.map((name,index)=>{
+    const count=chartCounts[name]||0;
+    const activeClass=count>0?'active-worker':'clear-worker';
+    const statusText=count>0?`${fmt(count)}件`:'完了';
+    return `<div class="battle-process ${activeClass} process-${index}" data-process="${name}" role="button" tabindex="0" aria-pressed="false" aria-label="${name}の滞留品を表示">
+      <div class="battle-process-name">${name}</div>
+      <div class="battle-process-count">${statusText}</div>
+      <div class="battle-worker-wrap process-symbol-wrap">
+        ${processSymbol(name)}
+        ${count===0?'<div class="process-complete-stamp">完了</div>':''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const runner=$('standardRunnerTrack');
+  if(runner){
+    runner.innerHTML=`<div class="battle-workers">${workers}
+      <div class="standard-summary-card ${chartRate>=100&&chartTotal>0?'complete':''}" data-overview role="button" tabindex="0" aria-label="全体表示へ戻る">
+        <div class="standard-summary-title">全体進捗</div>
+        <div class="standard-summary-rate">${chartRate.toFixed(1)}%</div>
+        <div class="standard-summary-message">${
+          chartTotal===0?'対象データなし':
+          chartRate>=100?'全件完成！<br>ご協力ありがとうございました。':
+          `完成まであと${fmt(remaining)}件<br>みんなで力を合わせよう！`
+        }</div>
+      </div>
+    </div>`;
+  }
+  updateStandardClock();
+}
+
+function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='today-ng'?rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):rows.filter(r=>(shipFilter==='specified'?r.due===specifiedShipDate:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'本日出荷・未完成','today':'本日出荷','tomorrow':'明日出荷','overdue':'製造期限切れ','specified':'指定日製造期限'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
+  const processOrder=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];
+  const processColors=['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'];
+  const processData=processOrder
+    .map((name,i)=>({name,count:chartCounts[name]||0,color:processColors[i]}))
+    .filter(x=>x.count>0);
+  let start=0;
+  const segments=processData.map(x=>{
+    const end=start+(chartTotal?x.count/chartTotal*100:0);
+    const seg=`${x.color} ${start}% ${end}%`;
+    start=end;
+    return seg;
+  });
+  $('donutRate').textContent=chartTotal?processData.length+'工程':'0工程';
+  $('donut').querySelector('small').textContent='工程別';
+  $('donut').style.background=segments.length?`conic-gradient(${segments.join(',')})`:'#edf1f4';
+  $('chartLegend').innerHTML=processData.map(x=>{
+    const pct=chartTotal?x.count/chartTotal*100:0;
+    return `<div><span class="dot" style="background:${x.color}"></span>${x.name} <b>${fmt(x.count)}件（${pct.toFixed(1)}%）</b></div>`;
+  }).join('')||'<div style="color:var(--muted)">対象データなし</div>';
+}else{
+  $('donutRate').textContent=chartRate.toFixed(1)+'%';
+  $('donut').querySelector('small').textContent='完成率';
+  $('donut').style.background=chartEffective?`conic-gradient(#00A67E 0 ${cp1}%,#1976D2 ${cp1}% ${cp2}%,#B0BEC5 ${cp2}% 100%)`:'#edf1f4';
+  $('chartLegend').innerHTML=`<div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">${fmt(chartDone)}</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">${fmt(chartActive)}</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">${fmt(chartNew)}</b></div><div style="color:var(--muted)"><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">${fmt(chartCancel)}</b> <small>※完成率対象外</small></div>`;
+}$('workTitle').textContent=`工程別の仕掛状況（${chartLabels[shipFilter]||'全出荷日'}）`;
+$('progressTitle').textContent=shipFilter==='today-ng'
+  ? '本日出荷・未完成 ミッション'
+  : shipFilter==='overdue'
+    ? '工程別進捗'
+    : `全体進捗（${chartLabels[shipFilter]||'全出荷日'}）`;$('progressCount').textContent=`${fmt(chartTotal)}件`;
+currentChartRows=chartRows;
+currentChartLabel=chartLabels[shipFilter]||'全出荷日';
+const mainGrid=document.querySelector('.grid');
+if(mainGrid){
+  mainGrid.classList.toggle('ng-layout',shipFilter==='today-ng');
+  mainGrid.classList.toggle('standard-layout',shipFilter!=='today-ng');
+}let work=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];let max=Math.max(...work.map(x=>chartCounts[x]||0),1);$('bars').innerHTML=work.map((x,i)=>`<div class="bar-row"><span>${x}</span><div class="track"><div class="fill" style="width:${(chartCounts[x]||0)/max*100}%;background:${['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'][i]}"></div></div><b>${fmt(chartCounts[x]||0)}</b></div>`).join('');let shipStat=k=>{let x=rows.filter(r=>r.shipDate===dates[k]);return`${fmt(x.length)}件（${fmt(x.reduce((a,r)=>a+r.qty,0))}点）`},ng=rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'));$('shipToday').textContent=shipStat('today');$('shipTomorrow').textContent=shipStat('tomorrow');let overdueRows=rows.filter(isOverdueItem);$('shipOverdue').textContent=`${fmt(overdueRows.length)}件（${fmt(overdueRows.reduce((a,r)=>a+r.qty,0))}点）`;let sx=rows.filter(r=>r.due===specifiedShipDate);$('shipSpecified').textContent=`${fmt(sx.length)}件（${fmt(sx.reduce((a,r)=>a+r.qty,0))}点）`;
+$('shipNg').textContent=`${fmt(ng.length)}件（${fmt(ng.reduce((a,r)=>a+r.qty,0))}点）`;
+
+const donutWrap=document.querySelector('.donut-wrap');
+const ngGame=$('ngGame');
+const standardGame=$('standardGame');
+const goalResult=$('goalResult');
+
+if(shipFilter==='today-ng'){
+  stopStandardMessageRotation();
+  if(donutWrap) donutWrap.style.display='none';
+  if(standardGame) standardGame.classList.remove('show');
+  if(ngGame) ngGame.classList.add('show');
+  updateGameClock();
+
+  const ngPoints=ng.reduce((a,r)=>a+r.qty,0);
+  $('bossCount').textContent=fmt(ng.length);
+  $('bossPoints').textContent=fmt(ngPoints);
+
+  const startBossKey=`todayNgStart:${dates.today}`;
+  const savedBossStart=Number(localStorage.getItem(startBossKey)||0);
+  if(!savedBossStart || ng.length>savedBossStart){
+    localStorage.setItem(startBossKey,String(Math.max(ng.length,1)));
+  }
+  const startBoss=Math.max(Number(localStorage.getItem(startBossKey)||ng.length),ng.length,1);
+  const bossHpPercent=ng.length===0 ? 0 : Math.max(0,Math.min(100,ng.length/startBoss*100));
+  $('bossFill').style.width=`${bossHpPercent}%`;
+  if($('bossHpText')) $('bossHpText').textContent=`${bossHpPercent.toFixed(0)}%`;
+
+  const evolution=window.BossEvolution
+    ? window.BossEvolution.getStage(bossHpPercent)
+    : {boss:'boss_100.png',background:'bg_100.png',name:'凶悪なBOSS',message:'⚠️ 強敵出現！<br>みんなで力を合わせよう！'};
+  const evolutionVisual=$('evolutionVisual');
+  const evolutionBossImage=$('evolutionBossImage');
+  if(evolutionVisual){
+    const evolutionStage=document.getElementById('evolutionStage');
+    if(evolutionStage){
+      evolutionStage.style.setProperty(
+        '--evolution-bg',
+        `url("assets/${evolution.background}")`
+      );
+    }
+    evolutionVisual.style.backgroundImage='none';
+    evolutionVisual.dataset.stage=evolution.key||'100';
+  }
+  if(evolutionBossImage){
+    evolutionBossImage.src=`assets/${evolution.boss}`;
+    evolutionBossImage.alt=evolution.name;
+  }
+  if($('evolutionStageName')) $('evolutionStageName').textContent=evolution.name;
+  if($('evolutionMessage')) $('evolutionMessage').innerHTML=evolution.message;
+  if($('bossStatusMessage')) $('bossStatusMessage').textContent=ng.length===0?'人間完成！':`人間完成まであと${fmt(ng.length)}件！`;
+  const bossStatusCard=$('bossStatusCard');
+  if(bossStatusCard){
+    bossStatusCard.dataset.stage=evolution.key||'100';
+    bossStatusCard.classList.toggle('boss-defeated',ng.length===0);
+  }
+
+  const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
+  const runnerTrack=$('runnerTrack');
+  if(runnerTrack){
+    const workers=processOrder.map((name,index)=>{
+      const count=ng.filter(r=>r.status===name).length;
+      const activeClass=count>0?'active-worker':'clear-worker';
+      const statusText=count>0?`${fmt(count)}件`:'完了';
+      return `<div class="battle-process ${activeClass} process-${index}" data-process="${name}" role="button" tabindex="0" aria-pressed="false" aria-label="${name}の滞留品を表示">
+        <div class="battle-process-name">${name}</div>
+        <div class="battle-process-count">${statusText}</div>
+        <div class="battle-worker-wrap process-symbol-wrap">
+          ${processSymbol(name)}
+          ${count===0?'<div class="process-complete-stamp">完了</div>':''}
+        </div>
+      </div>`;
+    }).join('');
+    runnerTrack.innerHTML=`<div class="battle-workers">${workers}</div>
+      <div class="evolution-support-card ${ng.length===0?'complete':''}">
+        <div class="evolution-support-title">BOSS進化</div>
+        <div class="evolution-support-stage">${evolution.name}</div>
+        <div class="evolution-support-count">${ng.length===0?'人間完成！':`あと${fmt(ng.length)}件`}</div>
+        <div class="evolution-support-message">${ng.length===0?'みんなの力で<br>進化完了！':'みんなの力で<br>人間に戻そう！'}</div>
+      </div>`;
+  }
+
+  const gameBanner=$('gameBanner');
+  const gameBannerMessage=$('gameBannerMessage');
+
+  if(ng.length===0){
+    const completedAt=getOrRecordTodayCompletion(0);
+    const before15=completedAt.getHours()<15;
+    if(gameBanner){
+      gameBanner.classList.remove('success','late');
+      gameBanner.classList.add(before15?'success':'late');
+    }
+    if(window.BossMotivation) window.BossMotivation.stop();
+    if(gameBannerMessage){
+      gameBannerMessage.innerHTML=before15
+        ? '🏆 人間完成！<br><strong>15時前達成！ お疲れ様でした！</strong>'
+        : '😊 人間完成！<br><strong>今日もお疲れ様でした！ 明日も頑張りましょう！</strong>';
+    }
+  }else{
+    getOrRecordTodayCompletion(ng.length);
+    if(gameBanner) gameBanner.classList.remove('success','late');
+    if(gameBannerMessage){
+      if(window.BossMotivation){
+        window.BossMotivation.start(gameBannerMessage,evolution,bossHpPercent);
+      }else{
+        gameBannerMessage.innerHTML=evolution.banner;
+      }
+    }
+  }
+
+  if(goalResult){
+    goalResult.className='goal-result';
+    goalResult.innerHTML='';
+  }
+}else{
+  if(donutWrap) donutWrap.style.display='none';
+  if(ngGame) ngGame.classList.remove('show');
+  if(standardGame) standardGame.classList.add('show');
+  renderStandardGame(
+    chartRows,chartCounts,chartLabels,chartTotal,
+    chartDone,chartActive,chartNew,chartCancel,chartRate,chartEffective
+  );
+
+  const gameBanner=$('gameBanner');
+  const gameBannerMessage=$('gameBannerMessage');
+  if(window.BossMotivation) window.BossMotivation.stop();
+  if(gameBanner) gameBanner.classList.remove('success','late');
+  if(gameBannerMessage){
+    gameBannerMessage.innerHTML='📣 今日もみんなで力を合わせよう！<br><strong>🔥 15:00までの全件完成を目指そう！💪</strong>';
+  }
+  if(goalResult){
+    goalResult.className='goal-result';
+    goalResult.innerHTML='';
+  }
+}
+
+renderSelectedProcessBacklog();
+
+const ngCard=document.querySelector('[data-ship="today-ng"]');
+const completeMessage=document.getElementById('completeMessage');
+
+if(ng.length===0){
+  ngCard.classList.remove('ng');
+  ngCard.style.background='#00C853';
+  ngCard.style.borderColor='#00C853';
+  ngCard.style.color='#fff';
+  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
+}else{
+  ngCard.classList.add('ng');
+  ngCard.style.background='';
+  ngCard.style.borderColor='';
+  ngCard.style.color='';
+  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='');
+}
+
+const overdueCard=document.querySelector('[data-ship="overdue"]');
+if(overdueRows.length===0){
+  overdueCard.classList.remove('overdue');
+  overdueCard.style.background='#00C853';
+  overdueCard.style.borderColor='#00C853';
+  overdueCard.style.color='#fff';
+  overdueCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
+}else{
+  overdueCard.classList.add('overdue');
+  overdueCard.style.background='';
+  overdueCard.style.borderColor='';
+  overdueCard.style.color='';
+  overdueCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='');
+}
+
+if(completeMessage){
+  if(shipFilter==='overdue'&&overdueRows.length>0){
+    completeMessage.style.display='block';
+    completeMessage.style.color='#d32f2f';
+    completeMessage.style.borderTopColor='#d32f2f';
+    completeMessage.style.borderBottomColor='#d32f2f';
+    completeMessage.innerHTML='製造期限切れを出さないように心掛けましょう。';
+  }else if(shipFilter==='overdue'&&overdueRows.length===0){
+    completeMessage.style.display='block';
+    completeMessage.style.color='#2E7D32';
+    completeMessage.style.borderTopColor='#2E7D32';
+    completeMessage.style.borderBottomColor='#2E7D32';
+    completeMessage.innerHTML='製造期限切れはありません。<br>この状態を維持しましょう！';
+  }else{
+    completeMessage.style.display='none';
+  }
+}
+}
+function refreshFilters(){let ss=[...new Set(rows.map(r=>r.status).filter(Boolean))],oo=[...new Set(rows.map(r=>r.owner).filter(Boolean))];$('statusFilter').innerHTML='<option value="">すべての進捗</option>'+ss.map(x=>`<option>${x}</option>`).join('');$('ownerFilter').innerHTML='<option value="">すべての担当者</option>'+oo.map(x=>`<option>${x}</option>`).join('')}
+function renderTable(){let q=$('search').value.toLowerCase(),s=$('statusFilter').value,o=$('ownerFilter').value,d=$('deadlineFilter').value,today=new Date(),soon=new Date(),shipDates=getShipDates();today.setHours(0,0,0,0);soon.setTime(today.getTime());soon.setDate(today.getDate()+7);soon.setHours(23,59,59,999);let list=rows.filter(r=>{let due=new Date(r.due+'T00:00:00'),late=due<today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ'),isNg=r.shipDate===shipDates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'),shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):(shipFilter==='specified'?r.due===specifiedShipDate:r.shipDate===shipDates[shipFilter]));return shipOk&&(!q||[r.id,r.client,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon))});$('resultCount').textContent=`表示 ${fmt(list.length)}件`;$('tbody').innerHTML=list.slice(0,500).map(r=>{let late=new Date(r.due+'T00:00:00')<today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ'),todayNg=r.shipDate===shipDates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル');return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td>${r.client}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}${todayNg?'':''}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`}).join('')||'<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>'}
+function render(){renderStats();refreshFilters();renderTable()}
+function captureUiState(){
+  return {
+    shipFilter,
+    specifiedShipDate,
+    search:$('search')?.value||'',
+    status:$('statusFilter')?.value||'',
+    owner:$('ownerFilter')?.value||'',
+    deadline:$('deadlineFilter')?.value||'',
+    scrollTop:document.querySelector('.table-wrap')?.scrollTop||0
+  };
+}
+function restoreUiState(state){
+  if(!state)return;
+  shipFilter=state.shipFilter||'today-ng';
+  specifiedShipDate=state.specifiedShipDate||getShipDates().today;
+
+  if($('specifiedDate')) $('specifiedDate').value=specifiedShipDate;
+  if($('search')) $('search').value=state.search||'';
+
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+    const value=x.dataset.ship||x.dataset.quick;
+    x.classList.toggle('active',value===shipFilter);
+  });
+
+  if($('statusFilter')) $('statusFilter').value=state.status||'';
+  if($('ownerFilter')) $('ownerFilter').value=state.owner||'';
+  if($('deadlineFilter')) $('deadlineFilter').value=state.deadline||'';
+
+  renderTable();
+
+  const wrap=document.querySelector('.table-wrap');
+  if(wrap) wrap.scrollTop=state.scrollTop||0;
+}
+['search','statusFilter','ownerFilter','deadlineFilter'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',renderTable));
+document.addEventListener('click',event=>{
+  const processCard=event.target.closest('.battle-process[data-process]');
+  if(processCard){
+    selectedProcess=processCard.dataset.process||'';
+    renderSelectedProcessBacklog();
+    return;
+  }
+  if(event.target.closest('[data-process-close],[data-overview]')){
+    selectedProcess='';
+    renderSelectedProcessBacklog();
+  }
+});
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Enter'&&event.key!==' ')return;
+  const target=event.target.closest('.battle-process[data-process],[data-overview]');
+  if(!target)return;
+  event.preventDefault();
+  if(target.matches('[data-overview]')){
+    selectedProcess='';
+  }else{
+    selectedProcess=target.dataset.process||'';
+  }
+  renderSelectedProcessBacklog();
+});
+document.querySelectorAll('[data-ship],[data-quick]').forEach(b=>b.addEventListener('click',()=>{
+  const v=b.dataset.ship||b.dataset.quick;
+  shipFilter=v;
+  selectedProcess='';
+  localStorage.setItem('shipFilter',shipFilter);
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+    x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)===shipFilter);
+  });
+  renderStats();
+  renderTable();
+}));
+$('specifiedDate').addEventListener('click',e=>e.stopPropagation());
+$('specifiedDate').addEventListener('change',e=>{
+  specifiedShipDate=e.target.value;
+  shipFilter='specified';
+  selectedProcess='';
+  localStorage.setItem('shipFilter',shipFilter);
+  localStorage.setItem('specifiedShipDate',specifiedShipDate);
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)==='specified'));
+  updateShipLabels();
+  renderStats();
+  renderTable();
+});
+
+async function loadSharedCsv(showMessage=true){
+  // Không cho nhiều lần tải CSV chạy chồng lên nhau.
+  if(csvLoading) return;
+  csvLoading=true;
+
+  // Chỉ lưu các bộ lọc phụ; tuyệt đối không chụp/gán lại shipFilter.
+  const currentSearch=$('search')?.value||'';
+  const currentStatus=$('statusFilter')?.value||'';
+  const currentOwner=$('ownerFilter')?.value||'';
+  const currentDeadline=$('deadlineFilter')?.value||'';
+  const currentScroll=document.querySelector('.table-wrap')?.scrollTop||0;
+
+  try{
+    const response=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok) throw new Error('HTTP '+response.status);
+
+    const buffer=await response.arrayBuffer();
+    let csvText='';
+
+    try{
+      csvText=new TextDecoder('shift-jis').decode(buffer);
+    }catch(_){
+      csvText=new TextDecoder('utf-8').decode(buffer);
+    }
+
+    if(!csvText.includes('製造指示番号')&&!csvText.includes('得意先')){
+      csvText=new TextDecoder('utf-8').decode(buffer);
+    }
+
+    csvText=csvText.replace(/^\uFEFF/,'');
+    const book=XLSX.read(csvText,{type:'string',cellDates:false,raw:true});
+    const sheet=book.Sheets[book.SheetNames[0]];
+    const raw=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:true});
+    const loaded=raw.map(normalize).filter(r=>r.id||r.name);
+
+    if(!loaded.length){
+      throw new Error('SCV.csv に有効なデータがありません');
+    }
+
+    // Chỉ thay dữ liệu. Không thay shipFilter, không quay về today-ng.
+    rows=loaded;
+    fullStats=false;
+
+    $('updated').textContent=new Date().toLocaleString('ja-JP');
+    updateShipLabels();
+
+    // Cập nhật biểu đồ và bảng bằng chính mục đang được chọn tại thời điểm này.
+    renderStats();
+    refreshFilters();
+
+    if($('search')) $('search').value=currentSearch;
+    if($('statusFilter')) $('statusFilter').value=currentStatus;
+    if($('ownerFilter')) $('ownerFilter').value=currentOwner;
+    if($('deadlineFilter')) $('deadlineFilter').value=currentDeadline;
+
+    document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+      const value=x.dataset.ship||x.dataset.quick;
+      x.classList.toggle('active',value===shipFilter);
+    });
+
+    renderTable();
+
+    const wrap=document.querySelector('.table-wrap');
+    if(wrap) wrap.scrollTop=currentScroll;
+
+    if(showMessage){
+      showNotice(`<span>✓ SCV.csv から ${fmt(rows.length)}件を読み込みました。30秒ごとに自動更新します。</span><button onclick="this.parentElement.remove()">×</button>`);
+    }
+  }catch(err){
+    console.error(err);
+    if(showMessage){
+      showNotice(`<span>⚠ SCV.csv を読み込めません。GitHub上のファイル名が正確に「SCV.csv」か確認してください。</span><button onclick="this.parentElement.remove()">×</button>`);
+    }
+  }finally{
+    csvLoading=false;
+  }
+}
+
+$('refresh').addEventListener('click',()=>loadSharedCsv(true));
+
+const validShipFilters=['today-ng','today','tomorrow','overdue','specified'];
+const savedFilter=localStorage.getItem('shipFilter');
+shipFilter=validShipFilters.includes(savedFilter)?savedFilter:'today-ng';
+localStorage.setItem('shipFilter',shipFilter);
+
+const savedSpecifiedDate=localStorage.getItem('specifiedShipDate');
+if(savedSpecifiedDate){
+  specifiedShipDate=savedSpecifiedDate;
+  const specifiedInput=$('specifiedDate');
+  if(specifiedInput) specifiedInput.value=savedSpecifiedDate;
+}
+
+document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
+  const value=x.dataset.ship||x.dataset.quick;
+  x.classList.toggle('active',value===shipFilter);
+});
+
+updateShipLabels();
+updateGameClock();
+render();
+loadSharedCsv(true);
+setInterval(()=>{ if(!csvLoading) loadSharedCsv(false); },30000);
+
+</script>
+</body>
+</html>
