@@ -512,47 +512,77 @@
       --status-cancel:#455A64
     }
 
+
+/* v4.0 BOSS EVOLUTION：本日出荷・未完成画面のみ */
+.evolution-stage{min-height:720px!important;background-image:url("assets/background.png")!important}
+.evolution-world{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.65fr);gap:18px;margin-top:14px;position:relative;z-index:4;min-height:430px}
+.evolution-visual{position:relative;min-height:430px;border:5px solid #ffd85a;border-radius:24px;overflow:hidden;background-size:cover;background-position:center;box-shadow:0 8px 0 #855e0e,0 14px 28px #183e6580;isolation:isolate}
+.evolution-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.14),rgba(0,0,0,.02) 50%,rgba(0,0,0,.3));z-index:0}
+.evolution-boss-image{position:absolute;z-index:2;left:50%;bottom:8px;transform:translateX(-50%);width:min(48%,430px);height:88%;object-fit:contain;filter:drop-shadow(0 12px 10px #0009);transition:opacity .35s ease,transform .35s ease}
+.evolution-copy{position:absolute;z-index:3;left:18px;right:18px;bottom:16px;text-align:center;color:#fff;text-shadow:0 3px 5px #000,0 0 12px #000}
+.evolution-stage-name{font-size:34px;font-weight:1000;color:#ffe96a;letter-spacing:.04em}
+.evolution-message{margin-top:5px;font-size:21px;font-weight:900;line-height:1.45}
+.boss-status-card{min-height:430px;border:5px solid #5e7dda;border-radius:24px;background:linear-gradient(145deg,rgba(239,246,255,.97),rgba(191,214,255,.97));box-shadow:0 8px 0 #294d9a,0 14px 28px #183e6566;padding:26px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#17233b}
+.boss-status-label{padding:7px 30px;border-radius:99px;background:#265bbb;color:#fff;font-size:19px;font-weight:1000;letter-spacing:.08em;box-shadow:0 4px 0 #173a77}
+.boss-status-card .boss-name{font-size:22px;margin-top:22px;color:#334766}
+.boss-status-card .boss-hp-value{font-size:54px;color:#e12d38;margin-top:10px}
+.boss-status-card .boss-points{font-size:22px;color:#526781}
+.boss-status-card .boss-track{width:100%;margin-top:22px;height:31px}
+.boss-status-card .boss-goal{font-size:19px;color:#263b61;margin-top:13px}
+.boss-status-message{margin-top:16px;border-radius:14px;padding:12px 18px;background:#fff9cf;border:2px solid #e3ba2d;color:#875800;font-size:20px;font-weight:1000}
+.boss-status-card.boss-defeated{background:linear-gradient(145deg,#effff3,#c9f0d2);border-color:#4cb66c;box-shadow:0 8px 0 #267940,0 14px 28px #183e6566}
+.boss-status-card.boss-defeated .boss-status-label{background:#2da95a;box-shadow:0 4px 0 #187137}
+.evolution-runner-world{margin-top:16px!important;padding-top:16px!important}
+.evolution-runner-world .runner-title{display:none!important}
+.evolution-runner-world .runner-track{grid-template-columns:minmax(0,1fr) 250px!important}
+.evolution-support-card{min-height:245px;border-radius:20px;background:linear-gradient(180deg,#f5ddff,#d8a8ef);border:4px solid #8a41b3;box-shadow:0 7px 0 #54236d;text-align:center;padding:12px 10px;color:#5b176e;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.evolution-support-title{font-size:22px;font-weight:1000}
+.evolution-support-stage{margin-top:12px;font-size:18px;font-weight:900}
+.evolution-support-count{margin-top:12px;font-size:32px;font-weight:1000;color:#e02d3a}
+.evolution-support-message{margin-top:10px;font-size:18px;font-weight:900;line-height:1.45}
+.evolution-support-card.complete{background:linear-gradient(180deg,#e9fff0,#bfefcc);border-color:#44aa62;box-shadow:0 7px 0 #267b40;color:#226a39}
+.evolution-support-card.complete .evolution-support-count{color:#238b49}
+@media(max-width:1300px){.evolution-world{grid-template-columns:1fr}.boss-status-card{min-height:300px}.evolution-visual{min-height:380px}.evolution-runner-world .runner-track{grid-template-columns:1fr!important}.evolution-support-card{min-height:180px}.evolution-boss-image{width:min(55%,360px)}}
+
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v3.7 GAME</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v4.0 BOSS EVOLUTION</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 出荷</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全出荷日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全出荷日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
 <div id="ngGame" class="ng-game">
-  <div class="game-stage">
+  <div class="game-stage evolution-stage" id="evolutionStage">
     <div class="game-banner" id="gameBanner">
       <div class="game-banner-main" id="gameBannerMessage">📣 今日もみんなで力を合わせよう！<br><strong>🔥 15:00までの全件完成を目指そう！💪</strong></div>
       <div class="game-clock"><small>現在時刻</small><b id="gameClock">--:--:--</b><small id="gameDate">----</small></div>
     </div>
 
-    <div class="game-world">
-      <div class="worker-zone">
-        <img class="worker-char worker-asset-main" src="assets/worker.png" alt="作業者">
-        <div class="worker-msg">みんなでBOSSを倒そう！</div>
-      </div>
+    <div class="evolution-world">
+      <section class="evolution-visual" id="evolutionVisual">
+        <div class="evolution-overlay"></div>
+        <img id="evolutionBossImage" class="evolution-boss-image" src="assets/boss_100.png" alt="BOSS進化">
+        <div class="evolution-copy">
+          <div id="evolutionStageName" class="evolution-stage-name">凶悪なBOSS</div>
+          <div id="evolutionMessage" class="evolution-message">⚠️ 強敵出現！<br>みんなで力を合わせよう！</div>
+        </div>
+      </section>
 
-      <div class="boss-card">
-        <div class="boss-label">BOSS</div>
-        <img class="boss-face boss-asset-main" src="assets/boss.png" alt="未完成ボス">
+      <section class="boss-status-card" id="bossStatusCard">
+        <div class="boss-status-label">BOSS STATUS</div>
         <div class="boss-name">本日出荷・未完成</div>
         <div class="boss-hp-value">残り <span id="bossCount">0</span>件</div>
         <div class="boss-points">（<span id="bossPoints">0</span>点）</div>
-        <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:0%"></div></div>
-        <div class="boss-goal">❤️ BOSS HP <span id="bossHpText">100%</span>　残り0件でBOSS撃破！</div>
-      </div>
-
-      <div class="treasure-zone">
-        <div class="target-flag">🏁 15:00<br>目標達成！</div>
-        <img class="treasure castle-asset-main" src="assets/castle.png" alt="完成ゲート">
-      </div>
+        <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
+        <div class="boss-goal">❤️ BOSS HP <span id="bossHpText">100%</span></div>
+        <div id="bossStatusMessage" class="boss-status-message">残り0件で人間完成！</div>
+      </section>
     </div>
 
-    <div class="runner-world">
-      <div class="runner-title">⚔️ 工程別BATTLE　―　各工程のWORKERがBOSSを攻撃中！</div>
+    <div class="runner-world evolution-runner-world">
       <div id="runnerTrack" class="runner-track"></div>
     </div>
   </div>
@@ -564,6 +594,7 @@
     <section class="panel work"><div class="panel-head"><h2>製造指示一覧</h2><span id="resultCount" style="font-size:11px;color:var(--muted)">表示 15件</span></div><div class="filters"><input id="search" placeholder="指示番号・品番・品名・規格・得意先を検索"/><div class="quick"><button type="button" data-quick="today-ng">本日未完成</button><button type="button" data-quick="today">本日出荷</button><button type="button" data-quick="tomorrow">明日</button><button type="button" data-quick="overdue">製造期限切れ</button><button type="button" data-quick="specified">指定日</button></div><select id="statusFilter"><option value="">すべての進捗</option></select><select id="ownerFilter"><option value="">すべての担当者</option></select><select id="deadlineFilter"><option value="">すべての納期</option><option value="late">期限超過</option><option value="soon">7日以内</option></select></div><div class="table-wrap"><table><thead><tr><th>製造指示番号</th><th>得意先</th><th>品番 / 品名</th><th>規格</th><th>数量（点）</th><th>出荷日</th><th>製造期限</th><th>進捗</th><th>担当者</th><th>配送便</th></tr></thead><tbody id="tbody"></tbody></table></div><div class="footer-note">※ 未完成判定：出荷日が本日で、進捗が「完成」以外の製造指示です。数量の単位は「点」です。</div></section>
   </div></main>
 </div>
+<script src="game.js"></script>
 <script>
 const sample=[
 ['26-J0056603-001-771','カンサイ　日進商会★','DC0000N','Sﾀﾞｲﾏ ｶﾊﾞｰ',1,'2026-06-18','完成','志田','店頭渡し'],
@@ -764,8 +795,25 @@ if(shipFilter==='today-ng'){
   const bossHpPercent=ng.length===0 ? 0 : Math.max(0,Math.min(100,ng.length/startBoss*100));
   $('bossFill').style.width=`${bossHpPercent}%`;
   if($('bossHpText')) $('bossHpText').textContent=`${bossHpPercent.toFixed(0)}%`;
-  const bossCardEl=document.querySelector('.boss-card');
-  if(bossCardEl) bossCardEl.classList.toggle('boss-defeated',ng.length===0);
+
+  const evolution=window.BossEvolution
+    ? window.BossEvolution.getStage(bossHpPercent)
+    : {boss:'boss_100.png',background:'bg_100.png',name:'凶悪なBOSS',message:'⚠️ 強敵出現！<br>みんなで力を合わせよう！'};
+  const evolutionVisual=$('evolutionVisual');
+  const evolutionBossImage=$('evolutionBossImage');
+  if(evolutionVisual){
+    evolutionVisual.style.backgroundImage=`url("assets/${evolution.background}")`;
+    evolutionVisual.dataset.stage=evolution.key||'100';
+  }
+  if(evolutionBossImage){
+    evolutionBossImage.src=`assets/${evolution.boss}`;
+    evolutionBossImage.alt=evolution.name;
+  }
+  if($('evolutionStageName')) $('evolutionStageName').textContent=evolution.name;
+  if($('evolutionMessage')) $('evolutionMessage').innerHTML=evolution.message;
+  if($('bossStatusMessage')) $('bossStatusMessage').textContent=ng.length===0?'人間完成！':`人間完成まであと${fmt(ng.length)}件！`;
+  const bossStatusCard=$('bossStatusCard');
+  if(bossStatusCard) bossStatusCard.classList.toggle('boss-defeated',ng.length===0);
 
   const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
   const processIcons={'CAD/CAM':'🖥️','切断':'⚙️','曲げ':'🪝','溶接':'🔥','仕上':'✨','塗装':'🎨','組立':'🧩'};
@@ -793,11 +841,11 @@ if(shipFilter==='today-ng'){
       </div>`;
     }).join('');
     runnerTrack.innerHTML=`<div class="battle-workers">${workers}</div>
-      <div class="battle-boss-target">
-        <div class="battle-boss-title">未完成 BOSS</div>
-        <img class="battle-boss-large" src="assets/boss.png" alt="未完成BOSS">
-        <div class="battle-boss-remain">残り ${fmt(ng.length)}件</div>
-        <div class="battle-hit">${ng.length>0?'攻撃中！':'撃破！'}</div>
+      <div class="evolution-support-card ${ng.length===0?'complete':''}">
+        <div class="evolution-support-title">BOSS進化</div>
+        <div class="evolution-support-stage">${evolution.name}</div>
+        <div class="evolution-support-count">${ng.length===0?'人間完成！':`あと${fmt(ng.length)}件`}</div>
+        <div class="evolution-support-message">${ng.length===0?'みんなの力で<br>進化完了！':'みんなの力で<br>人間に戻そう！'}</div>
       </div>`;
   }
 
@@ -807,23 +855,19 @@ if(shipFilter==='today-ng'){
   if(ng.length===0){
     const completedAt=getOrRecordTodayCompletion(0);
     const before15=completedAt.getHours()<15;
-
     if(gameBanner){
       gameBanner.classList.remove('success','late');
       gameBanner.classList.add(before15?'success':'late');
     }
     if(gameBannerMessage){
       gameBannerMessage.innerHTML=before15
-        ? '😊 🎉 今日の目標達成！<br><strong>15時前に全件完成しました！ お疲れ様でした！</strong>'
-        : '😌 今日もお疲れ様でした。<br><strong>目標には届きませんでしたが、明日も頑張りましょう！🌱</strong>';
+        ? '🏆 人間完成！<br><strong>15時前達成！ お疲れ様でした！</strong>'
+        : '😊 人間完成！<br><strong>今日もお疲れ様でした！ 明日も頑張りましょう！</strong>';
     }
   }else{
     getOrRecordTodayCompletion(ng.length);
-
     if(gameBanner) gameBanner.classList.remove('success','late');
-    if(gameBannerMessage){
-      gameBannerMessage.innerHTML='📣 今日もみんなで力を合わせよう！<br><strong>🔥 15:00までの全件完成を目指そう！💪</strong>';
-    }
+    if(gameBannerMessage) gameBannerMessage.innerHTML=evolution.banner;
   }
 
   if(goalResult){
