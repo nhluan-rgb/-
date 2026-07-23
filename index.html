@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>九州工場 生産進捗管理 v5.0 FINAL</title>
+  <title>九州工場 生産進捗管理 v5.2 FINAL EVOLUTION BG</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root{--ink:#17212b;--muted:#6b7785;--line:#dfe5ea;--paper:#fff;--bg:#f3f5f7;--nav:#142b3a;--blue:#1d6fa5;--cyan:#22a6a1;--green:#2d8b57;--orange:#d9822b;--red:#c8473d;--purple:#7457a6}
@@ -853,7 +853,7 @@
 
 
 /* ================================
-   v5.0 FINAL：未完成以外のGAME表示
+   v5.2 FINAL EVOLUTION BG：未完成以外のGAME表示
    ================================ */
 .standard-game{display:none}
 .standard-game.show{display:block}
@@ -1118,6 +1118,61 @@
   .standard-world{grid-template-columns:1fr}
   .standard-visual{min-height:420px}
   .standard-runner-track .battle-workers{grid-template-columns:repeat(4,minmax(120px,1fr))!important}
+}
+
+
+/* =========================================
+   v5.2 FINAL
+   4 TAB KHÁC: dùng nền tiến hóa bg_100~bg_0
+   Không Boss; 未完成 giữ nguyên
+   ========================================= */
+.standard-stage{
+  --standard-evolution-bg:url("assets/bg_100.png");
+  background-image:
+    linear-gradient(rgba(7,31,43,.16),rgba(7,31,43,.22)),
+    var(--standard-evolution-bg)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  transition:background-image .45s ease-in-out!important;
+}
+
+.standard-visual{
+  background-image:
+    linear-gradient(90deg,rgba(3,27,40,.68) 0%,rgba(3,27,40,.24) 58%,rgba(3,27,40,.06) 100%),
+    var(--standard-evolution-bg)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  transition:background-image .45s ease-in-out!important;
+}
+
+.standard-visual::after{
+  background:
+    linear-gradient(90deg,rgba(2,19,30,.52) 0%,rgba(2,19,30,.16) 58%,transparent 100%)!important;
+}
+
+.standard-visual-overlay{
+  max-width:58%!important;
+  padding:28px 30px!important;
+  border:1px solid rgba(255,255,255,.30)!important;
+  border-radius:20px!important;
+  background:rgba(5,31,45,.48)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.23),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+
+.standard-stage[data-evolution="0"] .standard-visual-overlay{
+  background:rgba(255,255,255,.60)!important;
+  color:#183243!important;
+  text-shadow:0 1px 1px rgba(255,255,255,.8)!important;
+}
+.standard-stage[data-evolution="0"] .standard-tab-name{color:#174d72!important}
+.standard-stage[data-evolution="0"] .standard-visual-message{
+  color:#17384d!important;
+  background:rgba(255,255,255,.55)!important;
+  text-shadow:none!important;
 }
 
 </style>
@@ -1419,6 +1474,31 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   const tabName=chartLabels[shipFilter]||'生産進捗';
   const totalPoints=chartRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   const remaining=Math.max(0,chartActive+chartNew);
+
+  // Dùng cùng logic nền tiến hóa với 未完成.
+  // 0% hoàn thành = bg_100; 100% hoàn thành = bg_0.
+  const remainingPercent=chartTotal===0 ? 0 : Math.max(0,Math.min(100,100-chartRate));
+  const standardEvolution=window.BossEvolution
+    ? window.BossEvolution.getStage(remainingPercent)
+    : remainingPercent>=80
+      ? {key:'100',background:'bg_100.png'}
+      : remainingPercent>=60
+        ? {key:'80',background:'bg_80.png'}
+        : remainingPercent>=40
+          ? {key:'60',background:'bg_60.png'}
+          : remainingPercent>=20
+            ? {key:'40',background:'bg_40.png'}
+            : remainingPercent>0
+              ? {key:'20',background:'bg_20.png'}
+              : {key:'0',background:'bg_0.png'};
+  const standardStage=document.querySelector('.standard-stage');
+  if(standardStage){
+    standardStage.style.setProperty(
+      '--standard-evolution-bg',
+      `url("assets/${standardEvolution.background}")`
+    );
+    standardStage.dataset.evolution=standardEvolution.key||'100';
+  }
 
   if($('standardTabName')) $('standardTabName').textContent=tabName;
   if($('standardTotal')) $('standardTotal').textContent=fmt(chartTotal);
