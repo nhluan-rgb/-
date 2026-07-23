@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>九州工場 生産進捗管理 v4.3</title>
+  <title>九州工場 生産進捗管理 v5.0 FINAL</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root{--ink:#17212b;--muted:#6b7785;--line:#dfe5ea;--paper:#fff;--bg:#f3f5f7;--nav:#142b3a;--blue:#1d6fa5;--cyan:#22a6a1;--green:#2d8b57;--orange:#d9822b;--red:#c8473d;--purple:#7457a6}
@@ -851,6 +851,275 @@
   }
 }
 
+
+/* ================================
+   v5.0 FINAL：未完成以外のGAME表示
+   ================================ */
+.standard-game{display:none}
+.standard-game.show{display:block}
+.grid.standard-layout{grid-template-columns:1fr!important}
+.grid.standard-layout>div:first-child{display:none!important}
+.grid.standard-layout>div:last-child{grid-column:1/-1!important}
+.grid.standard-layout>div:last-child>.panel-head{display:none!important}
+.grid.standard-layout>div:last-child>.panel-body{padding:0!important}
+
+.standard-stage{
+  padding:14px;
+  border-radius:18px;
+  overflow:hidden;
+  background:
+    linear-gradient(rgba(8,35,52,.12),rgba(8,35,52,.20)),
+    url("assets/background.png") center/cover no-repeat;
+}
+.standard-banner{
+  min-height:116px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:18px 24px;
+  border:2px solid rgba(255,255,255,.55);
+  border-radius:18px;
+  background:rgba(45,66,73,.78);
+  color:#fff;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 5px 0 rgba(18,36,43,.50);
+}
+.standard-banner-title{
+  font-size:19px;
+  font-weight:900;
+  color:#fff4c2;
+  margin-bottom:8px;
+}
+.standard-banner-message{
+  font-size:27px;
+  line-height:1.35;
+  font-weight:900;
+  text-shadow:0 2px 2px rgba(0,0,0,.65);
+}
+.standard-clock{
+  width:230px;
+  min-width:230px;
+  padding:10px 14px;
+  border:3px solid rgba(255,255,255,.25);
+  border-radius:16px;
+  background:rgba(12,27,31,.92);
+  color:#fff5bd;
+  text-align:center;
+  box-shadow:0 4px 0 rgba(0,0,0,.45);
+}
+.standard-clock small{display:block;font-weight:800}
+.standard-clock b{display:block;font-size:38px;line-height:1.05;margin:4px 0}
+
+.standard-world{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(400px,.55fr);
+  gap:14px;
+  margin-top:14px;
+  min-height:510px;
+}
+.standard-visual{
+  position:relative;
+  overflow:hidden;
+  min-height:510px;
+  border-radius:16px;
+  border:2px solid rgba(255,255,255,.58);
+  background:
+    linear-gradient(90deg,rgba(0,25,35,.15),rgba(0,25,35,.05)),
+    url("assets/background.png") center/cover no-repeat;
+}
+.standard-visual::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(3,24,35,.72) 0%,rgba(3,24,35,.28) 46%,rgba(3,24,35,.04) 72%);
+}
+.standard-visual-overlay{
+  position:absolute;
+  z-index:2;
+  left:5%;
+  top:50%;
+  transform:translateY(-50%);
+  max-width:55%;
+  color:#fff;
+  text-shadow:0 3px 5px rgba(0,0,0,.85);
+}
+.standard-tab-name{font-size:30px;font-weight:900;color:#fff4b0}
+.standard-total{font-size:78px;font-weight:1000;line-height:1.05;margin-top:16px}
+.standard-points{font-size:25px;font-weight:800;margin-top:6px}
+.standard-visual-message{
+  margin-top:22px;
+  padding:10px 16px;
+  border-left:6px solid #ffe477;
+  background:rgba(0,0,0,.34);
+  font-size:22px;
+  font-weight:900;
+  line-height:1.45;
+}
+
+.standard-donut-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:3px solid rgba(255,232,125,.92);
+  border-radius:20px;
+  padding:24px 22px;
+  background:rgba(18,66,92,.90);
+  color:#fff;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  box-shadow:0 6px 0 rgba(8,33,49,.55);
+}
+.standard-donut-label{
+  padding:8px 28px;
+  border-radius:999px;
+  background:linear-gradient(#2d81de,#1450a8);
+  border:1px solid #8ec4ff;
+  box-shadow:0 4px 0 #0a3a76;
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.animated-donut{
+  --done:0%;
+  --active:0%;
+  --new:0%;
+  position:relative;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  margin:26px auto 18px;
+  background:conic-gradient(
+    #00A67E 0 var(--done),
+    #1976D2 var(--done) var(--active),
+    #B0BEC5 var(--active) var(--new),
+    #455A64 var(--new) 100%
+  );
+  box-shadow:
+    0 0 0 8px rgba(255,255,255,.12),
+    0 0 30px rgba(0,203,165,.28);
+  transition:filter .5s ease;
+}
+.animated-donut::after{
+  content:"";
+  position:absolute;
+  inset:36px;
+  border-radius:50%;
+  background:rgba(248,252,255,.96);
+  box-shadow:inset 0 0 25px rgba(28,75,104,.18);
+}
+.animated-donut.complete{
+  animation:donutCompleteGlow 1.8s ease-in-out infinite alternate;
+}
+.animated-donut-center{
+  position:absolute;
+  z-index:3;
+  inset:0;
+  display:grid;
+  place-content:center;
+  text-align:center;
+  color:#132a38;
+}
+.animated-donut-center b{font-size:48px;line-height:1}
+.animated-donut-center small{font-size:17px;margin-top:8px;color:#667b88}
+.donut-orbit{
+  position:absolute;
+  z-index:4;
+  width:16px;
+  height:16px;
+  left:calc(50% - 8px);
+  top:-8px;
+  border-radius:50%;
+  background:#fff7a5;
+  box-shadow:0 0 14px 5px rgba(255,244,104,.75);
+  transform-origin:8px 148px;
+  animation:donutOrbit 5s linear infinite;
+}
+.standard-legend{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 20px;
+  width:100%;
+  max-width:360px;
+  font-size:17px;
+  font-weight:800;
+}
+.standard-legend>div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:7px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.10);
+}
+.standard-legend .dot{
+  width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;
+}
+.standard-progress-message{
+  margin-top:18px;
+  min-width:260px;
+  padding:11px 18px;
+  border-radius:14px;
+  background:#ffe783;
+  color:#6b4510;
+  text-align:center;
+  font-size:19px;
+  font-weight:900;
+  box-shadow:0 5px 0 #b77a12;
+}
+.standard-progress-message.complete{
+  background:#bdf5cf;
+  color:#126a38;
+  box-shadow:0 5px 0 #2d9b59;
+}
+
+.standard-runner-world{
+  margin-top:14px;
+  padding:14px;
+  border:2px solid rgba(255,255,255,.48);
+  border-radius:18px;
+  background:rgba(255,255,255,.22);
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+}
+.standard-runner-track .battle-workers{
+  grid-template-columns:repeat(8,minmax(100px,1fr))!important;
+}
+.standard-summary-card{
+  --process-color:#1976D2;
+  --process-soft:#e8f3ff;
+  min-height:245px;
+  border:3px solid var(--process-color);
+  border-radius:17px;
+  padding:12px 8px;
+  background:linear-gradient(180deg,#fff,var(--process-soft));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  justify-content:space-between;
+  box-shadow:0 5px 0 color-mix(in srgb,var(--process-color) 65%,#344552);
+}
+.standard-summary-card.complete{--process-color:#22a85a;--process-soft:#dff7e6}
+.standard-summary-title{font-size:18px;font-weight:900}
+.standard-summary-rate{font-size:38px;font-weight:1000;color:var(--process-color)}
+.standard-summary-message{font-size:15px;font-weight:800;line-height:1.45}
+
+@keyframes donutOrbit{to{transform:rotate(360deg)}}
+@keyframes donutCompleteGlow{
+  from{filter:drop-shadow(0 0 4px rgba(77,255,159,.35))}
+  to{filter:drop-shadow(0 0 18px rgba(77,255,159,.90))}
+}
+
+@media(max-width:1350px){
+  .standard-world{grid-template-columns:1fr}
+  .standard-visual{min-height:420px}
+  .standard-runner-track .battle-workers{grid-template-columns:repeat(4,minmax(120px,1fr))!important}
+}
+
 </style>
 </head>
 <body>
@@ -861,6 +1130,51 @@
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 出荷</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全出荷日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全出荷日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
+
+<div id="standardGame" class="standard-game">
+  <div class="standard-stage">
+    <div class="standard-banner">
+      <div>
+        <div class="standard-banner-title" id="standardBannerTitle">生産進捗ミッション</div>
+        <div class="standard-banner-message" id="standardBannerMessage">一件ずつ、確実に完成へ進めましょう。</div>
+      </div>
+      <div class="standard-clock">
+        <small>現在時刻</small>
+        <b id="standardClock">--:--:--</b>
+        <small id="standardDate">----</small>
+      </div>
+    </div>
+
+    <div class="standard-world">
+      <section class="standard-visual" aria-label="生産進捗イメージ">
+        <div class="standard-visual-overlay">
+          <div class="standard-tab-name" id="standardTabName">本日出荷</div>
+          <div class="standard-total"><span id="standardTotal">0</span>件</div>
+          <div class="standard-points">（<span id="standardPoints">0</span>点）</div>
+          <div class="standard-visual-message" id="standardVisualMessage">今日も安全第一で進めましょう。</div>
+        </div>
+      </section>
+
+      <section class="standard-donut-card">
+        <div class="standard-donut-label">全体進捗</div>
+        <div class="animated-donut" id="animatedDonut">
+          <div class="animated-donut-center">
+            <b id="animatedDonutRate">0.0%</b>
+            <small>完成率</small>
+          </div>
+          <span class="donut-orbit" aria-hidden="true"></span>
+        </div>
+        <div class="standard-legend" id="standardLegend"></div>
+        <div class="standard-progress-message" id="standardProgressMessage">対象データを集計しています。</div>
+      </section>
+    </div>
+
+    <div class="standard-runner-world">
+      <div id="standardRunnerTrack" class="standard-runner-track"></div>
+    </div>
+  </div>
+</div>
+
 <div id="ngGame" class="ng-game">
   <div class="game-stage evolution-stage" id="evolutionStage">
     <div class="game-banner" id="gameBanner">
@@ -1038,7 +1352,147 @@ function updateGameClock(){
     year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'
   });
 }
+
 setInterval(updateGameClock,1000);
+function updateStandardClock(){
+  const now=new Date();
+  const clock=$('standardClock');
+  const date=$('standardDate');
+  if(clock) clock.textContent=now.toLocaleTimeString('ja-JP',{hour12:false});
+  if(date) date.textContent=now.toLocaleDateString('ja-JP',{
+    year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'
+  });
+}
+setInterval(updateStandardClock,1000);
+
+
+
+let standardDonutAnimation=null;
+let standardDonutState={done:0,active:0,newp:0,rate:0};
+
+function animateStandardDonut(doneEnd,activeEnd,newEnd,rateEnd){
+  const donut=$('animatedDonut');
+  const rateEl=$('animatedDonutRate');
+  if(!donut||!rateEl)return;
+  if(standardDonutAnimation) cancelAnimationFrame(standardDonutAnimation);
+
+  const start={...standardDonutState};
+  const target={done:doneEnd,active:activeEnd,newp:newEnd,rate:rateEnd};
+  const startTime=performance.now();
+  const duration=900;
+
+  const frame=now=>{
+    const t=Math.min(1,(now-startTime)/duration);
+    const eased=1-Math.pow(1-t,3);
+    const cur={
+      done:start.done+(target.done-start.done)*eased,
+      active:start.active+(target.active-start.active)*eased,
+      newp:start.newp+(target.newp-start.newp)*eased,
+      rate:start.rate+(target.rate-start.rate)*eased
+    };
+    donut.style.setProperty('--done',`${cur.done}%`);
+    donut.style.setProperty('--active',`${cur.active}%`);
+    donut.style.setProperty('--new',`${cur.newp}%`);
+    rateEl.textContent=`${cur.rate.toFixed(1)}%`;
+    if(t<1){
+      standardDonutAnimation=requestAnimationFrame(frame);
+    }else{
+      standardDonutState=target;
+      standardDonutAnimation=null;
+    }
+  };
+  standardDonutAnimation=requestAnimationFrame(frame);
+}
+
+function standardTabMessage(filter,rate,total,remaining){
+  if(total===0)return '対象となる製造指示はありません。';
+  if(rate>=100)return '全件完成しました。皆さんのご協力に感謝します！';
+  if(filter==='overdue')return `期限切れ解消まであと${fmt(remaining)}件。優先順位を確認して進めましょう。`;
+  if(filter==='tomorrow')return `明日の出荷に向けて、あと${fmt(remaining)}件を確実に進めましょう。`;
+  if(filter==='specified')return `指定日の完成まであと${fmt(remaining)}件。工程間で協力しましょう。`;
+  return `全件完成まであと${fmt(remaining)}件。安全と品質を大切に進めましょう。`;
+}
+
+function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDone,chartActive,chartNew,chartCancel,chartRate,chartEffective){
+  const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
+  const processIcons={'CAD/CAM':'🖥️','切断':'⚙️','曲げ':'🪝','溶接':'🔥','仕上':'✨','塗装':'🎨','組立':'🧩'};
+  const tabName=chartLabels[shipFilter]||'生産進捗';
+  const totalPoints=chartRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const remaining=Math.max(0,chartActive+chartNew);
+
+  if($('standardTabName')) $('standardTabName').textContent=tabName;
+  if($('standardTotal')) $('standardTotal').textContent=fmt(chartTotal);
+  if($('standardPoints')) $('standardPoints').textContent=fmt(totalPoints);
+  if($('standardBannerTitle')) $('standardBannerTitle').textContent=`${tabName} ミッション`;
+  if($('standardBannerMessage')) $('standardBannerMessage').textContent=standardTabMessage(shipFilter,chartRate,chartTotal,remaining);
+  if($('standardVisualMessage')) $('standardVisualMessage').textContent=
+    chartRate>=100?'今日の協力に感謝します。次の仕事も安全第一で進めましょう。':
+    '一人ひとりの丁寧な仕事が、全体の流れと品質を支えています。';
+
+  const doneEnd=chartEffective?chartDone/chartEffective*100:0;
+  const activeEnd=doneEnd+(chartEffective?chartActive/chartEffective*100:0);
+  const newEnd=activeEnd+(chartEffective?chartNew/chartEffective*100:0);
+  animateStandardDonut(doneEnd,activeEnd,newEnd,chartRate);
+
+  const donut=$('animatedDonut');
+  if(donut) donut.classList.toggle('complete',chartTotal>0&&chartRate>=100);
+
+  if($('standardLegend')){
+    $('standardLegend').innerHTML=`
+      <div><span><span class="dot" style="background:#00A67E"></span>完成</span><b>${fmt(chartDone)}</b></div>
+      <div><span><span class="dot" style="background:#1976D2"></span>進行中</span><b>${fmt(chartActive)}</b></div>
+      <div><span><span class="dot" style="background:#B0BEC5"></span>未着手</span><b>${fmt(chartNew)}</b></div>
+      <div><span><span class="dot" style="background:#455A64"></span>キャンセル</span><b>${fmt(chartCancel)}</b></div>`;
+  }
+
+  const progressMessage=$('standardProgressMessage');
+  if(progressMessage){
+    progressMessage.classList.toggle('complete',chartTotal>0&&chartRate>=100);
+    progressMessage.textContent=chartTotal===0
+      ? '対象データなし'
+      : chartRate>=100
+        ? '全件完成！ お疲れ様でした！'
+        : `完成まであと${fmt(remaining)}件`;
+  }
+
+  const workers=processOrder.map((name,index)=>{
+    const count=chartCounts[name]||0;
+    const activeClass=count>0?'active-worker':'clear-worker';
+    const statusText=count>0?`${fmt(count)}件`:'完了';
+    const maxWorkers=15;
+    const shownWorkers=Math.min(count,maxWorkers);
+    const workerImages=Array.from({length:shownWorkers},(_,workerIndex)=>
+      `<span class="battle-worker-unit" style="--worker-delay:${(workerIndex%5)*0.12}s">
+        <img class="battle-worker" src="assets/worker.png" alt="${name} WORKER">
+        <img class="battle-bullet" src="assets/bullet.png" alt="">
+      </span>`
+    ).join('');
+    const extraWorkers=count>maxWorkers?`<div class="battle-worker-more">＋${fmt(count-maxWorkers)}人</div>`:'';
+    return `<div class="battle-process ${activeClass} process-${index}">
+      <div class="battle-process-name">${processIcons[name]||''} ${name}</div>
+      <div class="battle-process-count">${statusText}</div>
+      <div class="battle-worker-wrap ${count>0?'has-workers':''}">
+        ${count>0?workerImages+extraWorkers:'<div class="battle-clear">✓</div>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  const runner=$('standardRunnerTrack');
+  if(runner){
+    runner.innerHTML=`<div class="battle-workers">${workers}
+      <div class="standard-summary-card ${chartRate>=100&&chartTotal>0?'complete':''}">
+        <div class="standard-summary-title">全体進捗</div>
+        <div class="standard-summary-rate">${chartRate.toFixed(1)}%</div>
+        <div class="standard-summary-message">${
+          chartTotal===0?'対象データなし':
+          chartRate>=100?'全件完成！<br>ご協力ありがとうございました。':
+          `完成まであと${fmt(remaining)}件<br>みんなで力を合わせよう！`
+        }</div>
+      </div>
+    </div>`;
+  }
+  updateStandardClock();
+}
 
 function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='today-ng'?rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):rows.filter(r=>(shipFilter==='specified'?r.due===specifiedShipDate:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'本日出荷・未完成','today':'本日出荷','tomorrow':'明日出荷','overdue':'製造期限切れ','specified':'指定日製造期限'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
   const processOrder=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];
@@ -1072,15 +1526,20 @@ $('progressTitle').textContent=shipFilter==='today-ng'
     ? '工程別進捗'
     : `全体進捗（${chartLabels[shipFilter]||'全出荷日'}）`;$('progressCount').textContent=`${fmt(chartTotal)}件`;
 const mainGrid=document.querySelector('.grid');
-if(mainGrid) mainGrid.classList.toggle('ng-layout',shipFilter==='today-ng');let work=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];let max=Math.max(...work.map(x=>chartCounts[x]||0),1);$('bars').innerHTML=work.map((x,i)=>`<div class="bar-row"><span>${x}</span><div class="track"><div class="fill" style="width:${(chartCounts[x]||0)/max*100}%;background:${['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'][i]}"></div></div><b>${fmt(chartCounts[x]||0)}</b></div>`).join('');let shipStat=k=>{let x=rows.filter(r=>r.shipDate===dates[k]);return`${fmt(x.length)}件（${fmt(x.reduce((a,r)=>a+r.qty,0))}点）`},ng=rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'));$('shipToday').textContent=shipStat('today');$('shipTomorrow').textContent=shipStat('tomorrow');let overdueRows=rows.filter(isOverdueItem);$('shipOverdue').textContent=`${fmt(overdueRows.length)}件（${fmt(overdueRows.reduce((a,r)=>a+r.qty,0))}点）`;let sx=rows.filter(r=>r.due===specifiedShipDate);$('shipSpecified').textContent=`${fmt(sx.length)}件（${fmt(sx.reduce((a,r)=>a+r.qty,0))}点）`;
+if(mainGrid){
+  mainGrid.classList.toggle('ng-layout',shipFilter==='today-ng');
+  mainGrid.classList.toggle('standard-layout',shipFilter!=='today-ng');
+}let work=['CAD/CAM','切断','曲げ','溶接','塗装','組立','仕上','未着手'];let max=Math.max(...work.map(x=>chartCounts[x]||0),1);$('bars').innerHTML=work.map((x,i)=>`<div class="bar-row"><span>${x}</span><div class="track"><div class="fill" style="width:${(chartCounts[x]||0)/max*100}%;background:${['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'][i]}"></div></div><b>${fmt(chartCounts[x]||0)}</b></div>`).join('');let shipStat=k=>{let x=rows.filter(r=>r.shipDate===dates[k]);return`${fmt(x.length)}件（${fmt(x.reduce((a,r)=>a+r.qty,0))}点）`},ng=rows.filter(r=>r.shipDate===dates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'));$('shipToday').textContent=shipStat('today');$('shipTomorrow').textContent=shipStat('tomorrow');let overdueRows=rows.filter(isOverdueItem);$('shipOverdue').textContent=`${fmt(overdueRows.length)}件（${fmt(overdueRows.reduce((a,r)=>a+r.qty,0))}点）`;let sx=rows.filter(r=>r.due===specifiedShipDate);$('shipSpecified').textContent=`${fmt(sx.length)}件（${fmt(sx.reduce((a,r)=>a+r.qty,0))}点）`;
 $('shipNg').textContent=`${fmt(ng.length)}件（${fmt(ng.reduce((a,r)=>a+r.qty,0))}点）`;
 
 const donutWrap=document.querySelector('.donut-wrap');
 const ngGame=$('ngGame');
+const standardGame=$('standardGame');
 const goalResult=$('goalResult');
 
 if(shipFilter==='today-ng'){
   if(donutWrap) donutWrap.style.display='none';
+  if(standardGame) standardGame.classList.remove('show');
   if(ngGame) ngGame.classList.add('show');
   updateGameClock();
 
@@ -1194,8 +1653,13 @@ if(shipFilter==='today-ng'){
     goalResult.innerHTML='';
   }
 }else{
-  if(donutWrap) donutWrap.style.display='flex';
+  if(donutWrap) donutWrap.style.display='none';
   if(ngGame) ngGame.classList.remove('show');
+  if(standardGame) standardGame.classList.add('show');
+  renderStandardGame(
+    chartRows,chartCounts,chartLabels,chartTotal,
+    chartDone,chartActive,chartNew,chartCancel,chartRate,chartEffective
+  );
 
   const gameBanner=$('gameBanner');
   const gameBannerMessage=$('gameBannerMessage');
