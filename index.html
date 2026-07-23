@@ -823,12 +823,40 @@
   }
 }
 
+
+/* v4.6：背景消失を修正／BOSSをv4.5の75%へ縮小 */
+.evolution-stage{
+  background-image:var(--evolution-bg)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+
+/* v4.5比 75% */
+.evolution-boss-image{
+  width:min(75%,795px)!important;
+  height:87%!important;
+  bottom:-7%!important;
+  transform:translateX(-50%) scale(1)!important;
+  object-fit:contain!important;
+  transform-origin:center bottom!important;
+}
+
+@media(max-width:1300px){
+  .evolution-boss-image{
+    width:min(74%,615px)!important;
+    height:81%!important;
+    bottom:-5%!important;
+    transform:translateX(-50%) scale(1)!important;
+  }
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v4.5 BOSS EVOLUTION</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div><h1>八州電工株式会社　九州工場　進捗状況</h1><p>製造指示・工程・納期管理システム <small style="color:#9aa4ad">v4.6 BOSS EVOLUTION</small></p></div><div class="actions"><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 出荷</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
@@ -1078,7 +1106,10 @@ if(shipFilter==='today-ng'){
   if(evolutionVisual){
     const evolutionStage=document.getElementById('evolutionStage');
     if(evolutionStage){
-      evolutionStage.style.backgroundImage=`url("assets/${evolution.background}")`;
+      evolutionStage.style.setProperty(
+        '--evolution-bg',
+        `url("assets/${evolution.background}")`
+      );
     }
     evolutionVisual.style.backgroundImage='none';
     evolutionVisual.dataset.stage=evolution.key||'100';
