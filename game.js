@@ -79,22 +79,35 @@
   let timer=null;
   let index=0;
   let currentKey='';
+  let currentElement=null;
   function stop(){
     if(timer){clearInterval(timer);timer=null;}
   }
   function start(element,stage,hp){
     if(!element||!stage)return;
     const key=stage.key||String(Math.round(hp));
-    if(currentKey!==key){index=0;currentKey=key;}
+
+    // CSVは30秒ごとに再読込されるため、同じ段階ならタイマーを作り直さない。
+    if(timer && currentElement===element && currentKey===key){
+      return;
+    }
+
+    if(currentKey!==key){
+      index=0;
+    }
+    currentKey=key;
+    currentElement=element;
+
     const lines=[...(stageLines[key]||[]),...commonLines];
     const render=()=>{
       const line=lines[index%lines.length];
       element.innerHTML=`📣 ${stage.name}<br><strong>${line}</strong>`;
       index+=1;
     };
+
     stop();
     render();
-    timer=setInterval(render,180000);
+    timer=setInterval(render,180000); // 3分ごと
   }
 
   window.BossEvolution={stages,getStage};
