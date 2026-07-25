@@ -3,61 +3,107 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>新世界｜溶接工程</title>
+<title>新世界｜溶接工程管理</title>
 <style>
 :root{
-  --bg:#eef3f7;--card:#fff;--ink:#1d2a35;--muted:#617482;--line:#d2dde5;
-  --blue:#1976d2;--green:#009688;--purple:#7e57c2;--brown:#8d6e63;
+  --ink:#102437;--muted:#60798c;--line:rgba(111,184,221,.34);
+  --glass:rgba(246,252,255,.88);--glass2:rgba(255,255,255,.94);
+  --blue:#1976d2;--cyan:#16a6b6;--green:#21a467;--orange:#ef8a24;
+  --purple:#7a5cc7;--red:#d94b45;--yellow:#ddb319;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-header{height:86px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 10px #19324612}
-h1{margin:0;font-size:27px}header p{margin:3px 0 0;color:var(--muted);font-size:13px}
-.actions{display:flex;gap:9px}.btn{border:1px solid #c8d5df;background:#fff;color:#29465b;padding:10px 15px;border-radius:9px;text-decoration:none;cursor:pointer}.btn.primary{background:#1976a8;color:#fff;border-color:#1976a8}
-main{padding:14px 16px 28px}
-.notice{padding:11px 14px;margin-bottom:13px;border:1px solid #efb071;background:#fff7ed;color:#7c3f10;border-radius:10px}
-.date-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-.date-tab{position:relative;min-height:90px;padding:15px 17px;text-align:left;border:2px solid #cad8e2;background:#fff;border-radius:14px;cursor:pointer;box-shadow:0 4px 12px #1f3a4d14}
-.date-tab:nth-child(1){border-color:#2584da}.date-tab:nth-child(2){border-color:#20a277}.date-tab:nth-child(3){border-color:#8b68d4}.date-tab:nth-child(4){border-color:#ed8b16}
-.date-tab.active{box-shadow:0 0 0 3px #2684bb20,0 5px 13px #1f3a4d18;transform:translateY(-1px)}
-.date-tab .label{font-size:20px;font-weight:900}.date-tab .date{margin-top:4px;color:var(--muted)}
-.date-tab .count{position:absolute;right:16px;top:15px;font-size:31px;font-weight:1000}.date-tab input{width:100%;margin-top:8px;padding:8px;border:1px solid #d2dde5;border-radius:7px}
-.panel{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 7px 22px #1f3a4d12}
-.process-panel{padding:15px}
-.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}.panel-title h2{margin:0;font-size:22px}.panel-title span{color:var(--muted);font-size:13px}
-.materials{display:grid;grid-template-columns:210px repeat(4,1fr);border:1px solid #d2dde5;border-radius:13px;overflow:hidden;margin-bottom:13px}
-.material-title{padding:12px 17px;background:#eaf2f7;font-size:18px;font-weight:900}.material-title small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
-.material{min-height:70px;padding:10px 16px;display:flex;align-items:center;gap:10px;border-left:1px solid #d2dde5;font-weight:900}
-.circle{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;color:#fff;font-size:21px}
-.iron .circle{background:var(--blue)}.sus .circle{background:var(--green)}.super .circle{background:var(--purple)}.dob .circle{background:var(--brown)}
-.iron{color:var(--blue)}.sus{color:var(--green)}.super{color:var(--purple)}.dob{color:var(--brown)}
-.process-grid{display:grid;grid-template-columns:repeat(8,minmax(125px,1fr));gap:10px}
-.process-card{--c:#607d8b;position:relative;min-height:145px;padding:9px;border:2px solid var(--c);border-radius:14px;background:linear-gradient(#fff,#f4f8fa);text-align:center;cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 45%,#aebbc5)}
-.process-card.active{transform:translateY(-3px);box-shadow:0 7px 0 color-mix(in srgb,var(--c) 55%,#8c9aa4)}
-.process-card .head{padding:9px 5px;border-radius:8px;background:var(--c);color:#fff;font-size:17px;font-weight:900}
-.process-card .value{font-size:30px;font-weight:1000;margin-top:17px}.process-card .sub{font-size:12px;color:var(--muted)}
-.process-card .bar{height:7px;margin:15px 8px 0;border-radius:8px;background:#e1e7e9;overflow:hidden}.process-card .fill{height:100%;background:var(--c)}
-.total{--c:#19738c}.p0{--c:#c2a000}.p1{--c:#df7200}.p2{--c:#d653a3}.p3{--c:#d43a36}
-.disabled{--c:#929ca4;cursor:not-allowed;background:#edf1f4}.stamp{position:absolute;left:50%;top:66%;transform:translate(-50%,-50%) rotate(-10deg);padding:5px 10px;border:4px double #db5149;border-radius:7px;color:#db5149;background:#ffffffdd;font-size:21px;font-weight:1000}
-.lower{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(360px,.65fr);gap:13px;margin-top:13px}
-.products,.chart{padding:15px;min-height:390px}.product-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.product-head h2,.chart h2{margin:0;font-size:22px}.product-head p,.chart p{margin:3px 0 0;color:var(--muted);font-size:13px}
-.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.product-card{position:relative;min-height:135px;padding:14px;border:1px solid #d4dfe7;border-radius:13px;background:linear-gradient(145deg,#fff,#f4f8fa);cursor:pointer;overflow:hidden}
-.product-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--stripe,#607d8b)}
-.product-card:hover{border-color:#4c9bc8;transform:translateY(-2px)}.product-name{font-size:18px;font-weight:1000}.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
-.badge{--mc:#607d8b;padding:4px 7px;border-radius:7px;border:1px solid var(--mc);background:color-mix(in srgb,var(--mc) 12%,#fff);color:color-mix(in srgb,var(--mc) 78%,#17212b);font-size:11px;font-weight:900}
-.meta{display:flex;justify-content:space-between;align-items:end;margin-top:14px}.count{font-size:25px;font-weight:1000;color:#d0442e}.qty{color:var(--muted);font-size:13px}
-.empty{grid-column:1/-1;min-height:260px;display:grid;place-items:center;border:2px dashed #c7d4dd;border-radius:13px;background:#f8fafb;color:#71818c;font-size:19px;font-weight:800}
-.donut-wrap{display:grid;place-items:center;margin-top:18px}.donut{--pie:#d8e2e8;position:relative;width:260px;height:260px;border-radius:50%;background:var(--pie);box-shadow:0 0 0 3px #d8e4eb,0 7px 20px #1f3a4d18}.donut:after{content:"";position:absolute;inset:52px;border-radius:50%;background:#fff}.center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center}.center b{font-size:39px}.center small{color:var(--muted)}
-.legend{display:grid;gap:6px;margin-top:16px;max-height:190px;overflow:auto}.legend-row{display:grid;grid-template-columns:11px 1fr auto;gap:7px;align-items:center;padding:7px;border:1px solid #dae3e9;border-radius:7px;background:#f7fafc;font-size:12px}.dot{width:11px;height:11px;border-radius:50%}
-.modal{display:none;position:fixed;inset:0;background:#0009;z-index:20;padding:25px;align-items:center;justify-content:center}.modal.show{display:flex}.modal-card{width:min(1050px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}.modal-head{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:12px}.modal-head h3{margin:0}.close{border:0;border-radius:8px;padding:8px 13px;cursor:pointer}.detail{width:100%;border-collapse:collapse;margin-top:12px}.detail th,.detail td{padding:9px;border-bottom:1px solid #e2e8ed;text-align:left;font-size:13px}
-@media(max-width:1250px){.process-grid{grid-template-columns:repeat(4,1fr)}.lower{grid-template-columns:1fr}.materials{grid-template-columns:170px repeat(4,1fr)}}
-@media(max-width:760px){header{height:auto;padding:14px}.date-tabs{grid-template-columns:1fr 1fr}.materials{grid-template-columns:1fr 1fr}.material-title{grid-column:1/-1}.process-grid{grid-template-columns:1fr 1fr}.product-grid{grid-template-columns:1fr}}
+html,body{min-height:100%}
+body{
+  margin:0;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:var(--ink);
+  background:#174d67;
+}
+body:before{
+  content:"";position:fixed;inset:0;z-index:-2;
+  background-image:
+    linear-gradient(rgba(7,39,55,.22),rgba(6,46,64,.34)),
+    url("assets/bg_0.png");
+  background-size:cover;background-position:center center;background-attachment:fixed;
+}
+body:after{
+  content:"";position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(circle at 50% 25%,rgba(255,255,255,.18),transparent 35%),
+    linear-gradient(180deg,rgba(9,48,66,.06),rgba(6,39,55,.24));
+  pointer-events:none;
+}
+button,input{font:inherit}
+.top{
+  min-height:72px;padding:10px 26px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.93);border-bottom:1px solid #c6dce8;
+  box-shadow:0 3px 14px rgba(2,34,51,.18);backdrop-filter:blur(10px)
+}
+.title h1{margin:0;font-size:25px}.title p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.actions{display:flex;gap:8px}.btn{border:1px solid #bbd2df;background:#fff;color:#25485e;padding:9px 13px;border-radius:8px;text-decoration:none;cursor:pointer;font-weight:800}.btn.primary{background:#1978a8;color:#fff;border-color:#1978a8}
+main{padding:14px 18px 28px;max-width:1900px;margin:auto}
+.notice{
+  padding:10px 14px;margin-bottom:12px;border-radius:10px;
+  background:rgba(255,249,230,.94);border:1px solid #e9b85d;color:#704615;font-weight:700;
+  box-shadow:0 5px 16px rgba(7,41,56,.14)
+}
+.date-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px}
+.date-tab{
+  position:relative;min-height:78px;padding:13px 15px;text-align:left;cursor:pointer;
+  border:2px solid rgba(255,255,255,.68);border-radius:13px;
+  background:rgba(248,253,255,.92);box-shadow:0 5px 16px rgba(4,44,62,.18);
+  backdrop-filter:blur(8px)
+}
+.date-tab:nth-child(1){border-color:#2386d8}.date-tab:nth-child(2){border-color:#1fa56e}.date-tab:nth-child(3){border-color:#8a62cf}.date-tab:nth-child(4){border-color:#ed8a19}
+.date-tab.active{transform:translateY(-2px);box-shadow:0 0 0 3px rgba(34,142,196,.20),0 7px 18px rgba(4,44,62,.20)}
+.date-tab .label{font-size:18px;font-weight:1000}.date-tab .date{margin-top:4px;color:var(--muted);font-size:13px}.date-tab .count{position:absolute;right:14px;top:12px;font-size:29px;font-weight:1000}.date-tab input{width:100%;margin-top:6px;padding:6px 8px;border:1px solid #bad0dd;border-radius:6px;background:#fff}
+.glass{
+  background:var(--glass);border:1px solid rgba(255,255,255,.70);border-radius:15px;
+  box-shadow:0 8px 22px rgba(4,40,57,.20);backdrop-filter:blur(9px)
+}
+.group-board{padding:13px 14px;margin-bottom:12px}
+.board-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}.board-head h2{margin:0;font-size:20px}.board-head p{margin:0;color:var(--muted);font-size:12px}
+.group-grid{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:10px}
+.group-card{
+  --c:#1976d2;min-height:132px;padding:9px;border:2px solid var(--c);border-radius:13px;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(235,247,252,.95));
+  text-align:center;cursor:pointer;box-shadow:0 5px 0 color-mix(in srgb,var(--c) 52%,#607a89);
+  transition:.16s
+}
+.group-card:hover,.group-card.active{transform:translateY(-3px);box-shadow:0 8px 0 color-mix(in srgb,var(--c) 58%,#536e7d)}
+.group-card .ghead{min-height:47px;display:flex;align-items:center;justify-content:center;padding:8px 6px;border-radius:8px;background:var(--c);color:#fff;font-size:17px;font-weight:1000;line-height:1.2}
+.group-card .gcount{font-size:31px;font-weight:1000;margin-top:12px}.group-card .gqty{font-size:13px;color:var(--muted);font-weight:800}
+.g-box{--c:#1976d2}.g-duct{--c:#16a6b6}.g-stand{--c:#ef8a24}.g-frame{--c:#7a5cc7}.g-cover{--c:#21a467}.g-check{--c:#d94b45}
+.workspace{display:grid;grid-template-columns:280px minmax(480px,1fr) 330px;gap:12px;align-items:stretch}
+.side-info,.center-view,.chart-panel{padding:14px;min-height:470px}
+.panel-title{margin:0 0 10px;font-size:19px}
+.selected-badge{display:inline-flex;padding:6px 11px;border-radius:999px;background:#1976d2;color:#fff;font-weight:1000}
+.big-number{font-size:46px;font-weight:1000;line-height:1;margin-top:16px}.big-sub{color:var(--muted);font-weight:800;margin-top:5px}
+.info-list{display:grid;gap:8px;margin-top:18px}.info-row{display:flex;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:9px;background:rgba(255,255,255,.78);border:1px solid #d0e0e8}.info-row b{font-size:18px}
+.warning-note{margin-top:15px;padding:11px;border-radius:10px;background:#fff1ee;border:1px solid #eb928b;color:#9c332d;font-size:13px;font-weight:800;line-height:1.5}
+.center-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}.center-head h2{margin:0;font-size:21px}.center-head p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.subgroups{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px;max-height:590px;overflow:auto;padding:2px}
+.item-card{
+  --stripe:#1976d2;position:relative;min-height:125px;padding:13px 13px 12px 18px;
+  border:1px solid #cbdde7;border-radius:11px;background:rgba(255,255,255,.88);
+  cursor:pointer;text-align:left;overflow:hidden
+}
+.item-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--stripe)}
+.item-card:hover{border-color:#3694c2;transform:translateY(-2px)}
+.item-name{font-size:18px;font-weight:1000;line-height:1.25}.item-spec{margin-top:5px;color:var(--muted);font-size:12px;min-height:30px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.chip{--mc:#607d8b;padding:3px 7px;border-radius:999px;border:1px solid var(--mc);background:color-mix(in srgb,var(--mc) 13%,#fff);color:color-mix(in srgb,var(--mc) 75%,#17212b);font-size:11px;font-weight:1000}
+.item-meta{display:flex;justify-content:space-between;align-items:end;margin-top:10px}.item-meta strong{font-size:23px;color:#d14a3d}.item-meta span{color:var(--muted);font-size:12px;font-weight:800}
+.empty{min-height:330px;display:grid;place-items:center;border:2px dashed #b9d0dc;border-radius:12px;color:#6b8290;background:rgba(255,255,255,.50);font-size:18px;font-weight:900;text-align:center;padding:20px}
+.chart-title{margin:0;font-size:20px}.chart-sub{margin:3px 0 0;color:var(--muted);font-size:12px}
+.donut-wrap{display:grid;place-items:center;margin-top:22px}.donut{--pie:#d8e2e8;position:relative;width:245px;height:245px;border-radius:50%;background:var(--pie);box-shadow:0 0 0 4px rgba(255,255,255,.82),0 8px 23px rgba(4,42,58,.19)}.donut:after{content:"";position:absolute;inset:49px;border-radius:50%;background:rgba(250,254,255,.96)}.donut-center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center}.donut-center b{font-size:39px}.donut-center small{color:var(--muted);font-weight:800}
+.legend{display:grid;gap:6px;margin-top:18px}.legend-row{display:grid;grid-template-columns:12px 1fr auto;gap:7px;align-items:center;padding:7px 8px;border-radius:8px;background:rgba(255,255,255,.76);border:1px solid #d1e0e8;font-size:12px}.dot{width:11px;height:11px;border-radius:50%}
+.modal{display:none;position:fixed;inset:0;z-index:50;padding:25px;background:rgba(3,24,34,.72);align-items:center;justify-content:center}.modal.show{display:flex}.modal-card{width:min(1150px,96vw);max-height:90vh;overflow:auto;padding:18px;border-radius:16px;background:#fff}.modal-head{display:flex;justify-content:space-between;align-items:start;padding-bottom:11px;border-bottom:1px solid #dbe5ea}.modal-head h3{margin:0}.close{border:0;background:#e8eff3;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:800}
+.detail{width:100%;border-collapse:collapse;margin-top:10px;white-space:nowrap}.detail th,.detail td{padding:8px 9px;border-bottom:1px solid #e3ebef;text-align:left;font-size:12px}.detail th{background:#f2f7fa;position:sticky;top:0}
+@media(max-width:1380px){.group-grid{grid-template-columns:repeat(3,1fr)}.workspace{grid-template-columns:250px 1fr}.chart-panel{grid-column:1/-1}.chart-panel{display:grid;grid-template-columns:280px 1fr;gap:18px}.legend{margin-top:0}}
+@media(max-width:850px){.top{align-items:flex-start}.date-tabs{grid-template-columns:1fr 1fr}.group-grid{grid-template-columns:1fr 1fr}.workspace{grid-template-columns:1fr}.chart-panel{display:block}.subgroups{max-height:none}}
 </style>
 </head>
 <body>
-<header>
-  <div><h1>🌐 溶接工程ボード</h1><p>生地日を基準に、CAD/CAMから溶接までを管理</p></div>
+<header class="top">
+  <div class="title"><h1>🔥 溶接工程管理ボード</h1><p>生地日を基準に、溶接対象を製品グループ別で把握</p></div>
   <div class="actions"><a class="btn" href="index.html">← 新世界へ戻る</a><button class="btn primary" id="refresh">更新</button></div>
 </header>
 <main>
@@ -70,28 +116,34 @@ main{padding:14px 16px 28px}
   <button class="date-tab" data-mode="custom"><div class="label">指定日生地日</div><input type="date" id="customDate"></button>
 </section>
 
-<section class="panel process-panel">
-  <div class="panel-title"><h2>工程進捗 <small>（CAD/CAMから溶接まで）</small></h2><span>工程を選択すると品名別に表示します</span></div>
-  <div class="materials">
-    <div class="material-title">材質<small>品番の先頭文字で分類</small></div>
-    <div class="material iron"><span class="circle">I B</span><span>鉄（品番 I・B）</span></div>
-    <div class="material sus"><span class="circle">S</span><span>SUS（品番 S）</span></div>
-    <div class="material super"><span class="circle">D</span><span>スーパーダイマ（品番 D）</span></div>
-    <div class="material dob"><span class="circle">Z</span><span>ドブ（品番 Z）</span></div>
-  </div>
-  <div class="process-grid" id="processGrid"></div>
+<section class="glass group-board">
+  <div class="board-head"><div><h2>溶接製品グループ</h2><p>工程カードの代わりに、現場が判断しやすい製品分類を表示</p></div><b id="allSummary"></b></div>
+  <div class="group-grid" id="groupGrid"></div>
 </section>
 
-<section class="lower">
-  <div class="panel products">
-    <div class="product-head"><div><h2 id="listTitle">全体・品名一覧</h2><p id="listSub"></p></div><b id="summary"></b></div>
-    <div class="product-grid" id="productGrid"></div>
-  </div>
-  <div class="panel chart">
-    <h2>品名別構成（件数）</h2><p id="chartSub"></p>
-    <div class="donut-wrap"><div class="donut" id="donut"><div class="center"><b id="totalCenter">0</b><small>件 合計</small></div></div></div>
+<section class="workspace">
+  <aside class="glass side-info">
+    <h2 class="panel-title">選択中の情報</h2>
+    <span class="selected-badge" id="selectedBadge">全体</span>
+    <div class="big-number" id="selectedCount">0件</div>
+    <div class="big-sub" id="selectedQty">0点</div>
+    <div class="info-list" id="infoList"></div>
+    <div class="warning-note" id="warningNote" style="display:none">
+      「溶接無かもしれない案件」は、品名ではなく規格に
+      「切り板・プレート・曲げ金物」が含まれる案件だけを抽出しています。
+    </div>
+  </aside>
+
+  <section class="glass center-view">
+    <div class="center-head"><div><h2 id="centerTitle">全体一覧</h2><p id="centerSub"></p></div><b id="centerSummary"></b></div>
+    <div class="subgroups" id="subgroups"></div>
+  </section>
+
+  <aside class="glass chart-panel">
+    <div><h2 class="chart-title">製品グループ構成</h2><p class="chart-sub" id="chartSub"></p></div>
+    <div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutTotal">0</b><small>件 合計</small></div></div></div>
     <div class="legend" id="legend"></div>
-  </div>
+  </aside>
 </section>
 </main>
 
@@ -99,8 +151,15 @@ main{padding:14px 16px 28px}
 
 <script>
 const PROCESS=['CAD/CAM','切断','曲げ','溶接'];
-const COLORS=['#159a58','#1f80d5','#7e57c2','#f57c00','#00a7a0','#d84a76','#8d6e63','#78909c','#c0a000','#5b6fd8'];
-let rows=[], selectedProcess='ALL', selectedDate='';
+const GROUPS=[
+  {key:'box',name:'ボックス',icon:'📦',cls:'g-box',color:'#1976d2'},
+  {key:'duct',name:'ダクト',icon:'🌀',cls:'g-duct',color:'#16a6b6'},
+  {key:'stand',name:'架台',icon:'🏗',cls:'g-stand',color:'#ef8a24'},
+  {key:'frame',name:'貫通枠',icon:'🚪',cls:'g-frame',color:'#7a5cc7'},
+  {key:'cover',name:'カバー',icon:'🛡',cls:'g-cover',color:'#21a467'},
+  {key:'check',name:'溶接無かもしれない案件',icon:'❓',cls:'g-check',color:'#d94b45'}
+];
+let rows=[],selectedGroup='all',selectedDate='';
 
 function pad(n){return String(n).padStart(2,'0')}
 function fmt(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
@@ -113,19 +172,10 @@ function parseCSV(text){
   const out=[];let row=[],cell='',q=false;
   for(let i=0;i<text.length;i++){
     const ch=text[i],nx=text[i+1];
-    if(q){
-      if(ch==='"'&&nx==='"'){cell+='"';i++}
-      else if(ch==='"')q=false;
-      else cell+=ch;
-    }else{
-      if(ch==='"')q=true;
-      else if(ch===','){row.push(cell);cell=''}
-      else if(ch==='\n'){row.push(cell);out.push(row);row=[];cell=''}
-      else if(ch!=='\r')cell+=ch;
-    }
+    if(q){if(ch==='"'&&nx==='"'){cell+='"';i++}else if(ch==='"')q=false;else cell+=ch}
+    else{if(ch==='"')q=true;else if(ch===','){row.push(cell);cell=''}else if(ch==='\n'){row.push(cell);out.push(row);row=[];cell=''}else if(ch!=='\r')cell+=ch}
   }
-  if(cell||row.length){row.push(cell);out.push(row)}
-  return out;
+  if(cell||row.length){row.push(cell);out.push(row)}return out;
 }
 function cleanHeader(s){return String(s||'').replace(/^\uFEFF/,'').trim().replace(/[　\s]/g,'')}
 function processName(v){
@@ -136,6 +186,19 @@ function processName(v){
   if(/溶接|WELD/.test(s))return '溶接';
   return '';
 }
+function classify(r){
+  const name=String(r.name||'').normalize('NFKC');
+  const spec=String(r.spec||'').normalize('NFKC');
+  // Chỉ nhóm này dùng 規格.
+  if(/切り板|プレート|曲げ金物/.test(spec))return 'check';
+  // Các nhóm còn lại giữ cách lọc theo 品名.
+  if(/ダクト/.test(name))return 'duct';
+  if(/架台/.test(name))return 'stand';
+  if(/貫通枠/.test(name))return 'frame';
+  if(/カバー/.test(name))return 'cover';
+  if(/ボックス|BOX|平|被せ|水切り|水切/.test(name))return 'box';
+  return 'other';
+}
 function material(code){
   const c=String(code||'').trim().toUpperCase().charAt(0);
   if(c==='I'||c==='B')return ['鉄','#1976d2'];
@@ -144,131 +207,117 @@ function material(code){
   if(c==='Z')return ['ドブ','#8d6e63'];
   return ['その他','#607d8b'];
 }
-function todayDates(){
-  const a=[];const now=new Date();
-  for(let i=0;i<3;i++){const d=new Date(now);d.setDate(now.getDate()+i);a.push(fmt(d))}
-  return a;
-}
+function todayDates(){const a=[],now=new Date();for(let i=0;i<3;i++){const d=new Date(now);d.setDate(now.getDate()+i);a.push(fmt(d))}return a}
+function eligible(r){return !!r.process&&PROCESS.includes(r.process)}
+function dateRows(){return rows.filter(r=>r.materialDate===selectedDate&&eligible(r))}
+function selectedRows(){const list=dateRows();return selectedGroup==='all'?list:list.filter(r=>r.group===selectedGroup)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
 async function load(){
   try{
     const res=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});
     if(!res.ok)throw new Error('SCV.csvが見つかりません');
     const text=(await res.text()).replace(/^\uFEFF/,'');
-    const matrix=parseCSV(text);
-    const headers=matrix.shift().map(cleanHeader);
-    const idx={};
+    const matrix=parseCSV(text),headers=matrix.shift().map(cleanHeader),idx={};
     headers.forEach((h,i)=>idx[h]=i);
-    const required=['製造指示番号','品番','品名','数量','進捗','生地日'];
+    const required=['製造指示番号','品番','品名','数量','規格','進捗','生地日'];
     const missing=required.filter(k=>idx[k]===undefined);
     if(missing.length)throw new Error('列が見つかりません: '+missing.join('、'));
-    rows=matrix.filter(r=>r.some(v=>String(v).trim())).map(r=>({
-      id:r[idx['製造指示番号']]||'',
-      code:r[idx['品番']]||'',
-      name:r[idx['品名']]||'(品名なし)',
-      qty:Number(String(r[idx['数量']]||'0').replace(/,/g,''))||0,
-      status:r[idx['進捗']]||'',
-      process:processName(r[idx['進捗']]),
-      materialDate:normalizeDate(r[idx['生地日']]),
-      customer:idx['得意先']!==undefined?(r[idx['得意先']]||''):'',
-      owner:idx['担当者']!==undefined?(r[idx['担当者']]||''):''
-    }));
-    const recognized=rows.filter(r=>r.process).length;
-    const dateRecognized=rows.filter(r=>r.materialDate).length;
+    rows=matrix.filter(r=>r.some(v=>String(v).trim())).map(r=>{
+      const obj={
+        id:r[idx['製造指示番号']]||'',code:r[idx['品番']]||'',name:r[idx['品名']]||'(品名なし)',
+        qty:Number(String(r[idx['数量']]||'0').replace(/,/g,''))||0,spec:r[idx['規格']]||'',
+        status:r[idx['進捗']]||'',process:processName(r[idx['進捗']]),materialDate:normalizeDate(r[idx['生地日']]),
+        owner:idx['担当者']!==undefined?(r[idx['担当者']]||''):''
+      };
+      obj.group=classify(obj);return obj;
+    });
+    const recognized=rows.filter(r=>r.process).length,dateRecognized=rows.filter(r=>r.materialDate).length;
     document.getElementById('notice').textContent=`✓ SCV.csvから${rows.length.toLocaleString()}件を読み込みました。工程認識 ${recognized.toLocaleString()}件 ／ 生地日認識 ${dateRecognized.toLocaleString()}件`;
     initDates();render();
-  }catch(e){
-    document.getElementById('notice').textContent='⚠ '+e.message;
-  }
+  }catch(e){document.getElementById('notice').textContent='⚠ '+e.message}
 }
 function initDates(){
-  const ds=todayDates();
-  ['d0','d1','d2'].forEach((id,i)=>document.getElementById(id).textContent=ds[i]);
-  document.getElementById('customDate').value=ds[0];
-  selectedDate=ds[0];
-  updateDateCounts();
+  const ds=todayDates();['d0','d1','d2'].forEach((id,i)=>document.getElementById(id).textContent=ds[i]);
+  document.getElementById('customDate').value=ds[0];selectedDate=ds[0];updateDateCounts();
 }
-function eligible(r){return !!r.process && PROCESS.includes(r.process)}
 function updateDateCounts(){
-  const ds=todayDates();
-  ['c0','c1','c2'].forEach((id,i)=>{
-    document.getElementById(id).textContent=rows.filter(r=>r.materialDate===ds[i]&&eligible(r)).length;
-  });
+  const ds=todayDates();['c0','c1','c2'].forEach((id,i)=>document.getElementById(id).textContent=rows.filter(r=>r.materialDate===ds[i]&&eligible(r)).length)
 }
-function currentRows(){
-  return rows.filter(r=>r.materialDate===selectedDate&&eligible(r)&&(
-    selectedProcess==='ALL'||r.process===selectedProcess
-  ));
-}
-function render(){
-  renderProcess();renderProducts();
-}
-function renderProcess(){
-  const dateRows=rows.filter(r=>r.materialDate===selectedDate&&eligible(r));
-  const counts=Object.fromEntries(PROCESS.map(p=>[p,dateRows.filter(r=>r.process===p).length]));
-  const total=dateRows.length;
-  const cards=[
-    ['ALL','全体',total,'total'],['CAD/CAM','CAD/CAM',counts['CAD/CAM'],'p0'],
-    ['切断','切断',counts['切断'],'p1'],['曲げ','曲げ',counts['曲げ'],'p2'],['溶接','溶接',counts['溶接'],'p3']
-  ];
-  let h=cards.map(([key,label,n,cl])=>`<button class="process-card ${cl} ${selectedProcess===key?'active':''}" data-p="${key}"><div class="head">${label}</div><div class="value">${n}件</div><div class="sub">${dateRows.filter(r=>key==='ALL'||r.process===key).reduce((s,r)=>s+r.qty,0)}点</div><div class="bar"><div class="fill" style="width:${total?Math.max(4,n/total*100):0}%"></div></div></button>`).join('');
-  ['仕上げ','塗装','組立'].forEach(x=>h+=`<div class="process-card disabled"><div class="head">${x}</div><div class="stamp">対象外</div></div>`);
-  const grid=document.getElementById('processGrid');grid.innerHTML=h;
-  grid.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{selectedProcess=b.dataset.p;render()});
-}
-function groupRows(list){
-  const m=new Map();
-  list.forEach(r=>{
-    const key=r.name.trim()||'(品名なし)';
-    if(!m.has(key))m.set(key,{name:key,rows:[],qty:0,mats:new Map()});
-    const g=m.get(key);g.rows.push(r);g.qty+=r.qty;
-    const [mn,mc]=material(r.code);g.mats.set(mn,mc);
-  });
-  return [...m.values()].sort((a,b)=>b.rows.length-a.rows.length||a.name.localeCompare(b.name,'ja'));
-}
-function renderProducts(){
-  const list=currentRows(), groups=groupRows(list);
-  const title=selectedProcess==='ALL'?'全体・品名一覧':selectedProcess+'・品名一覧';
-  document.getElementById('listTitle').textContent=title;
-  document.getElementById('listSub').textContent=`生地日 ${selectedDate} ／ 同じ形状は材質違いでもまとめて表示`;
-  document.getElementById('summary').textContent=`${groups.length}種類・${list.length}件・${list.reduce((s,r)=>s+r.qty,0)}点`;
-  document.getElementById('chartSub').textContent=`${selectedProcess==='ALL'?'全体':selectedProcess}／生地日 ${selectedDate}／件数比率`;
-  const box=document.getElementById('productGrid');
-  if(!groups.length){box.innerHTML='<div class="empty">対象データはありません</div>'}
-  else box.innerHTML=groups.map((g,i)=>{
-    const first=[...g.mats.values()][0]||'#607d8b';
-    const badges=[...g.mats.entries()].map(([n,c])=>`<span class="badge" style="--mc:${c}">${n}</span>`).join('');
-    return `<button class="product-card" style="--stripe:${first}" data-i="${i}"><div class="product-name">${esc(g.name)}</div><div class="badges">${badges}</div><div class="meta"><div class="count">${g.rows.length}件</div><div class="qty">${g.qty}点</div></div></button>`;
+function render(){renderGroups();renderInfo();renderCenter();renderChart()}
+function renderGroups(){
+  const list=dateRows(),totalQty=list.reduce((s,r)=>s+r.qty,0);
+  document.getElementById('allSummary').textContent=`全体 ${list.length}件・${totalQty}点`;
+  document.getElementById('groupGrid').innerHTML=GROUPS.map(g=>{
+    const sub=list.filter(r=>r.group===g.key),qty=sub.reduce((s,r)=>s+r.qty,0);
+    return `<button class="group-card ${g.cls} ${selectedGroup===g.key?'active':''}" data-g="${g.key}"><div class="ghead">${g.icon} ${g.name}</div><div class="gcount">${sub.length}件</div><div class="gqty">${qty}点</div></button>`
   }).join('');
-  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openModal(groups[Number(b.dataset.i)]));
-  renderChart(groups,list.length);
+  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{selectedGroup=b.dataset.g;render()});
 }
-function renderChart(groups,total){
-  const donut=document.getElementById('donut'), legend=document.getElementById('legend');
-  document.getElementById('totalCenter').textContent=total;
+function groupLabel(){
+  if(selectedGroup==='all')return {name:'全体',color:'#19738c'};
+  return GROUPS.find(g=>g.key===selectedGroup)||{name:'その他',color:'#607d8b'};
+}
+function renderInfo(){
+  const list=selectedRows(),g=groupLabel(),qty=list.reduce((s,r)=>s+r.qty,0);
+  const badge=document.getElementById('selectedBadge');badge.textContent=g.name;badge.style.background=g.color;
+  document.getElementById('selectedCount').textContent=`${list.length}件`;
+  document.getElementById('selectedQty').textContent=`${qty}点`;
+  const mats=new Map(),procs=new Map();
+  list.forEach(r=>{const [m]=material(r.code);mats.set(m,(mats.get(m)||0)+1);procs.set(r.process,(procs.get(r.process)||0)+1)});
+  const rowsHtml=[
+    ...[...mats.entries()].sort((a,b)=>b[1]-a[1]).slice(0,4).map(([n,v])=>`<div class="info-row"><span>${n}</span><b>${v}件</b></div>`),
+    ...[...procs.entries()].sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<div class="info-row"><span>${n}</span><b>${v}件</b></div>`)
+  ];
+  document.getElementById('infoList').innerHTML=rowsHtml.join('')||'<div class="info-row"><span>対象データ</span><b>0件</b></div>';
+  document.getElementById('warningNote').style.display=selectedGroup==='check'?'block':'none';
+}
+function groupProducts(list){
+  const map=new Map();
+  list.forEach(r=>{
+    const key=`${r.name}|||${r.spec}`;
+    if(!map.has(key))map.set(key,{name:r.name,spec:r.spec,rows:[],qty:0,mats:new Map()});
+    const x=map.get(key);x.rows.push(r);x.qty+=r.qty;const [mn,mc]=material(r.code);x.mats.set(mn,mc)
+  });
+  return [...map.values()].sort((a,b)=>b.rows.length-a.rows.length||a.name.localeCompare(b.name,'ja'))
+}
+function renderCenter(){
+  const list=selectedRows(),items=groupProducts(list),g=groupLabel();
+  document.getElementById('centerTitle').textContent=`${g.name} 一覧`;
+  document.getElementById('centerSub').textContent=`生地日 ${selectedDate} ／ 品名・規格単位でまとめて表示`;
+  document.getElementById('centerSummary').textContent=`${items.length}種類`;
+  const box=document.getElementById('subgroups');
+  if(!items.length){box.innerHTML='<div class="empty">対象データはありません</div>';return}
+  box.innerHTML=items.map((x,i)=>{
+    const first=[...x.mats.values()][0]||g.color;
+    const chips=[...x.mats.entries()].map(([n,c])=>`<span class="chip" style="--mc:${c}">${n}</span>`).join('');
+    return `<button class="item-card" style="--stripe:${first}" data-i="${i}"><div class="item-name">${esc(x.name)}</div><div class="item-spec">${esc(x.spec||'規格なし')}</div><div class="chips">${chips}</div><div class="item-meta"><strong>${x.rows.length}件</strong><span>${x.qty}点</span></div></button>`
+  }).join('');
+  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openModal(items[Number(b.dataset.i)]))
+}
+function renderChart(){
+  const list=dateRows(),counts=GROUPS.map(g=>({g,n:list.filter(r=>r.group===g.key).length})),total=counts.reduce((s,x)=>s+x.n,0);
+  document.getElementById('donutTotal').textContent=total;
+  document.getElementById('chartSub').textContent=`生地日 ${selectedDate} ／ 件数比率`;
+  const donut=document.getElementById('donut'),legend=document.getElementById('legend');
   if(!total){donut.style.setProperty('--pie','#d8e2e8');legend.innerHTML='<div class="legend-row"><span class="dot" style="background:#d8e2e8"></span><span>対象データなし</span><b>0</b></div>';return}
   let start=0,parts=[];
-  groups.slice(0,9).forEach((g,i)=>{const end=start+g.rows.length/total*100;parts.push(`${COLORS[i%COLORS.length]} ${start}% ${end}%`);start=end});
-  if(start<100)parts.push(`#cfd8dc ${start}% 100%`);
+  counts.forEach(({g,n})=>{const end=start+n/total*100;parts.push(`${g.color} ${start}% ${end}%`);start=end});
   donut.style.setProperty('--pie',`conic-gradient(${parts.join(',')})`);
-  legend.innerHTML=groups.slice(0,9).map((g,i)=>`<div class="legend-row"><span class="dot" style="background:${COLORS[i%COLORS.length]}"></span><span>${esc(g.name)}</span><b>${g.rows.length}</b></div>`).join('');
-  if(groups.length>9)legend.innerHTML+=`<div class="legend-row"><span class="dot" style="background:#cfd8dc"></span><span>その他</span><b>${groups.slice(9).reduce((s,g)=>s+g.rows.length,0)}</b></div>`;
+  legend.innerHTML=counts.map(({g,n})=>`<div class="legend-row"><span class="dot" style="background:${g.color}"></span><span>${g.name}</span><b>${n}</b></div>`).join('')
 }
-function openModal(g){
-  document.getElementById('modalTitle').textContent=g.name;
-  document.getElementById('modalBody').innerHTML=`<table class="detail"><thead><tr><th>製造指示番号</th><th>品番</th><th>材質</th><th>進捗</th><th>数量</th><th>担当者</th></tr></thead><tbody>${g.rows.map(r=>`<tr><td>${esc(r.id)}</td><td>${esc(r.code)}</td><td>${material(r.code)[0]}</td><td>${esc(r.status)}</td><td>${r.qty}</td><td>${esc(r.owner)}</td></tr>`).join('')}</tbody></table>`;
-  document.getElementById('modal').classList.add('show');
+function openModal(x){
+  document.getElementById('modalTitle').textContent=`${x.name}｜${x.spec||'規格なし'}`;
+  document.getElementById('modalBody').innerHTML=`<table class="detail"><thead><tr><th>製造指示番号</th><th>品番</th><th>材質</th><th>規格</th><th>進捗</th><th>数量</th><th>担当者</th></tr></thead><tbody>${x.rows.map(r=>`<tr><td>${esc(r.id)}</td><td>${esc(r.code)}</td><td>${material(r.code)[0]}</td><td>${esc(r.spec)}</td><td>${esc(r.status)}</td><td>${r.qty}</td><td>${esc(r.owner)}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('modal').classList.add('show')
 }
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.querySelectorAll('.date-tab').forEach((b,i)=>b.onclick=e=>{
   if(e.target.tagName==='INPUT')return;
   document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');
-  selectedDate=i<3?todayDates()[i]:document.getElementById('customDate').value;
-  render();
+  selectedDate=i<3?todayDates()[i]:document.getElementById('customDate').value;selectedGroup='all';render()
 });
 document.getElementById('customDate').onchange=e=>{
-  selectedDate=e.target.value;selectedProcess='ALL';
-  document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));
-  e.target.closest('.date-tab').classList.add('active');render();
+  selectedDate=e.target.value;selectedGroup='all';document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));e.target.closest('.date-tab').classList.add('active');render()
 };
 document.getElementById('refresh').onclick=load;
 document.getElementById('close').onclick=()=>document.getElementById('modal').classList.remove('show');
