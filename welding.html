@@ -25,10 +25,45 @@ main{padding:18px 22px 30px;min-height:calc(100vh - 74px)}
 .modal{display:none;position:fixed;inset:0;z-index:20;padding:25px;background:rgba(0,0,0,.72);align-items:center;justify-content:center}.modal.show{display:flex}.modal-card{width:min(1050px,96vw);max-height:90vh;overflow:auto;border-radius:19px;background:#fff;box-shadow:0 25px 80px #000;padding:20px}.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:start;border-bottom:1px solid var(--line);padding-bottom:13px}.modal-head h3{margin:0;font-size:25px}.close{border:0;background:#e9eef1;border-radius:9px;padding:8px 13px;font-size:18px;cursor:pointer}.detail-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.detail-box{padding:12px;border:1px solid var(--line);border-radius:10px;background:#f7fafb}.detail-box small{color:#6d7b86}.detail-box b{display:block;margin-top:4px;font-size:18px}.detail-list{display:grid;gap:8px}.detail-row{display:grid;grid-template-columns:1.2fr 1fr 1.6fr .6fr 1fr 1fr;gap:8px;padding:10px;border-bottom:1px solid #e7ecef;align-items:center}.status{display:inline-block;padding:4px 8px;border-radius:20px;background:#ffe3df;color:#aa2c20;font-weight:800;text-align:center}
 @media(max-width:1250px){.dashboard-row{grid-template-columns:1fr}.process-grid{grid-template-columns:repeat(4,1fr)}.date-tabs{grid-template-columns:repeat(2,1fr)}.product-chart{display:grid;grid-template-columns:220px 1fr;align-items:center}.pie-legend{max-height:210px}}
 @media(max-width:700px){.product-chart{display:block}.product-pie{width:180px;height:180px}.top-material-legend{gap:7px}.top-material-legend .legend-title{width:100%}header{height:auto;padding:14px;align-items:flex-start}header p{display:none}.actions{flex-direction:column}.date-tabs{grid-template-columns:1fr 1fr}.process-grid{grid-template-columns:1fr 1fr}.detail-summary{grid-template-columns:1fr 1fr}.detail-row{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr}main{padding:12px}.date-tab .count{font-size:21px}}
+
+/* ===== 溶接工程ボード・最終レイアウト ===== */
+:root{--panel:#0c1c29;--panel2:#102636}
+body{background:#07131d;color:#eef7ff}
+body:before{background:radial-gradient(circle at 86% 8%,rgba(255,91,31,.18),transparent 24%),linear-gradient(rgba(2,12,20,.50),rgba(2,12,20,.80)),repeating-linear-gradient(135deg,#112431 0 28px,#0b1b27 28px 56px)}
+body:after{content:"";right:0;top:0;width:42%;height:180px;background:radial-gradient(circle at 78% 30%,rgba(255,111,33,.35),transparent 28%);font-size:0}
+header{height:86px;padding:0 30px;background:linear-gradient(90deg,#06131d,#0b1a25 72%,#24110c);border-bottom:1px solid #cb4a22}
+header h1{font-size:30px;letter-spacing:.02em}.weld-icon{filter:drop-shadow(0 0 8px #3db8ff)}
+header p{font-size:14px;color:#e5edf3}
+main{padding:14px 18px 28px}.notice{background:rgba(9,21,31,.94);border-color:#a43a2d;color:#fff;font-size:15px}
+.date-tabs{gap:14px}.date-tab{min-height:88px;padding:16px 18px;background:linear-gradient(145deg,#0b1c2a,#0b1722);border:1px solid #32495a;box-shadow:0 6px 15px #0006}
+.date-tab:nth-child(1){border-color:#147bd0}.date-tab:nth-child(2){border-color:#15966f}.date-tab:nth-child(3){border-color:#825cc8}.date-tab:nth-child(4){border-color:#e18200}
+.date-tab .label{font-size:20px}.date-tab .count{font-size:31px}.date-tab .date{color:#d9e6ef}
+.process-board{padding:14px 16px 17px;background:linear-gradient(145deg,rgba(9,25,36,.98),rgba(8,18,28,.98));border:1px solid #284255;color:#fff;box-shadow:0 12px 35px #0008}
+.board-title{margin-bottom:10px}.board-title h2{font-size:22px}.board-title h2 small{font-size:15px;color:#d5e1e9}.board-title span{color:#a9bdca}
+.top-material-legend{display:grid;grid-template-columns:240px repeat(4,1fr);gap:0;margin:0 0 14px;padding:0;background:transparent;border:1px solid #28465a;border-radius:14px;overflow:hidden;box-shadow:none}
+.top-material-legend .legend-title{display:flex;flex-direction:column;justify-content:center;padding:12px 18px;background:#0b1d2b;color:#fff;font-size:19px}
+.top-material-legend .legend-title small{font-size:12px;color:#a9bdca;margin-top:3px}
+.top-material-legend .material-chip{min-height:78px;border:0;border-left:1px solid #28465a;border-radius:0;background:#0a1925;color:#fff;padding:10px 18px;justify-content:flex-start}
+.top-material-legend .material-chip:before{display:none}.top-material-legend .material-chip>b{display:grid;place-items:center;min-width:48px;height:48px;border-radius:50%;background:var(--mc);font-size:23px;color:#fff}
+.top-material-legend .material-chip>span{font-size:16px;font-weight:900;color:color-mix(in srgb,var(--mc) 70%,#fff)}
+.process-grid{grid-template-columns:repeat(8,minmax(140px,1fr));gap:12px}.process-card{min-height:140px;background:linear-gradient(180deg,#102738,#0a1b28);color:#fff;border-width:2px;box-shadow:0 5px 0 color-mix(in srgb,var(--c) 60%,#00101c)}
+.process-card .head{font-size:18px;background:color-mix(in srgb,var(--c) 68%,#06131d);padding:10px}.process-card .value{font-size:30px;margin-top:17px}.process-card .sub{color:#c0cfda}
+.process-card.disabled{background:linear-gradient(180deg,#292f34,#1c2227);opacity:.72}.stamp{font-size:22px;background:rgba(15,19,23,.82);color:#ff574d;border-color:#ff574d}
+.lower-dashboard{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(430px,.65fr);gap:14px;margin-top:14px}
+.product-area{margin-top:0;min-height:410px;padding:16px;background:rgba(6,22,33,.95);border-color:#28465a}.product-head h2{font-size:24px}
+.product-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px}.product-card{min-height:138px;padding:14px;background:linear-gradient(145deg,#102638,#0b1c29);border-color:#38586e;color:#fff;box-shadow:none}
+.product-card:hover{border-color:#62b8ef;background:#123047}.product-name{font-size:19px}.product-part{color:#a8bfce}.product-qty{color:#b7c8d2}.product-count{color:#fff;font-size:25px}
+.material-badge{color:#fff!important;background:color-mix(in srgb,var(--mc) 75%,#10202b)!important;border-color:var(--mc)!important}
+.product-chart{padding:18px;background:rgba(7,23,34,.97);border-color:#28465a;color:#fff;box-shadow:none}.chart-title{font-size:23px}.chart-sub{color:#a8bdca;font-size:13px}
+.product-pie{width:290px;height:290px;box-shadow:0 0 0 3px #e7f4ff,0 0 28px #42a9df55}.product-pie:after{inset:55px;background:#0b1d2b}
+.pie-center{color:#fff}.pie-center b{font-size:44px}.pie-center small{color:#b9cbd6}.pie-legend{max-height:250px;gap:8px}.pie-item{background:#0e2637;color:#fff;border:1px solid #29495d;padding:8px;font-size:14px}.pie-value{color:#fff}
+@media(max-width:1500px){.process-grid{grid-template-columns:repeat(4,1fr)}.top-material-legend{grid-template-columns:180px repeat(4,1fr)}}
+@media(max-width:1100px){.lower-dashboard{grid-template-columns:1fr}.top-material-legend{grid-template-columns:1fr 1fr}.top-material-legend .legend-title{grid-column:1/-1}.process-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){.top-material-legend{grid-template-columns:1fr}.top-material-legend .legend-title{grid-column:auto}.process-grid{grid-template-columns:1fr 1fr}.product-pie{width:220px;height:220px}.product-pie:after{inset:44px}}
 </style>
 </head>
 <body>
-<header><div><h1>🔥 溶接工程ボード</h1><p>生地日を基準に、CAD/CAMから溶接までを管理</p></div><div class="actions"><a class="btn" href="index.html">← 新世界へ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
+<header><div><h1><span class="weld-icon">🥽</span> 溶接工程ボード</h1><p>生地日を基準に、CAD/CAMから溶接までを管理</p></div><div class="actions"><a class="btn" href="index.html">← 新世界へ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
 <main>
 <div class="notice" id="notice"><span>SCV.csvを読み込み中です。</span><button onclick="this.parentElement.remove()">×</button></div>
 <section class="date-tabs">
@@ -37,9 +72,13 @@ main{padding:18px 22px 30px;min-height:calc(100vh - 74px)}
 <button class="date-tab" data-date-mode="after"><div class="label">明後日生地</div><div class="date" id="dateAfter"></div><div class="count" id="countAfter">0</div></button>
 <button class="date-tab" data-date-mode="specified"><div class="label">指定日生地日</div><input type="date" id="specifiedDate"><div class="count" id="countSpecified">0</div></button>
 </section>
-<section class="top-material-legend"><span class="legend-title">材質カラー</span><span class="material-chip material-iron">鉄（品番 I・B）</span><span class="material-chip material-sus">SUS（品番 S）</span><span class="material-chip material-super">スーパーダイマ（品番 D）</span><span class="material-chip material-dob">ドブ（品番 Z）</span></section>
-<div class="dashboard-row"><section class="process-board"><div class="board-title"><h2>工程進捗</h2><span>工程を選択すると品名別に表示します</span></div><div class="process-grid" id="processGrid"></div></section><section class="product-chart"><div class="chart-title">品名別構成</div><div class="chart-sub" id="chartSub">選択中の工程を件数で表示</div><div class="pie-wrap"><div class="product-pie" id="productPie"><div class="pie-center"><b id="pieTotal">0</b><small>件</small></div></div><div class="pie-legend" id="pieLegend"></div></div></section></div>
+<section class="process-board"><div class="board-title"><h2>工程進捗 <small>（CAD/CAMから溶接まで）</small></h2><span>工程を選択すると品名別に表示します</span></div>
+<section class="top-material-legend"><span class="legend-title">材質 <small>（品番の先頭文字で分類）</small></span><span class="material-chip material-iron"><b>I B</b><span>鉄（品番 I・B）</span></span><span class="material-chip material-sus"><b>S</b><span>SUS（品番 S）</span></span><span class="material-chip material-super"><b>D</b><span>スーパーダイマ（品番 D）</span></span><span class="material-chip material-dob"><b>Z</b><span>ドブ（品番 Z）</span></span></section>
+<div class="process-grid" id="processGrid"></div></section>
+<div class="lower-dashboard">
 <section class="product-area"><div class="product-head"><div><h2 id="productTitle">全体・品名一覧</h2><p id="productSub">同じ形状は材質が違っても1つにまとめて表示します</p></div><div><b id="resultSummary">0件</b></div></div><div class="product-grid" id="productGrid"></div></section>
+<section class="product-chart"><div class="chart-title">品名別構成（件数）</div><div class="chart-sub" id="chartSub">選択中の工程を件数で表示</div><div class="pie-wrap"><div class="product-pie" id="productPie"><div class="pie-center"><b id="pieTotal">0</b><small>件 合計</small></div></div><div class="pie-legend" id="pieLegend"></div></div></section>
+</div>
 </main>
 <div class="modal" id="modal"><div class="modal-card"><div class="modal-head"><div><h3 id="modalTitle"></h3><div id="modalPart"></div></div><button class="close" id="closeModal">×</button></div><div class="detail-summary" id="detailSummary"></div><div class="detail-list" id="detailList"></div></div></div>
 <script>
@@ -50,22 +89,60 @@ const processOrder=['CAD/CAM','切断','曲げ','溶接'];
 const allCards=['全体','CAD/CAM','切断','曲げ','溶接','仕上げ','塗装','組立'];
 function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function dates(){const t=new Date();t.setHours(0,0,0,0);const d1=new Date(t),d2=new Date(t);d1.setDate(t.getDate()+1);d2.setDate(t.getDate()+2);return{today:localDate(t),tomorrow:localDate(d1),after:localDate(d2)}}
-function excelDate(v){if(!v)return'';if(v instanceof Date)return localDate(v);if(typeof v==='number')return localDate(new Date(Math.round((v-25569)*86400000)));const s=String(v).trim().replaceAll('/','-');let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:s.slice(0,10)}
+function excelDate(v){
+  if(v===null||v===undefined||v==='')return'';
+  if(v instanceof Date&&!isNaN(v))return localDate(v);
+  if(typeof v==='number'||/^\d{5}(?:\.\d+)?$/.test(String(v).trim())){
+    const n=Number(v);if(n>20000&&n<80000)return localDate(new Date(Math.round((n-25569)*86400000)));
+  }
+  const s=String(v).trim().replace(/[年月]/g,'-').replace(/日/g,'').replace(/[\.\/]/g,'-');
+  const m=s.match(/(20\d{2})\D+(\d{1,2})\D+(\d{1,2})/);
+  return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:'';
+}
 function materialInfo(part){const c=String(part||'').trim().charAt(0).toUpperCase();if(c==='I'||c==='B')return{key:'iron',label:'鉄',cls:'material-iron',color:'#1976d2'};if(c==='S')return{key:'sus',label:'SUS',cls:'material-sus',color:'#00897b'};if(c==='D')return{key:'super',label:'スーパーダイマ',cls:'material-super',color:'#7e57c2'};if(c==='Z')return{key:'dob',label:'ドブ',cls:'material-dob',color:'#8d6e63'};return{key:'other',label:'その他',cls:'material-other',color:'#607d8b'}}
 function productFamily(name){let s=String(name||'').trim().replace(/^(SUS|ＳＵＳ|鉄|国土|ZN|ＺＮ|ドブ|スーパーダイマ|Sダイマ|Ｓダイマ|ダイマ)[\s　]*/i,'');s=s.replace(/[\s　]+/g,' ').trim();return s||'品名未設定'}
-function normalize(o){const part=String(o['品番']||'').trim(),name=String(o['品名']||'').trim()||'品名未設定';return{id:String(o['製造指示番号']||'').trim(),part,name,family:productFamily(name),material:materialInfo(part),standard:String(o['規格']||'').trim(),qty:Number(String(o['数量']||0).replaceAll(',',''))||0,materialDate:excelDate(o['生地日']),shipDate:excelDate(o['出荷日']),due:excelDate(o['製造期限']),status:String(o['進捗']||'').trim(),owner:String(o['担当者']||'').trim(),ship:String(o['配送便']||'').trim()}}
+function normalizeKeys(o){const n={};Object.entries(o||{}).forEach(([k,v])=>n[String(k).replace(/^\uFEFF/,'').replace(/[\s　]/g,'').trim()]=v);return n}
+function pick(o,...keys){for(const k of keys){const nk=String(k).replace(/[\s　]/g,'');if(o[nk]!==undefined&&o[nk]!==null&&String(o[nk]).trim()!=='')return o[nk]}return''}
+function normalize(src){const o=normalizeKeys(src);const part=String(pick(o,'品番','品番コード','商品コード')).trim(),name=String(pick(o,'品名','商品名')).trim()||'品名未設定';return{id:String(pick(o,'製造指示番号','指示番号','製造番号')).trim(),part,name,family:productFamily(name),material:materialInfo(part),standard:String(pick(o,'規格','仕様')).trim(),qty:Number(String(pick(o,'数量','数量(点)','数量（点）')||0).replace(/,/g,''))||0,materialDate:excelDate(pick(o,'生地日','生地日付','生地予定日')),shipDate:excelDate(pick(o,'出荷日')),due:excelDate(pick(o,'製造期限')),status:String(pick(o,'進捗','工程','現在工程','進捗状況')).trim(),owner:String(pick(o,'担当者','担当')).trim(),ship:String(pick(o,'配送便')).trim()}}
 function selectedDate(){const ds=dates();return dateMode==='specified'?$('specifiedDate').value:ds[dateMode]}
-function stageIndex(s){return processOrder.indexOf(s)}
+function processName(s){
+  const v=String(s||'').replace(/[\s　]/g,'');
+  if(/CAD|CAM/i.test(v))return 'CAD/CAM';
+  if(/切断|水切|レーザー|パンチ/.test(v))return '切断';
+  if(/曲げ|ベンダ/.test(v))return '曲げ';
+  if(/溶接/.test(v))return '溶接';
+  if(/仕上/.test(v))return '仕上げ';
+  if(/塗装/.test(v))return '塗装';
+  if(/組立/.test(v))return '組立';
+  return '';
+}
+function stageIndex(s){return processOrder.indexOf(processName(s))}
 function baseRowsForDate(date){return rows.filter(r=>r.materialDate===date&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'))}
-function processRows(base,p){if(p==='全体')return base.filter(r=>stageIndex(r.status)>=0);return base.filter(r=>r.status===p)}
+function processRows(base,p){if(p==='全体')return base.filter(r=>stageIndex(r.status)>=0);return base.filter(r=>processName(r.status)===p)}
 function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function updateDateLabels(){const ds=dates();$('dateToday').textContent=ds.today;$('dateTomorrow').textContent=ds.tomorrow;$('dateAfter').textContent=ds.after;if(!$('specifiedDate').value)$('specifiedDate').value=ds.today;for(const [key,id] of [['today','countToday'],['tomorrow','countTomorrow'],['after','countAfter']])$(id).textContent=fmt(baseRowsForDate(ds[key]).filter(r=>stageIndex(r.status)>=0).length);$('countSpecified').textContent=fmt(baseRowsForDate($('specifiedDate').value).filter(r=>stageIndex(r.status)>=0).length)}
-function renderProcesses(){const base=baseRowsForDate(selectedDate());const relevant=base.filter(r=>stageIndex(r.status)>=0);const max=Math.max(1,...processOrder.map(p=>base.filter(r=>r.status===p).length));$('processGrid').innerHTML=allCards.map((p,i)=>{const disabled=i>=5;const count=p==='全体'?relevant.length:disabled?0:base.filter(r=>r.status===p).length;const qty=p==='全体'?relevant.reduce((a,r)=>a+r.qty,0):disabled?0:base.filter(r=>r.status===p).reduce((a,r)=>a+r.qty,0);const cls=p==='全体'?'total':i>0&&i<5?`p${i-1}`:'';return `<button class="process-card ${cls} ${disabled?'disabled':''} ${selectedProcess===p?'active':''}" data-process="${p}" ${disabled?'disabled':''}><div class="head">${p}</div>${disabled?'<div class="stamp">対象外</div>':`<div class="value">${fmt(count)}件</div><div class="sub">${fmt(qty)}点</div><div class="bar"><div class="fill" style="width:${p==='全体'?100:count/max*100}%"></div></div>`}</button>`}).join('')}
+function renderProcesses(){const base=baseRowsForDate(selectedDate());const relevant=base.filter(r=>stageIndex(r.status)>=0);const max=Math.max(1,...processOrder.map(p=>base.filter(r=>processName(r.status)===p).length));$('processGrid').innerHTML=allCards.map((p,i)=>{const disabled=i>=5;const count=p==='全体'?relevant.length:disabled?0:base.filter(r=>processName(r.status)===p).length;const qty=p==='全体'?relevant.reduce((a,r)=>a+r.qty,0):disabled?0:base.filter(r=>processName(r.status)===p).reduce((a,r)=>a+r.qty,0);const cls=p==='全体'?'total':i>0&&i<5?`p${i-1}`:'';return `<button class="process-card ${cls} ${disabled?'disabled':''} ${selectedProcess===p?'active':''}" data-process="${p}" ${disabled?'disabled':''}><div class="head">${p}</div>${disabled?'<div class="stamp">対象外</div>':`<div class="value">${fmt(count)}件</div><div class="sub">${fmt(qty)}点</div><div class="bar"><div class="fill" style="width:${p==='全体'?100:count/max*100}%"></div></div>`}</button>`}).join('')}
 function renderProductChart(data){const counts=new Map();data.forEach(r=>counts.set(r.family,(counts.get(r.family)||0)+1));let items=[...counts.entries()].sort((a,b)=>b[1]-a[1]);if(items.length>8){const other=items.slice(7).reduce((a,x)=>a+x[1],0);items=[...items.slice(0,7),['その他',other]]}const total=data.length;const colors=['#e53935','#1976d2','#00897b','#f57c00','#7e57c2','#d4a900','#546e7a','#ec6cb9'];let pos=0;const stops=items.map(([name,val],i)=>{const start=total?pos/total*100:0;pos+=val;const end=total?pos/total*100:0;return `${colors[i%colors.length]} ${start}% ${end}%`});$('productPie').style.setProperty('--pie',stops.length?`conic-gradient(${stops.join(',')})`:'#d9e1e6');$('pieTotal').textContent=fmt(total);$('chartSub').textContent=`${selectedProcess} ／ 生地日 ${selectedDate()} ／ 件数比率`;$('pieLegend').innerHTML=items.length?items.map(([name,val],i)=>`<div class="pie-item"><span class="pie-dot" style="--pc:${colors[i%colors.length]}"></span><span class="pie-name" title="${escapeHtml(name)}">${escapeHtml(name)}</span><span class="pie-value">${fmt(val)}件</span></div>`).join(''):'<div class="pie-item"><span></span><span class="pie-name">対象データなし</span><span></span></div>'}
 function renderProducts(){const base=baseRowsForDate(selectedDate());const data=processRows(base,selectedProcess);renderProductChart(data);const groups=new Map();data.forEach(r=>{const key=r.family;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r)});$('productTitle').textContent=`${selectedProcess}・品名一覧`;$('productSub').textContent=`生地日 ${selectedDate()} ／ 同じ形状は材質違いでもまとめて表示`;$('resultSummary').textContent=`${fmt(groups.size)}種類・${fmt(data.length)}件・${fmt(data.reduce((a,r)=>a+r.qty,0))}点`;$('productGrid').innerHTML=groups.size?[...groups.entries()].sort((a,b)=>b[1].length-a[1].length).map(([family,list])=>{const mats=new Map();list.forEach(r=>{const k=r.material.key;if(!mats.has(k))mats.set(k,{...r.material,count:0,qty:0});const m=mats.get(k);m.count++;m.qty+=r.qty});const badges=[...mats.values()].map(m=>`<span class="material-badge ${m.cls}" style="--mc:${m.color}">${m.label} ${fmt(m.count)}件</span>`).join('');const stripe=[...mats.values()].map(m=>m.color).join(',');return `<button class="product-card" style="--stripe:${stripe.includes(',')?`linear-gradient(to bottom,${[...mats.values()].map((m,i,a)=>`${m.color} ${i/a.length*100}% ${(i+1)/a.length*100}%`).join(',')})`:stripe}" data-key="${escapeHtml(encodeURIComponent(family))}"><div class="product-name">${escapeHtml(family)}</div><div class="product-part">材質別にまとめて表示</div><div class="material-list">${badges}</div><div class="product-meta"><div class="product-count">${fmt(list.length)}件</div><div class="product-qty">${fmt(list.reduce((a,r)=>a+r.qty,0))}点</div></div></button>`}).join(''):'<div class="empty">対象データはありません</div>'}
 function render(){updateDateLabels();renderProcesses();renderProducts();document.querySelectorAll('.date-tab').forEach(b=>b.classList.toggle('active',b.dataset.dateMode===dateMode))}
 function openDetails(key){const base=processRows(baseRowsForDate(selectedDate()),selectedProcess);const family=decodeURIComponent(key);const list=base.filter(r=>r.family===family);const mats=[...new Set(list.map(r=>r.material.label))].join('・');$('modalTitle').textContent=family;$('modalPart').textContent=`材質：${mats||'未分類'}`;$('detailSummary').innerHTML=`<div class="detail-box"><small>対象件数</small><b>${fmt(list.length)}件</b></div><div class="detail-box"><small>合計数量</small><b>${fmt(list.reduce((a,r)=>a+r.qty,0))}点</b></div><div class="detail-box"><small>生地日</small><b>${selectedDate()}</b></div><div class="detail-box"><small>選択工程</small><b>${selectedProcess}</b></div>`;$('detailList').innerHTML=list.map(r=>`<div class="detail-row"><b>${escapeHtml(r.id)}</b><span><b class="material-badge ${r.material.cls}" style="--mc:${r.material.color}">${r.material.label}</b><br>${escapeHtml(r.part||'品番なし')}</span><span>${escapeHtml(r.name)}<br><small>${escapeHtml(r.standard||'-')}</small></span><b>${fmt(r.qty)}点</b><span class="status">${escapeHtml(r.status)}</span><span>${escapeHtml(r.owner||'未設定')}</span></div>`).join('');$('modal').classList.add('show')}
-async function loadCSV(){try{const res=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error();const buf=await res.arrayBuffer();const wb=XLSX.read(buf,{type:'array',cellDates:true});const sheet=wb.Sheets[wb.SheetNames[0]];const raw=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:false,dateNF:'yyyy-mm-dd'});rows=raw.map(normalize).filter(r=>r.id&&r.materialDate);$('notice').innerHTML=`<span>✓ SCV.csvから${fmt(rows.length)}件を読み込みました。生地日で表示しています。</span><button onclick="this.parentElement.remove()">×</button>`;render()}catch(e){$('notice').innerHTML='<span>⚠ SCV.csvを読み込めません。ファイル名と「生地日」列を確認してください。</span><button onclick="this.parentElement.remove()">×</button>';render()}}
+function parseCsvBuffer(buf){
+  const bytes=new Uint8Array(buf),texts=[];
+  try{texts.push(new TextDecoder('shift-jis').decode(bytes))}catch(e){}
+  try{texts.push(new TextDecoder('utf-8').decode(bytes))}catch(e){}
+  let best=[];
+  for(const txt of texts){try{const wb=XLSX.read(txt,{type:'string',cellDates:true});const raw=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',raw:false,dateNF:'yyyy-mm-dd'});if(raw.length>best.length)best=raw}catch(e){}}
+  if(!best.length){const wb=XLSX.read(buf,{type:'array',cellDates:true});best=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',raw:false,dateNF:'yyyy-mm-dd'})}
+  return best;
+}
+async function loadCSV(){try{
+  const res=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
+  const normalized=parseCsvBuffer(await res.arrayBuffer()).map(normalize);
+  rows=normalized.filter(r=>r.id&&r.materialDate);
+  const missing=normalized.filter(r=>r.id&&!r.materialDate).length,recognized=rows.filter(r=>stageIndex(r.status)>=0).length;
+  $('notice').innerHTML=`<span>✓ SCV.csvから${fmt(rows.length)}件を読み込みました。工程認識 ${fmt(recognized)}件${missing?` ／ 生地日未認識 ${fmt(missing)}件`:''}</span><button onclick="this.parentElement.remove()">×</button>`;
+  render();
+}catch(e){$('notice').innerHTML=`<span>⚠ SCV.csvを読み込めません：${escapeHtml(e.message||'不明なエラー')}</span><button onclick="this.parentElement.remove()">×</button>`;render()}}
 document.addEventListener('click',e=>{const tab=e.target.closest('.date-tab');if(tab&&!e.target.matches('input')){dateMode=tab.dataset.dateMode;selectedProcess='全体';render()}const pc=e.target.closest('.process-card:not(.disabled)');if(pc){selectedProcess=pc.dataset.process;render()}const product=e.target.closest('.product-card');if(product)openDetails(product.dataset.key)});
 $('specifiedDate').addEventListener('change',()=>{dateMode='specified';selectedProcess='全体';render()});$('refresh').addEventListener('click',loadCSV);$('closeModal').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});
 loadCSV();setInterval(loadCSV,30000);
