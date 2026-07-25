@@ -4,213 +4,276 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>新世界｜溶接工程</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--red:#e53935;--orange:#f57c00;--pink:#ec6cb9;--yellow:#f4c430;--ink:#17212b;--line:#d8e0e6;--glass:rgba(255,255,255,.93)}
-*{box-sizing:border-box}body{margin:0;font-family:"Yu Gothic UI","Meiryo",sans-serif;color:var(--ink);background:#111923;min-height:100vh}
-body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 78% 22%,rgba(255,101,35,.42),transparent 22%),linear-gradient(rgba(8,14,21,.48),rgba(8,14,21,.78)),repeating-linear-gradient(135deg,#26313d 0 28px,#1b2530 28px 56px)}
-body:after{content:"⚡";position:fixed;right:8%;top:18%;z-index:-1;font-size:280px;color:#ff7b37;opacity:.12;filter:drop-shadow(0 0 35px #ff5a28)}
-header{height:74px;padding:0 26px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,rgba(30,22,22,.97),rgba(80,24,18,.94));border-bottom:2px solid #b53c29;color:#fff}
-header h1{margin:0;font-size:25px}header p{margin:4px 0 0;color:#ffc8bb;font-size:13px}.actions{display:flex;gap:9px}.btn{padding:10px 15px;border-radius:9px;border:1px solid #ffffff55;background:#ffffff12;color:#fff;text-decoration:none;cursor:pointer}.btn.primary{background:#d73b25;border-color:#ef6d57}
-main{padding:18px 22px 30px;min-height:calc(100vh - 74px)}
-.notice{display:flex;justify-content:space-between;gap:15px;padding:10px 14px;margin-bottom:14px;border-radius:10px;background:rgba(91,29,23,.9);border:1px solid #e06750;color:#ffe5de}
-.date-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}.date-tab{position:relative;padding:14px 16px;border:2px solid rgba(255,255,255,.32);border-radius:14px;background:rgba(20,31,42,.88);color:#fff;text-align:left;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.32)}.date-tab:hover,.date-tab.active{border-color:#ff7452;box-shadow:0 0 0 3px rgba(255,92,53,.23),0 5px 0 rgba(0,0,0,.32)}.date-tab .label{font-size:18px;font-weight:900}.date-tab .date{margin-top:4px;color:#ffcabd}.date-tab .count{position:absolute;right:15px;top:15px;font-size:27px;font-weight:900}.date-tab input{width:100%;margin-top:8px;padding:7px;border:0;border-radius:6px}
-.process-board{padding:16px;border:1px solid rgba(255,255,255,.35);border-radius:18px;background:rgba(242,247,250,.94);box-shadow:0 14px 40px rgba(0,0,0,.3)}
-.board-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}.board-title h2{margin:0;font-size:18px}.board-title span{color:#61707e;font-size:13px}
-.process-grid{display:grid;grid-template-columns:repeat(8,minmax(120px,1fr));gap:10px}.process-card{--c:#607d8b;position:relative;min-height:145px;padding:9px;border:3px solid var(--c);border-radius:15px;background:#fff;text-align:center;cursor:pointer;box-shadow:0 6px 0 color-mix(in srgb,var(--c) 65%,#263238);transition:.18s}.process-card:hover,.process-card.active{transform:translateY(-3px);box-shadow:0 9px 0 color-mix(in srgb,var(--c) 65%,#263238)}.process-card .head{padding:8px 5px;border-radius:8px;background:var(--c);color:#fff;font-size:16px;font-weight:900}.process-card .value{font-size:27px;font-weight:1000;margin-top:18px}.process-card .sub{font-size:12px;color:#65727d}.process-card .bar{height:7px;margin:17px 10px 0;border-radius:9px;background:#e1e7e9;overflow:hidden}.process-card .fill{height:100%;background:var(--c)}
-.process-card.total{--c:#19738c}.process-card.p0{--c:#d4a900}.process-card.p1{--c:#e46e00}.process-card.p2{--c:#d856a5}.process-card.p3{--c:#d93632}.process-card.disabled{--c:#77838e;cursor:not-allowed;filter:grayscale(.25);background:#e9edf0}.process-card.disabled:hover{transform:none;box-shadow:0 6px 0 #4d5861}.stamp{position:absolute;left:50%;top:63%;transform:translate(-50%,-50%) rotate(-10deg);padding:5px 10px;border:4px double #b3261e;border-radius:7px;color:#b3261e;background:rgba(255,255,255,.82);font-size:22px;font-weight:1000;letter-spacing:.1em}
-.product-area{margin-top:16px;min-height:380px;padding:17px;border:1px solid rgba(255,255,255,.34);border-radius:18px;background:rgba(11,25,36,.82);backdrop-filter:blur(8px);color:#fff}.product-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:13px}.product-head h2{margin:0;font-size:25px}.product-head p{margin:3px 0 0;color:#b9ced9}.material-legend{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;margin-bottom:8px}.material-chip{--mc:#607d8b;display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:2px solid var(--mc);border-radius:999px;background:#fff;color:#17212b;font-size:12px;font-weight:900}.material-chip:before{content:"";width:10px;height:10px;border-radius:50%;background:var(--mc)}.material-iron{--mc:#1976d2}.material-sus{--mc:#00897b}.material-super{--mc:#7e57c2}.material-dob{--mc:#8d6e63}.material-other{--mc:#607d8b}.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:13px}.product-card{position:relative;min-height:170px;padding:17px;border:2px solid rgba(255,255,255,.36);border-radius:15px;background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(232,240,245,.95));color:#17212b;cursor:pointer;box-shadow:0 7px 0 rgba(0,0,0,.28);transition:.18s;overflow:hidden}.product-card:hover{transform:translateY(-4px);border-color:#ff7654}.product-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--stripe,#607d8b)}.product-name{padding-left:4px;font-size:21px;font-weight:1000;line-height:1.25}.product-part{margin-top:7px;color:#416277;font-weight:700}.material-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}.material-badge{--mc:#607d8b;padding:5px 8px;border-radius:8px;background:color-mix(in srgb,var(--mc) 15%,#fff);border:1px solid color-mix(in srgb,var(--mc) 75%,#fff);color:color-mix(in srgb,var(--mc) 78%,#17212b);font-size:12px;font-weight:1000}.product-meta{display:flex;justify-content:space-between;align-items:end;margin-top:16px}.product-count{font-size:27px;font-weight:1000;color:#d93c27}.product-qty{font-size:15px;color:#5d6b75}.empty{grid-column:1/-1;display:grid;place-items:center;min-height:280px;border:2px dashed rgba(255,255,255,.35);border-radius:15px;color:#c5d4dc;font-size:21px;font-weight:800}
-
-.top-material-legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px;padding:11px 15px;border:1px solid rgba(255,255,255,.42);border-radius:14px;background:rgba(255,255,255,.92);box-shadow:0 7px 20px rgba(0,0,0,.22)}.top-material-legend .legend-title{font-size:15px;font-weight:1000;margin-right:4px}.dashboard-row{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:stretch}.dashboard-row .process-board{height:100%}.product-chart{padding:15px;border:1px solid rgba(255,255,255,.38);border-radius:18px;background:rgba(242,247,250,.95);box-shadow:0 14px 40px rgba(0,0,0,.3)}.chart-title{font-size:18px;font-weight:1000;margin-bottom:3px}.chart-sub{font-size:12px;color:#65727d;margin-bottom:8px}.pie-wrap{display:flex;flex-direction:column;align-items:center}.product-pie{--pie:#d9e1e6;position:relative;width:205px;height:205px;border-radius:50%;background:var(--pie);box-shadow:0 0 0 7px #fff,0 8px 24px rgba(0,0,0,.22)}.product-pie:after{content:"";position:absolute;inset:43px;border-radius:50%;background:#f8fbfc}.pie-center{position:absolute;z-index:2;inset:0;display:grid;place-content:center;text-align:center}.pie-center b{font-size:30px}.pie-center small{font-size:12px;color:#687883}.pie-legend{width:100%;display:grid;gap:5px;margin-top:12px;max-height:155px;overflow:auto}.pie-item{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:7px;align-items:center;padding:4px 6px;border-radius:7px;background:#fff;font-size:12px}.pie-dot{width:11px;height:11px;border-radius:50%;background:var(--pc)}.pie-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}.pie-value{font-weight:1000;color:#344b59}
-.modal{display:none;position:fixed;inset:0;z-index:20;padding:25px;background:rgba(0,0,0,.72);align-items:center;justify-content:center}.modal.show{display:flex}.modal-card{width:min(1050px,96vw);max-height:90vh;overflow:auto;border-radius:19px;background:#fff;box-shadow:0 25px 80px #000;padding:20px}.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:start;border-bottom:1px solid var(--line);padding-bottom:13px}.modal-head h3{margin:0;font-size:25px}.close{border:0;background:#e9eef1;border-radius:9px;padding:8px 13px;font-size:18px;cursor:pointer}.detail-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.detail-box{padding:12px;border:1px solid var(--line);border-radius:10px;background:#f7fafb}.detail-box small{color:#6d7b86}.detail-box b{display:block;margin-top:4px;font-size:18px}.detail-list{display:grid;gap:8px}.detail-row{display:grid;grid-template-columns:1.2fr 1fr 1.6fr .6fr 1fr 1fr;gap:8px;padding:10px;border-bottom:1px solid #e7ecef;align-items:center}.status{display:inline-block;padding:4px 8px;border-radius:20px;background:#ffe3df;color:#aa2c20;font-weight:800;text-align:center}
-@media(max-width:1250px){.dashboard-row{grid-template-columns:1fr}.process-grid{grid-template-columns:repeat(4,1fr)}.date-tabs{grid-template-columns:repeat(2,1fr)}.product-chart{display:grid;grid-template-columns:220px 1fr;align-items:center}.pie-legend{max-height:210px}}
-@media(max-width:700px){.product-chart{display:block}.product-pie{width:180px;height:180px}.top-material-legend{gap:7px}.top-material-legend .legend-title{width:100%}header{height:auto;padding:14px;align-items:flex-start}header p{display:none}.actions{flex-direction:column}.date-tabs{grid-template-columns:1fr 1fr}.process-grid{grid-template-columns:1fr 1fr}.detail-summary{grid-template-columns:1fr 1fr}.detail-row{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr}main{padding:12px}.date-tab .count{font-size:21px}}
-
-/* ===== 溶接工程ボード・最終レイアウト ===== */
-:root{--panel:#0c1c29;--panel2:#102636}
-body{background:#07131d;color:#eef7ff}
-body:before{background:radial-gradient(circle at 86% 8%,rgba(255,91,31,.18),transparent 24%),linear-gradient(rgba(2,12,20,.50),rgba(2,12,20,.80)),repeating-linear-gradient(135deg,#112431 0 28px,#0b1b27 28px 56px)}
-body:after{content:"";right:0;top:0;width:42%;height:180px;background:radial-gradient(circle at 78% 30%,rgba(255,111,33,.35),transparent 28%);font-size:0}
-header{height:86px;padding:0 30px;background:linear-gradient(90deg,#06131d,#0b1a25 72%,#24110c);border-bottom:1px solid #cb4a22}
-header h1{font-size:30px;letter-spacing:.02em}.weld-icon{filter:drop-shadow(0 0 8px #3db8ff)}
-header p{font-size:14px;color:#e5edf3}
-main{padding:14px 18px 28px}.notice{background:rgba(9,21,31,.94);border-color:#a43a2d;color:#fff;font-size:15px}
-.date-tabs{gap:14px}.date-tab{min-height:88px;padding:16px 18px;background:linear-gradient(145deg,#0b1c2a,#0b1722);border:1px solid #32495a;box-shadow:0 6px 15px #0006}
-.date-tab:nth-child(1){border-color:#147bd0}.date-tab:nth-child(2){border-color:#15966f}.date-tab:nth-child(3){border-color:#825cc8}.date-tab:nth-child(4){border-color:#e18200}
-.date-tab .label{font-size:20px}.date-tab .count{font-size:31px}.date-tab .date{color:#d9e6ef}
-.process-board{padding:14px 16px 17px;background:linear-gradient(145deg,rgba(9,25,36,.98),rgba(8,18,28,.98));border:1px solid #284255;color:#fff;box-shadow:0 12px 35px #0008}
-.board-title{margin-bottom:10px}.board-title h2{font-size:22px}.board-title h2 small{font-size:15px;color:#d5e1e9}.board-title span{color:#a9bdca}
-.top-material-legend{display:grid;grid-template-columns:240px repeat(4,1fr);gap:0;margin:0 0 14px;padding:0;background:transparent;border:1px solid #28465a;border-radius:14px;overflow:hidden;box-shadow:none}
-.top-material-legend .legend-title{display:flex;flex-direction:column;justify-content:center;padding:12px 18px;background:#0b1d2b;color:#fff;font-size:19px}
-.top-material-legend .legend-title small{font-size:12px;color:#a9bdca;margin-top:3px}
-.top-material-legend .material-chip{min-height:78px;border:0;border-left:1px solid #28465a;border-radius:0;background:#0a1925;color:#fff;padding:10px 18px;justify-content:flex-start}
-.top-material-legend .material-chip:before{display:none}.top-material-legend .material-chip>b{display:grid;place-items:center;min-width:48px;height:48px;border-radius:50%;background:var(--mc);font-size:23px;color:#fff}
-.top-material-legend .material-chip>span{font-size:16px;font-weight:900;color:color-mix(in srgb,var(--mc) 70%,#fff)}
-.process-grid{grid-template-columns:repeat(8,minmax(140px,1fr));gap:12px}.process-card{min-height:140px;background:linear-gradient(180deg,#102738,#0a1b28);color:#fff;border-width:2px;box-shadow:0 5px 0 color-mix(in srgb,var(--c) 60%,#00101c)}
-.process-card .head{font-size:18px;background:color-mix(in srgb,var(--c) 68%,#06131d);padding:10px}.process-card .value{font-size:30px;margin-top:17px}.process-card .sub{color:#c0cfda}
-.process-card.disabled{background:linear-gradient(180deg,#292f34,#1c2227);opacity:.72}.stamp{font-size:22px;background:rgba(15,19,23,.82);color:#ff574d;border-color:#ff574d}
-.lower-dashboard{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(430px,.65fr);gap:14px;margin-top:14px}
-.product-area{margin-top:0;min-height:410px;padding:16px;background:rgba(6,22,33,.95);border-color:#28465a}.product-head h2{font-size:24px}
-.product-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px}.product-card{min-height:138px;padding:14px;background:linear-gradient(145deg,#102638,#0b1c29);border-color:#38586e;color:#fff;box-shadow:none}
-.product-card:hover{border-color:#62b8ef;background:#123047}.product-name{font-size:19px}.product-part{color:#a8bfce}.product-qty{color:#b7c8d2}.product-count{color:#fff;font-size:25px}
-.material-badge{color:#fff!important;background:color-mix(in srgb,var(--mc) 75%,#10202b)!important;border-color:var(--mc)!important}
-.product-chart{padding:18px;background:rgba(7,23,34,.97);border-color:#28465a;color:#fff;box-shadow:none}.chart-title{font-size:23px}.chart-sub{color:#a8bdca;font-size:13px}
-.product-pie{width:290px;height:290px;box-shadow:0 0 0 3px #e7f4ff,0 0 28px #42a9df55}.product-pie:after{inset:55px;background:#0b1d2b}
-.pie-center{color:#fff}.pie-center b{font-size:44px}.pie-center small{color:#b9cbd6}.pie-legend{max-height:250px;gap:8px}.pie-item{background:#0e2637;color:#fff;border:1px solid #29495d;padding:8px;font-size:14px}.pie-value{color:#fff}
-@media(max-width:1500px){.process-grid{grid-template-columns:repeat(4,1fr)}.top-material-legend{grid-template-columns:180px repeat(4,1fr)}}
-@media(max-width:1100px){.lower-dashboard{grid-template-columns:1fr}.top-material-legend{grid-template-columns:1fr 1fr}.top-material-legend .legend-title{grid-column:1/-1}.process-grid{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:700px){.top-material-legend{grid-template-columns:1fr}.top-material-legend .legend-title{grid-column:auto}.process-grid{grid-template-columns:1fr 1fr}.product-pie{width:220px;height:220px}.product-pie:after{inset:44px}}
-
-/* ===== 明るい背景・視認性改善 ===== */
-body{background:#eef3f7!important;color:#1d2a35!important}
-body:before{
-  background:
-    radial-gradient(circle at 92% 4%,rgba(255,132,67,.10),transparent 24%),
-    linear-gradient(#f7f9fb,#edf3f7)!important
+:root{
+  --bg:#eef3f7;--card:#fff;--ink:#1d2a35;--muted:#617482;--line:#d2dde5;
+  --blue:#1976d2;--green:#009688;--purple:#7e57c2;--brown:#8d6e63;
 }
-body:after{display:none!important}
-header{
-  background:linear-gradient(90deg,#fff,#f8fafc)!important;
-  color:#17212b!important;border-bottom:1px solid #d4dee6!important;
-  box-shadow:0 2px 10px rgba(25,50,70,.08)
-}
-header p{color:#637483!important}
-.btn{background:#fff!important;color:#29465b!important;border-color:#c8d5df!important}
-.btn.primary{background:#1976a8!important;color:#fff!important;border-color:#1976a8!important}
-.notice{background:#fff7ed!important;border-color:#f0b27a!important;color:#7c3f10!important}
-.date-tab{background:#fff!important;color:#1d2a35!important;box-shadow:0 4px 12px rgba(31,58,77,.10)!important}
-.date-tab .date{color:#657784!important}
-.process-board,.product-area,.product-chart{
-  background:#fff!important;color:#1d2a35!important;border-color:#d2dde5!important;
-  box-shadow:0 7px 22px rgba(31,58,77,.09)!important
-}
-.board-title span,.product-head p,.chart-sub{color:#637483!important}
-.top-material-legend{background:#fff!important;border-color:#d2dde5!important;box-shadow:0 5px 16px rgba(31,58,77,.08)!important}
-.top-material-legend .legend-title{background:#eaf2f7!important;color:#203442!important}
-.top-material-legend .legend-title small{color:#657784!important}
-.top-material-legend .material-chip{background:#fff!important;color:#1d2a35!important;border-color:#d7e0e7!important}
-.process-card{background:linear-gradient(180deg,#fff,#f4f8fa)!important;color:#1d2a35!important}
-.process-card .sub{color:#667682!important}
-.process-card.disabled{background:#edf1f4!important;color:#6c7881!important}
-.stamp{background:rgba(255,255,255,.92)!important}
-.product-card{background:linear-gradient(145deg,#fff,#f4f8fa)!important;color:#1d2a35!important;border-color:#d4dfe7!important}
-.product-card:hover{background:#f7fcff!important}
-.product-part,.product-qty{color:#637483!important}
-.product-count{color:#d0442e!important}
-.product-pie:after{background:#fff!important}
-.pie-center{color:#1d2a35!important}.pie-center small{color:#657784!important}
-.pie-item{background:#f7fafc!important;color:#1d2a35!important;border-color:#dae3e9!important}
-.pie-value{color:#243c4c!important}
-.empty{color:#71818c!important;border-color:#c7d4dd!important;background:#f8fafb!important}
-
+*{box-sizing:border-box}
+body{margin:0;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+header{height:86px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 10px #19324612}
+h1{margin:0;font-size:27px}header p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.actions{display:flex;gap:9px}.btn{border:1px solid #c8d5df;background:#fff;color:#29465b;padding:10px 15px;border-radius:9px;text-decoration:none;cursor:pointer}.btn.primary{background:#1976a8;color:#fff;border-color:#1976a8}
+main{padding:14px 16px 28px}
+.notice{padding:11px 14px;margin-bottom:13px;border:1px solid #efb071;background:#fff7ed;color:#7c3f10;border-radius:10px}
+.date-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.date-tab{position:relative;min-height:90px;padding:15px 17px;text-align:left;border:2px solid #cad8e2;background:#fff;border-radius:14px;cursor:pointer;box-shadow:0 4px 12px #1f3a4d14}
+.date-tab:nth-child(1){border-color:#2584da}.date-tab:nth-child(2){border-color:#20a277}.date-tab:nth-child(3){border-color:#8b68d4}.date-tab:nth-child(4){border-color:#ed8b16}
+.date-tab.active{box-shadow:0 0 0 3px #2684bb20,0 5px 13px #1f3a4d18;transform:translateY(-1px)}
+.date-tab .label{font-size:20px;font-weight:900}.date-tab .date{margin-top:4px;color:var(--muted)}
+.date-tab .count{position:absolute;right:16px;top:15px;font-size:31px;font-weight:1000}.date-tab input{width:100%;margin-top:8px;padding:8px;border:1px solid #d2dde5;border-radius:7px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 7px 22px #1f3a4d12}
+.process-panel{padding:15px}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}.panel-title h2{margin:0;font-size:22px}.panel-title span{color:var(--muted);font-size:13px}
+.materials{display:grid;grid-template-columns:210px repeat(4,1fr);border:1px solid #d2dde5;border-radius:13px;overflow:hidden;margin-bottom:13px}
+.material-title{padding:12px 17px;background:#eaf2f7;font-size:18px;font-weight:900}.material-title small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.material{min-height:70px;padding:10px 16px;display:flex;align-items:center;gap:10px;border-left:1px solid #d2dde5;font-weight:900}
+.circle{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;color:#fff;font-size:21px}
+.iron .circle{background:var(--blue)}.sus .circle{background:var(--green)}.super .circle{background:var(--purple)}.dob .circle{background:var(--brown)}
+.iron{color:var(--blue)}.sus{color:var(--green)}.super{color:var(--purple)}.dob{color:var(--brown)}
+.process-grid{display:grid;grid-template-columns:repeat(8,minmax(125px,1fr));gap:10px}
+.process-card{--c:#607d8b;position:relative;min-height:145px;padding:9px;border:2px solid var(--c);border-radius:14px;background:linear-gradient(#fff,#f4f8fa);text-align:center;cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 45%,#aebbc5)}
+.process-card.active{transform:translateY(-3px);box-shadow:0 7px 0 color-mix(in srgb,var(--c) 55%,#8c9aa4)}
+.process-card .head{padding:9px 5px;border-radius:8px;background:var(--c);color:#fff;font-size:17px;font-weight:900}
+.process-card .value{font-size:30px;font-weight:1000;margin-top:17px}.process-card .sub{font-size:12px;color:var(--muted)}
+.process-card .bar{height:7px;margin:15px 8px 0;border-radius:8px;background:#e1e7e9;overflow:hidden}.process-card .fill{height:100%;background:var(--c)}
+.total{--c:#19738c}.p0{--c:#c2a000}.p1{--c:#df7200}.p2{--c:#d653a3}.p3{--c:#d43a36}
+.disabled{--c:#929ca4;cursor:not-allowed;background:#edf1f4}.stamp{position:absolute;left:50%;top:66%;transform:translate(-50%,-50%) rotate(-10deg);padding:5px 10px;border:4px double #db5149;border-radius:7px;color:#db5149;background:#ffffffdd;font-size:21px;font-weight:1000}
+.lower{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(360px,.65fr);gap:13px;margin-top:13px}
+.products,.chart{padding:15px;min-height:390px}.product-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.product-head h2,.chart h2{margin:0;font-size:22px}.product-head p,.chart p{margin:3px 0 0;color:var(--muted);font-size:13px}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.product-card{position:relative;min-height:135px;padding:14px;border:1px solid #d4dfe7;border-radius:13px;background:linear-gradient(145deg,#fff,#f4f8fa);cursor:pointer;overflow:hidden}
+.product-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:var(--stripe,#607d8b)}
+.product-card:hover{border-color:#4c9bc8;transform:translateY(-2px)}.product-name{font-size:18px;font-weight:1000}.badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.badge{--mc:#607d8b;padding:4px 7px;border-radius:7px;border:1px solid var(--mc);background:color-mix(in srgb,var(--mc) 12%,#fff);color:color-mix(in srgb,var(--mc) 78%,#17212b);font-size:11px;font-weight:900}
+.meta{display:flex;justify-content:space-between;align-items:end;margin-top:14px}.count{font-size:25px;font-weight:1000;color:#d0442e}.qty{color:var(--muted);font-size:13px}
+.empty{grid-column:1/-1;min-height:260px;display:grid;place-items:center;border:2px dashed #c7d4dd;border-radius:13px;background:#f8fafb;color:#71818c;font-size:19px;font-weight:800}
+.donut-wrap{display:grid;place-items:center;margin-top:18px}.donut{--pie:#d8e2e8;position:relative;width:260px;height:260px;border-radius:50%;background:var(--pie);box-shadow:0 0 0 3px #d8e4eb,0 7px 20px #1f3a4d18}.donut:after{content:"";position:absolute;inset:52px;border-radius:50%;background:#fff}.center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center}.center b{font-size:39px}.center small{color:var(--muted)}
+.legend{display:grid;gap:6px;margin-top:16px;max-height:190px;overflow:auto}.legend-row{display:grid;grid-template-columns:11px 1fr auto;gap:7px;align-items:center;padding:7px;border:1px solid #dae3e9;border-radius:7px;background:#f7fafc;font-size:12px}.dot{width:11px;height:11px;border-radius:50%}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:20;padding:25px;align-items:center;justify-content:center}.modal.show{display:flex}.modal-card{width:min(1050px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}.modal-head{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:12px}.modal-head h3{margin:0}.close{border:0;border-radius:8px;padding:8px 13px;cursor:pointer}.detail{width:100%;border-collapse:collapse;margin-top:12px}.detail th,.detail td{padding:9px;border-bottom:1px solid #e2e8ed;text-align:left;font-size:13px}
+@media(max-width:1250px){.process-grid{grid-template-columns:repeat(4,1fr)}.lower{grid-template-columns:1fr}.materials{grid-template-columns:170px repeat(4,1fr)}}
+@media(max-width:760px){header{height:auto;padding:14px}.date-tabs{grid-template-columns:1fr 1fr}.materials{grid-template-columns:1fr 1fr}.material-title{grid-column:1/-1}.process-grid{grid-template-columns:1fr 1fr}.product-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><div><h1><span class="weld-icon">🥽</span> 溶接工程ボード</h1><p>生地日を基準に、CAD/CAMから溶接までを管理</p></div><div class="actions"><a class="btn" href="index.html">← 新世界へ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
+<header>
+  <div><h1>🌐 溶接工程ボード</h1><p>生地日を基準に、CAD/CAMから溶接までを管理</p></div>
+  <div class="actions"><a class="btn" href="index.html">← 新世界へ戻る</a><button class="btn primary" id="refresh">更新</button></div>
+</header>
 <main>
-<div class="notice" id="notice"><span>SCV.csvを読み込み中です。</span><button onclick="this.parentElement.remove()">×</button></div>
+<div class="notice" id="notice">SCV.csvを読み込み中です。</div>
+
 <section class="date-tabs">
-<button class="date-tab active" data-date-mode="today"><div class="label">今日生地</div><div class="date" id="dateToday"></div><div class="count" id="countToday">0</div></button>
-<button class="date-tab" data-date-mode="tomorrow"><div class="label">明日生地</div><div class="date" id="dateTomorrow"></div><div class="count" id="countTomorrow">0</div></button>
-<button class="date-tab" data-date-mode="after"><div class="label">明後日生地</div><div class="date" id="dateAfter"></div><div class="count" id="countAfter">0</div></button>
-<button class="date-tab" data-date-mode="specified"><div class="label">指定日生地日</div><input type="date" id="specifiedDate"><div class="count" id="countSpecified">0</div></button>
+  <button class="date-tab active" data-mode="today"><div class="label">今日生地</div><div class="date" id="d0"></div><div class="count" id="c0">0</div></button>
+  <button class="date-tab" data-mode="tomorrow"><div class="label">明日生地</div><div class="date" id="d1"></div><div class="count" id="c1">0</div></button>
+  <button class="date-tab" data-mode="after"><div class="label">明後日生地</div><div class="date" id="d2"></div><div class="count" id="c2">0</div></button>
+  <button class="date-tab" data-mode="custom"><div class="label">指定日生地日</div><input type="date" id="customDate"></button>
 </section>
-<section class="process-board"><div class="board-title"><h2>工程進捗 <small>（CAD/CAMから溶接まで）</small></h2><span>工程を選択すると品名別に表示します</span></div>
-<section class="top-material-legend"><span class="legend-title">材質 <small>（品番の先頭文字で分類）</small></span><span class="material-chip material-iron"><b>I B</b><span>鉄（品番 I・B）</span></span><span class="material-chip material-sus"><b>S</b><span>SUS（品番 S）</span></span><span class="material-chip material-super"><b>D</b><span>スーパーダイマ（品番 D）</span></span><span class="material-chip material-dob"><b>Z</b><span>ドブ（品番 Z）</span></span></section>
-<div class="process-grid" id="processGrid"></div></section>
-<div class="lower-dashboard">
-<section class="product-area"><div class="product-head"><div><h2 id="productTitle">全体・品名一覧</h2><p id="productSub">同じ形状は材質が違っても1つにまとめて表示します</p></div><div><b id="resultSummary">0件</b></div></div><div class="product-grid" id="productGrid"></div></section>
-<section class="product-chart"><div class="chart-title">品名別構成（件数）</div><div class="chart-sub" id="chartSub">選択中の工程を件数で表示</div><div class="pie-wrap"><div class="product-pie" id="productPie"><div class="pie-center"><b id="pieTotal">0</b><small>件 合計</small></div></div><div class="pie-legend" id="pieLegend"></div></div></section>
-</div>
+
+<section class="panel process-panel">
+  <div class="panel-title"><h2>工程進捗 <small>（CAD/CAMから溶接まで）</small></h2><span>工程を選択すると品名別に表示します</span></div>
+  <div class="materials">
+    <div class="material-title">材質<small>品番の先頭文字で分類</small></div>
+    <div class="material iron"><span class="circle">I B</span><span>鉄（品番 I・B）</span></div>
+    <div class="material sus"><span class="circle">S</span><span>SUS（品番 S）</span></div>
+    <div class="material super"><span class="circle">D</span><span>スーパーダイマ（品番 D）</span></div>
+    <div class="material dob"><span class="circle">Z</span><span>ドブ（品番 Z）</span></div>
+  </div>
+  <div class="process-grid" id="processGrid"></div>
+</section>
+
+<section class="lower">
+  <div class="panel products">
+    <div class="product-head"><div><h2 id="listTitle">全体・品名一覧</h2><p id="listSub"></p></div><b id="summary"></b></div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+  <div class="panel chart">
+    <h2>品名別構成（件数）</h2><p id="chartSub"></p>
+    <div class="donut-wrap"><div class="donut" id="donut"><div class="center"><b id="totalCenter">0</b><small>件 合計</small></div></div></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</section>
 </main>
-<div class="modal" id="modal"><div class="modal-card"><div class="modal-head"><div><h3 id="modalTitle"></h3><div id="modalPart"></div></div><button class="close" id="closeModal">×</button></div><div class="detail-summary" id="detailSummary"></div><div class="detail-list" id="detailList"></div></div></div>
+
+<div class="modal" id="modal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle"></h3><button class="close" id="close">閉じる</button></div><div id="modalBody"></div></div></div>
+
 <script>
-const $=id=>document.getElementById(id);
-const fmt=n=>Number(n||0).toLocaleString('ja-JP');
-let rows=[],dateMode='today',selectedProcess='全体';
-const processOrder=['CAD/CAM','切断','曲げ','溶接'];
-const allCards=['全体','CAD/CAM','切断','曲げ','溶接','仕上げ','塗装','組立'];
-function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function dates(){const t=new Date();t.setHours(0,0,0,0);const d1=new Date(t),d2=new Date(t);d1.setDate(t.getDate()+1);d2.setDate(t.getDate()+2);return{today:localDate(t),tomorrow:localDate(d1),after:localDate(d2)}}
-function excelDate(v){
-  if(v===null||v===undefined||v==='')return'';
-  if(v instanceof Date&&!isNaN(v))return localDate(v);
-  if(typeof v==='number'||/^\d{5}(?:\.\d+)?$/.test(String(v).trim())){
-    const n=Number(v);if(n>20000&&n<80000)return localDate(new Date(Math.round((n-25569)*86400000)));
-  }
-  const s=String(v).trim().replace(/[年月]/g,'-').replace(/日/g,'').replace(/[\.\/]/g,'-');
-  const m=s.match(/(20\d{2})\D+(\d{1,2})\D+(\d{1,2})/);
-  return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:'';
+const PROCESS=['CAD/CAM','切断','曲げ','溶接'];
+const COLORS=['#159a58','#1f80d5','#7e57c2','#f57c00','#00a7a0','#d84a76','#8d6e63','#78909c','#c0a000','#5b6fd8'];
+let rows=[], selectedProcess='ALL', selectedDate='';
+
+function pad(n){return String(n).padStart(2,'0')}
+function fmt(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function normalizeDate(v){
+  const s=String(v||'').trim().replace(/\./g,'/').replace(/-/g,'/');
+  const m=s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+  return m?`${m[1]}-${pad(m[2])}-${pad(m[3])}`:'';
 }
-function materialInfo(part){const c=String(part||'').trim().charAt(0).toUpperCase();if(c==='I'||c==='B')return{key:'iron',label:'鉄',cls:'material-iron',color:'#1976d2'};if(c==='S')return{key:'sus',label:'SUS',cls:'material-sus',color:'#00897b'};if(c==='D')return{key:'super',label:'スーパーダイマ',cls:'material-super',color:'#7e57c2'};if(c==='Z')return{key:'dob',label:'ドブ',cls:'material-dob',color:'#8d6e63'};return{key:'other',label:'その他',cls:'material-other',color:'#607d8b'}}
-function productFamily(name){let s=String(name||'').trim().replace(/^(SUS|ＳＵＳ|鉄|国土|ZN|ＺＮ|ドブ|スーパーダイマ|Sダイマ|Ｓダイマ|ダイマ)[\s　]*/i,'');s=s.replace(/[\s　]+/g,' ').trim();return s||'品名未設定'}
-function normalizeKeys(o){const n={};Object.entries(o||{}).forEach(([k,v])=>n[String(k).replace(/^\uFEFF/,'').replace(/[\s　]/g,'').trim()]=v);return n}
-function pick(o,...keys){for(const k of keys){const nk=String(k).replace(/[\s　]/g,'');if(o[nk]!==undefined&&o[nk]!==null&&String(o[nk]).trim()!=='')return o[nk]}return''}
-function normalize(src){const o=normalizeKeys(src);const part=String(pick(o,'品番','品番コード','商品コード')).trim(),name=String(pick(o,'品名','商品名')).trim()||'品名未設定';return{id:String(pick(o,'製造指示番号','指示番号','製造番号')).trim(),part,name,family:productFamily(name),material:materialInfo(part),standard:String(pick(o,'規格','仕様')).trim(),qty:Number(String(pick(o,'数量','数量(点)','数量（点）')||0).replace(/,/g,''))||0,materialDate:excelDate(pick(o,'生地日','生地日付','生地予定日')),shipDate:excelDate(pick(o,'出荷日')),due:excelDate(pick(o,'製造期限')),status:String(pick(o,'進捗','工程','現在工程','進捗状況')).trim(),owner:String(pick(o,'担当者','担当')).trim(),ship:String(pick(o,'配送便')).trim()}}
-function selectedDate(){const ds=dates();return dateMode==='specified'?$('specifiedDate').value:ds[dateMode]}
-function processName(s){
-  const v=String(s||'').replace(/[\s　]/g,'');
-  if(/CAD|CAM/i.test(v))return 'CAD/CAM';
-  if(/切断|水切|レーザー|パンチ/.test(v))return '切断';
-  if(/曲げ|ベンダ/.test(v))return '曲げ';
-  if(/溶接/.test(v))return '溶接';
-  if(/仕上/.test(v))return '仕上げ';
-  if(/塗装/.test(v))return '塗装';
-  if(/組立/.test(v))return '組立';
+function parseCSV(text){
+  const out=[];let row=[],cell='',q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i],nx=text[i+1];
+    if(q){
+      if(ch==='"'&&nx==='"'){cell+='"';i++}
+      else if(ch==='"')q=false;
+      else cell+=ch;
+    }else{
+      if(ch==='"')q=true;
+      else if(ch===','){row.push(cell);cell=''}
+      else if(ch==='\n'){row.push(cell);out.push(row);row=[];cell=''}
+      else if(ch!=='\r')cell+=ch;
+    }
+  }
+  if(cell||row.length){row.push(cell);out.push(row)}
+  return out;
+}
+function cleanHeader(s){return String(s||'').replace(/^\uFEFF/,'').trim().replace(/[　\s]/g,'')}
+function processName(v){
+  const s=String(v||'').normalize('NFKC').replace(/[　\s]/g,'').toUpperCase();
+  if(s.includes('CAD')||s.includes('CAM'))return 'CAD/CAM';
+  if(/切断|水切|レーザー|LASER|パンチ|タレパン/.test(s))return '切断';
+  if(/曲げ|ベンダ|BEND/.test(s))return '曲げ';
+  if(/溶接|WELD/.test(s))return '溶接';
   return '';
 }
-function stageIndex(s){return processOrder.indexOf(processName(s))}
-function baseRowsForDate(date){return rows.filter(r=>r.materialDate===date&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'))}
-function processRows(base,p){if(p==='全体')return base.filter(r=>stageIndex(r.status)>=0);return base.filter(r=>processName(r.status)===p)}
-function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function updateDateLabels(){const ds=dates();$('dateToday').textContent=ds.today;$('dateTomorrow').textContent=ds.tomorrow;$('dateAfter').textContent=ds.after;if(!$('specifiedDate').value)$('specifiedDate').value=ds.today;for(const [key,id] of [['today','countToday'],['tomorrow','countTomorrow'],['after','countAfter']])$(id).textContent=fmt(baseRowsForDate(ds[key]).filter(r=>stageIndex(r.status)>=0).length);$('countSpecified').textContent=fmt(baseRowsForDate($('specifiedDate').value).filter(r=>stageIndex(r.status)>=0).length)}
-function renderProcesses(){const base=baseRowsForDate(selectedDate());const relevant=base.filter(r=>stageIndex(r.status)>=0);const max=Math.max(1,...processOrder.map(p=>base.filter(r=>processName(r.status)===p).length));$('processGrid').innerHTML=allCards.map((p,i)=>{const disabled=i>=5;const count=p==='全体'?relevant.length:disabled?0:base.filter(r=>processName(r.status)===p).length;const qty=p==='全体'?relevant.reduce((a,r)=>a+r.qty,0):disabled?0:base.filter(r=>processName(r.status)===p).reduce((a,r)=>a+r.qty,0);const cls=p==='全体'?'total':i>0&&i<5?`p${i-1}`:'';return `<button class="process-card ${cls} ${disabled?'disabled':''} ${selectedProcess===p?'active':''}" data-process="${p}" ${disabled?'disabled':''}><div class="head">${p}</div>${disabled?'<div class="stamp">対象外</div>':`<div class="value">${fmt(count)}件</div><div class="sub">${fmt(qty)}点</div><div class="bar"><div class="fill" style="width:${p==='全体'?100:count/max*100}%"></div></div>`}</button>`}).join('')}
-function renderProductChart(data){const counts=new Map();data.forEach(r=>counts.set(r.family,(counts.get(r.family)||0)+1));let items=[...counts.entries()].sort((a,b)=>b[1]-a[1]);if(items.length>8){const other=items.slice(7).reduce((a,x)=>a+x[1],0);items=[...items.slice(0,7),['その他',other]]}const total=data.length;const colors=['#e53935','#1976d2','#00897b','#f57c00','#7e57c2','#d4a900','#546e7a','#ec6cb9'];let pos=0;const stops=items.map(([name,val],i)=>{const start=total?pos/total*100:0;pos+=val;const end=total?pos/total*100:0;return `${colors[i%colors.length]} ${start}% ${end}%`});$('productPie').style.setProperty('--pie',stops.length?`conic-gradient(${stops.join(',')})`:'#d9e1e6');$('pieTotal').textContent=fmt(total);$('chartSub').textContent=`${selectedProcess} ／ 生地日 ${selectedDate()} ／ 件数比率`;$('pieLegend').innerHTML=items.length?items.map(([name,val],i)=>`<div class="pie-item"><span class="pie-dot" style="--pc:${colors[i%colors.length]}"></span><span class="pie-name" title="${escapeHtml(name)}">${escapeHtml(name)}</span><span class="pie-value">${fmt(val)}件</span></div>`).join(''):'<div class="pie-item"><span></span><span class="pie-name">対象データなし</span><span></span></div>'}
-function renderProducts(){const base=baseRowsForDate(selectedDate());const data=processRows(base,selectedProcess);renderProductChart(data);const groups=new Map();data.forEach(r=>{const key=r.family;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r)});$('productTitle').textContent=`${selectedProcess}・品名一覧`;$('productSub').textContent=`生地日 ${selectedDate()} ／ 同じ形状は材質違いでもまとめて表示`;$('resultSummary').textContent=`${fmt(groups.size)}種類・${fmt(data.length)}件・${fmt(data.reduce((a,r)=>a+r.qty,0))}点`;$('productGrid').innerHTML=groups.size?[...groups.entries()].sort((a,b)=>b[1].length-a[1].length).map(([family,list])=>{const mats=new Map();list.forEach(r=>{const k=r.material.key;if(!mats.has(k))mats.set(k,{...r.material,count:0,qty:0});const m=mats.get(k);m.count++;m.qty+=r.qty});const badges=[...mats.values()].map(m=>`<span class="material-badge ${m.cls}" style="--mc:${m.color}">${m.label} ${fmt(m.count)}件</span>`).join('');const stripe=[...mats.values()].map(m=>m.color).join(',');return `<button class="product-card" style="--stripe:${stripe.includes(',')?`linear-gradient(to bottom,${[...mats.values()].map((m,i,a)=>`${m.color} ${i/a.length*100}% ${(i+1)/a.length*100}%`).join(',')})`:stripe}" data-key="${escapeHtml(encodeURIComponent(family))}"><div class="product-name">${escapeHtml(family)}</div><div class="product-part">材質別にまとめて表示</div><div class="material-list">${badges}</div><div class="product-meta"><div class="product-count">${fmt(list.length)}件</div><div class="product-qty">${fmt(list.reduce((a,r)=>a+r.qty,0))}点</div></div></button>`}).join(''):'<div class="empty">対象データはありません</div>'}
-function render(){updateDateLabels();renderProcesses();renderProducts();document.querySelectorAll('.date-tab').forEach(b=>b.classList.toggle('active',b.dataset.dateMode===dateMode))}
-function openDetails(key){const base=processRows(baseRowsForDate(selectedDate()),selectedProcess);const family=decodeURIComponent(key);const list=base.filter(r=>r.family===family);const mats=[...new Set(list.map(r=>r.material.label))].join('・');$('modalTitle').textContent=family;$('modalPart').textContent=`材質：${mats||'未分類'}`;$('detailSummary').innerHTML=`<div class="detail-box"><small>対象件数</small><b>${fmt(list.length)}件</b></div><div class="detail-box"><small>合計数量</small><b>${fmt(list.reduce((a,r)=>a+r.qty,0))}点</b></div><div class="detail-box"><small>生地日</small><b>${selectedDate()}</b></div><div class="detail-box"><small>選択工程</small><b>${selectedProcess}</b></div>`;$('detailList').innerHTML=list.map(r=>`<div class="detail-row"><b>${escapeHtml(r.id)}</b><span><b class="material-badge ${r.material.cls}" style="--mc:${r.material.color}">${r.material.label}</b><br>${escapeHtml(r.part||'品番なし')}</span><span>${escapeHtml(r.name)}<br><small>${escapeHtml(r.standard||'-')}</small></span><b>${fmt(r.qty)}点</b><span class="status">${escapeHtml(r.status)}</span><span>${escapeHtml(r.owner||'未設定')}</span></div>`).join('');$('modal').classList.add('show')}
-function parseCsvBuffer(buf){
-  const bytes=new Uint8Array(buf);
-
-  // SCV.csv は UTF-8。文字化けした Shift-JIS を選ばないよう、
-  // 日本語ヘッダーが正しく存在する候補だけを採用する。
-  for(const enc of ['utf-8','shift-jis']){
-    try{
-      const txt=new TextDecoder(enc).decode(bytes).replace(/^\uFEFF/,'');
-      const wb=XLSX.read(txt,{type:'string',cellDates:true});
-      const raw=XLSX.utils.sheet_to_json(
-        wb.Sheets[wb.SheetNames[0]],
-        {defval:'',raw:false,dateNF:'yyyy-mm-dd'}
-      );
-      if(!raw.length)continue;
-
-      const keys=Object.keys(raw[0]||{}).map(
-        k=>String(k).replace(/^\uFEFF/,'').replace(/[\s　]/g,'')
-      );
-      const required=['製造指示番号','品番','品名','数量','進捗','生地日'];
-      if(required.every(k=>keys.includes(k)))return raw;
-    }catch(e){}
-  }
-
-  // 最終フォールバック
-  const txt=new TextDecoder('utf-8').decode(bytes).replace(/^\uFEFF/,'');
-  const wb=XLSX.read(txt,{type:'string',cellDates:true});
-  return XLSX.utils.sheet_to_json(
-    wb.Sheets[wb.SheetNames[0]],
-    {defval:'',raw:false,dateNF:'yyyy-mm-dd'}
-  );
+function material(code){
+  const c=String(code||'').trim().toUpperCase().charAt(0);
+  if(c==='I'||c==='B')return ['鉄','#1976d2'];
+  if(c==='S')return ['SUS','#009688'];
+  if(c==='D')return ['スーパーダイマ','#7e57c2'];
+  if(c==='Z')return ['ドブ','#8d6e63'];
+  return ['その他','#607d8b'];
 }
-async function loadCSV(){try{
-  const res=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
-  const normalized=parseCsvBuffer(await res.arrayBuffer()).map(normalize);
-  rows=normalized.filter(r=>r.id&&r.materialDate);
-  const missing=normalized.filter(r=>r.id&&!r.materialDate).length,recognized=rows.filter(r=>stageIndex(r.status)>=0).length;
-  $('notice').innerHTML=`<span>✓ SCV.csvから${fmt(rows.length)}件を読み込みました。工程認識 ${fmt(recognized)}件${missing?` ／ 生地日未認識 ${fmt(missing)}件`:''}</span><button onclick="this.parentElement.remove()">×</button>`;
+function todayDates(){
+  const a=[];const now=new Date();
+  for(let i=0;i<3;i++){const d=new Date(now);d.setDate(now.getDate()+i);a.push(fmt(d))}
+  return a;
+}
+async function load(){
+  try{
+    const res=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('SCV.csvが見つかりません');
+    const text=(await res.text()).replace(/^\uFEFF/,'');
+    const matrix=parseCSV(text);
+    const headers=matrix.shift().map(cleanHeader);
+    const idx={};
+    headers.forEach((h,i)=>idx[h]=i);
+    const required=['製造指示番号','品番','品名','数量','進捗','生地日'];
+    const missing=required.filter(k=>idx[k]===undefined);
+    if(missing.length)throw new Error('列が見つかりません: '+missing.join('、'));
+    rows=matrix.filter(r=>r.some(v=>String(v).trim())).map(r=>({
+      id:r[idx['製造指示番号']]||'',
+      code:r[idx['品番']]||'',
+      name:r[idx['品名']]||'(品名なし)',
+      qty:Number(String(r[idx['数量']]||'0').replace(/,/g,''))||0,
+      status:r[idx['進捗']]||'',
+      process:processName(r[idx['進捗']]),
+      materialDate:normalizeDate(r[idx['生地日']]),
+      customer:idx['得意先']!==undefined?(r[idx['得意先']]||''):'',
+      owner:idx['担当者']!==undefined?(r[idx['担当者']]||''):''
+    }));
+    const recognized=rows.filter(r=>r.process).length;
+    const dateRecognized=rows.filter(r=>r.materialDate).length;
+    document.getElementById('notice').textContent=`✓ SCV.csvから${rows.length.toLocaleString()}件を読み込みました。工程認識 ${recognized.toLocaleString()}件 ／ 生地日認識 ${dateRecognized.toLocaleString()}件`;
+    initDates();render();
+  }catch(e){
+    document.getElementById('notice').textContent='⚠ '+e.message;
+  }
+}
+function initDates(){
+  const ds=todayDates();
+  ['d0','d1','d2'].forEach((id,i)=>document.getElementById(id).textContent=ds[i]);
+  document.getElementById('customDate').value=ds[0];
+  selectedDate=ds[0];
+  updateDateCounts();
+}
+function eligible(r){return !!r.process && PROCESS.includes(r.process)}
+function updateDateCounts(){
+  const ds=todayDates();
+  ['c0','c1','c2'].forEach((id,i)=>{
+    document.getElementById(id).textContent=rows.filter(r=>r.materialDate===ds[i]&&eligible(r)).length;
+  });
+}
+function currentRows(){
+  return rows.filter(r=>r.materialDate===selectedDate&&eligible(r)&&(
+    selectedProcess==='ALL'||r.process===selectedProcess
+  ));
+}
+function render(){
+  renderProcess();renderProducts();
+}
+function renderProcess(){
+  const dateRows=rows.filter(r=>r.materialDate===selectedDate&&eligible(r));
+  const counts=Object.fromEntries(PROCESS.map(p=>[p,dateRows.filter(r=>r.process===p).length]));
+  const total=dateRows.length;
+  const cards=[
+    ['ALL','全体',total,'total'],['CAD/CAM','CAD/CAM',counts['CAD/CAM'],'p0'],
+    ['切断','切断',counts['切断'],'p1'],['曲げ','曲げ',counts['曲げ'],'p2'],['溶接','溶接',counts['溶接'],'p3']
+  ];
+  let h=cards.map(([key,label,n,cl])=>`<button class="process-card ${cl} ${selectedProcess===key?'active':''}" data-p="${key}"><div class="head">${label}</div><div class="value">${n}件</div><div class="sub">${dateRows.filter(r=>key==='ALL'||r.process===key).reduce((s,r)=>s+r.qty,0)}点</div><div class="bar"><div class="fill" style="width:${total?Math.max(4,n/total*100):0}%"></div></div></button>`).join('');
+  ['仕上げ','塗装','組立'].forEach(x=>h+=`<div class="process-card disabled"><div class="head">${x}</div><div class="stamp">対象外</div></div>`);
+  const grid=document.getElementById('processGrid');grid.innerHTML=h;
+  grid.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{selectedProcess=b.dataset.p;render()});
+}
+function groupRows(list){
+  const m=new Map();
+  list.forEach(r=>{
+    const key=r.name.trim()||'(品名なし)';
+    if(!m.has(key))m.set(key,{name:key,rows:[],qty:0,mats:new Map()});
+    const g=m.get(key);g.rows.push(r);g.qty+=r.qty;
+    const [mn,mc]=material(r.code);g.mats.set(mn,mc);
+  });
+  return [...m.values()].sort((a,b)=>b.rows.length-a.rows.length||a.name.localeCompare(b.name,'ja'));
+}
+function renderProducts(){
+  const list=currentRows(), groups=groupRows(list);
+  const title=selectedProcess==='ALL'?'全体・品名一覧':selectedProcess+'・品名一覧';
+  document.getElementById('listTitle').textContent=title;
+  document.getElementById('listSub').textContent=`生地日 ${selectedDate} ／ 同じ形状は材質違いでもまとめて表示`;
+  document.getElementById('summary').textContent=`${groups.length}種類・${list.length}件・${list.reduce((s,r)=>s+r.qty,0)}点`;
+  document.getElementById('chartSub').textContent=`${selectedProcess==='ALL'?'全体':selectedProcess}／生地日 ${selectedDate}／件数比率`;
+  const box=document.getElementById('productGrid');
+  if(!groups.length){box.innerHTML='<div class="empty">対象データはありません</div>'}
+  else box.innerHTML=groups.map((g,i)=>{
+    const first=[...g.mats.values()][0]||'#607d8b';
+    const badges=[...g.mats.entries()].map(([n,c])=>`<span class="badge" style="--mc:${c}">${n}</span>`).join('');
+    return `<button class="product-card" style="--stripe:${first}" data-i="${i}"><div class="product-name">${esc(g.name)}</div><div class="badges">${badges}</div><div class="meta"><div class="count">${g.rows.length}件</div><div class="qty">${g.qty}点</div></div></button>`;
+  }).join('');
+  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openModal(groups[Number(b.dataset.i)]));
+  renderChart(groups,list.length);
+}
+function renderChart(groups,total){
+  const donut=document.getElementById('donut'), legend=document.getElementById('legend');
+  document.getElementById('totalCenter').textContent=total;
+  if(!total){donut.style.setProperty('--pie','#d8e2e8');legend.innerHTML='<div class="legend-row"><span class="dot" style="background:#d8e2e8"></span><span>対象データなし</span><b>0</b></div>';return}
+  let start=0,parts=[];
+  groups.slice(0,9).forEach((g,i)=>{const end=start+g.rows.length/total*100;parts.push(`${COLORS[i%COLORS.length]} ${start}% ${end}%`);start=end});
+  if(start<100)parts.push(`#cfd8dc ${start}% 100%`);
+  donut.style.setProperty('--pie',`conic-gradient(${parts.join(',')})`);
+  legend.innerHTML=groups.slice(0,9).map((g,i)=>`<div class="legend-row"><span class="dot" style="background:${COLORS[i%COLORS.length]}"></span><span>${esc(g.name)}</span><b>${g.rows.length}</b></div>`).join('');
+  if(groups.length>9)legend.innerHTML+=`<div class="legend-row"><span class="dot" style="background:#cfd8dc"></span><span>その他</span><b>${groups.slice(9).reduce((s,g)=>s+g.rows.length,0)}</b></div>`;
+}
+function openModal(g){
+  document.getElementById('modalTitle').textContent=g.name;
+  document.getElementById('modalBody').innerHTML=`<table class="detail"><thead><tr><th>製造指示番号</th><th>品番</th><th>材質</th><th>進捗</th><th>数量</th><th>担当者</th></tr></thead><tbody>${g.rows.map(r=>`<tr><td>${esc(r.id)}</td><td>${esc(r.code)}</td><td>${material(r.code)[0]}</td><td>${esc(r.status)}</td><td>${r.qty}</td><td>${esc(r.owner)}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('modal').classList.add('show');
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.querySelectorAll('.date-tab').forEach((b,i)=>b.onclick=e=>{
+  if(e.target.tagName==='INPUT')return;
+  document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  selectedDate=i<3?todayDates()[i]:document.getElementById('customDate').value;
   render();
-}catch(e){$('notice').innerHTML=`<span>⚠ SCV.csvを読み込めません：${escapeHtml(e.message||'不明なエラー')}</span><button onclick="this.parentElement.remove()">×</button>`;render()}}
-document.addEventListener('click',e=>{const tab=e.target.closest('.date-tab');if(tab&&!e.target.matches('input')){dateMode=tab.dataset.dateMode;selectedProcess='全体';render()}const pc=e.target.closest('.process-card:not(.disabled)');if(pc){selectedProcess=pc.dataset.process;render()}const product=e.target.closest('.product-card');if(product)openDetails(product.dataset.key)});
-$('specifiedDate').addEventListener('change',()=>{dateMode='specified';selectedProcess='全体';render()});$('refresh').addEventListener('click',loadCSV);$('closeModal').addEventListener('click',()=>$('modal').classList.remove('show'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('show')});
-loadCSV();setInterval(loadCSV,30000);
+});
+document.getElementById('customDate').onchange=e=>{
+  selectedDate=e.target.value;selectedProcess='ALL';
+  document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));
+  e.target.closest('.date-tab').classList.add('active');render();
+};
+document.getElementById('refresh').onclick=load;
+document.getElementById('close').onclick=()=>document.getElementById('modal').classList.remove('show');
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show')};
+load();
 </script>
 </body>
 </html>
