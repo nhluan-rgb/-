@@ -7,7 +7,7 @@
 <style>
 :root{
   --ink:#102437;--muted:#60798c;--line:rgba(111,184,221,.34);
-  --glass:rgba(238,249,255,.33);--glass2:rgba(255,255,255,.37);
+  --glass:rgba(238,249,255,.16);--glass2:rgba(255,255,255,.18);
   --blue:#1976d2;--cyan:#16a6b6;--green:#21a467;--orange:#ef8a24;
   --purple:#7a5cc7;--red:#d94b45;--yellow:#ddb319;
 }
@@ -56,7 +56,7 @@ main{padding:14px 18px 28px;max-width:1900px;margin:auto}
 .date-tab.active{transform:translateY(-2px);box-shadow:0 0 0 3px rgba(34,142,196,.20),0 7px 18px rgba(4,44,62,.20)}
 .date-tab .label{font-size:18px;font-weight:1000}.date-tab .date{margin-top:4px;color:var(--muted);font-size:13px}.date-tab .count{position:absolute;right:14px;top:12px;font-size:29px;font-weight:1000}.date-tab input{width:100%;margin-top:6px;padding:6px 8px;border:1px solid #bad0dd;border-radius:6px;background:#fff}
 .glass{
-  background:var(--glass);border:1px solid rgba(255,255,255,.70);border-radius:15px;
+  background:var(--glass);border:1.5px solid rgba(255,255,255,.88);border-radius:15px;
   box-shadow:0 8px 22px rgba(4,40,57,.20);backdrop-filter:blur(9px)
 }
 .group-board{padding:13px 14px;margin-bottom:12px}
@@ -100,6 +100,38 @@ main{padding:14px 18px 28px;max-width:1900px;margin:auto}
 @media(max-width:1500px){.group-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:1380px){.group-grid{grid-template-columns:repeat(3,1fr)}.workspace{grid-template-columns:250px 1fr}.chart-panel{grid-column:1/-1}.chart-panel{display:grid;grid-template-columns:280px 1fr;gap:18px}.legend{margin-top:0}}
 @media(max-width:850px){.top{align-items:flex-start}.date-tabs{grid-template-columns:1fr 1fr}.group-grid{grid-template-columns:1fr 1fr}.workspace{grid-template-columns:1fr}.chart-panel{display:block}.subgroups{max-height:none}}
+
+/* V6.5：4つの大枠だけを約50％さらに透明化 */
+.group-board,
+.side-info,
+.center-view,
+.chart-panel{
+  background:rgba(238,249,255,.16) !important;
+  border-color:rgba(255,255,255,.88) !important;
+  box-shadow:0 8px 22px rgba(4,40,57,.18) !important;
+  backdrop-filter:blur(8px) !important;
+  -webkit-backdrop-filter:blur(8px) !important;
+}
+
+/* 内側カードは白さを維持して読みやすく */
+.group-card{
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.88),
+    rgba(235,247,252,.78)
+  ) !important;
+}
+.item-card{
+  background:rgba(255,255,255,.82) !important;
+}
+.info-row,
+.legend-row{
+  background:rgba(255,255,255,.78) !important;
+}
+.donut:after{
+  background:#fff !important;
+}
+
 </style>
 </head>
 <body>
