@@ -2627,6 +2627,9 @@ section.panel.work{
   z-index:3;
 }
 .boss-status-card .j-number-search{margin-top:0}
+.boss-status-card .boss-name,
+.boss-status-card .boss-goal,
+.boss-status-card .boss-status-message{display:none!important}
 .game-banner.message-relocated{display:none!important}
 .boss-mission-slot{
   width:100%;
@@ -2972,7 +2975,7 @@ section.panel.work{
 <div id="ngGame" class="ng-game">
   <div class="game-stage evolution-stage" id="evolutionStage">
     <div class="game-banner" id="gameBanner">
-      <div class="game-banner-main" id="gameBannerMessage">📣 今日もみんなで力を合わせよう！<br><strong>🔥 15:00までの全件完成を目指そう！💪</strong></div>
+    <div class="game-banner-main" id="gameBannerMessage"><strong>15時までに全件達成！</strong></div>
       <div class="game-clock"><small>現在時刻</small><b id="gameClock">--:--:--</b><small id="gameDate">----</small></div>
     </div>
 
@@ -3475,7 +3478,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>📅 ${year}年${monthNumber}月 15時<span class="calendar-title-line">達成カレンダー</span></b>
-      <span>15時までに全件達成！ 一件ずつ確実に、今日も全員でやり切ろう！</span>
+      <span>15時までに全件達成！ 今日も全員でやり切ろう！</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
@@ -4487,15 +4490,15 @@ if(shipFilter==='today-ng'){
     if(window.BossMotivation) window.BossMotivation.stop();
     if(gameBannerMessage){
       gameBannerMessage.innerHTML=before15
-        ? '🏆 全件完了！<br><strong>15時前達成！ お疲れ様でした！</strong>'
-        : '😊 全件完了！<br><strong>今日もお疲れ様でした！ 明日も頑張りましょう！</strong>';
+        ? '<strong>🏆 15時前達成！<br>お疲れ様でした！</strong>'
+        : '<strong>🏆 全件完了！<br>お疲れ様でした！</strong>';
     }
   }else{
     getOrRecordTodayCompletion(ng.length);
     if(gameBanner) gameBanner.classList.remove('success','late');
     if(gameBannerMessage){
       if(window.BossMotivation) window.BossMotivation.stop();
-      gameBannerMessage.innerHTML=`📣 本日出荷分を進めましょう！<br><strong>🔥 15:00までの全件完了を目指そう！ 残り${fmt(ng.length)}件</strong>`;
+      gameBannerMessage.innerHTML=`<strong>15時までに全件達成！<br>残り${fmt(ng.length)}件</strong>`;
     }
   }
 
@@ -4519,7 +4522,7 @@ if(shipFilter==='today-ng'){
   if(window.BossMotivation) window.BossMotivation.stop();
   if(gameBanner) gameBanner.classList.remove('success','late');
   if(gameBannerMessage){
-    gameBannerMessage.innerHTML='📣 今日もみんなで力を合わせよう！<br><strong>🔥 15:00までの全件完成を目指そう！💪</strong>';
+    gameBannerMessage.innerHTML='<strong>15時までに全件達成！</strong>';
   }
   if(goalResult){
     goalResult.className='goal-result';
