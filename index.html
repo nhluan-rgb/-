@@ -2620,13 +2620,16 @@ section.panel.work{
 .standard-donut-card:has(.j-number-search),
 .boss-status-card:has(.j-number-search){min-height:680px!important;justify-content:flex-start!important}
 .boss-status-card .j-number-search-host{
-  position:absolute;
-  left:28px;
-  right:28px;
-  bottom:24px;
+  position:relative;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  width:100%;
+  margin-top:16px;
   z-index:3;
 }
 .boss-status-card .j-number-search{margin-top:0}
+.boss-status-card:has(.j-number-search){align-self:start!important;height:auto!important}
 .boss-status-card .boss-name,
 .boss-status-card .boss-goal,
 .boss-status-card .boss-status-message{display:none!important}
