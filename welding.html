@@ -627,6 +627,7 @@ button.info-row.filter-row.active{
 }
 .process-stage-card{
   --stage:#607d8b;
+  position:relative;
   min-height:132px;
   padding:9px;
   border:3px solid var(--stage);
@@ -641,6 +642,23 @@ button.info-row.filter-row.active{
 .process-stage-card.active{
   transform:translateY(-4px);
   box-shadow:0 6px 0 color-mix(in srgb,var(--stage) 65%,#263944),0 0 0 4px #fff47d,0 0 24px var(--stage);
+}
+.process-showing-label{
+  position:absolute;
+  right:7px;
+  bottom:7px;
+  z-index:2;
+  padding:5px 10px;
+  border:2px solid #d8ffe4;
+  border-radius:5px;
+  background:linear-gradient(180deg,#20c86a,#07853d);
+  color:#fff;
+  font-size:14px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.04em;
+  text-shadow:0 1px 0 #005825;
+  box-shadow:0 3px 0 #005d2c,0 0 12px #26ef78;
 }
 .process-stage-name{
   display:flex;
@@ -928,10 +946,6 @@ function renderInfo(){
     <div class="info-section material">
       <div class="info-section-title">原料別 内訳</div>
       ${materialRows||'<div class="info-row"><span>対象データ</span><b>0件</b></div>'}
-    </div>
-    <div class="info-section process">
-      <div class="info-section-title">工程別 内訳</div>
-      ${processRows||'<div class="info-row"><span>対象データ</span><b>0件</b></div>'}
     </div>`;
   document.querySelectorAll('[data-material]').forEach(button=>button.onclick=()=>{
     selectedMaterial=selectedMaterial===button.dataset.material?'':button.dataset.material;
@@ -1000,6 +1014,7 @@ function renderChart(){
       <div class="process-stage-name"><span class="process-stage-icon">${stage.icon}</span>${stage.label}</div>
       <div class="process-stage-count">${stageRows.length}件</div>
       <div class="process-stage-points">${points}点</div>
+      ${selectedProcess===stage.key?'<span class="process-showing-label">表示中</span>':''}
     </button>`;
   }).join('');
   box.innerHTML=cards||'<div class="process-dashboard-empty">対象データはありません</div>';
