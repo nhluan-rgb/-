@@ -3392,6 +3392,45 @@ section.panel.work{
   color:#eafcff!important;
 }
 </style>
+<style id="v89_mission_marquee_clock_align_patch">
+/* 通常4タブ：時計を情報カードと同じ高さへ */
+.standard-game .standard-clock.visual-hud-clock{
+  top:475px!important;
+}
+
+/* 指令文：白い大型1行文字を3周させてから次の文へ */
+.standard-mission-slot,
+.standard-mission-content{
+  overflow:hidden!important;
+}
+.standard-mission-slot .standard-banner-message{
+  display:block!important;
+  width:max-content!important;
+  max-width:none!important;
+  padding:3px 0 3px 100%!important;
+  color:#fff!important;
+  font-size:clamp(28px,2vw,38px)!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  text-shadow:
+    0 2px 2px #00345d,
+    0 0 9px #36cfff,
+    0 0 16px rgba(54,207,255,.55)!important;
+  animation:standardMissionMarquee 12s linear 3;
+  will-change:transform;
+}
+@keyframes standardMissionMarquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+@media(max-width:1300px){
+  .standard-game .standard-clock.visual-hud-clock{
+    top:490px!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4033,7 +4072,7 @@ function animateStandardDonut(doneEnd,activeEnd,newEnd,rateEnd){
   standardDonutAnimation=requestAnimationFrame(frame);
 }
 
-const STANDARD_MESSAGE_INTERVAL=45000;
+const STANDARD_MESSAGE_INTERVAL=36000;
 const messageValue=(context,type)=>{
   if(type==='total')return fmt(context.total);
   if(type==='remaining')return fmt(context.remaining);
@@ -4229,8 +4268,13 @@ function renderStandardRotatingMessage(){
   const lines=standardMessageGroups[standardMessageKey]||standardMessageGroups.today;
   const createLine=lines[standardMessageIndex%lines.length];
   const missionText=createLine(standardMessageContext);
-  standardMessageElement.innerHTML=escapeHtml(missionText)
-    .replace(/。/g,'。<br>');
+  if(standardMessageElement.dataset.missionText!==missionText){
+    standardMessageElement.dataset.missionText=missionText;
+    standardMessageElement.textContent=missionText;
+    standardMessageElement.style.animation='none';
+    void standardMessageElement.offsetWidth;
+    standardMessageElement.style.animation='';
+  }
   if(standardVisualMessageElement){
     const visualLine=lines[(standardMessageIndex+1)%lines.length];
     standardVisualMessageElement.textContent=visualLine(standardMessageContext);
