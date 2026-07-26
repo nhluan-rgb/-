@@ -2525,6 +2525,9 @@ section.panel.work{
 .achievement-stamp.done{background:#10a84f;box-shadow:0 3px 0 #076b31,0 0 10px #22ed77;font-size:13px;letter-spacing:-.04em}
 .achievement-stamp.miss{background:#d71920;box-shadow:0 3px 0 #790a0d,0 0 10px #ff353d}
 .achievement-stamp.pending{background:#0c79ba;box-shadow:0 3px 0 #06496f,0 0 10px #33c8ff;font-size:13px}
+.achievement-day.holiday{background:rgba(116,131,145,.28);border-color:#a5b6c2}
+.achievement-day.holiday .achievement-day-number{color:#d7e0e6}
+.achievement-stamp.holiday{background:#647784;box-shadow:0 3px 0 #34434c,0 0 10px #b7cad5;font-size:13px}
 .achievement-day-note{margin-top:4px;text-align:center;font-size:10px;font-weight:900;color:#d5f4ff}
 @media(max-width:1300px){
   .monthly-achievement-calendar{position:relative;inset:auto;width:calc(100% - 24px);min-width:0;margin:210px 12px 20px}
@@ -2952,6 +2955,41 @@ function readAchievementMonth(month){
 function writeAchievementMonth(month,data){
   localStorage.setItem(achievementMonthKey(month),JSON.stringify(data));
 }
+function localDateKey(date){
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+function nthMonday(year,month,nth){
+  const first=new Date(year,month-1,1);
+  return 1+((8-first.getDay())%7)+(nth-1)*7;
+}
+function japaneseHolidayKeys(year){
+  const holidays=new Set();
+  const add=(month,day)=>holidays.add(`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
+  add(1,1); add(1,nthMonday(year,1,2));
+  add(2,11); if(year>=2020)add(2,23);
+  add(3,Math.floor(20.8431+0.242194*(year-1980)-Math.floor((year-1980)/4)));
+  add(4,29); add(5,3); add(5,4); add(5,5);
+  add(7,nthMonday(year,7,3)); add(8,11);
+  add(9,nthMonday(year,9,3));
+  add(9,Math.floor(23.2488+0.242194*(year-1980)-Math.floor((year-1980)/4)));
+  add(10,nthMonday(year,10,2)); add(11,3); add(11,23);
+
+  for(let day=2;day<=365;day++){
+    const date=new Date(year,0,day);
+    const key=localDateKey(date);
+    const before=localDateKey(new Date(year,0,day-1));
+    const after=localDateKey(new Date(year,0,day+1));
+    if(!holidays.has(key)&&holidays.has(before)&&holidays.has(after))holidays.add(key);
+  }
+  [...holidays].forEach(key=>{
+    const holiday=new Date(`${key}T00:00:00`);
+    if(holiday.getDay()!==0)return;
+    const substitute=new Date(holiday);
+    do{substitute.setDate(substitute.getDate()+1)}while(holidays.has(localDateKey(substitute)));
+    holidays.add(localDateKey(substitute));
+  });
+  return holidays;
+}
 function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const box=$('monthlyAchievementCalendar');
   if(!box)return;
@@ -2959,8 +2997,12 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const today=getShipDates().today;
   const month=today.slice(0,7);
   const data=readAchievementMonth(month);
+  const [year,monthNumber]=month.split('-').map(Number);
+  const holidayKeys=japaneseHolidayKeys(year);
+  const todayDate=new Date(`${today}T00:00:00`);
+  const todayIsClosed=todayDate.getDay()===0||todayDate.getDay()===6||holidayKeys.has(today);
 
-  if(allowRecord&&!data[today]){
+  if(allowRecord&&!todayIsClosed&&!data[today]){
     const existingCompletion=localStorage.getItem(getTodayCompletionKey());
     if(existingCompletion){
       const completedAt=new Date(existingCompletion);
@@ -2981,7 +3023,6 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     }
   }
 
-  const [year,monthNumber]=month.split('-').map(Number);
   const daysInMonth=new Date(year,monthNumber,0).getDate();
   const firstWeekday=new Date(year,monthNumber-1,1).getDay();
   const cells=[];
@@ -2989,18 +3030,25 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   for(let day=1;day<=daysInMonth;day++){
     const dateKey=`${month}-${String(day).padStart(2,'0')}`;
     const result=data[dateKey];
+    const calendarDate=new Date(year,monthNumber-1,day);
+    const weekday=calendarDate.getDay();
+    const isNationalHoliday=holidayKeys.has(dateKey);
+    const isClosed=weekday===0||weekday===6||isNationalHoliday;
     const isToday=dateKey===today;
     const isFuture=dateKey>today;
     let stamp='';
-    if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
+    if(isClosed){
+      const closedLabel=isNationalHoliday?'祝日':weekday===6?'土曜日':'日曜日';
+      stamp=`<div class="achievement-stamp holiday">休日</div><div class="achievement-day-note">${closedLabel}</div>`;
+    }else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
     else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
-    cells.push(`<div class="achievement-day ${isToday?'today':''}"><div class="achievement-day-number">${day}</div>${stamp}</div>`);
+    cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed?'holiday':''}"><div class="achievement-day-number">${day}</div>${stamp}</div>`);
   }
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>📅 ${year}年${monthNumber}月 15時<span class="calendar-title-line">達成カレンダー</span></b>
-      <span>達成＝15時前に全件完了 ／ 未達成＝15時時点で残件あり</span>
+      <span>達成＝15時前に全件完了 ／ 未達成＝15時時点で残件あり ／ 休日＝判定対象外</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
