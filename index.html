@@ -2590,7 +2590,23 @@ section.panel.work{
 }
 .bonus-title{text-align:center;font-size:29px;font-weight:1000;color:#fff283;text-shadow:0 2px 0 #8b4200,0 0 13px #ff9d00}
 .bonus-period{text-align:center;margin-top:4px;font-size:14px;font-weight:900;color:#ffe7ad}
-.bonus-intro{margin:11px 0;padding:9px 10px;border-radius:10px;background:#fff2c51a;border:1px solid #ffd35d;color:#fff9d3;font-size:14px;line-height:1.45;font-weight:850}
+.bonus-intro{
+  display:grid;
+  place-items:center;
+  min-height:82px;
+  margin:13px 0;
+  padding:14px 16px;
+  border-radius:13px;
+  background:linear-gradient(135deg,rgba(132,18,4,.88),rgba(225,60,8,.9),rgba(132,18,4,.88));
+  border:3px solid #ffd35d;
+  color:#fff7a5;
+  font-size:23px;
+  line-height:1.35;
+  font-weight:1000;
+  text-align:center;
+  text-shadow:0 2px 0 #721000,0 0 10px #ff9a00;
+  box-shadow:inset 0 0 16px #ffb52f55,0 0 14px #ff6a003d;
+}
 .bonus-progress-list{display:grid;gap:9px}
 .bonus-progress-row{padding:9px 11px;border:2px solid var(--bonus);border-radius:11px;background:rgba(4,20,30,.72);box-shadow:inset 0 0 12px color-mix(in srgb,var(--bonus) 22%,transparent)}
 .bonus-progress-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:19px;font-weight:1000}
@@ -2659,19 +2675,6 @@ section.panel.work{
   font-weight:850;
 }
 .j-search-result-item b{display:block;font-size:14px;color:#00679a}
-.ng-search-row{margin-top:14px}
-.ng-search-row .j-number-search{
-  display:grid;
-  grid-template-columns:260px minmax(420px,1fr) minmax(360px,520px);
-  grid-template-areas:"title keypad result" "display keypad result";
-  gap:8px 14px;
-  align-items:center;
-  margin-top:0;
-}
-.ng-search-row .j-search-title{grid-area:title}
-.ng-search-row .j-search-display{grid-area:display;margin-top:0}
-.ng-search-row .j-search-keypad{grid-area:keypad;margin-top:0}
-.ng-search-row .j-search-result{grid-area:result;margin-top:0;max-height:104px}
 .j-detail-title{font-size:28px;font-weight:1000;color:#0b5f8b}
 .j-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:14px}
 .j-detail-cell{padding:13px;border:1px solid #bcd5e2;border-radius:10px;background:#f2f9fc}
@@ -2679,7 +2682,6 @@ section.panel.work{
 .j-detail-cell b{display:block;margin-top:4px;font-size:18px;color:#15384a;overflow-wrap:anywhere}
 .j-detail-highlight{color:#d62d25!important;font-size:23px!important}
 @media(max-width:1300px){
-  .ng-search-row .j-number-search{grid-template-columns:1fr;grid-template-areas:"title" "display" "keypad" "result"}
   .j-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:1300px){
@@ -2954,10 +2956,9 @@ section.panel.work{
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
         <div class="boss-goal">完了までの進捗 <span id="bossHpText">100%</span></div>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
+        <div class="j-number-search-host"></div>
       </section>
     </div>
-
-    <div class="ng-search-row"><div class="j-number-search-host"></div></div>
 
     <div class="runner-world evolution-runner-world">
       <div id="runnerTrack" class="runner-track"></div>
@@ -3358,7 +3359,7 @@ function updateBonusCampaignPanel(){
   box.innerHTML=`
     <div class="bonus-title">🏆 大入り3万円 進捗</div>
     <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    <div class="bonus-intro"><strong>西日本100％達成で2万円、全国も100％達成なら合計3万円！</strong></div>
+    <div class="bonus-intro"><strong>西日本100％＝2万円、全国も100％＝3万円！</strong></div>
     <div class="bonus-progress-list">${progressHtml}</div>
     ${resultHtml}`;
 }
