@@ -2466,12 +2466,12 @@ section.panel.work{
 @keyframes clockRedAlert{from{filter:brightness(.86);transform:scale(1)}to{filter:brightness(1.32);transform:scale(1.018)}}
 
 /* 本日出荷・未完成：月間15時達成カレンダー */
-.evolution-visual:has(.monthly-achievement-calendar){min-height:870px!important}
+.evolution-visual:has(.monthly-achievement-calendar){min-height:930px!important}
 .monthly-achievement-calendar{
   position:absolute;
   z-index:7;
   left:24px;
-  top:222px;
+  top:282px;
   width:min(760px,calc(100% - 500px));
   min-width:650px;
   padding:17px 19px 19px;
@@ -2521,7 +2521,7 @@ section.panel.work{
   line-height:1;
   transform:rotate(-4deg);
 }
-.achievement-stamp.done{background:#10a84f;box-shadow:0 3px 0 #076b31,0 0 10px #22ed77}
+.achievement-stamp.done{background:#10a84f;box-shadow:0 3px 0 #076b31,0 0 10px #22ed77;font-size:13px;letter-spacing:-.04em}
 .achievement-stamp.miss{background:#d71920;box-shadow:0 3px 0 #790a0d,0 0 10px #ff353d}
 .achievement-stamp.pending{background:#0c79ba;box-shadow:0 3px 0 #06496f,0 0 10px #33c8ff;font-size:13px}
 .achievement-day-note{margin-top:4px;text-align:center;font-size:10px;font-weight:900;color:#d5f4ff}
@@ -2991,7 +2991,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     const isToday=dateKey===today;
     const isFuture=dateKey>today;
     let stamp='';
-    if(result?.status==='done')stamp=`<div class="achievement-stamp done">完了</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
+    if(result?.status==='done')stamp=`<div class="achievement-stamp done">目標達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
     else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未完了</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
     cells.push(`<div class="achievement-day ${isToday?'today':''}"><div class="achievement-day-number">${day}</div>${stamp}</div>`);
@@ -2999,7 +2999,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>📅 ${year}年${monthNumber}月 15時達成カレンダー</b>
-      <span>完了＝15時前達成 ／ 未完了＝15時時点で残件あり</span>
+      <span>目標達成＝15時前に全件完了 ／ 未完了＝15時時点で残件あり</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
