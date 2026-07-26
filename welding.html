@@ -367,6 +367,48 @@ main{padding:14px 18px 28px;max-width:1900px;margin:auto}
   display:flex;
   align-items:center;
 }
+.side-info{
+  background:linear-gradient(155deg,rgba(92,12,17,.94),rgba(151,25,22,.88),rgba(57,12,25,.94)) !important;
+  border-color:#ff8a75 !important;
+  box-shadow:inset 0 0 30px rgba(255,93,60,.18),0 5px 18px rgba(48,0,8,.28) !important;
+}
+.side-info .panel-title{
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:10px;
+  background:linear-gradient(180deg,#f04432,#a90f12);
+  color:#fff !important;
+  text-shadow:0 2px 0 #630006;
+  box-shadow:0 3px 0 #6f070b,0 0 12px rgba(255,74,45,.45);
+}
+.side-info .big-number{
+  color:#fff7b0 !important;
+  text-shadow:0 3px 0 #5c0005,0 0 14px #ff6a32 !important;
+}
+.side-info .big-sub{color:#fff !important;text-shadow:0 2px 0 #620007}
+.center-head h2,.chart-title{
+  display:inline-block;
+  padding:7px 14px;
+  border-radius:9px;
+  background:linear-gradient(180deg,#d92e22,#8e0b10);
+  color:#fff !important;
+  text-shadow:0 2px 0 #5b0004;
+  box-shadow:0 3px 0 #65070a;
+}
+button.info-row.filter-row{
+  width:100%;
+  cursor:pointer;
+  font-family:inherit;
+  color:#14283b;
+  text-align:left;
+  transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
+}
+button.info-row.filter-row:hover{transform:translateX(4px);box-shadow:0 0 0 3px rgba(255,218,74,.5)}
+button.info-row.filter-row.active{
+  background:linear-gradient(180deg,#fff08a,#ffc928) !important;
+  border-color:#ffb300 !important;
+  box-shadow:0 0 0 3px #fff3a6,0 0 16px #ffb300;
+}
 </style>
 
 
@@ -636,7 +678,7 @@ const GROUPS=[
   {key:'check',name:'溶接無かもしれない案件',icon:'❓',cls:'g-check',color:'#d94b45'},
   {key:'other',name:'その他',icon:'…',cls:'g-other',color:'#71808b'}
 ];
-let rows=[],selectedGroup='all',selectedDate='';
+let rows=[],selectedGroup='all',selectedDate='',selectedMaterial='',selectedProcess='';
 
 function pad(n){return String(n).padStart(2,'0')}
 function fmt(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
@@ -709,8 +751,14 @@ function dateBaseRows(){
 }
 function dateRows(){return dateBaseRows().filter(r=>!isCancelled(r))}
 function cancelRows(){return dateBaseRows().filter(r=>isCancelled(r))}
-function selectedRows(){const list=dateRows();return selectedGroup==='all'?list:list.filter(r=>r.group===selectedGroup)}
-function selectedCancelRows(){const list=cancelRows();return selectedGroup==='all'?list:list.filter(r=>r.group===selectedGroup)}
+function groupScopedRows(list){return selectedGroup==='all'?list:list.filter(r=>r.group===selectedGroup)}
+function selectedRows(){
+  let list=groupScopedRows(selectedProcess==='キャンセル'?cancelRows():dateRows());
+  if(selectedMaterial)list=list.filter(r=>material(r.materialRaw,r.code)[0]===selectedMaterial);
+  if(selectedProcess)list=list.filter(r=>r.process===selectedProcess);
+  return list;
+}
+function selectedCancelRows(){return groupScopedRows(cancelRows())}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 async function load(){
@@ -754,20 +802,20 @@ function renderGroups(){
     const sub=list.filter(r=>r.group===g.key),qty=sub.reduce((s,r)=>s+r.qty,0);
     return `<button class="group-card ${g.cls} ${selectedGroup===g.key?'active':''}" data-g="${g.key}"><div class="ghead">${g.icon} ${g.name}</div><div class="gcount">${sub.length}件</div><div class="gqty">${qty}点</div></button>`
   }).join('');
-  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{selectedGroup=b.dataset.g;render()});
+  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{selectedGroup=b.dataset.g;selectedMaterial='';selectedProcess='';render()});
 }
 function groupLabel(){
   if(selectedGroup==='all')return {name:'全体',color:'#19738c'};
   return GROUPS.find(g=>g.key===selectedGroup)||{name:'その他',color:'#607d8b'};
 }
 function renderInfo(){
-  const list=selectedRows(),g=groupLabel(),qty=list.reduce((s,r)=>s+r.qty,0);
+  const list=selectedRows(),breakdownList=groupScopedRows(dateRows()),g=groupLabel(),qty=list.reduce((s,r)=>s+r.qty,0);
   const badge=document.getElementById('selectedBadge');badge.textContent=g.name;badge.style.background=g.color;
   document.getElementById('selectedCount').textContent=`${list.length}件`;
   document.getElementById('selectedQty').textContent=`${qty}点`;
 
   const mats=new Map(),procs=new Map();
-  list.forEach(r=>{
+  breakdownList.forEach(r=>{
     const [m,mc]=material(r.materialRaw,r.code);
     if(!mats.has(m))mats.set(m,{count:0,color:mc});
     mats.get(m).count++;
@@ -785,14 +833,14 @@ function renderInfo(){
     .map(n=>{
       const x=mats.get(n);
       const short=n==='スーパーダイマ'?'SD':n==='アルミ'?'AL':n==='その他'?'他':n;
-      return `<div class="info-row"><span class="info-name"><span class="info-icon" style="background:${x.color}">${short}</span>${n}</span><b>${x.count}件</b></div>`;
+      return `<button type="button" class="info-row filter-row${selectedMaterial===n?' active':''}" data-material="${esc(n)}"><span class="info-name"><span class="info-icon" style="background:${x.color}">${short}</span>${n}</span><b>${x.count}件</b></button>`;
     }).join('');
 
   const processColors={'未着手':'#8b98a3','CAD/CAM':'#7a5cc7','切断':'#16a6b6','曲げ':'#ef8a24','溶接':'#d94b45','仕上':'#43a047','キャンセル':'#607d8b','工程未設定':'#8b98a3'};
   const processIcons={'未着手':'未','CAD/CAM':'C','切断':'切','曲げ':'曲','溶接':'溶','仕上':'仕','キャンセル':'×','工程未設定':'?'};
   const processRows=processOrder
     .filter(n=>procs.has(n))
-    .map(n=>`<div class="info-row${n==='キャンセル'?' cancel-row':''}"><span class="info-name"><span class="info-icon" style="background:${processColors[n]||'#607d8b'}">${processIcons[n]||String(n).charAt(0)}</span>${n}${n==='キャンセル'?'（集計外）':''}</span><b>${procs.get(n)}件</b></div>`)
+    .map(n=>`<button type="button" class="info-row filter-row${n==='キャンセル'?' cancel-row':''}${selectedProcess===n?' active':''}" data-process="${esc(n)}"><span class="info-name"><span class="info-icon" style="background:${processColors[n]||'#607d8b'}">${processIcons[n]||String(n).charAt(0)}</span>${n}${n==='キャンセル'?'（集計外）':''}</span><b>${procs.get(n)}件</b></button>`)
     .join('');
 
   document.getElementById('infoList').innerHTML=`
@@ -804,6 +852,14 @@ function renderInfo(){
       <div class="info-section-title">工程別 内訳</div>
       ${processRows||'<div class="info-row"><span>対象データ</span><b>0件</b></div>'}
     </div>`;
+  document.querySelectorAll('[data-material]').forEach(button=>button.onclick=()=>{
+    selectedMaterial=selectedMaterial===button.dataset.material?'':button.dataset.material;
+    render();
+  });
+  document.querySelectorAll('[data-process]').forEach(button=>button.onclick=()=>{
+    selectedProcess=selectedProcess===button.dataset.process?'':button.dataset.process;
+    render();
+  });
   document.getElementById('warningNote').style.display=selectedGroup==='check'?'block':'none';
 }
 function groupProducts(list){
@@ -821,6 +877,8 @@ function renderCenter(){
   document.getElementById('centerSub').textContent=selectedDate==='unregistered'
     ? '生地日未登録 ／ 登録漏れを品名・規格単位でまとめて表示'
     : `生地日 ${selectedDate} ／ 品名・規格単位でまとめて表示`;
+  const activeFilters=[selectedMaterial,selectedProcess].filter(Boolean).join('・');
+  document.getElementById('centerTitle').textContent=activeFilters?`${g.name}｜${activeFilters} 一覧`:`${g.name} 一覧`;
   document.getElementById('centerSummary').textContent=`${items.length}種類`;
   const box=document.getElementById('subgroups');
   if(!items.length){box.innerHTML='<div class="empty">対象データはありません</div>';return}
@@ -917,10 +975,10 @@ document.querySelectorAll('.date-tab').forEach(b=>b.onclick=e=>{
   document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');
   const mode=b.dataset.mode,dates=todayDates();
   selectedDate=mode==='today'?dates[0]:mode==='tomorrow'?dates[1]:mode==='after'?dates[2]:mode==='unregistered'?'unregistered':document.getElementById('customDate').value;
-  selectedGroup='all';render()
+  selectedGroup='all';selectedMaterial='';selectedProcess='';render()
 });
 document.getElementById('customDate').onchange=e=>{
-  selectedDate=e.target.value;selectedGroup='all';document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));e.target.closest('.date-tab').classList.add('active');render()
+  selectedDate=e.target.value;selectedGroup='all';selectedMaterial='';selectedProcess='';document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));e.target.closest('.date-tab').classList.add('active');render()
 };
 document.getElementById('refresh').onclick=load;
 document.getElementById('close').onclick=()=>document.getElementById('modal').classList.remove('show');
