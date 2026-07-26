@@ -1,0 +1,96 @@
+name: Update SCV.csv from latest CSV
+
+on:
+  push:
+    paths:
+      - "*.csv"
+      - "**/*.csv"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-scv-csv
+  cancel-in-progress: true
+
+jobs:
+  update-scv:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find latest CSV and update SCV.csv
+        id: update
+        shell: python
+        run: |
+          from pathlib import Path
+          import os
+          import shutil
+          import subprocess
+
+          root = Path.cwd()
+          target = root / "SCV.csv"
+
+          candidates = [
+              path for path in root.rglob("*.csv")
+              if path.is_file()
+              and path.resolve() != target.resolve()
+              and ".git" not in path.parts
+          ]
+
+          if not candidates:
+              raise SystemExit("Không tìm thấy file CSV mới.")
+
+          def last_commit_time(path):
+              relative = path.relative_to(root).as_posix()
+              result = subprocess.run(
+                  ["git", "log", "-1", "--format=%ct", "--", relative],
+                  capture_output=True,
+                  text=True
+              )
+              value = result.stdout.strip()
+              return int(value) if value.isdigit() else 0
+
+          source = max(
+              candidates,
+              key=lambda path: (
+                  last_commit_time(path),
+                  path.stat().st_mtime_ns
+              )
+          )
+
+          shutil.copyfile(source, target)
+
+          with open(
+              os.environ["GITHUB_OUTPUT"],
+              "a",
+              encoding="utf-8"
+          ) as output:
+              output.write(
+                  f"source={source.relative_to(root).as_posix()}\n"
+              )
+
+          print(f"Updated SCV.csv from: {source}")
+
+      - name: Commit updated SCV.csv
+        shell: bash
+        run: |
+          if git diff --quiet -- SCV.csv; then
+            echo "SCV.csv không thay đổi."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add SCV.csv
+          git commit -m \
+            "Auto-update SCV.csv from ${{ steps.update.outputs.source }}"
+          git push
