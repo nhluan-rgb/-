@@ -2474,7 +2474,7 @@ section.panel.work{
 @keyframes clockRedAlert{from{filter:brightness(.86);transform:scale(1)}to{filter:brightness(1.32);transform:scale(1.018)}}
 
 /* 本日出荷・未完成：月間15時達成カレンダー */
-.evolution-visual:has(.monthly-achievement-calendar){min-height:1040px!important}
+.evolution-visual:has(.monthly-achievement-calendar){min-height:1160px!important}
 .monthly-achievement-calendar{
   position:absolute;
   z-index:7;
@@ -2619,6 +2619,14 @@ section.panel.work{
 .bonus-result.waiting{background:linear-gradient(180deg,#e8f5fa,#a9cfdf);color:#15384a;box-shadow:0 4px 0 #527d91}
 .standard-donut-card:has(.j-number-search),
 .boss-status-card:has(.j-number-search){min-height:680px!important;justify-content:flex-start!important}
+.boss-status-card .j-number-search-host{
+  position:absolute;
+  left:28px;
+  right:28px;
+  bottom:24px;
+  z-index:3;
+}
+.boss-status-card .j-number-search{margin-top:0}
 .j-number-search{
   width:100%;
   margin-top:18px;
@@ -3359,7 +3367,7 @@ function updateBonusCampaignPanel(){
   box.innerHTML=`
     <div class="bonus-title">🏆 大入り3万円 進捗</div>
     <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    <div class="bonus-intro"><strong>西日本100％＝2万円、全国も100％＝3万円！</strong></div>
+    <div class="bonus-intro"><strong>西日本100％＝2万円<br>全国も100％＝3万円！</strong></div>
     <div class="bonus-progress-list">${progressHtml}</div>
     ${resultHtml}`;
 }
