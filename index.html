@@ -2617,6 +2617,34 @@ section.panel.work{
 .bonus-result small{display:block;font-size:13px;font-weight:1000}
 .bonus-result strong{display:block;margin-top:2px;font-size:36px;line-height:1;font-weight:1000}
 .bonus-result.waiting{background:linear-gradient(180deg,#e8f5fa,#a9cfdf);color:#15384a;box-shadow:0 4px 0 #527d91}
+.ng-utility-column{
+  position:absolute;
+  z-index:8;
+  right:24px;
+  top:282px;
+  width:420px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  align-content:start;
+}
+.ng-utility-column .bonus-campaign-panel{
+  position:relative;
+  inset:auto;
+  width:100%;
+  min-height:0;
+}
+.ng-utility-column .game-clock.visual-hud-clock{
+  position:relative!important;
+  inset:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:205px!important;
+  padding:18px!important;
+}
+.ng-utility-column .game-clock.visual-hud-clock b{font-size:68px!important}
 .standard-donut-card:has(.j-number-search),
 .boss-status-card:has(.j-number-search){min-height:680px!important;justify-content:flex-start!important}
 .boss-status-card .j-number-search-host{
@@ -2629,7 +2657,7 @@ section.panel.work{
   z-index:3;
 }
 .boss-status-card .j-number-search{margin-top:0}
-.boss-status-card:has(.j-number-search){align-self:start!important;height:auto!important}
+.boss-status-card:has(.j-number-search){align-self:stretch!important;height:auto!important}
 .boss-status-card .boss-name,
 .boss-status-card .boss-goal,
 .boss-status-card .boss-status-message{display:none!important}
@@ -2730,6 +2758,46 @@ section.panel.work{
   font-size:18px!important;
   line-height:1.4!important;
 }
+.standard-banner.mission-relocated{display:none!important}
+.standard-mission-slot{
+  position:absolute;
+  z-index:8;
+  left:5%;
+  right:5%;
+  top:300px;
+  min-height:122px;
+  display:grid;
+  place-items:center;
+  padding:14px 18px;
+  border:3px solid #ff8a43;
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(41,26,22,.93),rgba(86,43,24,.91),rgba(35,32,38,.93));
+  box-shadow:0 5px 0 rgba(76,20,7,.75),inset 0 0 18px rgba(255,113,48,.18),0 0 15px rgba(255,87,35,.36);
+}
+.standard-mission-content{
+  width:100%;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:18px;
+}
+.standard-mission-slot .standard-banner-title{
+  margin:0;
+  padding:8px 15px;
+  font-size:21px;
+  white-space:nowrap;
+}
+.standard-mission-slot .standard-banner-message{
+  width:100%;
+  font-size:clamp(25px,1.75vw,33px);
+  line-height:1.3;
+  white-space:normal;
+  text-align:left;
+}
+@media(max-width:1300px){
+  .standard-mission-slot{position:relative;inset:auto;margin:280px 18px 16px}
+  .standard-mission-content{grid-template-columns:1fr}
+}
 .j-detail-title{font-size:28px;font-weight:1000;color:#0b5f8b}
 .j-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:14px}
 .j-detail-cell{padding:13px;border:1px solid #bcd5e2;border-radius:10px;background:#f2f9fc}
@@ -2741,7 +2809,8 @@ section.panel.work{
 }
 @media(max-width:1300px){
   .monthly-achievement-calendar{position:relative;inset:auto;width:calc(100% - 24px);min-width:0;margin:210px 12px 20px}
-  .bonus-campaign-panel{position:relative;inset:auto;width:calc(100% - 24px);margin:12px}
+  .ng-utility-column{position:relative;inset:auto;width:calc(100% - 24px);margin:12px}
+  .bonus-campaign-panel{position:relative;inset:auto;width:100%;margin:0}
 }
 
 /* 工程別チャートを撤去し、全体進捗を宇宙船HUD化 */
@@ -2954,6 +3023,7 @@ section.panel.work{
 
     <div class="standard-world">
       <section class="standard-visual" aria-label="生産進捗イメージ">
+        <div id="standardMissionSlot" class="standard-mission-slot"></div>
         <div class="standard-visual-overlay">
           <div id="standardOverview">
             <div class="standard-tab-name" id="standardTabName">本日製造期限</div>
@@ -2999,7 +3069,9 @@ section.panel.work{
     <div class="evolution-world">
       <section class="evolution-visual" id="evolutionVisual">
         <div id="monthlyAchievementCalendar" class="monthly-achievement-calendar"></div>
-        <section id="bonusCampaignPanel" class="bonus-campaign-panel" aria-label="大入り3万円進捗"></section>
+        <div id="ngUtilityColumn" class="ng-utility-column">
+          <section id="bonusCampaignPanel" class="bonus-campaign-panel" aria-label="大入り3万円進捗"></section>
+        </div>
         <div id="ngProcessBacklog" class="process-backlog-panel ng-process-backlog" hidden></div>
       </section>
 
@@ -4000,7 +4072,20 @@ function formatShipTabValues(){
 function mountVisualClock(clockBox,targetVisual){
   if(!clockBox||!targetVisual)return;
   clockBox.classList.add('visual-hud-clock');
-  if(clockBox.parentElement!==targetVisual)targetVisual.append(clockBox);
+  const utility=clockBox.classList.contains('game-clock')?document.getElementById('ngUtilityColumn'):null;
+  const mountTarget=utility||targetVisual;
+  if(clockBox.parentElement!==mountTarget)mountTarget.append(clockBox);
+}
+function mountStandardMission(){
+  const banner=document.querySelector('.standard-banner');
+  const slot=document.getElementById('standardMissionSlot');
+  if(!banner||!slot)return;
+  const content=banner.querySelector(':scope > div:first-child');
+  if(content){
+    content.classList.add('standard-mission-content');
+    if(content.parentElement!==slot)slot.appendChild(content);
+  }
+  banner.classList.add('mission-relocated');
 }
 
 function updateClockAlertMode(clockBox){
@@ -4529,6 +4614,7 @@ if(shipFilter==='today-ng'){
   if(standardGame) standardGame.classList.add('show');
   mountShipTabs(document.querySelector('.standard-visual'),false,true);
   mountVisualClock(document.querySelector('.standard-clock'),document.querySelector('.standard-visual'));
+  mountStandardMission();
   renderStandardGame(
     chartRows,chartCounts,chartLabels,chartTotal,
     chartDone,chartActive,chartNew,chartCancel,chartRate,chartEffective
