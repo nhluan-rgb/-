@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>塗装工程ダッシュボード</title>
+<style>
+:root{--cyan:#5cecff;--navy:#061b30;--panel:#0c3550e8;--rust:#df4a2f;--bake:#8b5cf6;--other:#64748b}
+*{box-sizing:border-box}body{margin:0;font-family:"Yu Gothic","Meiryo",sans-serif;color:#fff;background:#041524 url("assets/bg_40.png") center/cover fixed no-repeat}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(#02111dcc,#03283ca8);z-index:-1}
+button,input{font:inherit}.app{min-height:100vh;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 24px;border:2px solid #75e8ff;border-radius:18px;background:#092b42e8;box-shadow:0 6px 0 #021421,0 0 24px #00c8ff42}
+.title{display:flex;align-items:center;gap:16px}.logo{width:68px;height:68px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(145deg,#27d5ff,#0867bc);font-size:36px;box-shadow:0 0 18px #3ce4ff}.title h1{margin:0;font-size:35px}.title p{margin:4px 0 0;color:#bdefff;font-size:17px;font-weight:800}.actions{display:flex;gap:10px}.btn{padding:13px 20px;border:2px solid #8defff;border-radius:12px;background:#0d5480;color:#fff;text-decoration:none;font-weight:1000;cursor:pointer}.btn:hover{filter:brightness(1.2)}
+.mission{margin-top:14px;padding:20px 24px;border:2px solid #ffda62;border-radius:18px;background:linear-gradient(100deg,#4b1306e8,#8f260ce0);box-shadow:0 6px 0 #2b0a03,0 0 22px #ff541f55}.mission b{font-size:31px;color:#fff3a0;text-shadow:0 0 12px #ff4b22}.mission span{display:block;margin-top:7px;font-size:19px;font-weight:900}
+.deadline-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;margin-top:14px;padding:11px;border:2px solid #6de5ff;border-radius:18px;background:#06283ee8;box-shadow:0 6px 0 #021724,0 0 20px #00c7ff38}.deadline-tab{min-height:145px;padding:14px;border:2px solid #9fdff0;border-radius:14px;background:linear-gradient(180deg,#eefaff,#cfe7f2);color:#123047;text-align:left;cursor:pointer;box-shadow:0 4px 0 #174b64;transition:.16s}.deadline-tab:hover,.deadline-tab.active{transform:translateY(-3px);border-color:#53ecff;box-shadow:0 6px 0 #087da0,0 0 18px #4de8ff}.deadline-tab.critical{background:linear-gradient(180deg,#ff7b31,#c52d13);border-color:#ffbd67;color:#fff}.deadline-tab .tab-name{min-height:48px;font-size:19px;font-weight:1000;line-height:1.3}.deadline-tab .tab-count{display:block;margin-top:8px;font-size:32px;font-weight:1000;color:#075fb5}.deadline-tab .tab-points{display:block;margin-top:4px;font-size:23px;font-weight:1000;color:#d51f2f}.deadline-tab.critical .tab-count{color:#fff16b}.deadline-tab.critical .tab-points{color:#c9f7ff}.deadline-tab input{width:100%;margin-top:7px;padding:7px;border:1px solid #5794aa;border-radius:7px;font-weight:900}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:14px}.kpi{min-height:140px;padding:16px;border:2px solid color-mix(in srgb,var(--c) 72%,#fff);border-radius:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 28%,#0a2940),#08263bd9);box-shadow:0 5px 0 #031727,0 0 16px color-mix(in srgb,var(--c) 38%,transparent)}.kpi small{font-size:16px;font-weight:900;color:#d8f6ff}.kpi strong{display:block;margin-top:9px;font-size:38px;color:var(--c);text-shadow:0 0 13px var(--c)}.kpi em{font-style:normal;font-size:18px;font-weight:900}
+.controls{display:grid;grid-template-columns:minmax(280px,1fr) 260px auto;gap:10px;margin-top:14px;padding:12px;border:2px solid #6edcf1;border-radius:15px;background:#082d45dc}.controls input,.controls select{min-width:0;padding:13px 15px;border:1px solid #86dff1;border-radius:10px;background:#f5fcff;color:#13293a;font-size:17px;font-weight:800}
+.groups{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.group{border:3px solid var(--group);border-radius:20px;overflow:hidden;background:#082a40e8;box-shadow:0 7px 0 #031724,0 0 24px color-mix(in srgb,var(--group) 42%,transparent)}.group-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:linear-gradient(90deg,color-mix(in srgb,var(--group) 72%,#151515),color-mix(in srgb,var(--group) 28%,#071e31))}.group-head h2{margin:0;font-size:32px}.group-head strong{font-size:27px;color:#fff8a6}.group-body{padding:14px}
+.color-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:14px}.color-chip{min-height:94px;display:grid;grid-template-columns:62px 1fr;align-items:center;gap:9px;padding:8px;border:1px solid #8ddff0;border-radius:12px;background:#ffffff13}.swatch{width:62px;height:62px;border:3px solid #fff;border-radius:12px;box-shadow:0 0 13px currentColor}.color-chip b{font-size:18px}.color-chip small{display:block;margin-top:4px;color:#c8eaf4;font-weight:800}
+.table-wrap{max-height:530px;overflow:auto;border:1px solid #5c9db5;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:900px;background:#f8fcff;color:#102738}thead{position:sticky;top:0;z-index:2;background:#0c5878;color:#fff}th,td{padding:10px 9px;border-bottom:1px solid #c7dce5;text-align:left}th{font-size:15px}td{font-size:14px}tbody tr:hover{background:#e0f6ff}.id{font-weight:1000;color:#075b91}.munsell{display:inline-flex;align-items:center;gap:7px;font-weight:1000}.munsell i{width:28px;height:28px;border:2px solid #405866;border-radius:6px}.empty{padding:38px;text-align:center;color:#bdddea;font-size:22px;font-weight:900}
+.other{margin-top:16px;border:2px solid #94a3b8;border-radius:16px;background:#102d40e8;padding:14px}.other h2{margin:0 0 10px;font-size:24px}.foot{margin:16px 0 4px;text-align:center;color:#b8dce9;font-weight:800}
+@media(max-width:1300px){.deadline-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,1fr)}.groups{grid-template-columns:1fr}}@media(max-width:700px){.app{padding:8px}.top{align-items:flex-start}.title h1{font-size:25px}.actions{flex-direction:column}.deadline-tabs{grid-template-columns:1fr}.kpis{grid-template-columns:1fr}.controls{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="title"><div class="logo">🎨</div><div><h1>塗装工程ダッシュボード</h1><p>錆止め・焼付・マンセル色を一画面で確認</p></div></div>
+    <div class="actions"><a class="btn" href="index (5).html">← ダッシュボード</a><button class="btn" id="reload">CSV更新</button></div>
+  </header>
+  <section class="mission"><b>🔥 色と品質に、九州工場の誇りを込めよう！</b><span id="missionText">塗装工程を読み込んでいます。</span></section>
+  <section class="deadline-tabs">
+    <button class="deadline-tab" data-deadline="tomorrow"><span class="tab-name">明日期限</span><span class="tab-count" id="tomorrowCount">0件</span><span class="tab-points" id="tomorrowPoints">0点</span></button>
+    <button class="deadline-tab" data-deadline="day2"><span class="tab-name">明後日期限</span><span class="tab-count" id="day2Count">0件</span><span class="tab-points" id="day2Points">0点</span></button>
+    <button class="deadline-tab" data-deadline="day3"><span class="tab-name">3日後期限</span><span class="tab-count" id="day3Count">0件</span><span class="tab-points" id="day3Points">0点</span></button>
+    <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">本日期限未完成<br>・製造期限切れ</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
+    <button class="deadline-tab" data-deadline="specified"><span class="tab-name">指定日製造期限</span><span class="tab-count" id="specifiedCount">0件</span><span class="tab-points" id="specifiedPoints">0点</span><input id="specifiedDate" type="date"></button>
+  </section>
+  <section class="kpis">
+    <div class="kpi" style="--c:#42e8ff"><small>塗装対象 合計</small><strong id="totalCount">0件</strong><em id="totalQty">0点</em></div>
+    <div class="kpi" style="--c:#ff684d"><small>錆止め</small><strong id="rustCount">0件</strong><em id="rustQty">0点</em></div>
+    <div class="kpi" style="--c:#b18aff"><small>焼付</small><strong id="bakeCount">0件</strong><em id="bakeQty">0点</em></div>
+    <div class="kpi" style="--c:#ffd34f"><small>マンセル値 登録</small><strong id="colorCount">0件</strong><em id="colorRate">0.0%</em></div>
+    <div class="kpi" style="--c:#96a6b5"><small>その他</small><strong id="otherCount">0件</strong><em id="otherQty">0点</em></div>
+  </section>
+  <section class="controls"><input id="search" placeholder="指示番号・品番・品名・規格・マンセル値を検索"><select id="owner"><option value="">すべての担当者</option></select><input id="csvFile" type="file" accept=".csv,text/csv"></section>
+  <main class="groups">
+    <section class="group" style="--group:var(--rust)"><header class="group-head"><h2>🛡 錆止め</h2><strong id="rustHead">0件・0点</strong></header><div class="group-body"><div class="color-summary" id="rustColors"></div><div class="table-wrap" id="rustTable"></div></div></section>
+    <section class="group" style="--group:var(--bake)"><header class="group-head"><h2>🔥 焼付</h2><strong id="bakeHead">0件・0点</strong></header><div class="group-body"><div class="color-summary" id="bakeColors"></div><div class="table-wrap" id="bakeTable"></div></div></section>
+  </main>
+  <section class="other"><h2>その他の塗装対象 <span id="otherHead">0件・0点</span></h2><div class="table-wrap" id="otherTable"></div></section>
+  <div class="foot">※ ZN・SUSは、色・マンセル値が登録されている場合のみ塗装対象に含みます。色が未登録の場合は対象外です。画面の色は近似表示のため、最終確認には正式な色見本を使用してください。</div>
+</div>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('ja-JP');
+let paintRows=[],deadlineFilter='critical',specifiedDate='';
+function localDate(offset=0){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function rowsForDeadline(rows,key){
+  const today=localDate(0),dates={tomorrow:localDate(1),day2:localDate(2),day3:localDate(3),specified:specifiedDate};
+  const dueOf=r=>String(r['製造期限']||'').trim().replaceAll('/','-');
+  if(key==='critical')return rows.filter(r=>dueOf(r)&&dueOf(r)<=today);
+  return rows.filter(r=>dueOf(r)===dates[key]);
+}
+function parseCsv(text){
+  const rows=[];let row=[],cell='',quoted=false;
+  for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
+    if(c==='"'&&quoted&&n==='"'){cell+='"';i++}
+    else if(c==='"'){quoted=!quoted}
+    else if(c===','&&!quoted){row.push(cell);cell=''}
+    else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(x=>x!==''))rows.push(row);row=[];cell=''}
+    else cell+=c
+  }
+  if(cell||row.length){row.push(cell);rows.push(row)}
+  const headers=rows.shift()||[];
+  return rows.map(values=>Object.fromEntries(headers.map((h,i)=>[h,values[i]||''])));
+}
+function typeOf(row){
+  const text=`${row['品名']||''} ${row['規格']||''}`;
+  if(/さび止め|錆止め|サビ止め|防錆/.test(text))return 'rust';
+  if(/焼付|焼き付|焼付け/.test(text))return 'bake';
+  return 'other';
+}
+function cleanColor(value){return String(value||'').replace(/[（(]?近似色[）)]?/g,'').replace(/全ﾂﾔ|3分ﾂﾔ/g,'').trim()}
+function munsellColor(value){
+  const raw=cleanColor(value).toUpperCase();
+  if(!raw)return '#d9e1e5';
+  const neutral=raw.match(/^N-?([0-9.]+)/);
+  if(neutral){const light=Math.max(5,Math.min(98,Number(neutral[1])<=10?Number(neutral[1])*10:Number(neutral[1])));return `hsl(210 3% ${light}%)`}
+  const m=raw.match(/^([0-9.]+)(R|YR|Y|GY|G|BG|B|PB|P|RP)\\s*([0-9.]+)\\/([0-9.]+)/);
+  if(m){const hueBase={R:0,YR:30,Y:55,GY:90,G:130,BG:170,B:210,PB:245,P:280,RP:325}[m[2]];const hue=(hueBase+(Number(m[1])-5)*2+360)%360;const light=Math.max(8,Math.min(95,Number(m[3])*10));const sat=Math.max(3,Math.min(88,Number(m[4])*8));return `hsl(${hue} ${sat}% ${light}%)`}
+  if(/^22-85C/.test(raw))return '#d9d6b7';
+  return '#a9b3ba';
+}
+function qty(rows){return rows.reduce((s,r)=>s+(Number(String(r['数量']).replace(/,/g,''))||0),0)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function colorCards(rows){
+  const map=new Map();
+  rows.forEach(r=>{const name=cleanColor(r['色'])||'色未登録';if(!map.has(name))map.set(name,{count:0,qty:0});const x=map.get(name);x.count++;x.qty+=Number(String(r['数量']).replace(/,/g,''))||0});
+  return [...map.entries()].sort((a,b)=>b[1].count-a[1].count).slice(0,12).map(([name,x])=>`<div class="color-chip"><i class="swatch" style="background:${munsellColor(name)};color:${munsellColor(name)}"></i><div><b>${esc(name)}</b><small>${fmt(x.count)}件・${fmt(x.qty)}点</small></div></div>`).join('');
+}
+function table(rows){
+  if(!rows.length)return '<div class="empty">対象データはありません</div>';
+  return `<table><thead><tr><th>製造指示番号</th><th>品番・品名</th><th>規格</th><th>マンセル値</th><th>数量</th><th>現在工程</th><th>期限</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']);return `<tr><td class="id">${esc(r['製造指示番号'])}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td><td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td><td><b>${fmt(r['数量'])}点</b></td><td><b>${esc(r['進捗']||'未着手')}</b></td><td>${esc(r['製造期限'])}</td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+}
+function render(){
+  const q=$('search').value.trim().toLowerCase(),owner=$('owner').value;
+  const deadlineRows=rowsForDeadline(paintRows,deadlineFilter);
+  const filtered=deadlineRows.filter(r=>(!owner||r['担当者']===owner)&&(!q||['製造指示番号','品番','品名','規格','色'].some(k=>String(r[k]||'').toLowerCase().includes(q))));
+  const rust=filtered.filter(r=>typeOf(r)==='rust'),bake=filtered.filter(r=>typeOf(r)==='bake'),other=filtered.filter(r=>typeOf(r)==='other');
+  const set=(id,v)=>$(id).textContent=v;
+  set('totalCount',`${fmt(filtered.length)}件`);set('totalQty',`${fmt(qty(filtered))}点`);
+  set('rustCount',`${fmt(rust.length)}件`);set('rustQty',`${fmt(qty(rust))}点`);
+  set('bakeCount',`${fmt(bake.length)}件`);set('bakeQty',`${fmt(qty(bake))}点`);
+  set('otherCount',`${fmt(other.length)}件`);set('otherQty',`${fmt(qty(other))}点`);
+  const colored=filtered.filter(r=>cleanColor(r['色'])).length;set('colorCount',`${fmt(colored)}件`);set('colorRate',`${filtered.length?(colored/filtered.length*100).toFixed(1):'0.0'}%`);
+  set('rustHead',`${fmt(rust.length)}件・${fmt(qty(rust))}点`);set('bakeHead',`${fmt(bake.length)}件・${fmt(qty(bake))}点`);set('otherHead',`${fmt(other.length)}件・${fmt(qty(other))}点`);
+  $('rustColors').innerHTML=colorCards(rust);$('bakeColors').innerHTML=colorCards(bake);
+  $('rustTable').innerHTML=table(rust);$('bakeTable').innerHTML=table(bake);$('otherTable').innerHTML=table(other);
+  const filterNames={tomorrow:'明日期限',day2:'明後日期限',day3:'3日後期限',critical:'本日期限未完成・製造期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
+  $('missionText').textContent=`${filterNames[deadlineFilter]}は全${fmt(filtered.length)}件・${fmt(qty(filtered))}点。錆止め${fmt(rust.length)}件、焼付${fmt(bake.length)}件です。色・数量・期限を確認して確実に仕上げましょう！`;
+  [['tomorrow','tomorrow'],['day2','day2'],['day3','day3'],['critical','critical'],['specified','specified']].forEach(([key,id])=>{
+    const list=rowsForDeadline(paintRows,key);$(`${id}Count`).textContent=`${fmt(list.length)}件`;$(`${id}Points`).textContent=`${fmt(qty(list))}点`;
+  });
+  document.querySelectorAll('.deadline-tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.deadline===deadlineFilter));
+}
+function loadText(text){
+  const all=parseCsv(text.replace(/^\\uFEFF/,''));
+  paintRows=all.filter(r=>{
+    const status=String(r['進捗']||'').trim();
+    const materialText=`${r['品名']||''} ${r['規格']||''}`.toUpperCase();
+    const hasZn=/(^|[\s　])ZN(?=$|[\s　])/.test(materialText);
+    const hasSus=/(^|[\s　])SUS(?=$|[\s　])/.test(materialText);
+    const hasColor=Boolean(cleanColor(r['色']));
+    const noPaintMaterial=(hasZn||hasSus)&&!hasColor;
+    return status!=='組立'&&status!=='完成'&&!status.includes('キャンセル')&&!status.includes('ｷｬﾝｾﾙ')&&!noPaintMaterial;
+  });
+  const owners=[...new Set(paintRows.map(r=>r['担当者']).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));
+  $('owner').innerHTML='<option value="">すべての担当者</option>'+owners.map(x=>`<option>${esc(x)}</option>`).join('');
+  render();
+}
+async function autoLoad(){try{const res=await fetch('SCV.csv?ts='+Date.now());if(!res.ok)throw Error();loadText(await res.text())}catch(e){$('missionText').textContent='SCV.csvを自動読込できません。右のファイル選択からSCV.csvを選んでください。'}}
+$('reload').onclick=autoLoad;$('search').oninput=render;$('owner').onchange=render;
+$('csvFile').onchange=async e=>{const file=e.target.files[0];if(file)loadText(await file.text())};
+$('specifiedDate').value=localDate(4);specifiedDate=$('specifiedDate').value;
+document.querySelectorAll('.deadline-tab').forEach(tab=>tab.addEventListener('click',()=>{deadlineFilter=tab.dataset.deadline;render()}));
+$('specifiedDate').addEventListener('click',e=>e.stopPropagation());
+$('specifiedDate').addEventListener('change',e=>{specifiedDate=e.target.value;deadlineFilter='specified';render()});
+autoLoad();setInterval(autoLoad,30000);
+</script>
+</body>
+</html>
