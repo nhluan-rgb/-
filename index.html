@@ -2493,6 +2493,7 @@ section.panel.work{
   margin-bottom:12px;
 }
 .calendar-achievement-title b{font-size:29px;color:#fff49a;text-shadow:0 0 10px #ffbe2e}
+.calendar-achievement-title b .calendar-title-line{display:block;font:inherit;color:inherit;text-shadow:inherit}
 .calendar-achievement-title span{font-size:16px;font-weight:1000;color:#bcefff}
 .achievement-weekdays,.achievement-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
 .achievement-weekdays div{text-align:center;padding:5px;font-size:15px;font-weight:1000;color:#aeeeff}
@@ -2991,15 +2992,15 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     const isToday=dateKey===today;
     const isFuture=dateKey>today;
     let stamp='';
-    if(result?.status==='done')stamp=`<div class="achievement-stamp done">目標達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
-    else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未完了</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
+    if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
+    else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
     cells.push(`<div class="achievement-day ${isToday?'today':''}"><div class="achievement-day-number">${day}</div>${stamp}</div>`);
   }
   box.innerHTML=`
     <div class="calendar-achievement-title">
-      <b>📅 ${year}年${monthNumber}月 15時達成カレンダー</b>
-      <span>目標達成＝15時前に全件完了 ／ 未完了＝15時時点で残件あり</span>
+      <b>📅 ${year}年${monthNumber}月 15時<span class="calendar-title-line">達成カレンダー</span></b>
+      <span>達成＝15時前に全件完了 ／ 未達成＝15時時点で残件あり</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
