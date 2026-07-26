@@ -838,6 +838,14 @@ function normalizeProductText(value){
 function classify(r){
   const name=normalizeProductText(r.name);
   const spec=normalizeProductText(r.spec);
+
+  // ボックス強制ルール：
+  // 「平・平蓋・被せ・かぶせ蓋・水切り」を含み、
+  // かつ「ダクト・カバー」を含まない品名は表記揺れに関係なくボックスへ。
+  const forcedBox=/(平|平蓋|被せ|かぶせ(?:蓋)?|カブセ(?:蓋)?|水切り?)/.test(name);
+  const boxException=/(ダクト|DUCT|カバー|COVER)/.test(name);
+  if(forcedBox&&!boxException)return 'box';
+
   const manual=categoryOverrides[name];
   if(manual&&GROUPS.some(g=>g.key===manual))return manual;
 
