@@ -2551,8 +2551,40 @@ section.panel.work{
 .achievement-day.holiday .achievement-day-number{color:#d7e0e6}
 .achievement-stamp.holiday{background:#647784;box-shadow:0 3px 0 #34434c,0 0 10px #b7cad5;font-size:13px}
 .achievement-day-note{margin-top:4px;text-align:center;font-size:10px;font-weight:900;color:#d5f4ff}
+.bonus-campaign-panel{
+  position:absolute;
+  z-index:8;
+  right:24px;
+  top:282px;
+  width:420px;
+  min-height:430px;
+  padding:17px;
+  border:4px solid #ffe45c;
+  border-radius:22px;
+  background:
+    linear-gradient(rgba(255,223,70,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,223,70,.055) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(42,24,3,.97),rgba(100,62,3,.94));
+  background-size:20px 20px,20px 20px,auto;
+  color:#fff;
+  box-shadow:0 8px 0 #2d1b00,inset 0 0 30px #ffcc2930,0 0 23px #ffc40066;
+}
+.bonus-title{text-align:center;font-size:29px;font-weight:1000;color:#fff283;text-shadow:0 2px 0 #8b4200,0 0 13px #ff9d00}
+.bonus-period{text-align:center;margin-top:4px;font-size:14px;font-weight:900;color:#ffe7ad}
+.bonus-intro{margin:11px 0;padding:9px 10px;border-radius:10px;background:#fff2c51a;border:1px solid #ffd35d;color:#fff9d3;font-size:14px;line-height:1.45;font-weight:850}
+.bonus-progress-list{display:grid;gap:9px}
+.bonus-progress-row{padding:9px 11px;border:2px solid var(--bonus);border-radius:11px;background:rgba(4,20,30,.72);box-shadow:inset 0 0 12px color-mix(in srgb,var(--bonus) 22%,transparent)}
+.bonus-progress-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:19px;font-weight:1000}
+.bonus-progress-head b{font-size:27px;color:var(--bonus);text-shadow:0 0 10px var(--bonus)}
+.bonus-progress-track{height:12px;margin-top:6px;border-radius:999px;background:#ffffff20;overflow:hidden}
+.bonus-progress-fill{height:100%;width:min(100%,var(--rate));border-radius:inherit;background:linear-gradient(90deg,color-mix(in srgb,var(--bonus) 60%,#fff),var(--bonus));box-shadow:0 0 10px var(--bonus)}
+.bonus-result{margin-top:12px;padding:11px;border-radius:12px;text-align:center;background:linear-gradient(180deg,#f8cf3e,#dc8500);color:#421f00;box-shadow:0 4px 0 #8b4a00,0 0 14px #ffb000}
+.bonus-result small{display:block;font-size:13px;font-weight:1000}
+.bonus-result strong{display:block;margin-top:2px;font-size:36px;line-height:1;font-weight:1000}
+.bonus-result.waiting{background:linear-gradient(180deg,#e8f5fa,#a9cfdf);color:#15384a;box-shadow:0 4px 0 #527d91}
 @media(max-width:1300px){
   .monthly-achievement-calendar{position:relative;inset:auto;width:calc(100% - 24px);min-width:0;margin:210px 12px 20px}
+  .bonus-campaign-panel{position:relative;inset:auto;width:calc(100% - 24px);margin:12px}
 }
 
 /* 工程別チャートを撤去し、全体進捗を宇宙船HUD化 */
@@ -2809,6 +2841,7 @@ section.panel.work{
     <div class="evolution-world">
       <section class="evolution-visual" id="evolutionVisual">
         <div id="monthlyAchievementCalendar" class="monthly-achievement-calendar"></div>
+        <section id="bonusCampaignPanel" class="bonus-campaign-panel" aria-label="大入り3万円進捗"></section>
         <div id="ngProcessBacklog" class="process-backlog-panel ng-process-backlog" hidden></div>
       </section>
 
@@ -3011,6 +3044,97 @@ function japaneseHolidayKeys(year){
     holidays.add(localDateKey(substitute));
   });
   return holidays;
+}
+const BONUS_PROGRESS_DEFAULTS={
+  '2026-08-20':{east:49.0,west:55.5,national:50.3}
+};
+let bonusRemoteProgress=null;
+async function loadBonusProgress(){
+  try{
+    const response=await fetch(`bonus-progress.json?ts=${Date.now()}`,{cache:'no-store'});
+    if(!response.ok)throw new Error(`bonus-progress.json ${response.status}`);
+    const data=await response.json();
+    const closingDate=String(data.closingDate||'').trim();
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(closingDate))throw new Error('closingDate');
+    bonusRemoteProgress={
+      closingDate,
+      east:Number(data.east)||0,
+      west:Number(data.west)||0,
+      national:Number(data.national)||0
+    };
+    updateBonusCampaignPanel();
+  }catch(error){
+    console.warn('大入り進捗データを読み込めません。内蔵値を使用します。',error);
+  }
+}
+function bonusCycleInfo(now=new Date()){
+  const start=new Date(now.getFullYear(),now.getMonth()-(now.getDate()<=20?1:0),21);
+  const end=new Date(start.getFullYear(),start.getMonth()+1,20);
+  return {start,end};
+}
+function bonusProgressFor(end){
+  const key=localDateKey(end);
+  if(bonusRemoteProgress&&bonusRemoteProgress.closingDate===key)return bonusRemoteProgress;
+  try{
+    const saved=JSON.parse(localStorage.getItem(`bonusProgress:${key}`)||'null');
+    if(saved)return saved;
+  }catch(_){}
+  return BONUS_PROGRESS_DEFAULTS[key]||{east:0,west:0,national:0};
+}
+function nextBonusBusinessDay(closingDate){
+  const pay=new Date(closingDate.getFullYear(),closingDate.getMonth(),21);
+  while(pay.getDay()===0||pay.getDay()===6||japaneseHolidayKeys(pay.getFullYear()).has(localDateKey(pay))){
+    pay.setDate(pay.getDate()+1);
+  }
+  return pay;
+}
+function bonusReward(progress){
+  return (Number(progress.west)>=100?20000:0)+(Number(progress.national)>=100?10000:0);
+}
+function shortJapaneseDate(date){
+  return `${date.getMonth()+1}月${date.getDate()}日`;
+}
+function updateBonusCampaignPanel(){
+  const box=$('bonusCampaignPanel');
+  if(!box)return;
+  const now=new Date();
+  const cycle=bonusCycleInfo(now);
+  const progress=bonusProgressFor(cycle.end);
+  const rows=[
+    {key:'east',label:'東日本',color:'#43b8ff'},
+    {key:'west',label:'西日本',color:'#ff9f32'},
+    {key:'national',label:'全国',color:'#56e493'}
+  ];
+  const progressHtml=rows.map(item=>{
+    const rate=Math.max(0,Number(progress[item.key])||0);
+    return `<div class="bonus-progress-row" style="--bonus:${item.color};--rate:${Math.min(rate,100)}%">
+      <div class="bonus-progress-head"><span>${item.label}</span><b>${rate.toFixed(1)}%</b></div>
+      <div class="bonus-progress-track"><div class="bonus-progress-fill"></div></div>
+    </div>`;
+  }).join('');
+
+  const lastClosedEnd=now.getDate()>=21
+    ? new Date(now.getFullYear(),now.getMonth(),20)
+    : new Date(now.getFullYear(),now.getMonth()-1,20);
+  const lastKey=localDateKey(lastClosedEnd);
+  const lastProgress=bonusProgressFor(lastClosedEnd);
+  const hasLastResult=Boolean(
+    (bonusRemoteProgress&&bonusRemoteProgress.closingDate===lastKey)||
+    BONUS_PROGRESS_DEFAULTS[lastKey]||
+    localStorage.getItem(`bonusProgress:${lastKey}`)
+  );
+  const payDate=nextBonusBusinessDay(lastClosedEnd);
+  const reward=bonusReward(lastProgress);
+  const resultHtml=hasLastResult&&now>=payDate
+    ? `<div class="bonus-result"><small>${shortJapaneseDate(payDate)} 支給額</small><strong>¥${reward.toLocaleString('ja-JP')}</strong></div>`
+    : `<div class="bonus-result waiting"><small>今回の締日 ${shortJapaneseDate(cycle.end)}</small><strong>支給予定 ${shortJapaneseDate(nextBonusBusinessDay(cycle.end))}</strong></div>`;
+
+  box.innerHTML=`
+    <div class="bonus-title">🏆 大入り3万円 進捗</div>
+    <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
+    <div class="bonus-intro">九州工場は<strong>西日本100%</strong>で2万円、さらに<strong>全国100%</strong>で1万円加算。最高3万円です。</div>
+    <div class="bonus-progress-list">${progressHtml}</div>
+    ${resultHtml}`;
 }
 function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const box=$('monthlyAchievementCalendar');
@@ -4017,6 +4141,7 @@ if(shipFilter==='today-ng'){
   $('bossCount').textContent=fmt(ng.length);
   $('bossPoints').textContent=fmt(ngPoints);
   updateMonthlyAchievementCalendar(ng.length,!fullStats);
+  updateBonusCampaignPanel();
 
   const startBossKey=`todayNgStart:${dates.today}`;
   const savedBossStart=Number(localStorage.getItem(startBossKey)||0);
@@ -4436,7 +4561,9 @@ updateShipLabels();
 updateGameClock();
 render();
 loadSharedCsv(true);
+loadBonusProgress();
 setInterval(()=>{ if(!csvLoading) loadSharedCsv(false); },30000);
+setInterval(loadBonusProgress,30000);
 
 </script>
 
