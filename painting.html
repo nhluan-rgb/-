@@ -39,7 +39,7 @@ button,input{font:inherit}.app{min-height:100vh;padding:18px}.top{display:flex;a
 .deadline-tab.active:after{right:12px;top:11px;transform:rotate(3deg)}
 .process-card.active:after{left:50%;bottom:10px;margin:0!important;transform:translateX(-50%) rotate(-3deg)}
 .groups{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.group{border:3px solid var(--group);border-radius:20px;overflow:hidden;background:#082a40e8;box-shadow:0 7px 0 #031724,0 0 24px color-mix(in srgb,var(--group) 42%,transparent)}.group-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:linear-gradient(90deg,color-mix(in srgb,var(--group) 72%,#151515),color-mix(in srgb,var(--group) 28%,#071e31))}.group-head h2{margin:0;font-size:32px}.group-head strong{font-size:27px;color:#fff8a6}.group-body{padding:14px}
-.color-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:14px}.color-chip{min-height:94px;display:grid;grid-template-columns:62px 1fr;align-items:center;gap:9px;padding:8px;border:1px solid #8ddff0;border-radius:12px;background:#ffffff13}.swatch{width:62px;height:62px;border:3px solid #fff;border-radius:12px;box-shadow:0 0 13px currentColor}.color-chip b{font-size:18px}.color-chip small{display:block;margin-top:4px;color:#c8eaf4;font-weight:800}
+.color-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:14px}.color-chip{position:relative;min-height:94px;display:grid;grid-template-columns:62px 1fr;align-items:center;gap:9px;padding:8px;border:1px solid #8ddff0;border-radius:12px;background:#ffffff13;color:#fff;text-align:left;cursor:pointer;transition:.16s}.color-chip:hover,.color-chip.selected{transform:translateY(-3px);border-color:#52ff9a;box-shadow:0 0 18px #20e778}.color-chip.selected:after{content:"表示中";position:absolute;right:5px;top:5px;padding:3px 7px;border:2px double #fff;border-radius:4px;background:#10a84f;color:#fff;font-size:10px;font-weight:1000;box-shadow:0 2px 0 #087436}.swatch{width:62px;height:62px;border:3px solid #fff;border-radius:12px;box-shadow:0 0 13px currentColor}.color-chip b{font-size:18px}.color-chip small{display:block;margin-top:4px;color:#c8eaf4;font-weight:800}
 .table-wrap{max-height:530px;overflow:auto;border:1px solid #5c9db5;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:900px;background:#f8fcff;color:#102738}thead{position:sticky;top:0;z-index:2;background:#0c5878;color:#fff}th,td{padding:10px 9px;border-bottom:1px solid #c7dce5;text-align:left}th{font-size:15px}td{font-size:14px}tbody tr:hover{background:#e0f6ff}.id{font-weight:1000;color:#075b91;white-space:nowrap}.check-col{width:62px;text-align:center}.job-check{width:27px;height:27px;accent-color:#00b86b;cursor:pointer}.done-row{background:#26343b!important;color:#c1ccd2!important;opacity:.78}.done-row:hover{background:#1d292f!important}.done-row .id{color:#8fadb9!important;text-decoration:line-through}.done-row td{border-bottom-color:#455862}.done-row b,.done-row .munsell{color:#c1ccd2!important}.munsell{display:inline-flex;align-items:center;gap:7px;font-weight:1000}.munsell i{width:28px;height:28px;border:2px solid #405866;border-radius:6px}.empty{padding:38px;text-align:center;color:#bdddea;font-size:22px;font-weight:900}
 .other{margin-top:16px;border:2px solid #94a3b8;border-radius:16px;background:#102d40e8;padding:14px}.other h2{margin:0 0 10px;font-size:24px}.foot{margin:16px 0 4px;text-align:center;color:#b8dce9;font-weight:800}
 @media(max-width:1300px){.deadline-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.process-deck{grid-template-columns:repeat(3,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,1fr)}.groups{grid-template-columns:1fr}}@media(max-width:700px){.app{padding:8px}.top{align-items:flex-start}.title h1{font-size:25px}.actions{flex-direction:column}.deadline-tabs{grid-template-columns:1fr}.process-deck{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:1fr}}
@@ -84,7 +84,7 @@ button,input{font:inherit}.app{min-height:100vh;padding:18px}.top{display:flex;a
 </div>
 <script>
 const $=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('ja-JP');
-let paintRows=[],deadlineFilter='critical',specifiedDate='',processFilter='';
+let paintRows=[],deadlineFilter='critical',specifiedDate='',processFilter='',colorFilter='';
 const DONE_STORAGE_KEY='paintingCompletedJNumbers';
 let completedJobs=new Set();
 try{completedJobs=new Set(JSON.parse(localStorage.getItem(DONE_STORAGE_KEY)||'[]'))}catch(e){completedJobs=new Set()}
@@ -136,7 +136,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function colorCards(rows){
   const map=new Map();
   rows.forEach(r=>{const name=cleanColor(r['色'])||'色未登録';if(!map.has(name))map.set(name,{count:0,qty:0});const x=map.get(name);x.count++;x.qty+=Number(String(r['数量']).replace(/,/g,''))||0});
-  return [...map.entries()].sort((a,b)=>b[1].count-a[1].count).slice(0,12).map(([name,x])=>`<div class="color-chip"><i class="swatch" style="background:${munsellColor(name)};color:${munsellColor(name)}"></i><div><b>${esc(name)}</b><small>${fmt(x.count)}件・${fmt(x.qty)}点</small></div></div>`).join('');
+  return [...map.entries()].sort((a,b)=>b[1].count-a[1].count).slice(0,12).map(([name,x])=>`<button type="button" class="color-chip ${colorFilter===name?'selected':''}" data-color="${esc(name)}"><i class="swatch" style="background:${munsellColor(name)};color:${munsellColor(name)}"></i><span><b>${esc(name)}</b><small>${fmt(x.count)}件・${fmt(x.qty)}点</small></span></button>`).join('');
 }
 function table(rows,showColor=true){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
@@ -146,7 +146,8 @@ function table(rows,showColor=true){
 function render(){
   const deadlineRows=rowsForDeadline(paintRows,deadlineFilter);
   const filtered=deadlineRows.filter(r=>!processFilter||String(r['進捗']||'').trim()===processFilter);
-  const rust=filtered.filter(r=>typeOf(r)==='rust'),bake=filtered.filter(r=>typeOf(r)==='bake'),other=filtered.filter(r=>typeOf(r)==='other');
+  const rust=filtered.filter(r=>typeOf(r)==='rust'),bakeAll=filtered.filter(r=>typeOf(r)==='bake'),other=filtered.filter(r=>typeOf(r)==='other');
+  const bake=colorFilter?bakeAll.filter(r=>(cleanColor(r['色'])||'色未登録')===colorFilter):bakeAll;
   const set=(id,v)=>$(id).textContent=v;
   set('totalCount',`${fmt(filtered.length)}件`);set('totalQty',`${fmt(qty(filtered))}点`);
   set('rustCount',`${fmt(rust.length)}件`);set('rustQty',`${fmt(qty(rust))}点`);
@@ -154,10 +155,12 @@ function render(){
   set('otherCount',`${fmt(other.length)}件`);set('otherQty',`${fmt(qty(other))}点`);
   const colorTargets=[...bake,...other],colored=colorTargets.filter(r=>cleanColor(r['色'])).length;set('colorCount',`${fmt(colored)}件`);set('colorRate',`${colorTargets.length?(colored/colorTargets.length*100).toFixed(1):'0.0'}%`);
   set('rustHead',`${fmt(rust.length)}件・${fmt(qty(rust))}点`);set('bakeHead',`${fmt(bake.length)}件・${fmt(qty(bake))}点`);set('otherHead',`${fmt(other.length)}件・${fmt(qty(other))}点`);
-  $('bakeColors').innerHTML=colorCards(bake);
+  $('bakeColors').innerHTML=colorCards(bakeAll);
   $('rustTable').innerHTML=table(rust,false);$('bakeTable').innerHTML=table(bake,true);$('otherTable').innerHTML=table(other,true);
   const filterNames={tomorrow:'明日期限',day2:'明後日期限',day3:'3日後期限',critical:'本日期限未完成・製造期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
-  $('missionText').textContent=`${filterNames[deadlineFilter]}は全${fmt(filtered.length)}件・${fmt(qty(filtered))}点。錆止め${fmt(rust.length)}件、焼付${fmt(bake.length)}件です。色・数量・期限を確認して確実に仕上げましょう！`;
+  $('missionText').textContent=colorFilter
+    ? `${filterNames[deadlineFilter]}・色 ${colorFilter} を表示中：焼付${fmt(bake.length)}件・${fmt(qty(bake))}点です。`
+    : `${filterNames[deadlineFilter]}は全${fmt(filtered.length)}件・${fmt(qty(filtered))}点。錆止め${fmt(rust.length)}件、焼付${fmt(bake.length)}件です。色・数量・期限を確認して確実に仕上げましょう！`;
   [['tomorrow','tomorrow'],['day2','day2'],['day3','day3'],['critical','critical'],['specified','specified']].forEach(([key,id])=>{
     const list=rowsForDeadline(paintRows,key);$(`${id}Count`).textContent=`${fmt(list.length)}件`;$(`${id}Points`).textContent=`${fmt(qty(list))}点`;
   });
@@ -185,10 +188,17 @@ function loadText(text){
 async function autoLoad(){try{const res=await fetch('SCV.csv?ts='+Date.now());if(!res.ok)throw Error();loadText(await res.text())}catch(e){$('missionText').textContent='SCV.csvを自動読込できません。右のファイル選択からSCV.csvを選んでください。'}}
 $('reload').onclick=autoLoad;
 $('specifiedDate').value=localDate(4);specifiedDate=$('specifiedDate').value;
-document.querySelectorAll('.deadline-tab').forEach(tab=>tab.addEventListener('click',()=>{deadlineFilter=tab.dataset.deadline;render()}));
+document.querySelectorAll('.deadline-tab').forEach(tab=>tab.addEventListener('click',()=>{deadlineFilter=tab.dataset.deadline;colorFilter='';render()}));
 $('specifiedDate').addEventListener('click',e=>e.stopPropagation());
-$('specifiedDate').addEventListener('change',e=>{specifiedDate=e.target.value;deadlineFilter='specified';render()});
-document.querySelectorAll('.process-card').forEach(card=>card.addEventListener('click',()=>{processFilter=processFilter===card.dataset.process?'':card.dataset.process;render()}));
+$('specifiedDate').addEventListener('change',e=>{specifiedDate=e.target.value;deadlineFilter='specified';colorFilter='';render()});
+document.querySelectorAll('.process-card').forEach(card=>card.addEventListener('click',()=>{processFilter=processFilter===card.dataset.process?'':card.dataset.process;colorFilter='';render()}));
+document.addEventListener('click',event=>{
+  const chip=event.target.closest('.color-chip');
+  if(!chip)return;
+  colorFilter=colorFilter===chip.dataset.color?'':chip.dataset.color;
+  render();
+  $('bakeTable').scrollIntoView({behavior:'smooth',block:'start'});
+});
 document.addEventListener('change',event=>{
   const checkbox=event.target.closest('.job-check');
   if(!checkbox)return;
