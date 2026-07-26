@@ -3657,7 +3657,7 @@ section.panel.work{
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1><div class="copyright-stamp"><b>著作権　ルー</b><small>有効期限：２０８９年０６月まで</small></div></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
@@ -5436,24 +5436,25 @@ if(shipFilter==='today-ng'){
 
 renderSelectedProcessBacklog();
 
-const ngCard=document.querySelector('[data-ship="today-ng"]');
+const ngCards=document.querySelectorAll('[data-ship="today-ng"]');
 const completeMessage=document.getElementById('completeMessage');
 
-if(ng.length===0){
-  ngCard.classList.remove('ng');
-  ngCard.classList.add('is-clear');
-  ngCard.style.background='#00C853';
-  ngCard.style.borderColor='#00C853';
-  ngCard.style.color='#fff';
-  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
-}else{
-  ngCard.classList.add('ng');
-  ngCard.classList.remove('is-clear');
-  ngCard.style.background='linear-gradient(180deg,#e53935,#b71c1c)';
-  ngCard.style.borderColor='#ff8a80';
-  ngCard.style.color='#fff';
-  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
-}
+ngCards.forEach(ngCard=>{
+  if(ng.length===0){
+    ngCard.classList.remove('ng');
+    ngCard.classList.add('is-clear');
+    ngCard.style.setProperty('background','#00C853','important');
+    ngCard.style.setProperty('border-color','#71ffaf','important');
+  }else{
+    ngCard.classList.add('ng');
+    ngCard.classList.remove('is-clear');
+    ngCard.style.setProperty('background','linear-gradient(180deg,#ef3340,#b00020)','important');
+    ngCard.style.setProperty('border-color','#ff8a80','important');
+  }
+  ngCard.style.setProperty('color','#fff','important');
+  ngCard.querySelectorAll('.day,.ship-value,.ship-sub,.ship-count-line,.ship-points-line')
+    .forEach(el=>el.style.setProperty('color','#fff','important'));
+});
 
 const overdueCard=document.querySelector('[data-ship="overdue"]');
 if(overdueRows.length===0){
