@@ -3178,6 +3178,63 @@ section.panel.work{
   .ng-game .evolution-world{min-height:auto!important}
 }
 </style>
+<style id="v87_ng_alarm_fit_patch">
+/* ALERT時：時計を全表示し、その分だけ下段の工程カードを短縮 */
+.ng-game .evolution-visual:has(.monthly-achievement-calendar),
+.ng-game .evolution-world,
+.ng-game .boss-status-card{
+  min-height:1000px!important;
+  height:1000px!important;
+}
+.ng-game .ng-utility-column .game-clock.visual-hud-clock{
+  min-height:152px!important;
+  height:152px!important;
+  padding:8px 12px!important;
+  overflow:visible!important;
+}
+.ng-game .ng-utility-column .game-clock.visual-hud-clock.clock-alarm::after{
+  margin-top:4px!important;
+  padding:4px 13px!important;
+  font-size:16px!important;
+}
+.ng-game .evolution-runner-world .ng-process-cards .battle-process{
+  min-height:195px!important;
+}
+.ng-game .evolution-runner-world .ng-process-cards .process-symbol{
+  width:72px!important;
+  height:72px!important;
+  margin-top:5px!important;
+}
+.ng-game:has(.game-clock.clock-alarm)
+  .ship-summary.game-stage-tabs .ship-card.ng{
+  background:linear-gradient(180deg,#ff263f,#b80018)!important;
+  border-color:#fff06a!important;
+  box-shadow:
+    0 5px 0 #71000e,
+    inset 0 0 22px rgba(255,255,255,.18),
+    0 0 11px #ff243c,
+    0 0 24px rgba(255,0,35,.85)!important;
+  animation:todayTabRedAlert .72s ease-in-out infinite alternate;
+}
+.ng-game:has(.game-clock.clock-alarm)
+  .ship-summary.game-stage-tabs .ship-card.ng.active::after{
+  color:#fff6a0!important;
+  text-shadow:0 0 8px #fff,0 0 13px #ffdf00;
+}
+@keyframes todayTabRedAlert{
+  from{filter:brightness(.9)}
+  to{filter:brightness(1.22)}
+}
+@media(max-width:1300px){
+  .ng-game .evolution-visual:has(.monthly-achievement-calendar),
+  .ng-game .evolution-world,
+  .ng-game .boss-status-card{
+    width:auto!important;
+    height:auto!important;
+    min-height:auto!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
