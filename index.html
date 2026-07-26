@@ -2466,7 +2466,7 @@ section.panel.work{
 @keyframes clockRedAlert{from{filter:brightness(.86);transform:scale(1)}to{filter:brightness(1.32);transform:scale(1.018)}}
 
 /* 本日出荷・未完成：月間15時達成カレンダー */
-.evolution-visual:has(.monthly-achievement-calendar){min-height:930px!important}
+.evolution-visual:has(.monthly-achievement-calendar){min-height:1040px!important}
 .monthly-achievement-calendar{
   position:absolute;
   z-index:7;
@@ -2487,14 +2487,28 @@ section.panel.work{
 }
 .calendar-achievement-title{
   display:flex;
+  flex-direction:column;
   align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  margin-bottom:12px;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:14px;
+  text-align:center;
 }
 .calendar-achievement-title b{font-size:29px;color:#fff49a;text-shadow:0 0 10px #ffbe2e}
 .calendar-achievement-title b .calendar-title-line{display:block;font:inherit;color:inherit;text-shadow:inherit}
-.calendar-achievement-title span{font-size:16px;font-weight:1000;color:#bcefff}
+.calendar-achievement-title>span{
+  width:100%;
+  padding:10px 12px;
+  border:2px solid #ffcf3d;
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(160,20,8,.86),rgba(232,65,8,.92),rgba(160,20,8,.86));
+  font-size:21px;
+  line-height:1.35;
+  font-weight:1000;
+  color:#fff6a5;
+  text-shadow:0 2px 0 #751000,0 0 12px #ff8a00;
+  box-shadow:inset 0 0 16px #ffb00055,0 0 12px #ff5a003d;
+}
 .achievement-weekdays,.achievement-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
 .achievement-weekdays div{text-align:center;padding:5px;font-size:15px;font-weight:1000;color:#aeeeff}
 .achievement-weekdays div:first-child{color:#ff9c9c}.achievement-weekdays div:last-child{color:#86bfff}
@@ -3048,7 +3062,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>📅 ${year}年${monthNumber}月 15時<span class="calendar-title-line">達成カレンダー</span></b>
-      <span>達成＝15時前に全件完了 ／ 未達成＝15時時点で残件あり ／ 休日＝判定対象外</span>
+      <span>15時までに全件達成！ 一件ずつ確実に、今日も全員でやり切ろう！</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
