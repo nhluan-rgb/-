@@ -3054,7 +3054,10 @@ async function loadBonusProgress(){
     const response=await fetch(`bonus-progress.json?ts=${Date.now()}`,{cache:'no-store'});
     if(!response.ok)throw new Error(`bonus-progress.json ${response.status}`);
     const data=await response.json();
-    const closingDate=String(data.closingDate||'').trim();
+    const rawClosingDate=String(data.closingDate||'auto').trim();
+    const closingDate=!rawClosingDate||rawClosingDate.toLowerCase()==='auto'
+      ? localDateKey(bonusCycleInfo(new Date()).end)
+      : rawClosingDate;
     if(!/^\d{4}-\d{2}-\d{2}$/.test(closingDate))throw new Error('closingDate');
     bonusRemoteProgress={
       closingDate,
@@ -3062,6 +3065,11 @@ async function loadBonusProgress(){
       west:Number(data.west)||0,
       national:Number(data.national)||0
     };
+    localStorage.setItem(`bonusProgress:${closingDate}`,JSON.stringify({
+      east:bonusRemoteProgress.east,
+      west:bonusRemoteProgress.west,
+      national:bonusRemoteProgress.national
+    }));
     updateBonusCampaignPanel();
   }catch(error){
     console.warn('大入り進捗データを読み込めません。内蔵値を使用します。',error);
@@ -3093,6 +3101,17 @@ function bonusReward(progress){
 }
 function shortJapaneseDate(date){
   return `${date.getMonth()+1}月${date.getDate()}日`;
+}
+function remainingBonusBusinessDays(now,end){
+  const cursor=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const last=new Date(end.getFullYear(),end.getMonth(),end.getDate());
+  let count=0;
+  while(cursor<=last){
+    const holidays=japaneseHolidayKeys(cursor.getFullYear());
+    if(cursor.getDay()!==0&&cursor.getDay()!==6&&!holidays.has(localDateKey(cursor)))count++;
+    cursor.setDate(cursor.getDate()+1);
+  }
+  return count;
 }
 function updateBonusCampaignPanel(){
   const box=$('bonusCampaignPanel');
@@ -3127,12 +3146,12 @@ function updateBonusCampaignPanel(){
   const reward=bonusReward(lastProgress);
   const resultHtml=hasLastResult&&now>=payDate
     ? `<div class="bonus-result"><small>${shortJapaneseDate(payDate)} 支給額</small><strong>¥${reward.toLocaleString('ja-JP')}</strong></div>`
-    : `<div class="bonus-result waiting"><small>今回の締日 ${shortJapaneseDate(cycle.end)}</small><strong>支給予定 ${shortJapaneseDate(nextBonusBusinessDay(cycle.end))}</strong></div>`;
+    : `<div class="bonus-result waiting"><small>${shortJapaneseDate(cycle.end)}の締日まで</small><strong>残り実働 ${remainingBonusBusinessDays(now,cycle.end)}日</strong></div>`;
 
   box.innerHTML=`
     <div class="bonus-title">🏆 大入り3万円 進捗</div>
     <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    <div class="bonus-intro">九州工場は<strong>西日本100%</strong>で2万円、さらに<strong>全国100%</strong>で1万円加算。最高3万円です。</div>
+    <div class="bonus-intro"><strong>西日本100％達成で2万円、全国も100％達成なら合計3万円！</strong></div>
     <div class="bonus-progress-list">${progressHtml}</div>
     ${resultHtml}`;
 }
