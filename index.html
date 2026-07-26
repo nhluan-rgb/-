@@ -544,7 +544,7 @@
 
 .evolution-runner-world{margin-top:16px!important;padding-top:16px!important}
 .evolution-runner-world .runner-title{display:none!important}
-.evolution-runner-world .runner-track{grid-template-columns:minmax(0,1fr) 250px!important}
+.evolution-runner-world .runner-track{grid-template-columns:minmax(0,1fr)!important}
 .evolution-support-card{min-height:245px;border-radius:20px;background:linear-gradient(180deg,#f5ddff,#d8a8ef);border:4px solid #8a41b3;box-shadow:0 7px 0 #54236d;text-align:center;padding:12px 10px;color:#5b176e;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .evolution-support-title{font-size:22px;font-weight:1000}
 .evolution-support-stage{margin-top:12px;font-size:18px;font-weight:900}
@@ -2168,7 +2168,7 @@ section.panel.work{
 .ng-operations-stack{display:grid;gap:14px;width:100%}
 .ng-process-cards{
   display:grid!important;
-  grid-template-columns:repeat(7,minmax(115px,1fr))!important;
+  grid-template-columns:repeat(8,minmax(105px,1fr))!important;
   gap:9px!important;
   padding:12px!important;
   border:3px solid rgba(224,241,255,.82);
@@ -3205,6 +3205,23 @@ section.panel.work{
   height:72px!important;
   margin-top:5px!important;
 }
+.ng-game .evolution-runner-world .runner-track{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+.ng-game .evolution-runner-world .ng-operations-stack{
+  width:100%!important;
+  min-width:0!important;
+  grid-column:1/-1!important;
+}
+.ng-game .evolution-runner-world .delivery-bottom-layout,
+.ng-game .evolution-runner-world .delivery-card-grid{
+  width:100%!important;
+  min-width:0!important;
+}
+.battle-process.process-unstarted{
+  --process-color:#78909c;
+  --process-soft:#eef3f5;
+}
 .ng-game:has(.game-clock.clock-alarm)
   .ship-summary.game-stage-tabs .ship-card.ng{
   background:linear-gradient(180deg,#ff263f,#b80018)!important;
@@ -4104,6 +4121,10 @@ function startStandardMessageRotation(element,visualElement,filter,context){
 
 function processSymbol(processName){
   const symbols={
+    '未着手':`<svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="symbol-line" cx="60" cy="60" r="32"/>
+      <circle class="symbol-fill" cx="60" cy="60" r="8"/>
+    </svg>`,
     'CAD/CAM':`<svg viewBox="0 0 120 120" aria-hidden="true">
       <rect class="symbol-fill" x="16" y="18" width="88" height="64" rx="8"/>
       <rect class="symbol-line" x="16" y="18" width="88" height="64" rx="8"/>
@@ -4270,11 +4291,12 @@ function renderDeliveryCards(chartRows){
 }
 
 function renderNgProcessCards(chartRows){
-  const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
+  const processOrder=['未着手','CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
   return `<div class="battle-workers ng-process-cards">${processOrder.map((processName,index)=>{
     const count=chartRows.filter(row=>row.status===processName).length;
     const isComplete=count===0;
-    return `<button type="button" class="battle-process process-${index} ${isComplete?'clear-worker':'active-worker'}" data-process="${escapeHtml(processName)}" aria-label="${escapeHtml(processName)}の工程情報を表示">
+    const processClass=processName==='未着手'?'process-unstarted':`process-${index-1}`;
+    return `<button type="button" class="battle-process ${processClass} ${isComplete?'clear-worker':'active-worker'}" data-process="${escapeHtml(processName)}" aria-label="${escapeHtml(processName)}の工程情報を表示">
       <div class="battle-process-name">${escapeHtml(processName)}</div>
       <div class="battle-process-count">${fmt(count)}件</div>
       ${isComplete?'<div class="ng-process-complete-stamp">完了</div>':processSymbol(processName)}
