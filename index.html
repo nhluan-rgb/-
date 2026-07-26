@@ -3110,6 +3110,22 @@ section.panel.work{
   align-items:center;
   justify-content:center;
   text-align:center;
+  font:inherit;
+  cursor:pointer;
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
+}
+.standard-material-card:hover,
+.standard-material-card:focus-visible{
+  transform:translateY(-4px);
+  filter:brightness(1.06) saturate(1.12);
+  outline:none;
+}
+.standard-material-card.material-selected{
+  transform:translateY(-4px);
+  box-shadow:
+    0 6px 0 color-mix(in srgb,var(--material-color) 62%,#263b43),
+    0 0 0 4px #fff,
+    0 0 22px var(--material-color)!important;
 }
 .standard-material-name{
   width:100%;
@@ -3596,11 +3612,52 @@ section.panel.work{
   font-size:46px!important;
 }
 </style>
+<style id="v92_copyright_cycle_calendar_patch">
+.world-title-row{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  min-width:0;
+}
+.world-title-row h1{margin:0}
+.copyright-stamp{
+  padding:7px 18px 6px;
+  border:4px double #fff;
+  border-radius:5px;
+  background:linear-gradient(180deg,#ee2d2d,#a40000);
+  color:#fff;
+  text-align:center;
+  line-height:1.12;
+  transform:rotate(-2deg);
+  box-shadow:0 4px 0 #660000,0 0 13px rgba(255,0,0,.58);
+  text-shadow:0 2px 0 #700000;
+}
+.copyright-stamp b{
+  display:block;
+  font-size:18px;
+  font-weight:1000;
+  letter-spacing:.05em;
+}
+.copyright-stamp small{
+  display:block;
+  margin-top:3px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.ng-game .achievement-day-number{
+  font-size:14px!important;
+}
+@media(max-width:900px){
+  .world-title-row{align-items:flex-start;flex-direction:column;gap:8px}
+  .copyright-stamp{transform:none}
+}
+</style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1><div class="copyright-stamp"><b>著作権　ルー</b><small>有効期限：２０８９年０６月まで</small></div></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
@@ -3721,7 +3778,7 @@ const sample=[
 ['26-J0066008-001-771','岡本電機　福山★','IE4040SG','鉄 PB 平',6,'2026-08-07','溶接','山口','福山通運　九州発送']
 ].map((r,i)=>({id:r[0],client:r[1],part:r[2],name:r[3],standard:['ｱｰｽ','穴加工','ｺﾞﾑﾊﾟｯｷﾝ付','さび止め','L65×65×6t'][i%5],qty:r[4],due:r[5],status:r[6],owner:r[7],ship:r[8],shipDate:['2026-07-20','2026-07-21','2026-07-22','2026-07-20','2026-07-21'][i%5]}));
 let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
-let selectedProcess='',selectedDelivery='',currentChartRows=[],currentChartLabel='生産進捗';
+let selectedProcess='',selectedDelivery='',selectedMaterial='',currentChartRows=[],currentChartLabel='生産進捗';
 let csvLoading=false;
 let jNumberSearchDigits='';
 
@@ -3784,6 +3841,7 @@ function openJNumberPopup(target){
     </section>`;
   selectedProcess='';
   selectedDelivery='';
+  selectedMaterial='';
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
   if(modalCard){
@@ -4109,7 +4167,12 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const month=today.slice(0,7);
   const data=readAchievementMonth(month);
   const [year,monthNumber]=month.split('-').map(Number);
-  const holidayKeys=japaneseHolidayKeys(year);
+  const cycleStart=new Date(year,monthNumber-1,20);
+  const cycleEnd=new Date(year,monthNumber,20);
+  const holidayKeys=new Set([
+    ...japaneseHolidayKeys(cycleStart.getFullYear()),
+    ...japaneseHolidayKeys(cycleEnd.getFullYear())
+  ]);
   const todayDate=new Date(`${today}T00:00:00`);
   const todayIsClosed=todayDate.getDay()===0||todayDate.getDay()===6||holidayKeys.has(today);
 
@@ -4134,15 +4197,25 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     }
   }
 
-  const daysInMonth=new Date(year,monthNumber,0).getDate();
-  const firstWeekday=new Date(year,monthNumber-1,1).getDay();
   const cells=[];
-  for(let i=0;i<firstWeekday;i++)cells.push('<div class="achievement-day empty"></div>');
-  for(let day=1;day<=daysInMonth;day++){
-    const dateKey=`${month}-${String(day).padStart(2,'0')}`;
-    const result=data[dateKey];
-    const calendarDate=new Date(year,monthNumber-1,day);
-    const weekday=calendarDate.getDay();
+  for(let i=0;i<cycleStart.getDay();i++)cells.push('<div class="achievement-day empty"></div>');
+  const monthDataCache=new Map([[month,data]]);
+  for(
+    let calendarDate=new Date(cycleStart);
+    calendarDate<=cycleEnd;
+    calendarDate.setDate(calendarDate.getDate()+1)
+  ){
+    const cellDate=new Date(calendarDate);
+    const cellYear=cellDate.getFullYear();
+    const cellMonth=cellDate.getMonth()+1;
+    const day=cellDate.getDate();
+    const dateKey=formatLocalDate(cellDate);
+    const dataMonth=dateKey.slice(0,7);
+    if(!monthDataCache.has(dataMonth)){
+      monthDataCache.set(dataMonth,readAchievementMonth(dataMonth));
+    }
+    const result=monthDataCache.get(dataMonth)[dateKey];
+    const weekday=cellDate.getDay();
     const isNationalHoliday=holidayKeys.has(dateKey);
     const isClosed=weekday===0||weekday===6||isNationalHoliday;
     const isBonusClosingDay=day===20;
@@ -4153,7 +4226,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     if(isBonusClosingDay&&bonusIsFinal){
       const reward=Object.prototype.hasOwnProperty.call(BONUS_RESULT_DEFAULTS,dateKey)
         ? BONUS_RESULT_DEFAULTS[dateKey]
-        : bonusReward(bonusProgressFor(calendarDate));
+        : bonusReward(bonusProgressFor(cellDate));
       const rewardLabel=reward>=30000?'3万円':reward>=20000?'2万円':'0円';
       stamp=`<div class="achievement-stamp bonus">大入り<br>${rewardLabel}</div><div class="achievement-day-note">締日結果</div>`;
     }else if(isBonusClosingDay&&isToday){
@@ -4164,12 +4237,12 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     }else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
     else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
-    cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed&&!(isBonusClosingDay&&bonusIsFinal)?'holiday':''} ${isBonusClosingDay&&bonusIsFinal?'bonus-day':''}"><div class="achievement-day-number">${day}</div>${stamp}</div>`);
+    cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed&&!(isBonusClosingDay&&bonusIsFinal)?'holiday':''} ${isBonusClosingDay&&bonusIsFinal?'bonus-day':''}"><div class="achievement-day-number">${cellMonth}/${day}</div>${stamp}</div>`);
   }
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>
-        <span class="calendar-title-line">📅 ${year}年${monthNumber}月</span>
+        <span class="calendar-title-line">📅 ${year}年${monthNumber}月20日 ～ ${cycleEnd.getMonth()+1}月20日</span>
         <span class="calendar-title-line calendar-title-time">15時 達成カレンダー</span>
       </b>
       <span>15時までに全件達成！ 今日も全員でやり切ろう！</span>
@@ -4706,20 +4779,28 @@ function mountStandardMission(){
   }
   banner.classList.add('mission-relocated');
 }
+const standardMaterialGroups=[
+  {name:'SUS',pattern:/SUS/i,color:'#00a99d'},
+  {name:'錆止め',pattern:/錆止|さび止|サビ止/i,color:'#e65a43'},
+  {name:'焼付',pattern:/焼付|焼き付/i,color:'#8a5bd1'},
+  {name:'ダイマー',pattern:/ダイマー|スーパーダイマ/i,color:'#536dfe'},
+  {name:'ドブ',pattern:/ドブ|溶融亜鉛|HDZ/i,color:'#8d6e63'}
+];
+function standardMaterialText(row){
+  return [row.part,row.name,row.standard,row.color].filter(Boolean).join(' ');
+}
+function matchesStandardMaterial(row,materialName){
+  const text=standardMaterialText(row);
+  if(materialName==='その他'){
+    return !standardMaterialGroups.some(group=>group.pattern.test(text));
+  }
+  const group=standardMaterialGroups.find(item=>item.name===materialName);
+  return Boolean(group&&group.pattern.test(text));
+}
 function renderStandardMaterialCards(chartRows){
-  const groups=[
-    {name:'SUS',pattern:/SUS/i,color:'#00a99d'},
-    {name:'錆止め',pattern:/錆止|さび止|サビ止/i,color:'#e65a43'},
-    {name:'焼付',pattern:/焼付|焼き付/i,color:'#8a5bd1'},
-    {name:'ダイマー',pattern:/ダイマー|スーパーダイマ/i,color:'#536dfe'},
-    {name:'ドブ',pattern:/ドブ|溶融亜鉛|HDZ/i,color:'#8d6e63'}
-  ];
+  const groups=[...standardMaterialGroups,{name:'その他',color:'#607d8b'}];
   const items=groups.map(group=>{
-    const matched=chartRows.filter(row=>
-      group.pattern.test([
-        row.part,row.name,row.standard,row.color
-      ].filter(Boolean).join(' '))
-    );
+    const matched=chartRows.filter(row=>matchesStandardMaterial(row,group.name));
     return{
       ...group,
       count:matched.length,
@@ -4730,11 +4811,11 @@ function renderStandardMaterialCards(chartRows){
     return '<div class="standard-material-empty">対象となる材質・表面処理はありません</div>';
   }
   return `<div class="standard-material-grid" style="--material-count:${items.length}">${items.map(item=>`
-    <div class="standard-material-card" style="--material-color:${item.color}">
+    <button type="button" class="standard-material-card" data-material="${escapeHtml(item.name)}" style="--material-color:${item.color}" aria-label="${escapeHtml(item.name)}の対象を表示">
       <div class="standard-material-name">${item.name}</div>
       <div class="standard-material-count">${fmt(item.count)}件</div>
       <div class="standard-material-points">${fmt(item.points)}点</div>
-    </div>`).join('')}</div>`;
+    </button>`).join('')}</div>`;
 }
 function mountStandardProcessCards(chartRows){
   const slot=document.getElementById('standardProcessSlot');
@@ -4975,6 +5056,58 @@ function buildProcessBacklogMarkup(processName){
     </div>`;
 }
 
+function buildMaterialBacklogMarkup(materialName){
+  const backlog=currentChartRows
+    .filter(row=>matchesStandardMaterial(row,materialName))
+    .slice()
+    .sort((a,b)=>
+      String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||
+      String(a.due||'9999-99-99').localeCompare(String(b.due||'9999-99-99'))||
+      String(a.id||'').localeCompare(String(b.id||''))
+    );
+  const points=backlog.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const body=backlog.length
+    ? `<div class="process-backlog-table-wrap"><table class="process-backlog-table">
+        <thead><tr>
+          <th>製造指示番号</th><th>品番・品名 / 規格</th><th>色</th>
+          <th>数量</th><th>工程</th><th>出荷日</th><th>製造期限</th>
+        </tr></thead>
+        <tbody>${backlog.map(row=>`<tr>
+          <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
+          <td class="backlog-product">
+            <b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'')}</b>
+            <small>規格：${escapeHtml(row.standard||'—')}</small>
+          </td>
+          <td>${escapeHtml(row.color||'—')}</td>
+          <td class="backlog-qty">${fmt(row.qty)}点</td>
+          <td><span class="process-popup-chip" style="--process-chip-color:${getProcessThemeColor(row.status)}">${escapeHtml(row.status||'—')}</span></td>
+          <td class="backlog-date">${escapeHtml(row.shipDate||'—')}</td>
+          <td class="backlog-date">${escapeHtml(row.due||'—')}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>`
+    : '<div class="process-backlog-table-wrap"><div class="process-backlog-empty">対象データはありません</div></div>';
+  return `
+    <div class="process-backlog-header">
+      <div class="process-popup-title-wrap">
+        <span class="process-popup-icon">${escapeHtml(materialName.slice(0,1))}</span>
+        <div>
+          <div class="process-backlog-kicker">${escapeHtml(currentChartLabel)}・材質／表面処理</div>
+          <div class="process-backlog-title">${escapeHtml(materialName)}</div>
+        </div>
+      </div>
+      <div class="process-backlog-summary">
+        <div class="process-backlog-count">${fmt(backlog.length)}件（${fmt(points)}点）</div>
+        <button type="button" class="process-backlog-close" data-process-close>× 全体表示へ戻る</button>
+      </div>
+    </div>
+    <section class="process-popup-section">
+      <div class="process-popup-section-head">
+        <span class="process-popup-section-icon">↯</span>製造指示一覧
+      </div>
+      ${body}
+    </section>`;
+}
+
 function renderSelectedProcessBacklog(){
   document.querySelectorAll('.battle-process[data-process]').forEach(card=>{
     const selected=Boolean(selectedProcess)&&card.dataset.process===selectedProcess;
@@ -4986,7 +5119,13 @@ function renderSelectedProcessBacklog(){
   const modalCard=document.getElementById('processModalCard');
   const modalBody=document.getElementById('processModalBody');
 
-  if(!selectedProcess&&!selectedDelivery){
+  document.querySelectorAll('.standard-material-card[data-material]').forEach(card=>{
+    const selected=Boolean(selectedMaterial)&&card.dataset.material===selectedMaterial;
+    card.classList.toggle('material-selected',selected);
+    card.setAttribute('aria-pressed',String(selected));
+  });
+
+  if(!selectedProcess&&!selectedDelivery&&!selectedMaterial){
     if(modal){
       modal.classList.remove('show');
       modal.setAttribute('aria-hidden','true');
@@ -5000,7 +5139,13 @@ function renderSelectedProcessBacklog(){
     return;
   }
 
-  if(modalBody) modalBody.innerHTML=selectedDelivery?buildDeliveryBacklogMarkup(selectedDelivery):buildProcessBacklogMarkup(selectedProcess);
+  if(modalBody){
+    modalBody.innerHTML=selectedMaterial
+      ? buildMaterialBacklogMarkup(selectedMaterial)
+      : selectedDelivery
+        ? buildDeliveryBacklogMarkup(selectedDelivery)
+        : buildProcessBacklogMarkup(selectedProcess);
+  }
   if(modal){
     modal.classList.add('show');
     modal.setAttribute('aria-hidden','false');
@@ -5378,10 +5523,19 @@ function restoreUiState(state){
 }
 ['search','statusFilter','ownerFilter','deadlineFilter'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',renderTable));
 document.addEventListener('click',event=>{
+  const materialCard=event.target.closest('[data-material]');
+  if(materialCard){
+    selectedMaterial=materialCard.dataset.material||'';
+    selectedProcess='';
+    selectedDelivery='';
+    renderSelectedProcessBacklog();
+    return;
+  }
   const deliveryRow=event.target.closest('[data-delivery]');
   if(deliveryRow){
     selectedDelivery=deliveryRow.dataset.delivery||'';
     selectedProcess='';
+    selectedMaterial='';
     renderSelectedProcessBacklog();
     return;
   }
@@ -5389,30 +5543,39 @@ document.addEventListener('click',event=>{
   if(processCard){
     selectedProcess=processCard.dataset.process||'';
     selectedDelivery='';
+    selectedMaterial='';
     renderSelectedProcessBacklog();
     return;
   }
   if(event.target.closest('[data-process-close],[data-overview]')){
     selectedProcess='';
     selectedDelivery='';
+    selectedMaterial='';
     renderSelectedProcessBacklog();
     return;
   }
 });
 document.addEventListener('keydown',event=>{
   if(event.key!=='Enter'&&event.key!==' ')return;
-  const target=event.target.closest('[data-process],[data-delivery],[data-overview]');
+  const target=event.target.closest('[data-material],[data-process],[data-delivery],[data-overview]');
   if(!target)return;
   event.preventDefault();
   if(target.matches('[data-overview]')){
     selectedProcess='';
     selectedDelivery='';
+    selectedMaterial='';
+  }else if(target.matches('[data-material]')){
+    selectedMaterial=target.dataset.material||'';
+    selectedProcess='';
+    selectedDelivery='';
   }else if(target.matches('[data-delivery]')){
     selectedDelivery=target.dataset.delivery||'';
     selectedProcess='';
+    selectedMaterial='';
   }else{
     selectedProcess=target.dataset.process||'';
     selectedDelivery='';
+    selectedMaterial='';
   }
   renderSelectedProcessBacklog();
 });
@@ -5421,6 +5584,7 @@ document.querySelectorAll('[data-ship],[data-quick]').forEach(b=>b.addEventListe
   shipFilter=v;
   selectedProcess='';
   selectedDelivery='';
+  selectedMaterial='';
   localStorage.setItem('shipFilter',shipFilter);
   document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
     x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)===shipFilter);
@@ -5434,6 +5598,7 @@ $('specifiedDate').addEventListener('change',e=>{
   shipFilter='specified';
   selectedProcess='';
   selectedDelivery='';
+  selectedMaterial='';
   localStorage.setItem('shipFilter',shipFilter);
   localStorage.setItem('specifiedShipDate',specifiedShipDate);
   document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)==='specified'));
@@ -5453,6 +5618,7 @@ $('specifiedDate').addEventListener('change',e=>{
     if(event.target===modal){
       selectedProcess='';
       selectedDelivery='';
+      selectedMaterial='';
       renderSelectedProcessBacklog();
     }
   });
@@ -5461,6 +5627,7 @@ $('specifiedDate').addEventListener('change',e=>{
     if(event.key==='Escape'&&modal.classList.contains('show')){
       selectedProcess='';
       selectedDelivery='';
+      selectedMaterial='';
       renderSelectedProcessBacklog();
     }
   });
