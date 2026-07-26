@@ -45,9 +45,15 @@ jobs:
           ]
 
           if not candidates:
-              raise SystemExit(
-                  "Không tìm thấy file CSV nguồn mới."
-              )
+              with open(
+                  os.environ["GITHUB_OUTPUT"],
+                  "a",
+                  encoding="utf-8"
+              ) as output:
+                  output.write("found=false\n")
+
+              print("Không có CSV nguồn mới, bỏ qua.")
+              raise SystemExit(0)
 
           def last_commit_time(path):
               relative = path.relative_to(root).as_posix()
@@ -78,25 +84,28 @@ jobs:
 
           source_name = source.relative_to(root).as_posix()
 
-          # Cập nhật file cố định mà trang web đang đọc
-          shutil.copyfile(source, target)
-
-          # Xóa toàn bộ CSV nguồn, chỉ giữ lại SCV.csv
-          for csv_file in candidates:
-              csv_name = csv_file.relative_to(root).as_posix()
-              csv_file.unlink()
-              print(f"Deleted source CSV: {csv_name}")
-
+          # Thông báo đã tìm thấy CSV nguồn
           with open(
               os.environ["GITHUB_OUTPUT"],
               "a",
               encoding="utf-8"
           ) as output:
+              output.write("found=true\n")
               output.write(f"source={source_name}\n")
+
+          # Cập nhật file cố định mà trang web đang đọc
+          shutil.copyfile(source, target)
+
+          # Xóa tất cả CSV nguồn, chỉ giữ SCV.csv
+          for csv_file in candidates:
+              csv_name = csv_file.relative_to(root).as_posix()
+              csv_file.unlink()
+              print(f"Deleted source CSV: {csv_name}")
 
           print(f"Updated SCV.csv from: {source_name}")
 
       - name: Commit SCV.csv and remove source CSV files
+        if: steps.update.outputs.found == 'true'
         shell: bash
         run: |
           if [ -z "$(git status --porcelain)" ]; then
@@ -109,6 +118,8 @@ jobs:
             "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -A
+
           git commit -m \
             "Auto-update SCV.csv from ${{ steps.update.outputs.source }}"
+
           git push
