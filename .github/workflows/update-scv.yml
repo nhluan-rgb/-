@@ -45,15 +45,26 @@ jobs:
           ]
 
           if not candidates:
-              raise SystemExit("Không tìm thấy file CSV mới.")
+              raise SystemExit(
+                  "Không tìm thấy file CSV nguồn mới."
+              )
 
           def last_commit_time(path):
               relative = path.relative_to(root).as_posix()
+
               result = subprocess.run(
-                  ["git", "log", "-1", "--format=%ct", "--", relative],
+                  [
+                      "git",
+                      "log",
+                      "-1",
+                      "--format=%ct",
+                      "--",
+                      relative
+                  ],
                   capture_output=True,
                   text=True
               )
+
               value = result.stdout.strip()
               return int(value) if value.isdigit() else 0
 
@@ -65,29 +76,31 @@ jobs:
               )
           )
 
-        shutil.copyfile(source, target)
+          source_name = source.relative_to(root).as_posix()
 
-# Xóa toàn bộ CSV nguồn sau khi đã cập nhật SCV.csv
-for csv_file in candidates:
-    csv_file.unlink()
-    print(f"Đã xóa file nguồn: {csv_file.relative_to(root)}")
+          # Cập nhật file cố định mà trang web đang đọc
+          shutil.copyfile(source, target)
+
+          # Xóa toàn bộ CSV nguồn, chỉ giữ lại SCV.csv
+          for csv_file in candidates:
+              csv_name = csv_file.relative_to(root).as_posix()
+              csv_file.unlink()
+              print(f"Deleted source CSV: {csv_name}")
 
           with open(
               os.environ["GITHUB_OUTPUT"],
               "a",
               encoding="utf-8"
           ) as output:
-              output.write(
-                  f"source={source.relative_to(root).as_posix()}\n"
-              )
+              output.write(f"source={source_name}\n")
 
-          print(f"Updated SCV.csv from: {source}")
+          print(f"Updated SCV.csv from: {source_name}")
 
-      - name: Commit updated SCV.csv
+      - name: Commit SCV.csv and remove source CSV files
         shell: bash
         run: |
-          if git diff --quiet -- SCV.csv; then
-            echo "SCV.csv không thay đổi."
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Không có thay đổi cần commit."
             exit 0
           fi
 
