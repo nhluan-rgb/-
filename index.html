@@ -2601,6 +2601,64 @@ section.panel.work{
 .bonus-result small{display:block;font-size:13px;font-weight:1000}
 .bonus-result strong{display:block;margin-top:2px;font-size:36px;line-height:1;font-weight:1000}
 .bonus-result.waiting{background:linear-gradient(180deg,#e8f5fa,#a9cfdf);color:#15384a;box-shadow:0 4px 0 #527d91}
+.standard-donut-card:has(.j-number-search),
+.boss-status-card:has(.j-number-search){min-height:680px!important;justify-content:flex-start!important}
+.j-number-search{
+  width:100%;
+  margin-top:18px;
+  padding:13px;
+  border:3px solid #65f0ff;
+  border-radius:15px;
+  background:linear-gradient(145deg,rgba(2,30,48,.96),rgba(3,79,98,.94));
+  box-shadow:0 5px 0 #042033,inset 0 0 18px #37dfff22,0 0 14px #25dfff55;
+  color:#fff;
+}
+.j-search-title{font-size:18px;font-weight:1000;color:#aef6ff;text-align:left}
+.j-search-display{
+  margin-top:7px;
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  padding:6px 11px;
+  border:2px solid #a7f6ff;
+  border-radius:8px;
+  background:#071923;
+  color:#fff56e;
+  font-family:ui-monospace,Consolas,monospace;
+  font-size:25px;
+  font-weight:1000;
+  letter-spacing:.06em;
+  box-shadow:inset 0 0 10px #000;
+}
+.j-search-keypad{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+.j-search-key{
+  min-height:39px;
+  border:2px solid #9beeff;
+  border-radius:8px;
+  background:linear-gradient(180deg,#287ead,#125074);
+  color:#fff;
+  font-size:20px;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 3px 0 #052f49;
+}
+.j-search-key:active{transform:translateY(2px);box-shadow:0 1px 0 #052f49}
+.j-search-key.command{background:linear-gradient(180deg,#f06a32,#a92c16);border-color:#ffbd8f;font-size:15px}
+.j-search-result{display:grid;gap:5px;margin-top:8px;max-height:112px;overflow:auto}
+.j-search-result-message{padding:7px;border-radius:7px;background:#ffffff13;color:#d8f8ff;font-size:13px;font-weight:850}
+.j-search-result-item{
+  width:100%;
+  padding:7px 9px;
+  border:1px solid #78dceb;
+  border-radius:7px;
+  background:#edfaff;
+  color:#143648;
+  text-align:left;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:850;
+}
+.j-search-result-item b{display:block;font-size:14px;color:#00679a}
 @media(max-width:1300px){
   .monthly-achievement-calendar{position:relative;inset:auto;width:calc(100% - 24px);min-width:0;margin:210px 12px 20px}
   .bonus-campaign-panel{position:relative;inset:auto;width:calc(100% - 24px);margin:12px}
@@ -2838,6 +2896,7 @@ section.panel.work{
         </div>
         <div class="standard-legend" id="standardLegend"></div>
         <div class="standard-progress-message" id="standardProgressMessage">対象データを集計しています。</div>
+        <div class="j-number-search-host"></div>
         <div class="delivery-divider"></div>
         <div class="delivery-chart-title">工程別 進捗状況</div>
         <div class="delivery-bars" id="deliveryBars"></div>
@@ -2872,6 +2931,7 @@ section.panel.work{
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
         <div class="boss-goal">完了までの進捗 <span id="bossHpText">100%</span></div>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
+        <div class="j-number-search-host"></div>
       </section>
     </div>
 
@@ -2909,6 +2969,74 @@ const sample=[
 let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
 let selectedProcess='',selectedDelivery='',currentChartRows=[],currentChartLabel='生産進捗';
 let csvLoading=false;
+let jNumberSearchDigits='';
+
+function shortJNumberForSearch(value){
+  const raw=String(value||'').trim();
+  const match=raw.match(/^\d{2}-(J.+)-\d{3}$/);
+  return match?match[1]:raw;
+}
+function escapeJSearch(value){
+  return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
+function matchingJNumberRows(){
+  if(!jNumberSearchDigits)return[];
+  return rows.filter(row=>String(row.id||'').replace(/\D/g,'').includes(jNumberSearchDigits));
+}
+function renderJNumberSearch(){
+  const matches=matchingJNumberRows();
+  document.querySelectorAll('.j-number-search').forEach(panel=>{
+    const display=panel.querySelector('.j-search-display');
+    const result=panel.querySelector('.j-search-result');
+    if(display)display.textContent=jNumberSearchDigits?`J ${jNumberSearchDigits}`:'J番号を入力';
+    if(!result)return;
+    if(!jNumberSearchDigits){
+      result.innerHTML='<div class="j-search-result-message">数字ボタンでJ番号を検索できます。</div>';
+    }else if(!matches.length){
+      result.innerHTML='<div class="j-search-result-message">該当するJ番号はありません。</div>';
+    }else{
+      result.innerHTML=`<div class="j-search-result-message">該当 ${fmt(matches.length)}件</div>`+
+        matches.slice(0,3).map(row=>`<button type="button" class="j-search-result-item" data-j-result="${escapeJSearch(row.id)}">
+          <b>${escapeJSearch(shortJNumberForSearch(row.id))}</b>
+          ${escapeJSearch(row.part||'—')} ／ ${escapeJSearch(row.name||'—')} ／ ${escapeJSearch(row.status||'未設定')}
+        </button>`).join('');
+    }
+  });
+}
+function initJNumberSearch(){
+  const keys=['1','2','3','4','5','6','7','8','9','0','back','clear'];
+  document.querySelectorAll('.j-number-search-host').forEach(host=>{
+    host.innerHTML=`<section class="j-number-search">
+      <div class="j-search-title">🔎 J番号検索</div>
+      <div class="j-search-display">J番号を入力</div>
+      <div class="j-search-keypad">${keys.map(key=>{
+        const label=key==='back'?'⌫':key==='clear'?'全消去':key;
+        return `<button type="button" class="j-search-key ${key==='back'||key==='clear'?'command':''}" data-j-key="${key}">${label}</button>`;
+      }).join('')}</div>
+      <div class="j-search-result"></div>
+    </section>`;
+  });
+  document.addEventListener('click',event=>{
+    const keyButton=event.target.closest('[data-j-key]');
+    if(keyButton){
+      const key=keyButton.dataset.jKey;
+      if(key==='back')jNumberSearchDigits=jNumberSearchDigits.slice(0,-1);
+      else if(key==='clear')jNumberSearchDigits='';
+      else if(jNumberSearchDigits.length<15)jNumberSearchDigits+=key;
+      renderJNumberSearch();
+      return;
+    }
+    const resultButton=event.target.closest('[data-j-result]');
+    if(resultButton){
+      const target=rows.find(row=>row.id===resultButton.dataset.jResult);
+      if(!target)return;
+      document.querySelectorAll('.j-search-result').forEach(result=>{
+        result.innerHTML=`<div class="j-search-result-message"><b>${escapeJSearch(shortJNumberForSearch(target.id))}</b><br>${escapeJSearch(target.part||'—')} ／ ${escapeJSearch(target.name||'—')}<br>工程：${escapeJSearch(target.status||'未設定')}　数量：${fmt(target.qty)}点<br>製造期限：${escapeJSearch(target.due||'—')}　出荷日：${escapeJSearch(target.shipDate||'—')}</div>`;
+      });
+    }
+  });
+  renderJNumberSearch();
+}
 
 function formatLocalDate(d){
   const y=d.getFullYear();
@@ -4553,6 +4681,7 @@ async function loadSharedCsv(showMessage=true){
     // Chỉ thay dữ liệu. Không thay shipFilter, không quay về today-ng.
     rows=loaded;
     fullStats=false;
+    renderJNumberSearch();
 
     $('updated').textContent=new Date().toLocaleString('ja-JP');
     updateShipLabels();
@@ -4610,6 +4739,7 @@ document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
 
 updateShipLabels();
 updateGameClock();
+initJNumberSearch();
 render();
 loadSharedCsv(true);
 loadBonusProgress();
