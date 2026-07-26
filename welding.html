@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>新世界｜溶接工程管理</title>
+<title>新世界｜工程進捗管理</title>
 <style>
 :root{
   --ink:#102437;--muted:#60798c;--line:rgba(111,184,221,.34);
@@ -45,14 +45,14 @@ main{padding:14px 18px 28px;max-width:1900px;margin:auto}
   background:rgba(255,249,230,.39);border:1px solid #e9b85d;color:#704615;font-weight:700;
   box-shadow:0 5px 16px rgba(7,41,56,.14)
 }
-.date-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px}
+.date-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:12px}
 .date-tab{
   position:relative;min-height:78px;padding:13px 15px;text-align:left;cursor:pointer;
   border:2px solid rgba(255,255,255,.68);border-radius:13px;
   background:rgba(248,253,255,.36);box-shadow:0 5px 16px rgba(4,44,62,.18);
   backdrop-filter:blur(8px)
 }
-.date-tab:nth-child(1){border-color:#2386d8}.date-tab:nth-child(2){border-color:#1fa56e}.date-tab:nth-child(3){border-color:#8a62cf}.date-tab:nth-child(4){border-color:#ed8a19}
+.date-tab:nth-child(1){border-color:#2386d8}.date-tab:nth-child(2){border-color:#1fa56e}.date-tab:nth-child(3){border-color:#8a62cf}.date-tab:nth-child(4){border-color:#ed8a19}.date-tab:nth-child(5){border-color:#e53935}
 .date-tab.active{transform:translateY(-2px);box-shadow:0 0 0 3px rgba(34,142,196,.20),0 7px 18px rgba(4,44,62,.20)}
 .date-tab .label{font-size:18px;font-weight:1000}.date-tab .date{margin-top:4px;color:var(--muted);font-size:13px}.date-tab .count{position:absolute;right:14px;top:12px;font-size:29px;font-weight:1000}.date-tab input{width:100%;margin-top:6px;padding:6px 8px;border:1px solid #bad0dd;border-radius:6px;background:#fff}
 .glass{
@@ -578,7 +578,7 @@ main{padding:14px 18px 28px;max-width:1900px;margin:auto}
 </head>
 <body>
 <header class="top">
-  <div class="title"><h1>🔥 溶接工程管理ボード</h1><p>生地日を基準に、溶接対象を製品グループ別で把握</p></div>
+  <div class="title"><h1>🛠 工程進捗管理ボード</h1><p>未着手から仕上まで、全工程の進捗と生地日を一画面で管理</p></div>
   <div class="actions"><a class="btn" href="index.html">← 新世界へ戻る</a><button class="btn primary" id="refresh">更新</button></div>
 </header>
 <main>
@@ -589,10 +589,11 @@ main{padding:14px 18px 28px;max-width:1900px;margin:auto}
   <button class="date-tab" data-mode="tomorrow"><div class="label">明日生地</div><div class="date" id="d1"></div><div class="count" id="c1">0</div></button>
   <button class="date-tab" data-mode="after"><div class="label">明後日生地</div><div class="date" id="d2"></div><div class="count" id="c2">0</div></button>
   <button class="date-tab" data-mode="custom"><div class="label">指定日生地日</div><input type="date" id="customDate"></button>
+  <button class="date-tab" data-mode="unregistered"><div class="label">⚠ 生地日未登録</div><div class="date">登録漏れを確認</div><div class="count" id="cUnregistered">0</div></button>
 </section>
 
 <section class="glass group-board">
-  <div class="board-head"><div><h2>溶接製品グループ</h2><p>工程カードの代わりに、現場が判断しやすい製品分類を表示（未分類はその他）</p></div><b id="allSummary"></b></div>
+  <div class="board-head"><div><h2>工程別 製品グループ</h2><p>未着手・CAD/CAM・切断・曲げ・溶接・仕上を製品分類ごとに確認（未分類はその他）</p></div><b id="allSummary"></b></div>
   <div class="group-grid" id="groupGrid"></div>
 </section>
 
@@ -702,7 +703,10 @@ function todayDates(){const a=[],now=new Date();for(let i=0;i<3;i++){const d=new
 function isExcludedProcess(r){return EXCLUDED_PROCESS_WORDS.some(x=>String(r.process||'').includes(x))}
 function isCancelled(r){return String(r.process||'').includes('キャンセル')}
 function eligible(r){return !!r.materialDate&&!isExcludedProcess(r)}
-function dateBaseRows(){return rows.filter(r=>r.materialDate===selectedDate&&eligible(r))}
+function dateBaseRows(){
+  if(selectedDate==='unregistered')return rows.filter(r=>!r.materialDate);
+  return rows.filter(r=>r.materialDate===selectedDate&&eligible(r));
+}
 function dateRows(){return dateBaseRows().filter(r=>!isCancelled(r))}
 function cancelRows(){return dateBaseRows().filter(r=>isCancelled(r))}
 function selectedRows(){const list=dateRows();return selectedGroup==='all'?list:list.filter(r=>r.group===selectedGroup)}
@@ -739,7 +743,8 @@ function initDates(){
   document.getElementById('customDate').value=ds[0];selectedDate=ds[0];updateDateCounts();
 }
 function updateDateCounts(){
-  const ds=todayDates();['c0','c1','c2'].forEach((id,i)=>document.getElementById(id).textContent=rows.filter(r=>r.materialDate===ds[i]&&eligible(r)&&!isCancelled(r)).length)
+  const ds=todayDates();['c0','c1','c2'].forEach((id,i)=>document.getElementById(id).textContent=rows.filter(r=>r.materialDate===ds[i]&&eligible(r)&&!isCancelled(r)).length);
+  document.getElementById('cUnregistered').textContent=rows.filter(r=>!r.materialDate).length;
 }
 function render(){renderGroups();renderInfo();renderCenter();renderChart()}
 function renderGroups(){
@@ -772,7 +777,7 @@ function renderInfo(){
   if(cancelled)procs.set('キャンセル',cancelled);
 
   const materialOrder=['アルミ','SUS','鉄','ドブ','ZAM','スーパーダイマ','銅','その他'];
-  const fixedProcessOrder=['溶接','曲げ','切断','CAD/CAM'];
+  const fixedProcessOrder=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   const processOrder=[...fixedProcessOrder,...[...procs.keys()].filter(n=>!fixedProcessOrder.includes(n)&&n!=='キャンセル').sort((a,b)=>a.localeCompare(b,'ja')),...(procs.has('キャンセル')?['キャンセル']:[])];
 
   const materialRows=materialOrder
@@ -783,8 +788,8 @@ function renderInfo(){
       return `<div class="info-row"><span class="info-name"><span class="info-icon" style="background:${x.color}">${short}</span>${n}</span><b>${x.count}件</b></div>`;
     }).join('');
 
-  const processColors={'溶接':'#d94b45','曲げ':'#ef8a24','切断':'#16a6b6','CAD/CAM':'#7a5cc7','キャンセル':'#607d8b','工程未設定':'#8b98a3'};
-  const processIcons={'溶接':'溶','曲げ':'曲','切断':'切','CAD/CAM':'C','キャンセル':'×','工程未設定':'?'};
+  const processColors={'未着手':'#8b98a3','CAD/CAM':'#7a5cc7','切断':'#16a6b6','曲げ':'#ef8a24','溶接':'#d94b45','仕上':'#43a047','キャンセル':'#607d8b','工程未設定':'#8b98a3'};
+  const processIcons={'未着手':'未','CAD/CAM':'C','切断':'切','曲げ':'曲','溶接':'溶','仕上':'仕','キャンセル':'×','工程未設定':'?'};
   const processRows=processOrder
     .filter(n=>procs.has(n))
     .map(n=>`<div class="info-row${n==='キャンセル'?' cancel-row':''}"><span class="info-name"><span class="info-icon" style="background:${processColors[n]||'#607d8b'}">${processIcons[n]||String(n).charAt(0)}</span>${n}${n==='キャンセル'?'（集計外）':''}</span><b>${procs.get(n)}件</b></div>`)
@@ -813,7 +818,9 @@ function groupProducts(list){
 function renderCenter(){
   const list=selectedRows(),items=groupProducts(list),g=groupLabel();
   document.getElementById('centerTitle').textContent=`${g.name} 一覧`;
-  document.getElementById('centerSub').textContent=`生地日 ${selectedDate} ／ 品名・規格単位でまとめて表示`;
+  document.getElementById('centerSub').textContent=selectedDate==='unregistered'
+    ? '生地日未登録 ／ 登録漏れを品名・規格単位でまとめて表示'
+    : `生地日 ${selectedDate} ／ 品名・規格単位でまとめて表示`;
   document.getElementById('centerSummary').textContent=`${items.length}種類`;
   const box=document.getElementById('subgroups');
   if(!items.length){box.innerHTML='<div class="empty">対象データはありません</div>';return}
@@ -827,7 +834,9 @@ function renderCenter(){
 function renderChart(){
   const list=dateRows(),counts=GROUPS.map(g=>({g,n:list.filter(r=>r.group===g.key).length})),total=counts.reduce((s,x)=>s+x.n,0);
   document.getElementById('donutTotal').textContent=total;
-  document.getElementById('chartSub').textContent=`生地日 ${selectedDate} ／ 件数比率`;
+  document.getElementById('chartSub').textContent=selectedDate==='unregistered'
+    ? '生地日未登録 ／ 件数比率'
+    : `生地日 ${selectedDate} ／ 件数比率`;
   const donut=document.getElementById('donut'),legend=document.getElementById('legend');
   if(!total){donut.style.setProperty('--pie','#d8e2e8');legend.innerHTML='<div class="legend-row"><span class="dot" style="background:#d8e2e8"></span><span>対象データなし</span><b>0</b></div>';return}
   let start=0,parts=[];
@@ -903,10 +912,12 @@ function openModal(x){
 
   document.getElementById('modal').classList.add('show')
 }
-document.querySelectorAll('.date-tab').forEach((b,i)=>b.onclick=e=>{
+document.querySelectorAll('.date-tab').forEach(b=>b.onclick=e=>{
   if(e.target.tagName==='INPUT')return;
   document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');
-  selectedDate=i<3?todayDates()[i]:document.getElementById('customDate').value;selectedGroup='all';render()
+  const mode=b.dataset.mode,dates=todayDates();
+  selectedDate=mode==='today'?dates[0]:mode==='tomorrow'?dates[1]:mode==='after'?dates[2]:mode==='unregistered'?'unregistered':document.getElementById('customDate').value;
+  selectedGroup='all';render()
 });
 document.getElementById('customDate').onchange=e=>{
   selectedDate=e.target.value;selectedGroup='all';document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));e.target.closest('.date-tab').classList.add('active');render()
