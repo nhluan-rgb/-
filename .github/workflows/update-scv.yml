@@ -65,7 +65,12 @@ jobs:
               )
           )
 
-          shutil.copyfile(source, target)
+        shutil.copyfile(source, target)
+
+# Xóa toàn bộ CSV nguồn sau khi đã cập nhật SCV.csv
+for csv_file in candidates:
+    csv_file.unlink()
+    print(f"Đã xóa file nguồn: {csv_file.relative_to(root)}")
 
           with open(
               os.environ["GITHUB_OUTPUT"],
@@ -90,7 +95,7 @@ jobs:
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add SCV.csv
+          git add -A
           git commit -m \
             "Auto-update SCV.csv from ${{ steps.update.outputs.source }}"
           git push
