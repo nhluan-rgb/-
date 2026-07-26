@@ -2465,6 +2465,70 @@ section.panel.work{
 }
 @keyframes clockRedAlert{from{filter:brightness(.86);transform:scale(1)}to{filter:brightness(1.32);transform:scale(1.018)}}
 
+/* 本日出荷・未完成：月間15時達成カレンダー */
+.evolution-visual:has(.monthly-achievement-calendar){min-height:870px!important}
+.monthly-achievement-calendar{
+  position:absolute;
+  z-index:7;
+  left:24px;
+  top:222px;
+  width:min(760px,calc(100% - 500px));
+  min-width:650px;
+  padding:17px 19px 19px;
+  border:4px solid #75eaff;
+  border-radius:22px;
+  background:
+    linear-gradient(rgba(73,226,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(73,226,255,.055) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(3,29,52,.95),rgba(5,68,86,.93));
+  background-size:20px 20px,20px 20px,auto;
+  box-shadow:0 8px 0 #031a2a,inset 0 0 32px #36d7ff24,0 0 24px #25d8ff55;
+  color:#fff;
+}
+.calendar-achievement-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+}
+.calendar-achievement-title b{font-size:29px;color:#fff49a;text-shadow:0 0 10px #ffbe2e}
+.calendar-achievement-title span{font-size:16px;font-weight:1000;color:#bcefff}
+.achievement-weekdays,.achievement-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.achievement-weekdays div{text-align:center;padding:5px;font-size:15px;font-weight:1000;color:#aeeeff}
+.achievement-weekdays div:first-child{color:#ff9c9c}.achievement-weekdays div:last-child{color:#86bfff}
+.achievement-day{
+  position:relative;
+  min-height:76px;
+  padding:6px;
+  border:1px solid #64a9c2;
+  border-radius:10px;
+  background:#ffffff10;
+}
+.achievement-day.empty{visibility:hidden}
+.achievement-day.today{outline:3px solid #ffe76a;box-shadow:0 0 13px #ffe65f}
+.achievement-day-number{font-size:17px;font-weight:1000;color:#fff}
+.achievement-stamp{
+  display:grid;
+  place-items:center;
+  min-height:37px;
+  margin-top:4px;
+  border:3px double #fff;
+  border-radius:4px;
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  line-height:1;
+  transform:rotate(-4deg);
+}
+.achievement-stamp.done{background:#10a84f;box-shadow:0 3px 0 #076b31,0 0 10px #22ed77}
+.achievement-stamp.miss{background:#d71920;box-shadow:0 3px 0 #790a0d,0 0 10px #ff353d}
+.achievement-stamp.pending{background:#0c79ba;box-shadow:0 3px 0 #06496f,0 0 10px #33c8ff;font-size:13px}
+.achievement-day-note{margin-top:4px;text-align:center;font-size:10px;font-weight:900;color:#d5f4ff}
+@media(max-width:1300px){
+  .monthly-achievement-calendar{position:relative;inset:auto;width:calc(100% - 24px);min-width:0;margin:210px 12px 20px}
+}
+
 /* 工程別チャートを撤去し、全体進捗を宇宙船HUD化 */
 .standard-donut-card .delivery-divider,
 .standard-donut-card .delivery-chart-title,
@@ -2718,6 +2782,7 @@ section.panel.work{
 
     <div class="evolution-world">
       <section class="evolution-visual" id="evolutionVisual">
+        <div id="monthlyAchievementCalendar" class="monthly-achievement-calendar"></div>
         <div id="ngProcessBacklog" class="process-backlog-panel ng-process-backlog" hidden></div>
       </section>
 
@@ -2875,6 +2940,69 @@ function getOrRecordTodayCompletion(ngCount){
   }
   const d=new Date(saved);
   return Number.isNaN(d.getTime())?new Date():d;
+}
+
+function achievementMonthKey(month){
+  return `todayNgAchievement:${month}`;
+}
+function readAchievementMonth(month){
+  try{return JSON.parse(localStorage.getItem(achievementMonthKey(month))||'{}')}catch(_){return{}}
+}
+function writeAchievementMonth(month,data){
+  localStorage.setItem(achievementMonthKey(month),JSON.stringify(data));
+}
+function updateMonthlyAchievementCalendar(ngCount,allowRecord){
+  const box=$('monthlyAchievementCalendar');
+  if(!box)return;
+  const now=new Date();
+  const today=getShipDates().today;
+  const month=today.slice(0,7);
+  const data=readAchievementMonth(month);
+
+  if(allowRecord&&!data[today]){
+    const existingCompletion=localStorage.getItem(getTodayCompletionKey());
+    if(existingCompletion){
+      const completedAt=new Date(existingCompletion);
+      data[today]={
+        status:completedAt.getHours()<15?'done':'miss',
+        time:completedAt.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false})
+      };
+      writeAchievementMonth(month,data);
+    }else if(ngCount===0){
+      data[today]={
+        status:now.getHours()<15?'done':'miss',
+        time:now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false})
+      };
+      writeAchievementMonth(month,data);
+    }else if(now.getHours()>=15){
+      data[today]={status:'miss',time:'15:00'};
+      writeAchievementMonth(month,data);
+    }
+  }
+
+  const [year,monthNumber]=month.split('-').map(Number);
+  const daysInMonth=new Date(year,monthNumber,0).getDate();
+  const firstWeekday=new Date(year,monthNumber-1,1).getDay();
+  const cells=[];
+  for(let i=0;i<firstWeekday;i++)cells.push('<div class="achievement-day empty"></div>');
+  for(let day=1;day<=daysInMonth;day++){
+    const dateKey=`${month}-${String(day).padStart(2,'0')}`;
+    const result=data[dateKey];
+    const isToday=dateKey===today;
+    const isFuture=dateKey>today;
+    let stamp='';
+    if(result?.status==='done')stamp=`<div class="achievement-stamp done">完了</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
+    else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未完了</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
+    else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
+    cells.push(`<div class="achievement-day ${isToday?'today':''}"><div class="achievement-day-number">${day}</div>${stamp}</div>`);
+  }
+  box.innerHTML=`
+    <div class="calendar-achievement-title">
+      <b>📅 ${year}年${monthNumber}月 15時達成カレンダー</b>
+      <span>完了＝15時前達成 ／ 未完了＝15時時点で残件あり</span>
+    </div>
+    <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="achievement-days">${cells.join('')}</div>`;
 }
 function updateGameClock(){
   const clock=$('gameClock');
@@ -3817,6 +3945,7 @@ if(shipFilter==='today-ng'){
   const ngPoints=ng.reduce((a,r)=>a+r.qty,0);
   $('bossCount').textContent=fmt(ng.length);
   $('bossPoints').textContent=fmt(ngPoints);
+  updateMonthlyAchievementCalendar(ng.length,!fullStats);
 
   const startBossKey=`todayNgStart:${dates.today}`;
   const savedBossStart=Number(localStorage.getItem(startBossKey)||0);
