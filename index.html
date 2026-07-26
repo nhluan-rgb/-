@@ -4176,24 +4176,24 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const todayDate=new Date(`${today}T00:00:00`);
   const todayIsClosed=todayDate.getDay()===0||todayDate.getDay()===6||holidayKeys.has(today);
 
-  if(allowRecord&&!todayIsClosed&&todayDate.getDate()!==20&&!data[today]){
-    const existingCompletion=localStorage.getItem(getTodayCompletionKey());
-    if(existingCompletion){
-      const completedAt=new Date(existingCompletion);
-      data[today]={
-        status:completedAt.getHours()<15?'done':'miss',
-        time:completedAt.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false})
-      };
-      writeAchievementMonth(month,data);
-    }else if(ngCount===0){
-      data[today]={
-        status:now.getHours()<15?'done':'miss',
-        time:now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false})
-      };
-      writeAchievementMonth(month,data);
-    }else if(now.getHours()>=15){
-      data[today]={status:'miss',time:'15:00'};
-      writeAchievementMonth(month,data);
+  if(allowRecord&&!todayIsClosed&&todayDate.getDate()!==20){
+    if(now.getHours()<15){
+      // 15時前は判定しない。以前の誤記録があれば当日分だけ取り消す。
+      if(data[today]){
+        delete data[today];
+        writeAchievementMonth(month,data);
+      }
+    }else{
+      const nextStatus=ngCount===0?'done':'miss';
+      const nextTime=nextStatus==='done'
+        ? (data[today]?.status==='done'&&data[today].time
+          ? data[today].time
+          : now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false}))
+        : '15:00';
+      if(data[today]?.status!==nextStatus||data[today]?.time!==nextTime){
+        data[today]={status:nextStatus,time:nextTime};
+        writeAchievementMonth(month,data);
+      }
     }
   }
 
@@ -4234,7 +4234,8 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     }else if(isClosed){
       const closedLabel=isNationalHoliday?'祝日':weekday===6?'土曜日':'日曜日';
       stamp=`<div class="achievement-stamp holiday">休日</div><div class="achievement-day-note">${closedLabel}</div>`;
-    }else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15時前'}</div>`;
+    }else if(isToday&&now.getHours()<15)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
+    else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
     cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed&&!(isBonusClosingDay&&bonusIsFinal)?'holiday':''} ${isBonusClosingDay&&bonusIsFinal?'bonus-day':''}"><div class="achievement-day-number">${cellMonth}/${day}</div>${stamp}</div>`);
@@ -5440,16 +5441,18 @@ const completeMessage=document.getElementById('completeMessage');
 
 if(ng.length===0){
   ngCard.classList.remove('ng');
+  ngCard.classList.add('is-clear');
   ngCard.style.background='#00C853';
   ngCard.style.borderColor='#00C853';
   ngCard.style.color='#fff';
   ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
 }else{
   ngCard.classList.add('ng');
-  ngCard.style.background='';
-  ngCard.style.borderColor='';
-  ngCard.style.color='';
-  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='');
+  ngCard.classList.remove('is-clear');
+  ngCard.style.background='linear-gradient(180deg,#e53935,#b71c1c)';
+  ngCard.style.borderColor='#ff8a80';
+  ngCard.style.color='#fff';
+  ngCard.querySelectorAll('.day,.ship-value,.ship-sub').forEach(el=>el.style.color='#fff');
 }
 
 const overdueCard=document.querySelector('[data-ship="overdue"]');
