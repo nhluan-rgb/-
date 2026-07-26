@@ -3436,6 +3436,139 @@ section.panel.work{
   }
 }
 </style>
+<style id="v90_ng_ticker_clock_grid_patch">
+/* 本日出荷未完成：指令を上段へ、時計を右側J番号の上へ */
+.ng-game .evolution-visual:has(.monthly-achievement-calendar),
+.ng-game .evolution-world,
+.ng-game .boss-status-card{
+  min-height:1150px!important;
+  height:1150px!important;
+}
+.ng-mission-ticker-slot{
+  position:absolute;
+  z-index:10;
+  left:24px;
+  right:24px;
+  top:282px;
+  height:135px;
+  overflow:hidden;
+  padding:46px 0 10px;
+  border:4px solid #50d8ff;
+  border-radius:20px;
+  background:
+    linear-gradient(rgba(72,207,255,.065) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(72,207,255,.065) 1px,transparent 1px),
+    linear-gradient(135deg,rgba(3,35,63,.96),rgba(5,91,135,.94),rgba(3,39,75,.96));
+  background-size:20px 20px,20px 20px,auto;
+  box-shadow:
+    0 6px 0 rgba(2,38,70,.82),
+    inset 0 0 22px rgba(63,206,255,.2),
+    0 0 17px rgba(40,190,255,.48);
+}
+.ng-mission-ticker-slot::before{
+  content:"本日出荷・未完成 ミッション";
+  position:absolute;
+  left:18px;
+  top:10px;
+  padding:6px 16px;
+  border:2px solid #7be7ff;
+  border-radius:999px;
+  background:linear-gradient(180deg,#168dcc,#075b98);
+  color:#fff;
+  font-size:18px;
+  font-weight:1000;
+  text-shadow:0 2px 2px rgba(0,0,0,.45);
+  box-shadow:0 3px 0 #033e71,0 0 12px rgba(64,207,255,.42);
+}
+.ng-mission-ticker-slot .game-banner-main{
+  display:block!important;
+  width:max-content!important;
+  max-width:none!important;
+  padding:0 0 0 100%!important;
+  color:#fff!important;
+  background:none!important;
+  -webkit-text-fill-color:#fff!important;
+  filter:none!important;
+  font-size:32px!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+  text-shadow:0 2px 2px #00345d,0 0 6px rgba(54,207,255,.72)!important;
+  animation:ngMissionMarquee 12s linear infinite;
+  will-change:transform;
+}
+.ng-mission-ticker-slot .game-banner-main strong{
+  color:#fff!important;
+  font-size:inherit!important;
+  white-space:nowrap!important;
+}
+.ng-mission-ticker-slot .game-banner-main br{
+  display:none!important;
+}
+@keyframes ngMissionMarquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+.ng-game .monthly-achievement-calendar{
+  top:435px!important;
+  height:625px!important;
+  box-sizing:border-box!important;
+}
+.ng-game .ng-utility-column{
+  top:435px!important;
+  height:625px!important;
+}
+.ng-game .ng-utility-column .bonus-campaign-panel{
+  height:625px!important;
+  min-height:625px!important;
+  box-sizing:border-box!important;
+}
+.ng-game .boss-mission-slot{
+  min-height:250px!important;
+  padding:0!important;
+  border:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.ng-game .boss-mission-slot .game-clock.visual-hud-clock{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  height:250px!important;
+  min-height:250px!important;
+  margin:0!important;
+}
+@media(max-width:1300px){
+  .ng-game .evolution-visual:has(.monthly-achievement-calendar),
+  .ng-game .evolution-world,
+  .ng-game .boss-status-card{
+    width:auto!important;
+    height:auto!important;
+    min-height:auto!important;
+  }
+  .ng-mission-ticker-slot{
+    position:relative;
+    inset:auto;
+    width:calc(100% - 24px);
+    margin:12px;
+  }
+  .ng-game .monthly-achievement-calendar,
+  .ng-game .ng-utility-column{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:12px!important;
+  }
+  .ng-game .ng-utility-column .bonus-campaign-panel{
+    height:auto!important;
+    min-height:0!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3508,6 +3641,7 @@ section.panel.work{
 
     <div class="evolution-world">
       <section class="evolution-visual" id="evolutionVisual">
+        <div id="ngMissionTickerSlot" class="ng-mission-ticker-slot"></div>
         <div id="monthlyAchievementCalendar" class="monthly-achievement-calendar"></div>
         <div id="ngUtilityColumn" class="ng-utility-column">
           <section id="bonusCampaignPanel" class="bonus-campaign-panel" aria-label="大入り3万円進捗"></section>
@@ -3666,7 +3800,7 @@ function initJNumberSearch(){
 function mountBossMissionMessage(){
   const banner=document.getElementById('gameBanner');
   const message=document.getElementById('gameBannerMessage');
-  const slot=document.getElementById('bossMissionSlot');
+  const slot=document.getElementById('ngMissionTickerSlot');
   if(!banner||!message||!slot)return;
   if(message.parentElement!==slot)slot.appendChild(message);
   banner.classList.add('message-relocated');
@@ -4525,8 +4659,10 @@ function formatShipTabValues(){
 function mountVisualClock(clockBox,targetVisual){
   if(!clockBox||!targetVisual)return;
   clockBox.classList.add('visual-hud-clock');
-  const utility=clockBox.classList.contains('game-clock')?document.getElementById('ngUtilityColumn'):null;
-  const mountTarget=utility||targetVisual;
+  const clockSlot=clockBox.classList.contains('game-clock')
+    ? document.getElementById('bossMissionSlot')
+    : null;
+  const mountTarget=clockSlot||targetVisual;
   if(clockBox.parentElement!==mountTarget)mountTarget.append(clockBox);
 }
 function mountStandardMission(){
