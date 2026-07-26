@@ -2659,6 +2659,29 @@ section.panel.work{
   font-weight:850;
 }
 .j-search-result-item b{display:block;font-size:14px;color:#00679a}
+.ng-search-row{margin-top:14px}
+.ng-search-row .j-number-search{
+  display:grid;
+  grid-template-columns:260px minmax(420px,1fr) minmax(360px,520px);
+  grid-template-areas:"title keypad result" "display keypad result";
+  gap:8px 14px;
+  align-items:center;
+  margin-top:0;
+}
+.ng-search-row .j-search-title{grid-area:title}
+.ng-search-row .j-search-display{grid-area:display;margin-top:0}
+.ng-search-row .j-search-keypad{grid-area:keypad;margin-top:0}
+.ng-search-row .j-search-result{grid-area:result;margin-top:0;max-height:104px}
+.j-detail-title{font-size:28px;font-weight:1000;color:#0b5f8b}
+.j-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:14px}
+.j-detail-cell{padding:13px;border:1px solid #bcd5e2;border-radius:10px;background:#f2f9fc}
+.j-detail-cell small{display:block;color:#648091;font-size:12px;font-weight:850}
+.j-detail-cell b{display:block;margin-top:4px;font-size:18px;color:#15384a;overflow-wrap:anywhere}
+.j-detail-highlight{color:#d62d25!important;font-size:23px!important}
+@media(max-width:1300px){
+  .ng-search-row .j-number-search{grid-template-columns:1fr;grid-template-areas:"title" "display" "keypad" "result"}
+  .j-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media(max-width:1300px){
   .monthly-achievement-calendar{position:relative;inset:auto;width:calc(100% - 24px);min-width:0;margin:210px 12px 20px}
   .bonus-campaign-panel{position:relative;inset:auto;width:calc(100% - 24px);margin:12px}
@@ -2931,9 +2954,10 @@ section.panel.work{
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
         <div class="boss-goal">完了までの進捗 <span id="bossHpText">100%</span></div>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
-        <div class="j-number-search-host"></div>
       </section>
     </div>
+
+    <div class="ng-search-row"><div class="j-number-search-host"></div></div>
 
     <div class="runner-world evolution-runner-world">
       <div id="runnerTrack" class="runner-track"></div>
@@ -3003,6 +3027,41 @@ function renderJNumberSearch(){
     }
   });
 }
+function openJNumberPopup(target){
+  const modal=document.getElementById('processModal');
+  const modalCard=document.getElementById('processModalCard');
+  const modalBody=document.getElementById('processModalBody');
+  if(!modal||!modalBody)return;
+  modalBody.innerHTML=`
+    <header class="process-backlog-header">
+      <div>
+        <div class="j-detail-title">🔎 ${escapeJSearch(shortJNumberForSearch(target.id))}</div>
+        <div>J番号 詳細情報</div>
+      </div>
+      <button type="button" class="process-backlog-close" data-process-close>× 閉じる</button>
+    </header>
+    <section class="j-detail-grid">
+      <div class="j-detail-cell"><small>製造指示番号</small><b>${escapeJSearch(target.id||'—')}</b></div>
+      <div class="j-detail-cell"><small>品番</small><b>${escapeJSearch(target.part||'—')}</b></div>
+      <div class="j-detail-cell"><small>品名</small><b>${escapeJSearch(target.name||'—')}</b></div>
+      <div class="j-detail-cell"><small>規格</small><b>${escapeJSearch(target.standard||'—')}</b></div>
+      <div class="j-detail-cell"><small>現在工程</small><b class="j-detail-highlight">${escapeJSearch(target.status||'未設定')}</b></div>
+      <div class="j-detail-cell"><small>数量</small><b>${fmt(target.qty)}点</b></div>
+      <div class="j-detail-cell"><small>製造期限</small><b>${escapeJSearch(target.due||'—')}</b></div>
+      <div class="j-detail-cell"><small>出荷日</small><b>${escapeJSearch(target.shipDate||'—')}</b></div>
+      <div class="j-detail-cell"><small>担当者</small><b>${escapeJSearch(target.owner||'未設定')}</b></div>
+      <div class="j-detail-cell"><small>配送便</small><b>${escapeJSearch(target.ship||'—')}</b></div>
+    </section>`;
+  selectedProcess='';
+  selectedDelivery='';
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  if(modalCard){
+    modalCard.scrollTop=0;
+    modalCard.style.transform='translate(0px,0px)';
+  }
+  document.body.style.overflow='hidden';
+}
 function initJNumberSearch(){
   const keys=['1','2','3','4','5','6','7','8','9','0','back','clear'];
   document.querySelectorAll('.j-number-search-host').forEach(host=>{
@@ -3030,9 +3089,7 @@ function initJNumberSearch(){
     if(resultButton){
       const target=rows.find(row=>row.id===resultButton.dataset.jResult);
       if(!target)return;
-      document.querySelectorAll('.j-search-result').forEach(result=>{
-        result.innerHTML=`<div class="j-search-result-message"><b>${escapeJSearch(shortJNumberForSearch(target.id))}</b><br>${escapeJSearch(target.part||'—')} ／ ${escapeJSearch(target.name||'—')}<br>工程：${escapeJSearch(target.status||'未設定')}　数量：${fmt(target.qty)}点<br>製造期限：${escapeJSearch(target.due||'—')}　出荷日：${escapeJSearch(target.shipDate||'—')}</div>`;
-      });
+      openJNumberPopup(target);
     }
   });
   renderJNumberSearch();
