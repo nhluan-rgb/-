@@ -617,6 +617,87 @@ button.info-row.filter-row.active{
 }
 </style>
 
+<style id="v71_process_dashboard">
+.chart-panel{display:block !important}
+.process-dashboard{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+  margin-top:16px;
+}
+.process-stage-card{
+  --stage:#607d8b;
+  min-height:132px;
+  padding:9px;
+  border:3px solid var(--stage);
+  border-radius:14px;
+  background:linear-gradient(180deg,#fff,#edf5f8);
+  cursor:pointer;
+  text-align:center;
+  box-shadow:0 5px 0 color-mix(in srgb,var(--stage) 58%,#334a57),0 0 14px color-mix(in srgb,var(--stage) 28%,transparent);
+  transition:transform .14s ease,filter .14s ease;
+}
+.process-stage-card:hover{transform:translateY(-3px);filter:brightness(1.05)}
+.process-stage-card.active{
+  transform:translateY(-4px);
+  box-shadow:0 6px 0 color-mix(in srgb,var(--stage) 65%,#263944),0 0 0 4px #fff47d,0 0 24px var(--stage);
+}
+.process-stage-name{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:39px;
+  padding:7px 5px;
+  border-radius:8px;
+  background:var(--stage);
+  color:#fff;
+  font-size:19px;
+  line-height:1.1;
+  font-weight:1000;
+  text-shadow:0 2px 0 rgba(0,0,0,.34);
+}
+.process-stage-icon{font-size:22px}
+.process-stage-count{margin-top:10px;font-size:34px;line-height:1;font-weight:1000;color:var(--stage)}
+.process-stage-points{margin-top:7px;font-size:15px;font-weight:900;color:#29465b}
+.process-dashboard-empty{
+  grid-column:1/-1;
+  min-height:260px;
+  display:grid;
+  place-items:center;
+  border:2px dashed #a9c3d1;
+  border-radius:13px;
+  background:rgba(255,255,255,.65);
+  font-size:19px;
+  font-weight:1000;
+  color:#607d8b;
+}
+.date-tab[data-mode="unregistered"]{
+  overflow:hidden;
+  border:4px solid #ff2d2d !important;
+  background:linear-gradient(145deg,#8f070b,#e2241c) !important;
+  box-shadow:0 0 0 3px #fff2a6,0 7px 0 #680408,0 0 25px rgba(255,35,25,.72) !important;
+  animation:unregisteredAlert 1.15s ease-in-out infinite alternate;
+}
+.date-tab[data-mode="unregistered"] .label,
+.date-tab[data-mode="unregistered"] .date{color:#fff !important;text-shadow:0 2px 0 #680000}
+.date-tab[data-mode="unregistered"] .count{color:#fff36d !important;text-shadow:0 3px 0 #650000,0 0 14px #ffae00 !important}
+.unregistered-check-label{
+  display:inline-block;
+  margin-left:7px;
+  padding:4px 9px;
+  border-radius:999px;
+  background:#fff25e;
+  color:#9a0808;
+  font-size:14px;
+  font-weight:1000;
+  vertical-align:middle;
+  box-shadow:0 2px 0 #b87900,0 0 10px #fff59a;
+}
+@keyframes unregisteredAlert{from{filter:brightness(.94)}to{filter:brightness(1.16)}}
+@media(max-width:1380px){.process-dashboard{grid-template-columns:repeat(3,minmax(150px,1fr))}}
+@media(max-width:850px){.process-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 <header class="top">
@@ -631,7 +712,7 @@ button.info-row.filter-row.active{
   <button class="date-tab" data-mode="tomorrow"><div class="label">明日生地</div><div class="date" id="d1"></div><div class="count" id="c1">0</div></button>
   <button class="date-tab" data-mode="after"><div class="label">明後日生地</div><div class="date" id="d2"></div><div class="count" id="c2">0</div></button>
   <button class="date-tab" data-mode="custom"><div class="label">指定日生地日</div><input type="date" id="customDate"></button>
-  <button class="date-tab" data-mode="unregistered"><div class="label">⚠ 生地日未登録</div><div class="date">登録漏れを確認</div><div class="count" id="cUnregistered">0</div></button>
+  <button class="date-tab" data-mode="unregistered"><div class="label">⚠ 生地日未登録 <span class="unregistered-check-label">要確認</span></div><div class="date">登録漏れを必ず確認</div><div class="count" id="cUnregistered">0</div></button>
 </section>
 
 <section class="glass group-board">
@@ -658,9 +739,8 @@ button.info-row.filter-row.active{
   </section>
 
   <aside class="glass chart-panel">
-    <div><h2 class="chart-title">製品グループ構成</h2><p class="chart-sub" id="chartSub"></p></div>
-    <div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutTotal">0</b><small>件 合計</small></div></div></div>
-    <div class="legend" id="legend"></div>
+    <div><h2 class="chart-title">工程進捗</h2><p class="chart-sub" id="chartSub"></p></div>
+    <div class="process-dashboard" id="processDashboard"></div>
   </aside>
 </section>
 </main>
@@ -776,6 +856,7 @@ async function load(){
         id:r[idx['製造指示番号']]||'',code:r[idx['品番']]||'',name:r[idx['品名']]||'(品名なし)',
         qty:Number(String(r[idx['数量']]||'0').replace(/,/g,''))||0,spec:r[idx['規格']]||'',
         status:r[idx['進捗']]||'',process:processName(r[idx['進捗']]),materialDate:normalizeDate(r[idx['生地日']]),
+        due:idx['製造期限']!==undefined?(r[idx['製造期限']]||''):'',
         owner:idx['担当者']!==undefined?(r[idx['担当者']]||''):'',
         materialRaw:idx['材質']!==undefined?(r[idx['材質']]||''):(idx['材料']!==undefined?(r[idx['材料']]||''):'')
       };
@@ -890,17 +971,42 @@ function renderCenter(){
   box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>openModal(items[Number(b.dataset.i)]))
 }
 function renderChart(){
-  const list=dateRows(),counts=GROUPS.map(g=>({g,n:list.filter(r=>r.group===g.key).length})),total=counts.reduce((s,x)=>s+x.n,0);
-  document.getElementById('donutTotal').textContent=total;
+  const list=groupScopedRows(dateRows());
   document.getElementById('chartSub').textContent=selectedDate==='unregistered'
-    ? '生地日未登録 ／ 件数比率'
-    : `生地日 ${selectedDate} ／ 件数比率`;
-  const donut=document.getElementById('donut'),legend=document.getElementById('legend');
-  if(!total){donut.style.setProperty('--pie','#d8e2e8');legend.innerHTML='<div class="legend-row"><span class="dot" style="background:#d8e2e8"></span><span>対象データなし</span><b>0</b></div>';return}
-  let start=0,parts=[];
-  counts.forEach(({g,n})=>{const end=start+n/total*100;parts.push(`${g.color} ${start}% ${end}%`);start=end});
-  donut.style.setProperty('--pie',`conic-gradient(${parts.join(',')})`);
-  legend.innerHTML=counts.map(({g,n})=>`<div class="legend-row"><span class="dot" style="background:${g.color}"></span><span>${g.name}</span><b>${n}</b></div>`).join('')
+    ? '生地日未登録 ／ 工程カードを押すと一覧を絞り込み'
+    : `生地日 ${selectedDate} ／ 工程カードを押すと一覧を絞り込み`;
+  const stages=[
+    {key:'未着手',label:'未着手',icon:'○',color:'#8799a5'},
+    {key:'CAD/CAM',label:'CAD/CAM',icon:'▣',color:'#f6bd21'},
+    {key:'切断',label:'切断',icon:'◉',color:'#f57c00'},
+    {key:'曲げ',label:'曲げ',icon:'↪',color:'#e65fb2'},
+    {key:'溶接',label:'溶接',icon:'⚡',color:'#ed3434'},
+    {key:'仕上',label:'仕上',icon:'✦',color:'#90a4ae'}
+  ];
+  if(selectedDate==='unregistered'){
+    stages.push(
+      {key:'塗装',label:'塗装',icon:'▥',color:'#43a047'},
+      {key:'組立',label:'組立',icon:'⚒',color:'#7e57c2'},
+      {key:'完成',label:'完成',icon:'✓',color:'#00a67e'}
+    );
+  }
+  const cancelled=groupScopedRows(cancelRows());
+  if(cancelled.length)stages.push({key:'キャンセル',label:'キャンセル',icon:'×',color:'#607d8b',rows:cancelled});
+  const box=document.getElementById('processDashboard');
+  const cards=stages.map(stage=>{
+    const stageRows=stage.rows||list.filter(r=>r.process===stage.key);
+    const points=stageRows.reduce((sum,r)=>sum+r.qty,0);
+    return `<button type="button" class="process-stage-card${selectedProcess===stage.key?' active':''}" data-stage="${esc(stage.key)}" style="--stage:${stage.color}">
+      <div class="process-stage-name"><span class="process-stage-icon">${stage.icon}</span>${stage.label}</div>
+      <div class="process-stage-count">${stageRows.length}件</div>
+      <div class="process-stage-points">${points}点</div>
+    </button>`;
+  }).join('');
+  box.innerHTML=cards||'<div class="process-dashboard-empty">対象データはありません</div>';
+  box.querySelectorAll('[data-stage]').forEach(button=>button.onclick=()=>{
+    selectedProcess=selectedProcess===button.dataset.stage?'':button.dataset.stage;
+    render();
+  });
 }
 function openModal(x){
   const first=x.rows[0]||{};
@@ -911,6 +1017,8 @@ function openModal(x){
   const remainingQty=Math.max(0,totalQty-completedQty);
   const process=first.process||first.status||'';
   const owner=first.owner||'—';
+  const dueDates=x.rows.map(r=>String(r.due||'').trim()).filter(Boolean).sort();
+  const earliestDue=dueDates[0]||'未設定';
   const note=`${x.spec||'規格なし'} の製造指示です。`;
 
   document.getElementById('modalTitle').innerHTML=`
@@ -929,6 +1037,7 @@ function openModal(x){
         <div class="basic-cell"><small>進捗</small><span class="modal-chip" style="color:#ef8a24">${esc(process||'—')}</span></div>
         <div class="basic-cell"><small>数量</small><strong>${totalQty} 台</strong></div>
         <div class="basic-cell"><small>担当者</small><strong>${esc(owner)}</strong></div>
+        <div class="basic-cell"><small>最早製造期限</small><strong>${esc(earliestDue)}</strong></div>
       </div>
     </section>
 
@@ -936,7 +1045,7 @@ function openModal(x){
       <div class="modal-section-head"><span class="modal-section-icon">↯</span>製造指示一覧</div>
       <div class="modal-table-wrap">
         <table class="detail">
-          <thead><tr><th>製造指示番号</th><th>品番</th><th>材質</th><th>規格</th><th>進捗</th><th>数量</th><th>担当者</th></tr></thead>
+          <thead><tr><th>製造指示番号</th><th>品番</th><th>材質</th><th>規格</th><th>進捗</th><th>製造期限</th><th>数量</th><th>担当者</th></tr></thead>
           <tbody>${x.rows.map(r=>{
             const [mn,mc]=material(r.materialRaw,r.code);
             return `<tr>
@@ -945,6 +1054,7 @@ function openModal(x){
               <td><span class="modal-chip" style="color:${mc}">${esc(mn)}</span></td>
               <td>${esc(r.spec)}</td>
               <td><span class="modal-chip" style="color:#ef8a24">${esc(r.process||r.status)}</span></td>
+              <td><strong>${esc(r.due||'未設定')}</strong></td>
               <td>${r.qty} 台</td>
               <td>${esc(r.owner||'—')}</td>
             </tr>`;
