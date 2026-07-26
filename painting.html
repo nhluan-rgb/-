@@ -85,7 +85,7 @@ function munsellColor(value){
   if(!raw)return '#d9e1e5';
   const neutral=raw.match(/^N-?([0-9.]+)/);
   if(neutral){const light=Math.max(5,Math.min(98,Number(neutral[1])<=10?Number(neutral[1])*10:Number(neutral[1])));return `hsl(210 3% ${light}%)`}
-  const m=raw.match(/^([0-9.]+)(R|YR|Y|GY|G|BG|B|PB|P|RP)\\s*([0-9.]+)\\/([0-9.]+)/);
+  const m=raw.match(/^([0-9.]+)(R|YR|Y|GY|G|BG|B|PB|P|RP)\s*([0-9.]+)\/([0-9.]+)/);
   if(m){const hueBase={R:0,YR:30,Y:55,GY:90,G:130,BG:170,B:210,PB:245,P:280,RP:325}[m[2]];const hue=(hueBase+(Number(m[1])-5)*2+360)%360;const light=Math.max(8,Math.min(95,Number(m[3])*10));const sat=Math.max(3,Math.min(88,Number(m[4])*8));return `hsl(${hue} ${sat}% ${light}%)`}
   if(/^22-85C/.test(raw))return '#d9d6b7';
   return '#a9b3ba';
