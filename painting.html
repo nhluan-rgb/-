@@ -17,7 +17,7 @@ button,input{font:inherit}.app{min-height:100vh;padding:18px}.top{display:flex;a
 .process-deck{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-top:14px;padding:13px;border:3px solid #9cdff0;border-radius:19px;background:#263c48e8;box-shadow:0 7px 0 #071a25,inset 0 1px 0 #ffffff55}.process-card{--pc:#42a5f5;position:relative;min-height:225px;padding:10px;border:3px solid var(--pc);border-radius:17px;background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--pc) 13%,#fff));box-shadow:0 5px 0 color-mix(in srgb,var(--pc) 65%,#273746);color:#17212b;cursor:pointer;text-align:center;transition:.16s}.process-card:hover,.process-card.active{transform:translateY(-4px);box-shadow:0 7px 0 color-mix(in srgb,var(--pc) 65%,#273746),0 0 20px var(--pc)}.process-name{display:grid;place-items:center;min-height:48px;padding:6px;border-radius:11px;background:var(--pc);color:#fff;font-size:24px;font-weight:1000;text-shadow:0 2px 2px #0006}.process-count{display:block;margin-top:10px;font-size:31px;font-weight:1000;color:color-mix(in srgb,var(--pc) 82%,#17212b)}.process-icon{width:92px;height:82px;display:grid;place-items:center;margin:17px auto 3px;border:3px solid var(--pc);border-radius:19px;background:#ffffffd9;color:var(--pc);font-size:48px;font-weight:1000;box-shadow:0 5px 10px color-mix(in srgb,var(--pc) 28%,transparent)}.process-card.active:after{content:"表示中";display:inline-block;margin-top:5px;padding:3px 10px;border-radius:99px;background:var(--pc);color:#fff;font-size:12px;font-weight:1000}.process-card.zero .process-count,.process-card.zero .process-icon{display:none}.process-card.zero:before{content:"完了";display:grid;place-items:center;width:105px;height:76px;margin:42px auto 0;border:5px double #fff;border-radius:5px;background:#26343b;color:#fff;font-size:34px;font-weight:1000;line-height:1;transform:rotate(-6deg);box-shadow:0 6px 12px #0005,0 0 0 3px #26343b}.process-card.zero{background:linear-gradient(180deg,#52636c,#34434b);border-color:#26343b;box-shadow:0 5px 0 #17242a}.process-card.zero .process-name{background:#26343b}.process-card.zero.active:after{display:none}
 .groups{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.group{border:3px solid var(--group);border-radius:20px;overflow:hidden;background:#082a40e8;box-shadow:0 7px 0 #031724,0 0 24px color-mix(in srgb,var(--group) 42%,transparent)}.group-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:linear-gradient(90deg,color-mix(in srgb,var(--group) 72%,#151515),color-mix(in srgb,var(--group) 28%,#071e31))}.group-head h2{margin:0;font-size:32px}.group-head strong{font-size:27px;color:#fff8a6}.group-body{padding:14px}
 .color-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:14px}.color-chip{min-height:94px;display:grid;grid-template-columns:62px 1fr;align-items:center;gap:9px;padding:8px;border:1px solid #8ddff0;border-radius:12px;background:#ffffff13}.swatch{width:62px;height:62px;border:3px solid #fff;border-radius:12px;box-shadow:0 0 13px currentColor}.color-chip b{font-size:18px}.color-chip small{display:block;margin-top:4px;color:#c8eaf4;font-weight:800}
-.table-wrap{max-height:530px;overflow:auto;border:1px solid #5c9db5;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:900px;background:#f8fcff;color:#102738}thead{position:sticky;top:0;z-index:2;background:#0c5878;color:#fff}th,td{padding:10px 9px;border-bottom:1px solid #c7dce5;text-align:left}th{font-size:15px}td{font-size:14px}tbody tr:hover{background:#e0f6ff}.id{font-weight:1000;color:#075b91}.munsell{display:inline-flex;align-items:center;gap:7px;font-weight:1000}.munsell i{width:28px;height:28px;border:2px solid #405866;border-radius:6px}.empty{padding:38px;text-align:center;color:#bdddea;font-size:22px;font-weight:900}
+.table-wrap{max-height:530px;overflow:auto;border:1px solid #5c9db5;border-radius:12px}table{width:100%;border-collapse:collapse;min-width:900px;background:#f8fcff;color:#102738}thead{position:sticky;top:0;z-index:2;background:#0c5878;color:#fff}th,td{padding:10px 9px;border-bottom:1px solid #c7dce5;text-align:left}th{font-size:15px}td{font-size:14px}tbody tr:hover{background:#e0f6ff}.id{font-weight:1000;color:#075b91;white-space:nowrap}.check-col{width:62px;text-align:center}.job-check{width:27px;height:27px;accent-color:#00b86b;cursor:pointer}.done-row{background:#26343b!important;color:#c1ccd2!important;opacity:.78}.done-row:hover{background:#1d292f!important}.done-row .id{color:#8fadb9!important;text-decoration:line-through}.done-row td{border-bottom-color:#455862}.done-row b,.done-row .munsell{color:#c1ccd2!important}.munsell{display:inline-flex;align-items:center;gap:7px;font-weight:1000}.munsell i{width:28px;height:28px;border:2px solid #405866;border-radius:6px}.empty{padding:38px;text-align:center;color:#bdddea;font-size:22px;font-weight:900}
 .other{margin-top:16px;border:2px solid #94a3b8;border-radius:16px;background:#102d40e8;padding:14px}.other h2{margin:0 0 10px;font-size:24px}.foot{margin:16px 0 4px;text-align:center;color:#b8dce9;font-weight:800}
 @media(max-width:1300px){.deadline-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.process-deck{grid-template-columns:repeat(3,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,1fr)}.groups{grid-template-columns:1fr}}@media(max-width:700px){.app{padding:8px}.top{align-items:flex-start}.title h1{font-size:25px}.actions{flex-direction:column}.deadline-tabs{grid-template-columns:1fr}.process-deck{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:1fr}}
 </style>
@@ -62,6 +62,15 @@ button,input{font:inherit}.app{min-height:100vh;padding:18px}.top{display:flex;a
 <script>
 const $=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('ja-JP');
 let paintRows=[],deadlineFilter='critical',specifiedDate='',processFilter='';
+const DONE_STORAGE_KEY='paintingCompletedJNumbers';
+let completedJobs=new Set();
+try{completedJobs=new Set(JSON.parse(localStorage.getItem(DONE_STORAGE_KEY)||'[]'))}catch(e){completedJobs=new Set()}
+function saveCompletedJobs(){localStorage.setItem(DONE_STORAGE_KEY,JSON.stringify([...completedJobs]))}
+function shortJNumber(value){
+  const raw=String(value||'').trim();
+  const match=raw.match(/^\d{2}-(J.+)-\d{3}$/);
+  return match?match[1]:raw;
+}
 function localDate(offset=0){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function rowsForDeadline(rows,key){
   const today=localDate(0),dates={tomorrow:localDate(1),day2:localDate(2),day3:localDate(3),specified:specifiedDate};
@@ -109,7 +118,7 @@ function colorCards(rows){
 function table(rows,showColor=true){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const colorHead=showColor?'<th>マンセル値</th>':'';
-  return `<table><thead><tr><th>製造指示番号</th><th>品番・品名</th><th>規格</th>${colorHead}<th>数量</th><th>現在工程</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']);const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr><td class="id">${esc(r['製造指示番号'])}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b>${esc(r['進捗']||'未着手')}</b></td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+  return `<table><thead><tr><th class="check-col">完了</th><th>J番号</th><th>品番・品名</th><th>規格</th>${colorHead}<th>数量</th><th>現在工程</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job);const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="check-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td class="id">${esc(job)}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b>${esc(r['進捗']||'未着手')}</b></td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
 function render(){
   const deadlineRows=rowsForDeadline(paintRows,deadlineFilter);
@@ -157,6 +166,18 @@ document.querySelectorAll('.deadline-tab').forEach(tab=>tab.addEventListener('cl
 $('specifiedDate').addEventListener('click',e=>e.stopPropagation());
 $('specifiedDate').addEventListener('change',e=>{specifiedDate=e.target.value;deadlineFilter='specified';render()});
 document.querySelectorAll('.process-card').forEach(card=>card.addEventListener('click',()=>{processFilter=processFilter===card.dataset.process?'':card.dataset.process;render()}));
+document.addEventListener('change',event=>{
+  const checkbox=event.target.closest('.job-check');
+  if(!checkbox)return;
+  const job=checkbox.dataset.job;
+  if(checkbox.checked)completedJobs.add(job);else completedJobs.delete(job);
+  saveCompletedJobs();
+  document.querySelectorAll('.job-check').forEach(item=>{
+    if(item.dataset.job!==job)return;
+    item.checked=checkbox.checked;
+    item.closest('tr')?.classList.toggle('done-row',checkbox.checked);
+  });
+});
 autoLoad();setInterval(autoLoad,30000);
 </script>
 </body>
