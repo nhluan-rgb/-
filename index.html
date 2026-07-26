@@ -2627,6 +2627,33 @@ section.panel.work{
   z-index:3;
 }
 .boss-status-card .j-number-search{margin-top:0}
+.game-banner.message-relocated{display:none!important}
+.boss-mission-slot{
+  width:100%;
+  min-height:250px;
+  margin-top:28px;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  border:4px solid #ff4141;
+  border-radius:17px;
+  background:
+    linear-gradient(rgba(255,65,65,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,65,65,.05) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(36,7,14,.96),rgba(105,10,15,.92));
+  background-size:20px 20px,20px 20px,auto;
+  box-shadow:inset 0 0 24px #ff343433,0 0 17px #ff252555;
+}
+.boss-mission-slot .game-banner-main{
+  width:100%;
+  padding:20px;
+  color:#fff;
+  font-size:28px!important;
+  line-height:1.45;
+  text-align:center;
+  text-shadow:0 2px 0 #640000,0 0 12px #ff6d45;
+}
+.boss-mission-slot .game-banner-main strong{font-size:34px!important;color:#fff48a}
 .j-number-search{
   width:100%;
   margin-top:18px;
@@ -2964,6 +2991,7 @@ section.panel.work{
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
         <div class="boss-goal">完了までの進捗 <span id="bossHpText">100%</span></div>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
+        <div id="bossMissionSlot" class="boss-mission-slot"></div>
         <div class="j-number-search-host"></div>
       </section>
     </div>
@@ -3102,6 +3130,14 @@ function initJNumberSearch(){
     }
   });
   renderJNumberSearch();
+}
+function mountBossMissionMessage(){
+  const banner=document.getElementById('gameBanner');
+  const message=document.getElementById('gameBannerMessage');
+  const slot=document.getElementById('bossMissionSlot');
+  if(!banner||!message||!slot)return;
+  if(message.parentElement!==slot)slot.appendChild(message);
+  banner.classList.add('message-relocated');
 }
 
 function formatLocalDate(d){
@@ -3336,9 +3372,9 @@ function updateBonusCampaignPanel(){
   const cycle=bonusCycleInfo(now);
   const progress=bonusProgressFor(cycle.end);
   const rows=[
-    {key:'east',label:'東日本',color:'#43b8ff'},
-    {key:'west',label:'西日本',color:'#ff9f32'},
-    {key:'national',label:'全国',color:'#56e493'}
+    {key:'east',label:'東半球',color:'#43b8ff'},
+    {key:'west',label:'西半球',color:'#ff9f32'},
+    {key:'national',label:'全世界',color:'#56e493'}
   ];
   const progressHtml=rows.map(item=>{
     const rate=Math.max(0,Number(progress[item.key])||0);
@@ -3367,7 +3403,7 @@ function updateBonusCampaignPanel(){
   box.innerHTML=`
     <div class="bonus-title">🏆 大入り3万円 進捗</div>
     <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    <div class="bonus-intro"><strong>西日本100％＝2万円<br>全国も100％＝3万円！</strong></div>
+    <div class="bonus-intro"><strong>西半球100％＝2万円<br>全世界100％＝3万円！</strong></div>
     <div class="bonus-progress-list">${progressHtml}</div>
     ${resultHtml}`;
 }
@@ -4806,6 +4842,7 @@ document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
 updateShipLabels();
 updateGameClock();
 initJNumberSearch();
+mountBossMissionMessage();
 render();
 loadSharedCsv(true);
 loadBonusProgress();
