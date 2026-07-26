@@ -3040,7 +3040,7 @@ section.panel.work{
   -webkit-backdrop-filter:blur(5px);
 }
 .standard-process-slot::before{
-  content:"工程";
+  content:"材質・表面処理";
   position:absolute;
   left:16px;
   top:10px;
@@ -3083,6 +3083,79 @@ section.panel.work{
 .standard-process-slot .ng-process-complete-stamp{
   padding:7px 11px;
   font-size:22px;
+}
+.standard-material-grid{
+  width:100%;
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:repeat(var(--material-count),minmax(0,1fr));
+  gap:10px;
+}
+.standard-material-card{
+  min-width:0;
+  min-height:145px;
+  padding:10px 8px;
+  border:3px solid var(--material-color);
+  border-radius:15px;
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.96),
+    color-mix(in srgb,var(--material-color) 17%,#fff)
+  );
+  box-shadow:
+    0 5px 0 color-mix(in srgb,var(--material-color) 62%,#263b43),
+    0 0 14px color-mix(in srgb,var(--material-color) 35%,transparent);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.standard-material-name{
+  width:100%;
+  padding:8px 6px;
+  border-radius:9px;
+  background:var(--material-color);
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+  text-shadow:0 2px 2px rgba(0,0,0,.38);
+}
+.standard-material-count{
+  margin-top:10px;
+  color:var(--material-color);
+  font-size:30px;
+  font-weight:1000;
+}
+.standard-material-points{
+  margin-top:3px;
+  color:#415866;
+  font-size:18px;
+  font-weight:900;
+}
+.standard-material-empty{
+  width:100%;
+  margin-top:34px;
+  padding:28px;
+  border:2px dashed #74dff2;
+  border-radius:13px;
+  color:#dffbff;
+  font-size:20px;
+  font-weight:1000;
+  text-align:center;
+}
+.standard-game .standard-runner-track,
+.standard-game .standard-runner-track .ng-operations-stack,
+.standard-game .standard-runner-track .ng-process-cards,
+.standard-game .standard-runner-track .delivery-bottom-layout{
+  width:100%!important;
+  min-width:0!important;
+}
+.standard-game .standard-runner-track .delivery-bottom-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+.standard-game .standard-runner-track .standard-summary-card{
+  display:none!important;
 }
 @media(max-width:1300px){
   .standard-game .standard-visual{min-height:1240px!important}
@@ -3570,6 +3643,7 @@ function normalize(o){
     part:String(o['品番']||'').trim(),
     name:String(o['品名']||'').trim(),
     standard:String(o['規格']||'').trim(),
+    color:String(o['色']||'').trim(),
     qty,
     due:excelDate(o['製造期限']),
     shipDate:excelDate(o['出荷日']),
@@ -4348,11 +4422,40 @@ function mountStandardMission(){
   }
   banner.classList.add('mission-relocated');
 }
-function mountStandardProcessCards(){
+function renderStandardMaterialCards(chartRows){
+  const groups=[
+    {name:'SUS',pattern:/SUS/i,color:'#00a99d'},
+    {name:'錆止め',pattern:/錆止|さび止|サビ止/i,color:'#e65a43'},
+    {name:'焼付',pattern:/焼付|焼き付/i,color:'#8a5bd1'},
+    {name:'ダイマー',pattern:/ダイマー|スーパーダイマ/i,color:'#536dfe'},
+    {name:'ドブ',pattern:/ドブ|溶融亜鉛|HDZ/i,color:'#8d6e63'}
+  ];
+  const items=groups.map(group=>{
+    const matched=chartRows.filter(row=>
+      group.pattern.test([
+        row.part,row.name,row.standard,row.color
+      ].filter(Boolean).join(' '))
+    );
+    return{
+      ...group,
+      count:matched.length,
+      points:matched.reduce((sum,row)=>sum+(Number(row.qty)||0),0)
+    };
+  }).filter(item=>item.count>0);
+  if(!items.length){
+    return '<div class="standard-material-empty">対象となる材質・表面処理はありません</div>';
+  }
+  return `<div class="standard-material-grid" style="--material-count:${items.length}">${items.map(item=>`
+    <div class="standard-material-card" style="--material-color:${item.color}">
+      <div class="standard-material-name">${item.name}</div>
+      <div class="standard-material-count">${fmt(item.count)}件</div>
+      <div class="standard-material-points">${fmt(item.points)}点</div>
+    </div>`).join('')}</div>`;
+}
+function mountStandardProcessCards(chartRows){
   const slot=document.getElementById('standardProcessSlot');
-  const cards=document.querySelector('#standardRunnerTrack .ng-process-cards');
-  if(!slot||!cards)return;
-  if(cards.parentElement!==slot)slot.replaceChildren(cards);
+  if(!slot)return;
+  slot.innerHTML=renderStandardMaterialCards(chartRows||[]);
 }
 
 function updateClockAlertMode(clockBox){
@@ -4886,7 +4989,7 @@ if(shipFilter==='today-ng'){
     chartRows,chartCounts,chartLabels,chartTotal,
     chartDone,chartActive,chartNew,chartCancel,chartRate,chartEffective
   );
-  mountStandardProcessCards();
+  mountStandardProcessCards(chartRows);
 
   const gameBanner=$('gameBanner');
   const gameBannerMessage=$('gameBannerMessage');
