@@ -3000,15 +3000,17 @@ section.panel.work{
 <style id="v85_standard_world_layout_patch">
 /* 4つの通常タブ：案内・時計・工程を地球画面内に整理 */
 .standard-game .standard-visual{
-  min-height:940px!important;
+  min-height:1020px!important;
 }
-.standard-game .standard-visual-overlay{
+.standard-game .standard-visual-overlay,
+.standard-game .standard-visual:has(.visual-tabs) .standard-visual-overlay{
   left:5%!important;
   top:455px!important;
   transform:none!important;
   width:50%!important;
   max-width:50%!important;
   min-height:220px;
+  box-sizing:border-box;
   display:flex;
   align-items:center;
 }
@@ -3025,7 +3027,7 @@ section.panel.work{
   z-index:8;
   left:5%;
   right:24px;
-  top:710px;
+  top:745px;
   bottom:22px;
   display:flex;
   align-items:center;
@@ -3083,14 +3085,15 @@ section.panel.work{
   font-size:22px;
 }
 @media(max-width:1300px){
-  .standard-game .standard-visual{min-height:1180px!important}
-  .standard-game .standard-visual-overlay{
+  .standard-game .standard-visual{min-height:1240px!important}
+  .standard-game .standard-visual-overlay,
+  .standard-game .standard-visual:has(.visual-tabs) .standard-visual-overlay{
     left:4%!important;top:470px!important;width:52%!important;max-width:52%!important;
   }
   .standard-game .standard-clock.visual-hud-clock{
     top:470px!important;right:4%!important;width:38%!important;min-width:330px!important;
   }
-  .standard-process-slot{left:4%;right:4%;top:735px;bottom:24px}
+  .standard-process-slot{left:4%;right:4%;top:775px;bottom:24px}
   .standard-process-slot .ng-process-cards{grid-template-columns:repeat(4,minmax(120px,1fr))!important}
 }
 </style>
