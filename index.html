@@ -4598,6 +4598,88 @@ section.panel.work{
   color-scheme:dark;
 }
 </style>
+<style id="v102_mission_calendar_bonus_unify_patch">
+/* 指令を切らずに表示し、カレンダーと大入りを同じ落ち着いたHUDへ */
+.standard-mission-slot .standard-banner-message{
+  width:100%!important;
+  max-width:100%!important;
+  padding:4px 12px!important;
+  white-space:normal!important;
+  text-align:center!important;
+  line-height:1.35!important;
+  animation:none!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+.standard-mission-content{overflow:visible!important}
+.standard-mission-slot{overflow:hidden!important}
+.ng-mission-ticker-slot .game-banner-main{
+  width:100%!important;
+  max-width:100%!important;
+  padding:2px 18px!important;
+  white-space:normal!important;
+  text-align:center!important;
+  line-height:1.3!important;
+  animation:none!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+.ng-mission-ticker-slot .game-banner-main strong{
+  display:block;
+  width:100%;
+  white-space:normal!important;
+  text-align:center;
+}
+.monthly-achievement-calendar,
+.bonus-campaign-panel{
+  border:2px solid #55dff7!important;
+  border-radius:18px!important;
+  background:
+    linear-gradient(rgba(73,218,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(73,218,255,.055) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(4,40,62,.97),rgba(2,22,39,.98))!important;
+  background-size:22px 22px,22px 22px,auto!important;
+  box-shadow:
+    0 0 18px rgba(51,208,242,.22),
+    inset 0 0 28px rgba(48,190,226,.10)!important;
+}
+.calendar-achievement-title b,
+.bonus-title{
+  color:#dffbff!important;
+  text-shadow:0 0 10px rgba(75,221,255,.42)!important;
+}
+.calendar-achievement-title>span,
+.bonus-intro{
+  border:1px solid #46cce9!important;
+  border-radius:8px!important;
+  background:linear-gradient(90deg,rgba(5,49,75,.92),rgba(8,78,105,.88),rgba(5,49,75,.92))!important;
+  color:#effdff!important;
+  text-shadow:none!important;
+  box-shadow:inset 0 0 14px rgba(54,205,238,.10)!important;
+}
+.bonus-period{color:#9ed9e7!important}
+.bonus-progress-list{gap:8px!important}
+.bonus-progress-row{
+  border-width:1px!important;
+  border-color:color-mix(in srgb,var(--bonus) 56%,#6aa5b6)!important;
+  border-radius:8px!important;
+  background:rgba(3,20,31,.74)!important;
+  box-shadow:none!important;
+}
+.bonus-progress-head b{text-shadow:none!important}
+.bonus-progress-fill{box-shadow:none!important}
+.bonus-result{
+  border:1px solid #70d7eb;
+  border-radius:8px!important;
+  background:linear-gradient(180deg,#d9f2f8,#9fc8d7)!important;
+  color:#12394b!important;
+  box-shadow:0 3px 0 #416f82!important;
+}
+.bonus-result.waiting{
+  background:linear-gradient(180deg,#d9f2f8,#9fc8d7)!important;
+  color:#12394b!important;
+}
+</style>
 </head>
 <body>
 <div class="app">
