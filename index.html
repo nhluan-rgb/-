@@ -4419,6 +4419,100 @@ section.panel.work{
   .ng-process-cards .battle-process::before{animation:none}
 }
 </style>
+<style id="v100_ship_tabs_hud_patch">
+/* 上段5タブ：短く、鋭く、遠くから読めるHUD */
+.ship-summary.game-stage-tabs{
+  gap:11px!important;
+  padding:12px!important;
+  border:1px solid rgba(101,226,255,.72)!important;
+  border-radius:8px!important;
+  background:
+    linear-gradient(90deg,rgba(73,218,255,.045) 1px,transparent 1px),
+    linear-gradient(rgba(73,218,255,.045) 1px,transparent 1px),
+    linear-gradient(180deg,rgba(2,25,40,.96),rgba(2,17,29,.96))!important;
+  background-size:24px 24px,24px 24px,auto!important;
+  box-shadow:0 0 20px rgba(45,207,246,.20),inset 0 0 22px rgba(45,207,246,.08)!important;
+}
+.ship-summary.game-stage-tabs .ship-card{
+  min-height:226px!important;
+  padding:13px 15px 15px!important;
+  border-width:2px!important;
+  border-radius:4px 15px 4px 15px!important;
+  clip-path:polygon(0 0,calc(100% - 15px) 0,100% 15px,100% 100%,15px 100%,0 calc(100% - 15px));
+  box-shadow:inset 0 0 20px rgba(11,79,112,.10),0 5px 0 rgba(1,12,20,.55)!important;
+  overflow:hidden;
+}
+.ship-summary.game-stage-tabs .ship-card::before{
+  content:"";
+  position:absolute;
+  left:10px;right:10px;bottom:8px;
+  height:3px;
+  border-radius:4px;
+  background:linear-gradient(90deg,transparent,currentColor,transparent);
+  opacity:.62;
+}
+.ship-summary.game-stage-tabs .ship-card .day{
+  min-height:50px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:0 3px 9px!important;
+  border-bottom:1px solid currentColor;
+  font-size:clamp(17px,1.35vw,22px)!important;
+  font-weight:1000!important;
+  line-height:1.18!important;
+  letter-spacing:.02em;
+}
+.ship-summary.game-stage-tabs .ship-value{
+  margin:13px 0 0!important;
+  line-height:1!important;
+}
+.ship-summary.game-stage-tabs .ship-count-line{
+  display:block!important;
+  font-size:clamp(34px,2.7vw,46px)!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  font-variant-numeric:tabular-nums;
+}
+.ship-summary.game-stage-tabs .ship-points-line{
+  display:block!important;
+  margin-top:10px!important;
+  font-size:clamp(25px,2vw,34px)!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  font-variant-numeric:tabular-nums;
+}
+.ship-summary.game-stage-tabs .ship-card .ship-sub{display:none!important}
+.ship-summary.game-stage-tabs .ship-card[data-ship="specified"] .ship-sub{
+  display:block!important;
+  margin-top:14px!important;
+}
+.ship-summary.game-stage-tabs .ship-card[data-ship="specified"] input{
+  height:40px;
+  margin:0!important;
+  border:1px solid #7cb4ca!important;
+  border-radius:4px!important;
+  background:rgba(255,255,255,.93)!important;
+  font-size:16px!important;
+  font-weight:800;
+}
+.ship-summary.game-stage-tabs .ship-card.active{
+  transform:translateY(-3px);
+  filter:brightness(1.05);
+  box-shadow:0 0 0 2px #62e8ff,0 0 18px rgba(74,223,255,.48),0 6px 0 rgba(1,12,20,.62)!important;
+}
+.ship-summary.game-stage-tabs .ship-card.active::after{
+  right:12px!important;top:8px!important;
+  padding:3px 8px;
+  border:1px solid currentColor;
+  border-radius:999px;
+  background:rgba(3,24,35,.70);
+  color:#7cefff!important;
+  font-size:11px!important;
+}
+@media(max-width:1100px){
+  .ship-summary.game-stage-tabs{grid-template-columns:repeat(5,minmax(165px,1fr))!important;overflow-x:auto}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4695,10 +4789,15 @@ function updateShipLabels(){
   const dates=getShipDates();
   const cards=document.querySelectorAll('.ship-card .day');
   if(cards.length>=5){
-    cards[1].textContent=`本日 ${dates.today} 製造期限`;
-    cards[2].textContent=`明日 ${dates.tomorrow} 出荷`;
-    cards[3].textContent='⚠ 製造期限切れ';
-    cards[4].textContent=`指定日 ${specifiedShipDate||dates.today} 製造期限`;
+    const shortDate=value=>{
+      const parts=String(value||'').split('-');
+      return parts.length===3?`${Number(parts[1])}/${Number(parts[2])}`:value;
+    };
+    cards[0].textContent='⚠ 本日出荷・未完成';
+    cards[1].textContent=`本日期限　${shortDate(dates.today)}`;
+    cards[2].textContent=`明日出荷　${shortDate(dates.tomorrow)}`;
+    cards[3].textContent='⚠ 期限切れ';
+    cards[4].textContent='指定日期限';
   }
   const input=$('specifiedDate');
   if(input && !input.value){
