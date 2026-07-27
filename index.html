@@ -4680,6 +4680,71 @@ section.panel.work{
   color:#12394b!important;
 }
 </style>
+<style id="v103_mission_marquee_safe_patch">
+/* 指令テロップ：走らせつつ上下を切らない */
+.ng-mission-ticker-slot{
+  height:138px!important;
+  padding:56px 0 14px!important;
+  display:block!important;
+  overflow:hidden!important;
+}
+.ng-mission-ticker-slot .game-banner-main{
+  display:block!important;
+  width:max-content!important;
+  max-width:none!important;
+  padding:2px 0 4px 100%!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+  font-size:clamp(23px,1.65vw,29px)!important;
+  line-height:1.35!important;
+  animation:ngMissionMarqueeSafe var(--mission-marquee-duration,14s) linear 1!important;
+  will-change:transform;
+}
+.ng-mission-ticker-slot .game-banner-main strong{
+  display:inline!important;
+  width:auto!important;
+  white-space:nowrap!important;
+}
+@keyframes ngMissionMarqueeSafe{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+.standard-mission-slot{
+  min-height:132px!important;
+  padding-top:10px!important;
+  padding-bottom:10px!important;
+  overflow:hidden!important;
+}
+.standard-mission-content{
+  overflow:hidden!important;
+}
+.standard-mission-slot .standard-banner-message{
+  display:block!important;
+  width:max-content!important;
+  max-width:none!important;
+  padding:3px 0 5px 100%!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+  font-size:clamp(22px,1.6vw,28px)!important;
+  line-height:1.35!important;
+  animation:standardMissionMarqueeSafe var(--mission-marquee-duration,14s) linear 1!important;
+  will-change:transform;
+}
+@keyframes standardMissionMarqueeSafe{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ng-mission-ticker-slot .game-banner-main,
+  .standard-mission-slot .standard-banner-message{
+    width:100%!important;
+    padding-left:12px!important;
+    white-space:normal!important;
+    text-align:center!important;
+    animation:none!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
