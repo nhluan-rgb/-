@@ -4179,6 +4179,113 @@ section.panel.work{
   .standard-compare-value{font-size:36px}
 }
 </style>
+<style id="v98_spacecraft_cockpit_patch">
+/* 4つの通常タブ：宇宙船コックピットHUD */
+.standard-game .standard-visual{--hud-cyan:#4de8ff;--hud-deep:rgba(2,22,39,.90)}
+.standard-game .standard-visual::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:
+    linear-gradient(90deg,rgba(77,232,255,.045) 1px,transparent 1px),
+    linear-gradient(rgba(77,232,255,.045) 1px,transparent 1px),
+    radial-gradient(circle at 50% 45%,transparent 0 48%,rgba(0,9,18,.34) 100%);
+  background-size:28px 28px,28px 28px,auto;
+}
+.standard-game .standard-visual-overlay,
+.standard-game .standard-visual:has(.visual-tabs) .standard-visual-overlay{
+  border:2px solid rgba(77,232,255,.88)!important;
+  border-radius:20px!important;
+  background:linear-gradient(135deg,rgba(8,49,73,.94),rgba(2,21,37,.88))!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.15),0 0 24px rgba(40,210,255,.28),inset 0 0 34px rgba(27,166,211,.14)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  color:#eafcff!important;text-shadow:none!important;
+}
+.standard-game .standard-visual-overlay::before,
+.standard-game .standard-visual-overlay::after{
+  content:"";position:absolute;width:38px;height:38px;pointer-events:none;
+}
+.standard-game .standard-visual-overlay::before{
+  left:10px;top:10px;border-left:3px solid #80f1ff;border-top:3px solid #80f1ff;
+}
+.standard-game .standard-visual-overlay::after{
+  right:10px;bottom:10px;border-right:3px solid #80f1ff;border-bottom:3px solid #80f1ff;
+}
+.standard-game .standard-tab-name{
+  color:#9cefff!important;font-size:22px!important;font-weight:1000!important;
+  letter-spacing:.08em;text-shadow:0 0 12px rgba(77,232,255,.55)!important;
+}
+.standard-game .standard-overview-compare{gap:14px;margin-top:12px}
+.standard-game .standard-compare-box{
+  position:relative;padding:12px 16px;border:1px solid rgba(105,226,255,.65);
+  background:linear-gradient(145deg,rgba(17,73,99,.85),rgba(5,31,48,.92));
+  color:#eaffff;box-shadow:inset 0 0 20px rgba(55,197,238,.12),0 5px 14px rgba(0,0,0,.32);
+  overflow:hidden;
+}
+.standard-game .standard-compare-box::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
+  background:linear-gradient(90deg,transparent,#42ddff,transparent);
+}
+.standard-game .standard-compare-box.remaining{
+  border-color:rgba(255,85,105,.92);
+  background:linear-gradient(145deg,rgba(92,20,39,.88),rgba(38,8,22,.94));
+  color:#fff1f3;
+}
+.standard-game .standard-compare-box.remaining::after{
+  background:linear-gradient(90deg,transparent,#ff3659,transparent);
+}
+.standard-game .standard-compare-label{color:#a7dcea;font-size:16px;letter-spacing:.12em}
+.standard-game .standard-compare-box.remaining .standard-compare-label{color:#ff9cac}
+.standard-game .standard-compare-value{
+  color:#f3fdff;font-size:43px;text-shadow:0 0 15px rgba(89,229,255,.38);
+}
+.standard-game .standard-compare-box.remaining .standard-compare-value{
+  color:#ff546d;text-shadow:0 0 16px rgba(255,52,84,.45);
+}
+.standard-game .standard-compare-points{color:#9cc6d4}
+.standard-game .standard-compare-box.remaining .standard-compare-points{color:#ff9cac}
+.standard-game .standard-visual-message{
+  border-left:4px solid #50e8ff!important;background:rgba(4,17,28,.72)!important;
+  color:#eaffff!important;box-shadow:inset 0 0 18px rgba(33,199,237,.12);
+}
+.standard-game .standard-clock.visual-hud-clock{
+  border:2px solid #54eaff!important;border-radius:20px!important;
+  background:
+    linear-gradient(rgba(65,223,255,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(65,223,255,.06) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(4,43,63,.97),rgba(2,20,36,.96))!important;
+  background-size:22px 22px,22px 22px,auto!important;color:#eaffff!important;
+  box-shadow:0 0 26px rgba(44,218,255,.30),inset 0 0 32px rgba(31,171,215,.12)!important;
+}
+.standard-game .standard-clock.visual-hud-clock.clock-alarm{
+  border-color:#ff4864!important;
+  background:
+    linear-gradient(rgba(255,80,105,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,80,105,.06) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(65,10,28,.97),rgba(25,4,17,.97))!important;
+  background-size:22px 22px,22px 22px,auto!important;
+  box-shadow:0 0 24px rgba(255,52,84,.34),inset 0 0 30px rgba(255,40,72,.12)!important;
+}
+.standard-game .standard-clock.visual-hud-clock b{
+  font-variant-numeric:tabular-nums;letter-spacing:.04em!important;text-shadow:0 0 15px currentColor!important;
+}
+.standard-game .standard-process-slot{
+  border:2px solid rgba(77,232,255,.82);
+  background:linear-gradient(180deg,rgba(3,37,55,.94),rgba(2,20,34,.91));
+  box-shadow:0 0 24px rgba(38,205,246,.24),inset 0 0 32px rgba(35,178,220,.10);
+}
+.standard-game .standard-process-slot::before{
+  content:"MATERIAL SCAN  /  材質・表面処理";
+  background:linear-gradient(180deg,#168fba,#075a78);border:1px solid #8df4ff;
+  box-shadow:0 0 14px rgba(59,225,255,.48);letter-spacing:.04em;
+}
+.standard-game .standard-material-card{
+  border-width:2px!important;
+  background:linear-gradient(180deg,rgba(245,252,255,.96),rgba(214,232,240,.94))!important;
+  box-shadow:0 5px 0 rgba(7,35,49,.72),0 0 13px color-mix(in srgb,var(--material-color) 32%,transparent)!important;
+  transition:transform .18s ease,filter .18s ease!important;
+}
+.standard-game .standard-material-card:hover{transform:translateY(-5px);filter:brightness(1.08)}
+</style>
 </head>
 <body>
 <div class="app">
