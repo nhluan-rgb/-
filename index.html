@@ -195,7 +195,7 @@
     .game-stage{
       background-image:
         linear-gradient(180deg,rgba(66,180,245,.08),rgba(78,194,104,.10)),
-        url("assets/bg_02.png") !important;
+        url("assets/background.png") !important;
       background-size:cover !important;
       background-position:center bottom !important;
       min-height:650px
@@ -826,7 +826,7 @@
 
 /* v4.6：背景消失を修正／BOSSをv4.5の75%へ縮小 */
 .evolution-stage{
-  background-image:url("assets/bg_02.png")!important;
+  background-image:var(--evolution-bg)!important;
   background-size:cover!important;
   background-position:center center!important;
   background-repeat:no-repeat!important;
@@ -869,7 +869,7 @@
   overflow:hidden;
   background:
     linear-gradient(rgba(8,35,52,.12),rgba(8,35,52,.20)),
-    url("assets/bg_02.png") center/cover no-repeat;
+    url("assets/background.png") center/cover no-repeat;
 }
 .standard-banner{
   min-height:116px;
@@ -954,7 +954,7 @@
   border:2px solid rgba(255,255,255,.58);
   background:
     linear-gradient(90deg,rgba(0,25,35,.15),rgba(0,25,35,.05)),
-    url("assets/bg_02.png") center/cover no-repeat;
+    url("assets/background.png") center/cover no-repeat;
 }
 .standard-visual::after{
   content:"";
@@ -1024,7 +1024,9 @@
     #ff1744 var(--active) var(--new),
     #455A64 var(--new) 100%
   );
-  box-shadow:none;
+  box-shadow:
+    0 0 0 8px rgba(255,255,255,.12),
+    0 0 30px rgba(0,203,165,.28);
   transition:filter .5s ease;
 }
 .animated-donut::after{
@@ -1036,7 +1038,7 @@
   box-shadow:inset 0 0 25px rgba(28,75,104,.18);
 }
 .animated-donut.complete{
-  animation:none;
+  animation:donutCompleteGlow 1.8s ease-in-out infinite alternate;
 }
 .animated-donut-center{
   position:absolute;
@@ -1049,7 +1051,7 @@
 }
 .animated-donut-center b{font-size:48px;line-height:1}
 .animated-donut-center small{font-size:17px;margin-top:8px;color:#667b88}
-.donut-orbit{display:none!important;
+.donut-orbit{
   position:absolute;
   z-index:4;
   width:16px;
@@ -1083,9 +1085,9 @@
 .standard-legend .dot{
   width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;
 }
-.standard-legend>div:nth-child(1) .dot{background:#00e676!important;box-shadow:none}
-.standard-legend>div:nth-child(2) .dot{background:#ffd600!important;box-shadow:none}
-.standard-legend>div:nth-child(3) .dot{background:#ff1744!important;box-shadow:none}
+.standard-legend>div:nth-child(1) .dot{background:#00e676!important;box-shadow:0 0 6px #00e676,0 0 14px #00e676}
+.standard-legend>div:nth-child(2) .dot{background:#ffd600!important;box-shadow:0 0 6px #ffd600,0 0 14px #ffd600}
+.standard-legend>div:nth-child(3) .dot{background:#ff1744!important;box-shadow:0 0 6px #ff1744,0 0 14px #ff1744}
 .standard-progress-message{
   margin-top:18px;
   min-width:260px;
@@ -1155,7 +1157,7 @@
    Không Boss; 未完成 giữ nguyên
    ========================================= */
 .standard-stage{
-  --standard-evolution-bg:url("assets/bg_02.png");
+  --standard-evolution-bg:url("assets/bg_100.png");
   background-image:
     linear-gradient(rgba(7,31,43,.16),rgba(7,31,43,.22)),
     var(--standard-evolution-bg)!important;
@@ -1523,447 +1525,6 @@
 /* popup badges colors */
 .badge-process,.process-badge{color:#fff!important}
 .badge-process[data-process="CAD/CAM"],.process-cad{background:#F4C430!important;color:#fff!important}
-
-
-/* =========================================================
-   V10.0 AI DIGITAL RING — restrained / less flashy
-   Keeps all existing data logic and only replaces the visual style
-   of the overall-progress donut area.
-   ========================================================= */
-
-.standard-donut-card{
-  position:relative!important;
-  overflow:hidden!important;
-  border:1px solid rgba(112,185,215,.42)!important;
-  border-radius:18px!important;
-  padding:26px 24px 24px!important;
-  background:
-    linear-gradient(180deg,rgba(7,29,43,.94),rgba(8,37,52,.92))!important;
-  color:#eaf8ff!important;
-  box-shadow:
-    0 10px 28px rgba(0,12,22,.28),
-    inset 0 1px 0 rgba(255,255,255,.06)!important;
-  backdrop-filter:blur(6px)!important;
-  -webkit-backdrop-filter:blur(6px)!important;
-}
-
-.standard-donut-card::before{
-  content:""!important;
-  position:absolute!important;
-  inset:0!important;
-  pointer-events:none!important;
-  background:
-    linear-gradient(rgba(99,184,215,.045) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(99,184,215,.045) 1px,transparent 1px)!important;
-  background-size:28px 28px!important;
-  mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 92%)!important;
-  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 92%)!important;
-}
-
-.standard-donut-card>*{
-  position:relative!important;
-  z-index:1!important;
-}
-
-.standard-donut-label{
-  min-width:210px!important;
-  padding:10px 22px!important;
-  border:1px solid rgba(111,198,230,.48)!important;
-  border-radius:12px!important;
-  background:rgba(15,65,86,.68)!important;
-  color:#dff7ff!important;
-  box-shadow:none!important;
-  font-size:20px!important;
-  font-weight:850!important;
-  letter-spacing:.10em!important;
-  text-align:center!important;
-}
-
-.animated-donut{
-  --ring-track:#173a4c;
-  position:relative!important;
-  width:286px!important;
-  height:286px!important;
-  margin:30px auto 22px!important;
-  border-radius:50%!important;
-  background:
-    conic-gradient(
-      #37c8a3 0 var(--done),
-      #d8b94a var(--done) var(--active),
-      #8f5e68 var(--active) var(--new),
-      #263d4a var(--new) 100%
-    )!important;
-  box-shadow:none!important;
-  animation:none!important;
-  transition:none!important;
-}
-
-.animated-donut::before{
-  content:""!important;
-  position:absolute!important;
-  inset:-12px!important;
-  border-radius:50%!important;
-  border:1px solid rgba(103,183,212,.34)!important;
-  box-shadow:
-    inset 0 0 0 8px rgba(7,28,41,.92),
-    inset 0 0 0 9px rgba(103,183,212,.14)!important;
-  pointer-events:none!important;
-}
-
-.animated-donut::after{
-  content:""!important;
-  position:absolute!important;
-  inset:42px!important;
-  border-radius:50%!important;
-  background:
-    radial-gradient(circle at 50% 42%,rgba(236,249,255,.98),rgba(221,239,247,.96) 62%,rgba(193,218,229,.96))!important;
-  box-shadow:
-    inset 0 0 0 1px rgba(68,129,153,.16),
-    inset 0 -14px 28px rgba(33,79,98,.08)!important;
-}
-
-.animated-donut.complete{
-  animation:none!important;
-  filter:none!important;
-}
-
-.donut-orbit{
-  display:none!important;
-  animation:none!important;
-  box-shadow:none!important;
-}
-
-.animated-donut-center{
-  z-index:3!important;
-  color:#11384a!important;
-}
-
-.animated-donut-center b{
-  font-size:54px!important;
-  font-weight:850!important;
-  letter-spacing:-.04em!important;
-  line-height:1!important;
-  color:#10394b!important;
-  text-shadow:none!important;
-}
-
-.animated-donut-center small{
-  margin-top:10px!important;
-  font-size:16px!important;
-  font-weight:700!important;
-  letter-spacing:.12em!important;
-  color:#5c7784!important;
-}
-
-.standard-legend{
-  width:100%!important;
-  max-width:370px!important;
-  grid-template-columns:1fr 1fr!important;
-  gap:9px 12px!important;
-  font-size:16px!important;
-}
-
-.standard-legend>div{
-  min-height:44px!important;
-  padding:9px 12px!important;
-  border:1px solid rgba(112,185,215,.24)!important;
-  border-radius:9px!important;
-  background:rgba(255,255,255,.055)!important;
-  color:#e5f4fa!important;
-  box-shadow:none!important;
-}
-
-.standard-legend .dot{
-  width:10px!important;
-  height:10px!important;
-  margin-right:7px!important;
-  box-shadow:none!important;
-}
-
-.standard-legend>div:nth-child(1) .dot{
-  background:#37c8a3!important;
-  box-shadow:none!important;
-}
-.standard-legend>div:nth-child(2) .dot{
-  background:#d8b94a!important;
-  box-shadow:none!important;
-}
-.standard-legend>div:nth-child(3) .dot{
-  background:#8f5e68!important;
-  box-shadow:none!important;
-}
-.standard-legend>div:nth-child(4) .dot{
-  background:#607785!important;
-  box-shadow:none!important;
-}
-
-.standard-progress-message{
-  min-width:270px!important;
-  margin-top:18px!important;
-  padding:12px 18px!important;
-  border:1px solid rgba(125,190,214,.30)!important;
-  border-radius:10px!important;
-  background:rgba(13,49,66,.82)!important;
-  color:#dceef5!important;
-  box-shadow:none!important;
-  font-size:17px!important;
-  font-weight:750!important;
-}
-
-.standard-progress-message.complete{
-  border-color:rgba(73,178,133,.38)!important;
-  background:rgba(26,87,65,.76)!important;
-  color:#dff5e9!important;
-  box-shadow:none!important;
-}
-
-/* Remove extra neon from the ring section only */
-.standard-donut-card,
-.standard-donut-card *,
-.standard-donut-card *::before,
-.standard-donut-card *::after{
-  filter:none!important;
-  text-shadow:none!important;
-}
-
-/* A quiet technical accent, not an animated glow */
-.standard-donut-card::after{
-  content:""!important;
-  position:absolute!important;
-  top:16px!important;
-  right:16px!important;
-  width:34px!important;
-  height:34px!important;
-  border-top:1px solid rgba(119,196,223,.45)!important;
-  border-right:1px solid rgba(119,196,223,.45)!important;
-  pointer-events:none!important;
-}
-
-@media(max-width:1300px){
-  .animated-donut{
-    width:260px!important;
-    height:260px!important;
-  }
-  .animated-donut::after{inset:38px!important}
-  .animated-donut-center b{font-size:49px!important}
-}
-
-@media(max-width:680px){
-  .standard-donut-card{padding:22px 16px!important}
-  .animated-donut{
-    width:235px!important;
-    height:235px!important;
-  }
-  .animated-donut::after{inset:34px!important}
-  .animated-donut-center b{font-size:44px!important}
-  .standard-legend{grid-template-columns:1fr!important}
-}
-
-
-/* =========================================================
-   V10.2 EMBEDDED FIXED BACKGROUND
-   No external assets required. Stable on all 5 tabs.
-   ========================================================= */
-:root{
-  --fixed-space-bg:
-    radial-gradient(circle at 18% 20%, rgba(55,120,190,.34) 0 5%, transparent 18%),
-    radial-gradient(circle at 76% 18%, rgba(86,42,150,.28) 0 4%, transparent 18%),
-    radial-gradient(circle at 68% 72%, rgba(30,110,150,.22) 0 6%, transparent 22%),
-    radial-gradient(circle at 30% 78%, rgba(20,72,115,.28) 0 5%, transparent 24%),
-    radial-gradient(circle at 12% 8%, rgba(255,255,255,.95) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 26% 36%, rgba(255,255,255,.85) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 41% 13%, rgba(255,255,255,.85) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 58% 31%, rgba(255,255,255,.9) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 73% 11%, rgba(255,255,255,.85) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 84% 43%, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 92% 17%, rgba(255,255,255,.9) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 17% 63%, rgba(255,255,255,.78) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 48% 69%, rgba(255,255,255,.78) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 79% 79%, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
-    linear-gradient(135deg,#061522 0%,#0a2032 42%,#071724 68%,#08131f 100%);
-}
-
-.standard-stage,
-.standard-visual,
-.evolution-stage,
-.game-stage{
-  background-image:var(--fixed-space-bg)!important;
-  background-color:#071724!important;
-  background-size:cover!important;
-  background-position:center center!important;
-  background-repeat:no-repeat!important;
-  background-attachment:scroll!important;
-}
-
-/* Remove old external image layers and evolution swaps */
-.standard-stage{
-  background:var(--fixed-space-bg)!important;
-}
-.standard-visual{
-  background:var(--fixed-space-bg)!important;
-}
-.evolution-stage{
-  background:var(--fixed-space-bg)!important;
-}
-.game-stage{
-  background:var(--fixed-space-bg)!important;
-}
-
-
-/* =========================================================
-   V10.3 ORIGINAL AI CONTROL BACKGROUND
-   Fully generated by CSS — no image files, no bg_0 assets.
-   Calm industrial AI style, shared across all five tabs.
-   ========================================================= */
-:root{
-  --ai-bg-base:#07131d;
-  --ai-bg-mid:#0b2030;
-  --ai-grid:rgba(92,157,184,.075);
-  --ai-line:rgba(96,177,208,.18);
-}
-
-.standard-stage,
-.standard-visual,
-.evolution-stage,
-.game-stage{
-  position:relative!important;
-  background:
-    linear-gradient(rgba(92,157,184,.055) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(92,157,184,.055) 1px,transparent 1px),
-    radial-gradient(circle at 18% 20%,rgba(31,95,126,.24),transparent 30%),
-    radial-gradient(circle at 82% 24%,rgba(28,73,103,.21),transparent 29%),
-    radial-gradient(circle at 55% 84%,rgba(24,78,97,.18),transparent 34%),
-    linear-gradient(145deg,#06121b 0%,#0a1d2a 44%,#071722 72%,#06111a 100%)!important;
-  background-size:
-    32px 32px,
-    32px 32px,
-    auto,
-    auto,
-    auto,
-    auto!important;
-  background-position:center!important;
-  background-repeat:repeat,repeat,no-repeat,no-repeat,no-repeat,no-repeat!important;
-  background-attachment:scroll!important;
-  border-color:rgba(104,175,203,.30)!important;
-}
-
-/* technical panel accents */
-.standard-stage::after,
-.evolution-stage::after,
-.game-stage::after{
-  content:""!important;
-  position:absolute!important;
-  inset:12px!important;
-  z-index:0!important;
-  pointer-events:none!important;
-  border:1px solid rgba(103,178,207,.16)!important;
-  border-radius:14px!important;
-  clip-path:polygon(
-    0 18px,18px 18px,18px 0,
-    calc(100% - 18px) 0,calc(100% - 18px) 18px,100% 18px,
-    100% calc(100% - 18px),calc(100% - 18px) calc(100% - 18px),
-    calc(100% - 18px) 100%,18px 100%,18px calc(100% - 18px),
-    0 calc(100% - 18px)
-  )!important;
-  opacity:.85!important;
-}
-
-.standard-stage > *,
-.evolution-stage > *,
-.game-stage > *{
-  position:relative!important;
-  z-index:1!important;
-}
-
-/* left visual area gets a quiet depth gradient instead of a picture */
-.standard-visual,
-.evolution-visual{
-  background:
-    linear-gradient(90deg,rgba(1,13,22,.58),rgba(1,13,22,.13) 62%,rgba(1,13,22,.05)),
-    radial-gradient(circle at 70% 45%,rgba(35,109,137,.18),transparent 32%),
-    linear-gradient(rgba(92,157,184,.045) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(92,157,184,.045) 1px,transparent 1px),
-    linear-gradient(145deg,#071722,#0b2331 56%,#071721)!important;
-  background-size:auto,auto,28px 28px,28px 28px,auto!important;
-  box-shadow:
-    inset 0 0 80px rgba(0,8,14,.45),
-    inset 0 1px 0 rgba(255,255,255,.04)!important;
-}
-
-/* restrained information panels */
-.standard-banner,
-.game-banner,
-.standard-donut-card,
-.boss-status-card,
-.standard-runner-world,
-.evolution-runner-world{
-  background:linear-gradient(180deg,rgba(10,36,51,.90),rgba(7,27,39,.90))!important;
-  border-color:rgba(105,180,208,.30)!important;
-  box-shadow:
-    0 8px 22px rgba(0,8,14,.22),
-    inset 0 1px 0 rgba(255,255,255,.045)!important;
-  backdrop-filter:blur(5px)!important;
-  -webkit-backdrop-filter:blur(5px)!important;
-}
-
-/* remove any remaining external image or evolution variable */
-.standard-stage,
-.standard-visual,
-.evolution-stage,
-.evolution-visual,
-.game-stage{
-  background-image:none!important;
-}
-.standard-stage{
-  background:
-    linear-gradient(rgba(92,157,184,.055) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(92,157,184,.055) 1px,transparent 1px),
-    radial-gradient(circle at 18% 20%,rgba(31,95,126,.24),transparent 30%),
-    radial-gradient(circle at 82% 24%,rgba(28,73,103,.21),transparent 29%),
-    linear-gradient(145deg,#06121b,#0a1d2a 50%,#06111a)!important;
-  background-size:32px 32px,32px 32px,auto,auto,auto!important;
-}
-.evolution-stage,
-.game-stage{
-  background:
-    linear-gradient(rgba(92,157,184,.055) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(92,157,184,.055) 1px,transparent 1px),
-    radial-gradient(circle at 20% 24%,rgba(31,95,126,.22),transparent 32%),
-    radial-gradient(circle at 78% 72%,rgba(25,75,100,.18),transparent 30%),
-    linear-gradient(145deg,#06121b,#0a1d2a 50%,#06111a)!important;
-  background-size:32px 32px,32px 32px,auto,auto,auto!important;
-}
-.standard-visual,
-.evolution-visual{
-  background:
-    linear-gradient(90deg,rgba(1,13,22,.58),rgba(1,13,22,.12) 65%,rgba(1,13,22,.04)),
-    radial-gradient(circle at 72% 48%,rgba(33,107,135,.18),transparent 34%),
-    linear-gradient(rgba(92,157,184,.045) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(92,157,184,.045) 1px,transparent 1px),
-    linear-gradient(145deg,#071722,#0b2331 56%,#071721)!important;
-  background-size:auto,auto,28px 28px,28px 28px,auto!important;
-}
-
-/* no animated background */
-@keyframes backgroundShift{from{background-position:center}to{background-position:center}}
-
-
-/* V10.4 Restore bg_02 background */
-.standard-stage,
-.standard-visual,
-.evolution-stage,
-.evolution-visual,
-.game-stage{
-  background:#071722 url("assets/bg_02.png") center center / cover no-repeat !important;
-}
-.standard-stage::before,
-.standard-stage::after,
-.evolution-stage::before,
-.evolution-stage::after,
-.game-stage::before,
-.game-stage::after{
-  background:none!important;
-}
 
 </style>
 
@@ -2362,7 +1923,7 @@ section.panel.work{
 .animated-donut::after{inset:28px !important}
 .animated-donut-center b{font-size:40px !important}
 .animated-donut-center small{font-size:15px !important;margin-top:5px !important}
-.donut-orbit{display:none!important;transform-origin:8px 110px !important}
+.donut-orbit{transform-origin:8px 110px !important}
 .standard-legend{
   gap:6px 10px !important;
   max-width:330px !important;
@@ -3324,7 +2885,7 @@ section.panel.work{
   text-shadow:0 0 14px rgba(46,206,255,.48);
 }
 .animated-donut-center small{font-size:18px!important}
-.donut-orbit{display:none!important;
+.donut-orbit{
   width:20px!important;
   height:20px!important;
   left:calc(50% - 10px)!important;
@@ -3853,7 +3414,7 @@ section.panel.work{
   top:475px!important;
 }
 
-/* 指令文：白い大型1行文字を1周させてから次の文へ */
+/* 指令文：白い大型1行文字を3周させてから次の文へ */
 .standard-mission-slot,
 .standard-mission-content{
   overflow:hidden!important;
@@ -3878,7 +3439,7 @@ section.panel.work{
   text-shadow:
     0 2px 2px #00345d,
     0 0 6px rgba(54,207,255,.72)!important;
-  animation:standardMissionMarquee var(--mission-marquee-duration,12s) linear 1;
+  animation:standardMissionMarquee 12s linear 3;
   will-change:transform;
 }
 @keyframes standardMissionMarquee{
@@ -3949,7 +3510,7 @@ section.panel.work{
   white-space:nowrap!important;
   text-align:left!important;
   text-shadow:0 2px 2px #00345d,0 0 6px rgba(54,207,255,.72)!important;
-  animation:ngMissionMarquee var(--mission-marquee-duration,12s) linear 1;
+  animation:ngMissionMarquee 12s linear infinite;
   will-change:transform;
 }
 .ng-mission-ticker-slot .game-banner-main strong{
@@ -4092,17 +3653,57 @@ section.panel.work{
   .copyright-stamp{transform:none}
 }
 </style>
-
-<style id="v96_main_background_fix">
-/* V9.6: 本日出荷・未完成も通常タブと同じ進化背景を確実に表示 */
-#evolutionStage.evolution-stage{
-  --evolution-bg:url("assets/bg_02.png");
-  background-image:
-    linear-gradient(180deg,rgba(5,18,30,.10) 0%,rgba(5,18,30,.04) 48%,rgba(5,18,30,.22) 100%),
-    var(--evolution-bg)!important;
-  background-size:cover!important;
-  background-position:center center!important;
-  background-repeat:no-repeat!important;
+<style id="v93_standard_total_remaining_patch">
+/* 4つの標準タブ：全体と未完成を一目で比較 */
+.standard-overview-compare{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:14px;
+}
+.standard-compare-box{
+  min-width:0;
+  padding:12px 16px;
+  border:2px solid rgba(255,255,255,.78);
+  border-radius:14px;
+  background:rgba(238,247,252,.88);
+  color:#143447;
+  text-shadow:none;
+  box-shadow:0 5px 12px rgba(0,0,0,.18);
+}
+.standard-compare-box.remaining{
+  border-color:#ff6b6b;
+  background:rgba(255,235,235,.94);
+  color:#bd1526;
+}
+.standard-compare-label{
+  display:block;
+  font-size:21px;
+  font-weight:1000;
+  letter-spacing:.04em;
+}
+.standard-compare-value{
+  display:block;
+  margin-top:2px;
+  font-size:clamp(40px,3.2vw,58px);
+  font-weight:1000;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.standard-compare-points{
+  display:block;
+  margin-top:5px;
+  font-size:18px;
+  font-weight:900;
+  color:#526b79;
+}
+.standard-compare-box.remaining .standard-compare-points{color:#d62c3d}
+.standard-stage[data-evolution="0"] .standard-visual-overlay{
+  color:#183243!important;
+}
+@media(max-width:850px){
+  .standard-overview-compare{grid-template-columns:1fr;gap:8px}
+  .standard-compare-value{font-size:38px}
 }
 </style>
 </head>
@@ -4135,8 +3736,18 @@ section.panel.work{
         <div class="standard-visual-overlay">
           <div id="standardOverview">
             <div class="standard-tab-name" id="standardTabName">本日製造期限</div>
-            <div class="standard-total"><span id="standardTotal">0</span>件</div>
-            <div class="standard-points">（<span id="standardPoints">0</span>点）</div>
+            <div class="standard-overview-compare">
+              <div class="standard-compare-box total">
+                <span class="standard-compare-label">全体</span>
+                <strong class="standard-compare-value"><span id="standardTotal">0</span>件</strong>
+                <span class="standard-compare-points"><span id="standardPoints">0</span>点</span>
+              </div>
+              <div class="standard-compare-box remaining">
+                <span class="standard-compare-label">未完成</span>
+                <strong class="standard-compare-value"><span id="standardRemaining">0</span>件</strong>
+                <span class="standard-compare-points"><span id="standardRemainingPoints">0</span>点</span>
+              </div>
+            </div>
             <div class="standard-visual-message" id="standardVisualMessage">今日も安全第一で進めましょう。</div>
           </div>
           <div id="standardProcessBacklog" class="process-backlog-panel" hidden></div>
@@ -4636,17 +4247,11 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
         writeAchievementMonth(month,data);
       }
     }else{
-      // 15時判定：
-      // 15時より前に全件完了した記録がある場合だけ「達成」。
-      // 15時以降に完了しても、その日の判定は必ず「未達成」のまま固定する。
-      const completedRaw=localStorage.getItem(getTodayCompletionKey());
-      const completedAt=completedRaw?new Date(completedRaw):null;
-      const completedBefore15=completedAt
-        && !Number.isNaN(completedAt.getTime())
-        && completedAt.getHours()<15;
-      const nextStatus=completedBefore15?'done':'miss';
-      const nextTime=completedBefore15
-        ? completedAt.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false})
+      const nextStatus=ngCount===0?'done':'miss';
+      const nextTime=nextStatus==='done'
+        ? (data[today]?.status==='done'&&data[today].time
+          ? data[today].time
+          : now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false}))
         : '15:00';
       if(data[today]?.status!==nextStatus||data[today]?.time!==nextTime){
         data[today]={status:nextStatus,time:nextTime};
@@ -4676,16 +4281,19 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     const weekday=cellDate.getDay();
     const isNationalHoliday=holidayKeys.has(dateKey);
     const isClosed=weekday===0||weekday===6||isNationalHoliday;
+    const isBonusClosingDay=day===20;
+    const bonusIsFinal=dateKey<today;
     const isToday=dateKey===today;
     const isFuture=dateKey>today;
-    const legacyMissDates=new Set([
-      '2026-07-20','2026-07-21','2026-07-22','2026-07-23','2026-07-24'
-    ]);
-    const isLegacyMiss=legacyMissDates.has(dateKey);
     let stamp='';
-    if(isLegacyMiss){
-      // カレンダー導入前の過去分だけを固定で未達成表示する。
-      stamp='<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">15:00</div>';
+    if(isBonusClosingDay&&bonusIsFinal){
+      const reward=Object.prototype.hasOwnProperty.call(BONUS_RESULT_DEFAULTS,dateKey)
+        ? BONUS_RESULT_DEFAULTS[dateKey]
+        : bonusReward(bonusProgressFor(cellDate));
+      const rewardLabel=reward>=30000?'3万円':reward>=20000?'2万円':'0円';
+      stamp=`<div class="achievement-stamp bonus">大入り<br>${rewardLabel}</div><div class="achievement-day-note">締日結果</div>`;
+    }else if(isBonusClosingDay&&isToday){
+      stamp='<div class="achievement-stamp pending">集計中</div><div class="achievement-day-note">翌日確定</div>';
     }else if(isClosed){
       const closedLabel=isNationalHoliday?'祝日':weekday===6?'土曜日':'日曜日';
       stamp=`<div class="achievement-stamp holiday">休日</div><div class="achievement-day-note">${closedLabel}</div>`;
@@ -4693,7 +4301,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
     else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
-    cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed&&!isLegacyMiss?'holiday':''}"><div class="achievement-day-number">${cellMonth}/${day}</div>${stamp}</div>`);
+    cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed&&!(isBonusClosingDay&&bonusIsFinal)?'holiday':''} ${isBonusClosingDay&&bonusIsFinal?'bonus-day':''}"><div class="achievement-day-number">${cellMonth}/${day}</div>${stamp}</div>`);
   }
   box.innerHTML=`
     <div class="calendar-achievement-title">
@@ -4770,7 +4378,7 @@ function animateStandardDonut(doneEnd,activeEnd,newEnd,rateEnd){
   standardDonutAnimation=requestAnimationFrame(frame);
 }
 
-const STANDARD_MESSAGE_INTERVAL=12000;
+const STANDARD_MESSAGE_INTERVAL=36000;
 const messageValue=(context,type)=>{
   if(type==='total')return fmt(context.total);
   if(type==='remaining')return fmt(context.remaining);
@@ -4791,52 +4399,7 @@ const buildMessageGroup=(templates,emptyMessages,completeMessages)=>templates.ma
     completeMessages[index%completeMessages.length]
   )
 );
-const ngLateCompletionMessages=[
-  '本日は15時以降の完了となりました。明日は少し早めの段取りを意識しましょう。',
-  '最後まで完了できたことは大切です。次回は15時前の達成を目指しましょう。',
-  '今日の遅れを責める必要はありません。原因を一つ確認し、明日の改善につなげましょう。',
-  'あと少し早く動ければ達成につながります。明日は優先順位を早めにそろえましょう。',
-  '困った工程は早めに共有しましょう。小さな相談が大きな遅れを防ぎます。',
-  '作業は完了しましたが、本日の判定は未達成です。明日は余裕を持った進行を心掛けましょう。',
-  '今日の経験を次に生かしましょう。朝の段取りと途中確認を少し早めることが大切です。',
-  '安全と品質を守りながら、明日は時間内の完了を目指して一歩ずつ改善しましょう。',
-  '遅れた理由を一つだけ振り返りましょう。小さな改善の積み重ねが達成につながります。',
-  'お疲れさまでした。明日は15時前に終えられるよう、早めの声掛けを意識しましょう。'
-];
-
 const standardMessageGroups={
-  'today-ng':buildMessageGroup([
-    '⚔️ 本日出荷の未完成は全{total}件、討伐完了まであと{remaining}件です。全員でゴールを目指しましょう！',
-    '🔥 本日ミッションの進捗は{rate}%！ 次の一件に集中し、勢いをつなげましょう！',
-    '🚀 残り{remaining}件！ 声を掛け合い、15時までの全件達成へ加速しましょう！',
-    '💪 本日出荷は全{total}件。困っている工程を見つけたら、すぐに力を合わせましょう！',
-    '⭐ 完成率{rate}%！ 一件ずつ確実に終わらせれば、ゴールは必ず近づきます！',
-    '⚡ あと{remaining}件！ 安全・品質・スピードをそろえて、最後まで走り切りましょう！',
-    '🏭 九州工場の底力を見せる時です。全{total}件を最高の流れで完成へ進めましょう！',
-    '🎯 残り{remaining}件！ 優先順位をそろえ、今やるべき一件を確実に仕上げましょう！',
-    '🤝 完成率{rate}%です。工程を越えた応援が、今日の達成を引き寄せます！',
-    '🔥 ラストまで集中！ 残り{remaining}件を、確認を省かず丁寧に完成させましょう！',
-    '🛠️ 全{total}件の一つひとつに、九州工場の技術と誇りを込めましょう！',
-    '📣 迷ったら共有、止まったら応援！ 残り{remaining}件をチームの力で動かしましょう！',
-    '🌟 完成率{rate}%まで到達！ 進んだ実績を自信に変えて、次へ挑戦しましょう！',
-    '🏁 ゴールまであと{remaining}件！ 最後の一件まで同じ品質で仕上げましょう！',
-    '🔥 今日の一件は、明日の信頼につながります。全{total}件を確実に送り出しましょう！',
-    '⚔️ 残り{remaining}件！ 焦りではなく段取りで勝ち、全件達成をつかみましょう！',
-    '💥 完成率{rate}%！ 一人の集中と仲間の連携を、大きな成果へ変えましょう！',
-    '🚩 あと{remaining}件です。次工程が動きやすい状態で、気持ちよく引き渡しましょう！',
-    '🏆 全{total}件の達成に向けて前進中！ 今日のベストをチームの標準にしましょう！',
-    '🔥 残り{remaining}件！ できる理由を見つけ、助け合える場所を見つけ、前へ進みましょう！'
-  ],[
-    '🌈 本日出荷の未完成はゼロ件です。最高のスタートを次の準備へつなげましょう！',
-    '✨ 未完成ゼロ！ 設備点検と先行準備で、さらに強い流れをつくりましょう！',
-    '🏆 本日出荷の遅れはありません。この良い状態を全員で守りましょう！',
-    '🚀 対象ゼロ件です。次の仕事を先回りし、未来の達成を準備しましょう！'
-  ],[
-    '🏆 本日出荷は全件達成！ 九州工場のチームワーク、お見事です！',
-    '🎉 100%達成！ 最後まで安全にやり切った全員に感謝します！',
-    '🌟 全件完成しました！ 今日の成功を次の挑戦へつなげましょう！',
-    '👏 ミッション完了！ 素晴らしい連携と確実な仕事をありがとうございました！'
-  ]),
   today:buildMessageGroup([
     '本日製造期限は全{total}件、完成まであと{remaining}件です。安全を守り、確実に進めましょう。',
     '本日分の完成率は{rate}%です。次の一件も品質を確認して進めましょう。',
@@ -4980,185 +4543,47 @@ const fireMotivationTemplates=[
   '🔥 完成率{rate}%！ 見える進歩は自信になる。自信は集中を生み、集中は品質を高めます！',
   '🔥 今日のベストをチームの標準へ。声を掛け合い、最後までやり切りましょう！'
 ];
-const tabMessagePrefix={
-  'today-ng':'【本日出荷・未完成】',
-  today:'【本日製造期限】',
-  tomorrow:'【明日出荷】',
-  overdue:'【製造期限切れ】',
-  specified:'【指定日製造期限】'
-};
 Object.keys(standardMessageGroups).forEach(key=>{
-  const prefix=tabMessagePrefix[key]||'【生産ミッション】';
   standardMessageGroups[key].push(...fireMotivationTemplates.map(template=>
     dynamicMessage(
-      `${prefix} ${template}`,
-      `${prefix} 🔥 対象ゼロ件！ 今こそ点検・改善・次の準備で、未来の成果を先取りしましょう！`,
-      `${prefix} 🔥 100%達成！ この成功を全員で称え、次の挑戦へ最高の流れをつなげましょう！`
+      template,
+      '🔥 対象ゼロ件！ 今こそ点検・改善・次の準備で、未来の成果を先取りしましょう！',
+      '🔥 100%達成！ この成功を全員で称え、次の挑戦へ最高の流れをつなげましょう！'
     )
   ));
 });
-
-/* V9.0: 5タブ × 100文 = 合計500文。
-   既存32文/タブに、タブ専用の68文を追加する。
-   同一タブでは全100文を一巡するまで同じ文を繰り返さない。 */
-const v90MessageParts={
-  'today-ng':{
-    openings:[
-      '⚔️ 本日出荷の勝負はここからです。','🔥 九州工場の集中力を一つにしましょう。','🚀 15時のゴールへ向けて加速しましょう。','🎯 今日の最優先を全員でそろえましょう。','💪 一件ずつ確実に完成へ運びましょう。','🏭 現場の底力を成果に変える時間です。','⚡ 今の一歩が今日の達成を決めます。','🛠️ 技術と連携で流れをつくりましょう。','🏁 ゴールを見据えて最後まで進みましょう。','🤝 工程を越えて力を合わせましょう。','🌟 今日の仕事を最高の実績に変えましょう。','📣 困り事はすぐ共有し、すぐ動かしましょう。','🔥 安全と品質を守りながら前進しましょう。','🎮 BOSS攻略の鍵は全員の連携です。','🏆 今日のベストを更新しましょう。','🚩 次工程へ良い流れを渡しましょう。','💥 一人の集中をチームの力へ変えましょう。'
-    ],
-    endings:[
-      '全{total}件のうち残り{remaining}件、完成率{rate}%です。',
-      '残り{remaining}件を段取りよく仕上げ、全件達成をつかみましょう。',
-      '完成率{rate}%、確認を省かず最後の一件まで進めましょう。',
-      '全{total}件を安全・品質・スピードの三本柱で完成へ導きましょう。'
-    ],
-    empty:'🌈 本日出荷の未完成はゼロ件です。点検と先行準備で良い流れを守りましょう！',
-    complete:'🏆 本日出荷は100%達成です。最高の連携と確実な仕事をありがとうございました！'
-  },
-  today:{
-    openings:[
-      '本日製造期限を確実に守りましょう。','今日の積み重ねが信頼をつくります。','安全第一で落ち着いて進めましょう。','品質を守り、納期へつなげましょう。','工程間の連携をさらに強めましょう。','一つひとつの確認を大切にしましょう。','今日できる最善を積み重ねましょう。','報告・連絡・相談を早めに行いましょう。','次工程が動きやすい仕事をしましょう。','基本動作を守って確実に進めましょう。','全員の力で今日の計画を形にしましょう。','小さな改善を今日の成果へ変えましょう。','持ち場を越えて助け合いましょう。','焦らず、止まらず、丁寧に進めましょう。','目の前の一件に集中しましょう。','今日の品質を明日の標準にしましょう。','良い流れを最後まで維持しましょう。'
-    ],
-    endings:[
-      '対象は全{total}件、残り{remaining}件、完成率{rate}%です。',
-      '残り{remaining}件を確実に仕上げ、本日分の完了を目指しましょう。',
-      '完成率{rate}%です。最後の一件まで同じ品質を守りましょう。',
-      '全{total}件の進捗を共有し、必要な支援をすぐにつなげましょう。'
-    ],
-    empty:'本日製造期限の対象はゼロ件です。設備点検と次の準備を進めましょう。',
-    complete:'本日製造期限は100%達成です。安全で確実な仕事をありがとうございました。'
-  },
-  tomorrow:{
-    openings:[
-      '明日の安心を今日から準備しましょう。','先回りの一歩が余裕を生みます。','明日出荷の段取りを今そろえましょう。','早めの確認で手戻りを防ぎましょう。','材料・設備・情報を先に整えましょう。','明日の流れを今日つくりましょう。','計画的な仕事で品質を守りましょう。','余裕のある引き継ぎを目指しましょう。','負荷の偏りを早めに見つけましょう。','問題が小さいうちに相談しましょう。','前日の準備を確かな安心へ変えましょう。','次工程が迷わない情報を残しましょう。','今日できる仕事を確実に進めましょう。','明日の出荷を笑顔で迎えましょう。','先を読む力をチームの強みにしましょう。','予定との差を早めに調整しましょう。','良い準備で明日の成功を先取りしましょう。'
-    ],
-    endings:[
-      '明日出荷は全{total}件、残り{remaining}件、完成率{rate}%です。',
-      '残り{remaining}件を今日のうちに進め、明日の余裕につなげましょう。',
-      '完成率{rate}%です。段取りと引き継ぎを丁寧に整えましょう。',
-      '全{total}件の優先順位を共有し、計画どおり完成へ進めましょう。'
-    ],
-    empty:'明日出荷の対象はゼロ件です。後日の予定と作業環境を確認しましょう。',
-    complete:'明日出荷は100%準備完了です。早めで丁寧な対応をありがとうございました。'
-  },
-  overdue:{
-    openings:[
-      '期限切れを一件ずつ確実に解消しましょう。','現状を正しく共有し、解決へ動きましょう。','責めるより助け合う行動を選びましょう。','原因と次の一歩を明確にしましょう。','優先順位をそろえて冷静に進めましょう。','困り事を抱え込まず早めに相談しましょう。','安全と品質を守りながら挽回しましょう。','再発防止まで考えて対応しましょう。','影響の大きい案件から着手しましょう。','担当と完了予定を明確にしましょう。','工程を越えて知恵を持ち寄りましょう。','小さな滞りも見逃さず動かしましょう。','できたことと残る課題を共有しましょう。','手戻りのない確実な対応を選びましょう。','一件の解消を次の改善につなげましょう。','正しい報告が解決の第一歩です。','最後まで落ち着いて完了させましょう。'
-    ],
-    endings:[
-      '対象は全{total}件、残り{remaining}件、解消率{rate}%です。',
-      '残り{remaining}件の原因と担当を確認し、確実に解消しましょう。',
-      '対応率{rate}%です。納期だけでなく品質確認も守りましょう。',
-      '全{total}件を見える化し、支援が必要な工程へすぐ力を届けましょう。'
-    ],
-    empty:'製造期限切れはゼロ件です。先を見た段取りでこの状態を守りましょう。',
-    complete:'期限切れ対象は100%解消しました。協力と確実な対応に感謝します。'
-  },
-  specified:{
-    openings:[
-      '指定日の計画を確実に形にしましょう。','選択日の負荷を全員で共有しましょう。','担当と順序を早めにそろえましょう。','先を読んだ段取りで余裕をつくりましょう。','必要な支援を具体的に共有しましょう。','工程のつながりを意識して進めましょう。','計画との差を早めに確認しましょう。','材料と設備の準備を先行させましょう。','次のボトルネックを見つけましょう。','無理のない順序で確実に仕上げましょう。','品質確認の時間も計画に入れましょう。','見える化した計画を行動へ変えましょう。','全工程の協力で前へ進めましょう。','今日の具体的な目標を決めましょう。','予定どおりの部分と課題を分けましょう。','引き継ぎを分かりやすく整えましょう。','安全・品質・納期を最後まで守りましょう。'
-    ],
-    endings:[
-      '指定日の対象は全{total}件、残り{remaining}件、完成率{rate}%です。',
-      '残り{remaining}件の担当と完了予定をそろえ、計画どおり進めましょう。',
-      '完成率{rate}%です。必要な調整を早めに行いましょう。',
-      '全{total}件の優先順位を共有し、支援が必要な場所を明確にしましょう。'
-    ],
-    empty:'指定日の対象はゼロ件です。前後の日程と設備の状態を確認しましょう。',
-    complete:'指定日の製造分は100%完成です。計画的な連携をありがとうございました。'
-  }
-};
-Object.entries(v90MessageParts).forEach(([key,parts])=>{
-  const generated=[];
-  parts.openings.forEach(opening=>parts.endings.forEach(ending=>{
-    generated.push(dynamicMessage(`${opening} ${ending}`,parts.empty,parts.complete));
-  }));
-  // 17 × 4 = 68文を追加。既存32文と合わせて各タブ100文。
-  standardMessageGroups[key].push(...generated.slice(0,68));
-});
+let standardMessageTimer=null;
 let standardMessageKey='';
 let standardMessageIndex=0;
 let standardMessageContext={total:0,remaining:0,rate:0};
 let standardMessageElement=null;
 let standardVisualMessageElement=null;
-let standardAnimationEndHandler=null;
-
-/* V9.5: mỗi tab giữ riêng câu và vị trí marquee đang chạy. */
-const missionMarqueeStates={};
-function getMissionState(key){
-  if(!missionMarqueeStates[key]){
-    missionMarqueeStates[key]={index:0,currentTime:0,finished:false};
-  }
-  return missionMarqueeStates[key];
-}
-function getMarqueeAnimation(element,name){
-  if(!element||!element.getAnimations)return null;
-  return element.getAnimations().find(animation=>animation.animationName===name)||null;
-}
-function saveMarqueePosition(key,element,name,index){
-  if(!key)return;
-  const state=getMissionState(key);
-  state.index=index||0;
-  const animation=getMarqueeAnimation(element,name);
-  if(animation&&Number.isFinite(Number(animation.currentTime))){
-    state.currentTime=Math.max(0,Number(animation.currentTime));
-  }
-}
-function restoreMarqueePosition(key,element,name){
-  const state=getMissionState(key);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const animation=getMarqueeAnimation(element,name);
-    if(!animation)return;
-    const duration=Number(animation.effect?.getTiming?.().duration)||0;
-    const restored=duration>0?Math.min(state.currentTime||0,Math.max(0,duration-1)):state.currentTime||0;
-    animation.currentTime=restored;
-    animation.play();
-  }));
-}
-
-function setOneLapMarqueeDuration(element){
-  if(!element)return;
-  const container=element.parentElement;
-  const containerWidth=container?container.clientWidth:window.innerWidth;
-  const textWidth=Math.max(element.scrollWidth,element.getBoundingClientRect().width);
-  const seconds=(containerWidth+textWidth)/310;
-  element.style.setProperty('--mission-marquee-duration',`${seconds.toFixed(2)}s`);
-}
-
-function restartOneLapAnimation(element){
-  if(!element)return;
-  element.style.animation='none';
-  void element.offsetWidth;
-  setOneLapMarqueeDuration(element);
-  element.style.animation='';
-}
 
 function stopStandardMessageRotation(){
-  if(standardMessageElement&&standardMessageKey){
-    saveMarqueePosition(standardMessageKey,standardMessageElement,'standardMissionMarquee',standardMessageIndex);
+  if(standardMessageTimer){
+    clearInterval(standardMessageTimer);
+    standardMessageTimer=null;
   }
-  if(standardMessageElement&&standardAnimationEndHandler){
-    standardMessageElement.removeEventListener('animationend',standardAnimationEndHandler);
-  }
+  standardMessageKey='';
   standardMessageElement=null;
   standardVisualMessageElement=null;
-  standardAnimationEndHandler=null;
 }
 
-function renderStandardRotatingMessage(restorePosition=false){
+function renderStandardRotatingMessage(){
   if(!standardMessageElement)return;
   const lines=standardMessageGroups[standardMessageKey]||standardMessageGroups.today;
   const createLine=lines[standardMessageIndex%lines.length];
   const missionText=createLine(standardMessageContext);
-  standardMessageElement.dataset.missionText=missionText;
-  standardMessageElement.textContent=missionText;
+  if(standardMessageElement.dataset.missionText!==missionText){
+    standardMessageElement.dataset.missionText=missionText;
+    standardMessageElement.textContent=missionText;
+    standardMessageElement.style.animation='none';
+    void standardMessageElement.offsetWidth;
+    standardMessageElement.style.animation='';
+  }
   if(standardVisualMessageElement){
     const visualLine=lines[(standardMessageIndex+1)%lines.length];
     standardVisualMessageElement.textContent=visualLine(standardMessageContext);
-  }
-  restartOneLapAnimation(standardMessageElement);
-  if(restorePosition){
-    restoreMarqueePosition(standardMessageKey,standardMessageElement,'standardMissionMarquee');
   }
 }
 
@@ -5166,7 +4591,11 @@ function startStandardMessageRotation(element,visualElement,filter,context){
   if(!element)return;
   const key=standardMessageGroups[filter]?filter:'today';
   standardMessageContext=context;
-  if(standardMessageElement===element&&standardVisualMessageElement===visualElement&&standardMessageKey===key){
+
+  // CSV được tải lại mỗi 30 giây: chỉ cập nhật số liệu trong câu,
+  // không khởi động lại bộ đếm 3 phút và không nhảy sang câu khác.
+  if(standardMessageTimer&&standardMessageElement===element&&standardVisualMessageElement===visualElement&&standardMessageKey===key){
+    renderStandardRotatingMessage();
     return;
   }
 
@@ -5174,70 +4603,13 @@ function startStandardMessageRotation(element,visualElement,filter,context){
   standardMessageElement=element;
   standardVisualMessageElement=visualElement;
   standardMessageKey=key;
-  const state=getMissionState(key);
-  standardMessageIndex=state.index||0;
-  standardAnimationEndHandler=(event)=>{
-    if(event.target!==standardMessageElement||event.animationName!=='standardMissionMarquee')return;
+  standardMessageIndex=0;
+  renderStandardRotatingMessage();
+  standardMessageTimer=setInterval(()=>{
     const lines=standardMessageGroups[standardMessageKey]||standardMessageGroups.today;
     standardMessageIndex=(standardMessageIndex+1)%lines.length;
-    const activeState=getMissionState(standardMessageKey);
-    activeState.index=standardMessageIndex;
-    activeState.currentTime=0;
-    renderStandardRotatingMessage(false);
-  };
-  standardMessageElement.addEventListener('animationend',standardAnimationEndHandler);
-  renderStandardRotatingMessage(true);
-}
-
-let ngMessageIndex=0;
-let ngMessageContext={total:0,remaining:0,rate:0};
-let ngMessageElement=null;
-let ngAnimationEndHandler=null;
-function stopNgMessageRotation(){
-  if(ngMessageElement){
-    saveMarqueePosition('today-ng',ngMessageElement,'ngMissionMarquee',ngMessageIndex);
-  }
-  if(ngMessageElement&&ngAnimationEndHandler){
-    ngMessageElement.removeEventListener('animationend',ngAnimationEndHandler);
-  }
-  ngMessageElement=null;
-  ngAnimationEndHandler=null;
-}
-function renderNgRotatingMessage(restorePosition=false){
-  const element=ngMessageElement||$('gameBannerMessage');
-  if(!element)return;
-  const lateLines=ngLateCompletionMessages;
-  const lines=ngMessageContext.lateCompletion?lateLines:standardMessageGroups['today-ng'];
-  const text=ngMessageContext.lateCompletion
-    ? lines[ngMessageIndex%lines.length]
-    : lines[ngMessageIndex%lines.length](ngMessageContext);
-  element.textContent=text;
-  restartOneLapAnimation(element);
-  if(restorePosition){
-    restoreMarqueePosition('today-ng',element,'ngMissionMarquee');
-  }
-}
-function startNgMessageRotation(context){
-  ngMessageContext=context;
-  const element=$('gameBannerMessage');
-  if(!element)return;
-  if(ngMessageElement===element&&ngAnimationEndHandler)return;
-
-  stopNgMessageRotation();
-  ngMessageElement=element;
-  const state=getMissionState('today-ng');
-  ngMessageIndex=state.index||0;
-  ngAnimationEndHandler=(event)=>{
-    if(event.target!==ngMessageElement||event.animationName!=='ngMissionMarquee')return;
-    const lines=ngMessageContext.lateCompletion?ngLateCompletionMessages:standardMessageGroups['today-ng'];
-    ngMessageIndex=(ngMessageIndex+1)%lines.length;
-    const activeState=getMissionState('today-ng');
-    activeState.index=ngMessageIndex;
-    activeState.currentTime=0;
-    renderNgRotatingMessage(false);
-  };
-  ngMessageElement.addEventListener('animationend',ngAnimationEndHandler);
-  renderNgRotatingMessage(true);
+    renderStandardRotatingMessage();
+  },STANDARD_MESSAGE_INTERVAL);
 }
 
 function processSymbol(processName){
@@ -5854,6 +5226,13 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   const tabName=chartLabels[shipFilter]||'生産進捗';
   const totalPoints=chartRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   const remaining=Math.max(0,chartActive+chartNew);
+  const remainingPoints=chartRows
+    .filter(row=>
+      row.status!=='完成' &&
+      !row.status.includes('ｷｬﾝｾﾙ') &&
+      !row.status.includes('キャンセル')
+    )
+    .reduce((sum,row)=>sum+(Number(row.qty)||0),0);
 
   // Hình nền của tất cả các tab tiêu chuẩn phải bám theo đúng trạng thái
   // tiến hóa hiện tại của ô 本日出荷・未完成.
@@ -5903,6 +5282,8 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   if($('standardTabName')) $('standardTabName').textContent=tabName;
   if($('standardTotal')) $('standardTotal').textContent=fmt(chartTotal);
   if($('standardPoints')) $('standardPoints').textContent=fmt(totalPoints);
+  if($('standardRemaining')) $('standardRemaining').textContent=fmt(remaining);
+  if($('standardRemainingPoints')) $('standardRemainingPoints').textContent=fmt(remainingPoints);
   if($('standardBannerTitle')) $('standardBannerTitle').textContent=`${tabName} ミッション`;
   startStandardMessageRotation($('standardBannerMessage'),$('standardVisualMessage'),shipFilter,{
     total:chartTotal,
@@ -6037,23 +5418,17 @@ if(shipFilter==='today-ng'){
   if(evolutionVisual){
     const evolutionStage=document.getElementById('evolutionStage');
     if(evolutionStage){
-      const mainEvolutionBg=`url("assets/${evolution.background}")`;
-      evolutionStage.style.removeProperty("--evolution-bg");
-      evolutionStage.dataset.background=evolution.background;
+      evolutionStage.style.setProperty(
+        '--evolution-bg',
+        `url("assets/${evolution.background}")`
+      );
     }
-    evolutionVisual.style.backgroundImage="";
+    evolutionVisual.style.backgroundImage='none';
     evolutionVisual.dataset.stage=evolution.key||'100';
   }
   if($('evolutionStageName')) $('evolutionStageName').textContent='進捗ステージ';
-  const savedCompletionRaw=localStorage.getItem(getTodayCompletionKey());
-  const savedCompletionAt=savedCompletionRaw?new Date(savedCompletionRaw):null;
-  const isLateCompletion=ng.length===0
-    && savedCompletionAt
-    && !Number.isNaN(savedCompletionAt.getTime())
-    && savedCompletionAt.getHours()>=15;
-  const completionDisplay=isLateCompletion?'本日は15時以降の完了となりました。明日は少し早めの段取りを意識しましょう。':'本日の作業が完了しました！';
-  if($('evolutionMessage')) $('evolutionMessage').innerHTML=ng.length===0?completionDisplay:`完了まであと${fmt(ng.length)}件です。`;
-  if($('bossStatusMessage')) $('bossStatusMessage').textContent=ng.length===0?completionDisplay:`完了まであと${fmt(ng.length)}件！`;
+  if($('evolutionMessage')) $('evolutionMessage').innerHTML=ng.length===0?'本日の作業が完了しました！':`完了まであと${fmt(ng.length)}件です。`;
+  if($('bossStatusMessage')) $('bossStatusMessage').textContent=ng.length===0?'本日の作業が完了しました！':`完了まであと${fmt(ng.length)}件！`;
   const bossStatusCard=$('bossStatusCard');
   if(bossStatusCard){
     bossStatusCard.dataset.stage=evolution.key||'100';
@@ -6069,8 +5444,8 @@ if(shipFilter==='today-ng'){
         <div class="evolution-support-card ${ng.length===0?'complete':''}">
           <div class="evolution-support-title">進捗ステージ</div>
           <div class="evolution-support-stage">背景が進捗に合わせて変化します</div>
-          <div class="evolution-support-count">${ng.length===0?(isLateCompletion?'本日は未達成':'全件完了！'):`あと${fmt(ng.length)}件`}</div>
-          <div class="evolution-support-message">${ng.length===0?(isLateCompletion?'今日の経験を生かし、<br>明日は15時前を目指しましょう。':'みんなの力で<br>作業完了！'):'みんなで協力して<br>完了を目指そう！'}</div>
+          <div class="evolution-support-count">${ng.length===0?'全件完了！':`あと${fmt(ng.length)}件`}</div>
+          <div class="evolution-support-message">${ng.length===0?'みんなの力で<br>作業完了！':'みんなで協力して<br>完了を目指そう！'}</div>
         </div>
       </div>
     </div>`;
@@ -6078,23 +5453,28 @@ if(shipFilter==='today-ng'){
 
   const gameBanner=$('gameBanner');
   const gameBannerMessage=$('gameBannerMessage');
-  let ngRate=startBoss>0?Math.max(0,Math.min(100,(startBoss-ng.length)/startBoss*100)):100;
-  let completedAfter15=false;
-  if(gameBanner){
-    gameBanner.classList.remove('success','late');
-    if(ng.length===0){
-      const completedAt=getOrRecordTodayCompletion(0);
-      completedAfter15=completedAt.getHours()>=15;
-      gameBanner.classList.add(completedAfter15?'late':'success');
-    }else{
-      getOrRecordTodayCompletion(ng.length);
+
+  if(ng.length===0){
+    const completedAt=getOrRecordTodayCompletion(0);
+    const before15=completedAt.getHours()<15;
+    if(gameBanner){
+      gameBanner.classList.remove('success','late');
+      gameBanner.classList.add(before15?'success':'late');
+    }
+    if(window.BossMotivation) window.BossMotivation.stop();
+    if(gameBannerMessage){
+      gameBannerMessage.innerHTML=before15
+        ? '<strong>🏆 15時前達成！<br>お疲れ様でした！</strong>'
+        : '<strong>🏆 全件完了！<br>お疲れ様でした！</strong>';
+    }
+  }else{
+    getOrRecordTodayCompletion(ng.length);
+    if(gameBanner) gameBanner.classList.remove('success','late');
+    if(gameBannerMessage){
+      if(window.BossMotivation) window.BossMotivation.stop();
+      gameBannerMessage.innerHTML=`<strong>15時までに全件達成！<br>残り${fmt(ng.length)}件</strong>`;
     }
   }
-  // 15時以降の完了は「100%達成」の祝福文を出さない。
-  // completeMessage の条件(rate>=100)に入らないよう、表示用だけ99.9%にする。
-  if(completedAfter15)ngRate=99.9;
-  if(window.BossMotivation) window.BossMotivation.stop();
-  startNgMessageRotation({total:startBoss,remaining:ng.length,rate:ngRate,lateCompletion:completedAfter15});
 
   if(goalResult){
     goalResult.className='goal-result';
@@ -6115,7 +5495,6 @@ if(shipFilter==='today-ng'){
 
   const gameBanner=$('gameBanner');
   const gameBannerMessage=$('gameBannerMessage');
-  stopNgMessageRotation();
   if(window.BossMotivation) window.BossMotivation.stop();
   if(gameBanner) gameBanner.classList.remove('success','late');
   if(gameBannerMessage){
