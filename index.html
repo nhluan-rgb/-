@@ -4527,6 +4527,77 @@ section.panel.work{
   .ship-summary.game-stage-tabs{grid-template-columns:repeat(5,minmax(165px,1fr))!important;overflow-x:auto}
 }
 </style>
+<style id="v101_ship_tabs_status_hud_patch">
+/* 5タブを指令テロップと同系統のステータスHUDへ */
+.ship-summary.game-stage-tabs .ship-card{
+  --tab-rgb:22,157,207;
+  --tab-bright:#5eeaff;
+  --tab-deep:#06354d;
+  border-color:rgba(var(--tab-rgb),.94)!important;
+  background:
+    linear-gradient(rgba(var(--tab-rgb),.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--tab-rgb),.10) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(8,65,92,.97),rgba(3,27,46,.98))!important;
+  background-size:22px 22px,22px 22px,auto!important;
+  color:#eaffff!important;
+  box-shadow:
+    0 0 15px rgba(var(--tab-rgb),.34),
+    inset 0 0 26px rgba(var(--tab-rgb),.14),
+    0 5px 0 rgba(1,12,20,.60)!important;
+}
+.ship-summary.game-stage-tabs .ship-card .day{
+  color:#fff!important;
+  font-size:clamp(23px,1.72vw,31px)!important;
+  font-weight:1000!important;
+  letter-spacing:.035em;
+  border-bottom-color:rgba(var(--tab-rgb),.74)!important;
+  text-shadow:0 2px 2px rgba(0,0,0,.62),0 0 11px rgba(var(--tab-rgb),.62)!important;
+}
+.ship-summary.game-stage-tabs .ship-card .ship-count-line{
+  color:#71ecff!important;
+  text-shadow:0 0 14px rgba(55,221,255,.48)!important;
+}
+.ship-summary.game-stage-tabs .ship-card .ship-points-line{
+  color:#ffe66d!important;
+  text-shadow:0 0 11px rgba(255,216,64,.38)!important;
+}
+.ship-summary.game-stage-tabs .ship-card.ng,
+.ship-summary.game-stage-tabs .ship-card.is-clear{
+  --tab-rgb:22,220,123;
+  background:
+    linear-gradient(rgba(var(--tab-rgb),.11) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--tab-rgb),.11) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(5,88,58,.98),rgba(2,43,42,.98))!important;
+}
+.ship-summary.game-stage-tabs .ship-card.ng:not(.is-clear){
+  --tab-rgb:255,54,84;
+  background:
+    linear-gradient(rgba(var(--tab-rgb),.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--tab-rgb),.10) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(102,13,37,.98),rgba(45,5,25,.99))!important;
+}
+.ship-summary.game-stage-tabs .ship-card.ng:not(.is-clear) .ship-count-line,
+.ship-summary.game-stage-tabs .ship-card.ng:not(.is-clear) .ship-points-line{
+  color:#fff1a6!important;
+}
+.ship-summary.game-stage-tabs .ship-card.overdue{
+  --tab-rgb:255,143,24;
+  background:
+    linear-gradient(rgba(var(--tab-rgb),.11) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(var(--tab-rgb),.11) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(112,48,4,.98),rgba(54,20,2,.99))!important;
+}
+.ship-summary.game-stage-tabs .ship-card.overdue .ship-count-line,
+.ship-summary.game-stage-tabs .ship-card.overdue .ship-points-line{
+  color:#fff29b!important;
+}
+.ship-summary.game-stage-tabs .ship-card[data-ship="specified"] input{
+  color:#eaffff!important;
+  background:rgba(1,19,31,.82)!important;
+  border-color:#59dff5!important;
+  color-scheme:dark;
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -6582,17 +6653,15 @@ ngCards.forEach(ngCard=>{
   if(ng.length===0){
     ngCard.classList.remove('ng');
     ngCard.classList.add('is-clear');
-    ngCard.style.setProperty('background','#00C853','important');
-    ngCard.style.setProperty('border-color','#71ffaf','important');
   }else{
     ngCard.classList.add('ng');
     ngCard.classList.remove('is-clear');
-    ngCard.style.setProperty('background','linear-gradient(180deg,#ef3340,#b00020)','important');
-    ngCard.style.setProperty('border-color','#ff8a80','important');
   }
+  ngCard.style.removeProperty('background');
+  ngCard.style.removeProperty('border-color');
   ngCard.style.setProperty('color','#fff','important');
   ngCard.querySelectorAll('.day,.ship-value,.ship-sub,.ship-count-line,.ship-points-line')
-    .forEach(el=>el.style.setProperty('color','#fff','important'));
+    .forEach(el=>el.style.removeProperty('color'));
 });
 
 const overdueCard=document.querySelector('[data-ship="overdue"]');
