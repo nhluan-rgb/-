@@ -4286,6 +4286,139 @@ section.panel.work{
 }
 .standard-game .standard-material-card:hover{transform:translateY(-5px);filter:brightness(1.08)}
 </style>
+<style id="v99_process_module_hud_patch">
+/* 工程カード：色を保った宇宙船モジュール */
+.ng-process-cards{
+  gap:12px!important;
+  padding:14px!important;
+  border:1px solid rgba(124,232,255,.70)!important;
+  border-radius:20px!important;
+  background:
+    linear-gradient(90deg,rgba(71,218,255,.045) 1px,transparent 1px),
+    linear-gradient(rgba(71,218,255,.045) 1px,transparent 1px),
+    linear-gradient(180deg,rgba(3,28,42,.96),rgba(2,17,29,.94))!important;
+  background-size:22px 22px,22px 22px,auto!important;
+  box-shadow:inset 0 0 28px rgba(43,195,235,.13),0 0 18px rgba(43,195,235,.16)!important;
+}
+.ng-process-cards .battle-process{
+  position:relative;
+  isolation:isolate;
+  min-height:245px!important;
+  padding:10px 9px 14px!important;
+  border:2px solid var(--process-color)!important;
+  border-radius:5px 18px 5px 18px!important;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+  background:
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--process-color) 20%,#132b37),
+      rgba(5,19,29,.97) 54%,
+      color-mix(in srgb,var(--process-color) 12%,#07141d)
+    )!important;
+  box-shadow:
+    inset 0 0 24px color-mix(in srgb,var(--process-color) 18%,transparent),
+    0 0 13px color-mix(in srgb,var(--process-color) 28%,transparent)!important;
+  overflow:hidden;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+}
+.ng-process-cards .battle-process::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:
+    linear-gradient(115deg,transparent 0 44%,rgba(255,255,255,.10) 48%,transparent 52%),
+    repeating-linear-gradient(180deg,transparent 0 21px,rgba(255,255,255,.025) 22px);
+  transform:translateX(-110%);
+  animation:processModuleScan 4.8s ease-in-out infinite;
+}
+.ng-process-cards .battle-process::after{
+  content:"";
+  position:absolute;
+  left:11px;
+  right:11px;
+  bottom:8px;
+  height:4px;
+  border-radius:5px;
+  background:linear-gradient(90deg,transparent,var(--process-color) 20% 80%,transparent);
+  box-shadow:0 0 9px var(--process-color);
+  opacity:.9;
+}
+.ng-process-cards .battle-process:hover,
+.ng-process-cards .battle-process:focus-visible{
+  transform:translateY(-7px) scale(1.015)!important;
+  filter:brightness(1.17);
+  box-shadow:
+    inset 0 0 28px color-mix(in srgb,var(--process-color) 24%,transparent),
+    0 0 24px color-mix(in srgb,var(--process-color) 56%,transparent)!important;
+}
+.ng-process-cards .battle-process-name{
+  position:relative;
+  z-index:2;
+  min-height:48px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1px solid color-mix(in srgb,var(--process-color) 82%,#fff)!important;
+  border-radius:3px 12px 3px 12px!important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb,var(--process-color) 90%,#fff),
+    color-mix(in srgb,var(--process-color) 82%,#06131c)
+  )!important;
+  color:#fff!important;
+  font-size:19px!important;
+  letter-spacing:.025em;
+  text-shadow:0 2px 3px rgba(0,0,0,.65),0 0 8px color-mix(in srgb,var(--process-color) 70%,transparent)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.48),0 0 10px color-mix(in srgb,var(--process-color) 30%,transparent);
+}
+.ng-process-cards .battle-process-count{
+  position:relative;
+  z-index:2;
+  margin:13px 0 6px!important;
+  color:color-mix(in srgb,var(--process-color) 72%,#fff)!important;
+  font-size:29px!important;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 13px color-mix(in srgb,var(--process-color) 60%,transparent)!important;
+}
+.ng-process-cards .process-symbol{
+  position:relative;
+  z-index:2;
+  width:74px!important;
+  height:74px!important;
+  border:2px solid var(--process-color)!important;
+  border-radius:50%!important;
+  background:
+    radial-gradient(circle,rgba(255,255,255,.94) 0 45%,color-mix(in srgb,var(--process-color) 18%,#fff) 46% 68%,transparent 70%)!important;
+  color:var(--process-color)!important;
+  box-shadow:0 0 15px color-mix(in srgb,var(--process-color) 48%,transparent),inset 0 0 12px rgba(255,255,255,.78)!important;
+}
+.ng-process-cards .clear-worker{
+  filter:saturate(.45);
+  background:linear-gradient(145deg,#30434d,#172832 58%,#0e1b23)!important;
+}
+.ng-process-cards .clear-worker .battle-process-count{display:none!important}
+.ng-process-cards .ng-process-complete-stamp{
+  position:relative;
+  z-index:2;
+  margin:auto;
+  padding:10px 16px;
+  border:2px solid rgba(224,249,255,.92);
+  border-radius:3px;
+  background:rgba(5,19,27,.64);
+  color:#f1fdff;
+  font-size:27px;
+  letter-spacing:.10em;
+  transform:rotate(-4deg);
+  text-shadow:0 0 9px #fff;
+  box-shadow:0 0 12px rgba(196,240,255,.34),inset 0 0 10px rgba(196,240,255,.12);
+}
+@keyframes processModuleScan{
+  0%,58%{transform:translateX(-110%)}
+  78%,100%{transform:translateX(110%)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ng-process-cards .battle-process::before{animation:none}
+}
+</style>
 </head>
 <body>
 <div class="app">
