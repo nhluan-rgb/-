@@ -7626,9 +7626,14 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   setShipLabel('remainingShipLaterLabel',jpShipLabel(laterDate,`以降${breakdownSuffix}`));
   document.querySelectorAll('[data-standard-bucket="unset"] span').forEach(el=>el.textContent=unsetLabel);
   document.querySelectorAll('[data-standard-bucket]').forEach(button=>{
+    const bucket=button.dataset.standardBucket;
+    const hidden=
+      (shipFilter==='tomorrow'&&!['past','today','tomorrow'].includes(bucket)) ||
+      (shipFilter==='overdue'&&['past','today'].includes(bucket)) ||
+      (shipFilter==='today'&&bucket==='past');
     button.classList.toggle(
       'breakdown-hidden',
-      breakdownByDue&&!['past','today','tomorrow'].includes(button.dataset.standardBucket)
+      hidden
     );
   });
 
