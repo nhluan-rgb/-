@@ -5017,11 +5017,17 @@ color:#d7e6ef!important;
   font-family:inherit;
   text-align:left;
   cursor:pointer;
+  position:relative;
+  z-index:20;
+  pointer-events:auto!important;
 }
 .deadline-breakdown>button:hover,
 .deadline-breakdown>button.active{
   background:rgba(54,221,255,.14);
   box-shadow:inset 3px 0 0 #36ddff;
+}
+.deadline-breakdown>button.breakdown-hidden{
+  display:none!important;
 }
 .remaining-breakdown>button:hover,
 .remaining-breakdown>button.active{
@@ -5036,6 +5042,14 @@ color:#d7e6ef!important;
 }
 .remaining-breakdown b{color:#ff755f}
 .remaining-breakdown>button[data-standard-bucket="later"] b{color:#ffbd37}
+.standard-game #standardOverview,
+.standard-game .standard-overview-compare,
+.standard-game .standard-compare-box,
+.standard-game .deadline-breakdown{
+  position:relative;
+  z-index:15;
+  pointer-events:auto!important;
+}
 
 /* Bỏ MATERIAL SCAN, chỉ giữ tên Nhật */
 .standard-game .standard-process-slot::before{
@@ -5588,6 +5602,7 @@ color:#d7e6ef!important;
                 <strong class="standard-compare-value"><span id="standardTotal">0</span>件</strong>
                 <div class="deadline-breakdown">
   
+  <button type="button" data-standard-bucket="past"><span id="totalShipPastLabel">→ 本日以前出荷</span><b id="totalShipPast">0件</b></button>
   <button type="button" data-standard-bucket="today"><span id="totalShipTodayLabel">→ 本日出荷</span><b id="totalShipToday">0件</b></button>
   <button type="button" data-standard-bucket="tomorrow"><span id="totalShipTomorrowLabel">→ --月--日出荷</span><b id="totalShipTomorrow">0件</b></button>
   <button type="button" data-standard-bucket="dayAfter"><span id="totalShipDayAfterLabel">→ --月--日出荷</span><b id="totalShipDayAfter">0件</b></button>
@@ -5600,6 +5615,7 @@ color:#d7e6ef!important;
                 <strong class="standard-compare-value"><span id="standardRemaining">0</span>件</strong>
                 <div class="deadline-breakdown remaining-breakdown">
   
+  <button type="button" data-standard-bucket="past" data-standard-unfinished="true"><span id="remainingShipPastLabel">→ 本日以前出荷</span><b id="remainingShipPast">0件</b></button>
   <button type="button" data-standard-bucket="today" data-standard-unfinished="true"><span id="remainingShipTodayLabel">→ 本日出荷</span><b id="remainingShipToday">0件</b></button>
   <button type="button" data-standard-bucket="tomorrow" data-standard-unfinished="true"><span id="remainingShipTomorrowLabel">→ --月--日出荷</span><b id="remainingShipTomorrow">0件</b></button>
   <button type="button" data-standard-bucket="dayAfter" data-standard-unfinished="true"><span id="remainingShipDayAfterLabel">→ --月--日出荷</span><b id="remainingShipDayAfter">0件</b></button>
@@ -7587,17 +7603,34 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   const laterDate=new Date(dateBase);
   laterDate.setDate(laterDate.getDate()+3);
 
-  const jpShipLabel=(date,suffix='出荷')=>`→ ${date.getMonth()+1}月${date.getDate()}日${suffix}`;
+  const breakdownByDue=shipFilter==='tomorrow';
+  const breakdownSuffix=breakdownByDue?'製造期限':'出荷';
+  const jpShipLabel=(date,suffix=breakdownSuffix)=>`→ ${date.getMonth()+1}月${date.getDate()}日${suffix}`;
   const setShipLabel=(id,label)=>{const el=$(id);if(el)el.textContent=label;};
 
-  setShipLabel('totalShipTodayLabel','→ 本日出荷');
-  setShipLabel('remainingShipTodayLabel','→ 本日出荷');
-  setShipLabel('totalShipTomorrowLabel',jpShipLabel(tomorrowDate));
+  const pastLabel=breakdownByDue?'→ 製造期限切れ':'→ 本日以前出荷';
+  const todayLabel=breakdownByDue?'→ 本日製造期限':'→ 本日出荷';
+  const unsetLabel=breakdownByDue?'→ 製造期限未設定':'→ 出荷日未設定';
+  setShipLabel('totalShipPastLabel',pastLabel);
+  setShipLabel('remainingShipPastLabel',pastLabel);
+  setShipLabel('totalShipTodayLabel',todayLabel);
+  setShipLabel('remainingShipTodayLabel',todayLabel);
+  const tomorrowBreakdownLabel=breakdownByDue
+    ? `→ 明日期限（${tomorrowDate.getMonth()+1}月${tomorrowDate.getDate()}日）`
+    : jpShipLabel(tomorrowDate);
+  setShipLabel('totalShipTomorrowLabel',tomorrowBreakdownLabel);
   setShipLabel('totalShipDayAfterLabel',jpShipLabel(dayAfterDate));
-  setShipLabel('totalShipLaterLabel',jpShipLabel(laterDate,'以降'));
-  setShipLabel('remainingShipTomorrowLabel',jpShipLabel(tomorrowDate));
+  setShipLabel('totalShipLaterLabel',jpShipLabel(laterDate,`以降${breakdownSuffix}`));
+  setShipLabel('remainingShipTomorrowLabel',tomorrowBreakdownLabel);
   setShipLabel('remainingShipDayAfterLabel',jpShipLabel(dayAfterDate));
-  setShipLabel('remainingShipLaterLabel',jpShipLabel(laterDate,'以降'));
+  setShipLabel('remainingShipLaterLabel',jpShipLabel(laterDate,`以降${breakdownSuffix}`));
+  document.querySelectorAll('[data-standard-bucket="unset"] span').forEach(el=>el.textContent=unsetLabel);
+  document.querySelectorAll('[data-standard-bucket]').forEach(button=>{
+    button.classList.toggle(
+      'breakdown-hidden',
+      breakdownByDue&&!['past','today','tomorrow'].includes(button.dataset.standardBucket)
+    );
+  });
 
   const unfinishedStandardRows=chartRows.filter(row=>
     row.status!=='完成' &&
@@ -7605,25 +7638,28 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
     !String(row.status||'').includes('キャンセル')
   );
   const countShipBuckets=(targetRows)=>{
-    let today=0,tomorrow=0,dayAfter=0,later=0,unset=0;
+    let past=0,today=0,tomorrow=0,dayAfter=0,later=0,unset=0;
     targetRows.forEach(row=>{
-      const ship=String(row.shipDate||'');
-      if(!ship)unset++;
-      else if(ship===todayDates.today)today++;
-      else if(ship===tomorrowKey)tomorrow++;
-      else if(ship===dayAfterKey)dayAfter++;
-      else if(ship>dayAfterKey)later++;
+      const targetDate=String((breakdownByDue?row.due:row.shipDate)||'');
+      if(!targetDate)unset++;
+      else if(targetDate<todayDates.today)past++;
+      else if(targetDate===todayDates.today)today++;
+      else if(targetDate===tomorrowKey)tomorrow++;
+      else if(targetDate===dayAfterKey)dayAfter++;
+      else if(targetDate>dayAfterKey)later++;
     });
-    return{today,tomorrow,dayAfter,later,unset};
+    return{past,today,tomorrow,dayAfter,later,unset};
   };
   const totalBuckets=countShipBuckets(chartRows);
   const remainingBuckets=countShipBuckets(unfinishedStandardRows);
   const setBucket=(id,value)=>{const el=$(id);if(el)el.textContent=`${fmt(value)}件`;};
+  setBucket('totalShipPast',totalBuckets.past);
   setBucket('totalShipToday',totalBuckets.today);
   setBucket('totalShipTomorrow',totalBuckets.tomorrow);
   setBucket('totalShipDayAfter',totalBuckets.dayAfter);
   setBucket('totalShipLater',totalBuckets.later);
   setBucket('totalShipUnset',totalBuckets.unset);
+  setBucket('remainingShipPast',remainingBuckets.past);
   setBucket('remainingShipToday',remainingBuckets.today);
   setBucket('remainingShipTomorrow',remainingBuckets.tomorrow);
   setBucket('remainingShipDayAfter',remainingBuckets.dayAfter);
@@ -7933,13 +7969,14 @@ function renderTable(){
   const isUnfinished=r=>r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ')&&!String(r.status||'').includes('キャンセル');
   const matchesBreakdown=r=>{
     if(!standardBreakdownFilter)return true;
-    const ship=String(r.shipDate||'');
+    const targetDate=String((shipFilter==='tomorrow'?r.due:r.shipDate)||'');
     let bucketOk=false;
-    if(standardBreakdownFilter.bucket==='today')bucketOk=ship===shipDates.today;
-    else if(standardBreakdownFilter.bucket==='tomorrow')bucketOk=ship===tomorrowKey;
-    else if(standardBreakdownFilter.bucket==='dayAfter')bucketOk=ship===dayAfterKey;
-    else if(standardBreakdownFilter.bucket==='later')bucketOk=ship>dayAfterKey;
-    else if(standardBreakdownFilter.bucket==='unset')bucketOk=!ship;
+    if(standardBreakdownFilter.bucket==='past')bucketOk=Boolean(targetDate)&&targetDate<shipDates.today;
+    else if(standardBreakdownFilter.bucket==='today')bucketOk=targetDate===shipDates.today;
+    else if(standardBreakdownFilter.bucket==='tomorrow')bucketOk=targetDate===tomorrowKey;
+    else if(standardBreakdownFilter.bucket==='dayAfter')bucketOk=targetDate===dayAfterKey;
+    else if(standardBreakdownFilter.bucket==='later')bucketOk=targetDate>dayAfterKey;
+    else if(standardBreakdownFilter.bucket==='unset')bucketOk=!targetDate;
     return bucketOk&&(!standardBreakdownFilter.unfinished||isUnfinished(r));
   };
   let list=rows.filter(r=>{
