@@ -7993,6 +7993,36 @@ function renderTable(){
     return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`;
   }).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>';
 }
+function applyStandardBreakdown(button){
+  const next={bucket:button.dataset.standardBucket,unfinished:button.dataset.standardUnfinished==='true'};
+  const same=standardBreakdownFilter&&standardBreakdownFilter.bucket===next.bucket&&standardBreakdownFilter.unfinished===next.unfinished;
+  standardBreakdownFilter=same?null:next;
+  document.querySelectorAll('[data-standard-bucket]').forEach(item=>{
+    item.classList.toggle('active',Boolean(standardBreakdownFilter&&standardBreakdownFilter.bucket===item.dataset.standardBucket&&standardBreakdownFilter.unfinished===(item.dataset.standardUnfinished==='true')));
+  });
+  renderTable();
+  if(!standardBreakdownFilter){renderSelectedProcessBacklog();return}
+  const modal=document.getElementById('processModal');
+  const modalCard=document.getElementById('processModalCard');
+  const modalBody=document.getElementById('processModalBody');
+  const label=button.querySelector('span')?.textContent?.replace(/^→\s*/,'')||'分類';
+  const count=document.getElementById('resultCount')?.textContent||'';
+  if(modalBody)modalBody.innerHTML=`
+    <header class="process-backlog-header">
+      <div><div class="process-backlog-title">${label}</div><div>${next.unfinished?'未完成のみ':'全体'} ／ ${count}</div></div>
+      <button type="button" class="process-backlog-close" data-process-close>× 閉じる</button>
+    </header>
+    <section class="process-popup-section">
+      <div class="process-popup-section-head">製造指示一覧</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>製造指示番号</th><th>品番 / 品名</th><th>規格</th><th>数量（点）</th><th>出荷日</th><th>製造期限</th><th>進捗</th><th>担当者</th><th>配送便</th></tr></thead>
+        <tbody>${document.getElementById('tbody')?.innerHTML||''}</tbody>
+      </table></div>
+    </section>`;
+  if(modal){modal.classList.add('show');modal.setAttribute('aria-hidden','false')}
+  if(modalCard){modalCard.scrollTop=0;modalCard.style.transform='translate(0px,0px)'}
+  document.body.style.overflow='hidden';
+}
 function render(){renderStats();refreshFilters();renderTable()}
 function captureUiState(){
   return {
@@ -8031,21 +8061,9 @@ function restoreUiState(state){
 document.addEventListener('click',event=>{
   const breakdownButton=event.target.closest('[data-standard-bucket]');
   if(breakdownButton){
-    const next={
-      bucket:breakdownButton.dataset.standardBucket,
-      unfinished:breakdownButton.dataset.standardUnfinished==='true'
-    };
-    const same=standardBreakdownFilter&&standardBreakdownFilter.bucket===next.bucket&&standardBreakdownFilter.unfinished===next.unfinished;
-    standardBreakdownFilter=same?null:next;
-    document.querySelectorAll('[data-standard-bucket]').forEach(button=>{
-      button.classList.toggle('active',Boolean(
-        standardBreakdownFilter &&
-        standardBreakdownFilter.bucket===button.dataset.standardBucket &&
-        standardBreakdownFilter.unfinished===(button.dataset.standardUnfinished==='true')
-      ));
-    });
-    renderTable();
-    document.querySelector('.panel.work')?.scrollIntoView({behavior:'smooth',block:'start'});
+    event.preventDefault();
+    event.stopPropagation();
+    applyStandardBreakdown(breakdownButton);
     return;
   }
   const materialCard=event.target.closest('[data-material]');
@@ -8079,7 +8097,7 @@ document.addEventListener('click',event=>{
     renderSelectedProcessBacklog();
     return;
   }
-});
+},true);
 document.addEventListener('keydown',event=>{
   if(event.key!=='Enter'&&event.key!==' ')return;
   const target=event.target.closest('[data-material],[data-process],[data-delivery],[data-overview]');
