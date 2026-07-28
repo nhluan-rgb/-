@@ -4995,7 +4995,8 @@ color:#d7e6ef!important;
   text-align:center;
   letter-spacing:.08em;
 }
-.deadline-breakdown>div:not(.deadline-title){
+.deadline-breakdown>div:not(.deadline-title),
+.deadline-breakdown>button{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -5007,6 +5008,26 @@ color:#d7e6ef!important;
   font-size:15px;
   font-weight:900;
 }
+.deadline-breakdown>button{
+  width:100%;
+  border-right:0;
+  border-bottom:0;
+  border-left:0;
+  background:transparent;
+  font-family:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.deadline-breakdown>button:hover,
+.deadline-breakdown>button.active{
+  background:rgba(54,221,255,.14);
+  box-shadow:inset 3px 0 0 #36ddff;
+}
+.remaining-breakdown>button:hover,
+.remaining-breakdown>button.active{
+  background:rgba(255,117,95,.14);
+  box-shadow:inset 3px 0 0 #ff755f;
+}
 .deadline-breakdown b{
   color:#36ddff;
   font-size:21px;
@@ -5014,7 +5035,7 @@ color:#d7e6ef!important;
   white-space:nowrap;
 }
 .remaining-breakdown b{color:#ff755f}
-.remaining-breakdown>div:nth-child(4) b{color:#ffbd37}
+.remaining-breakdown>button[data-standard-bucket="later"] b{color:#ffbd37}
 
 /* Bỏ MATERIAL SCAN, chỉ giữ tên Nhật */
 .standard-game .standard-process-slot::before{
@@ -5092,7 +5113,8 @@ color:#d7e6ef!important;
 .deadline-breakdown .deadline-title{
   display:none!important;
 }
-.deadline-breakdown>div{
+.deadline-breakdown>div,
+.deadline-breakdown>button{
   min-height:31px!important;
 }
 </style>
@@ -5566,9 +5588,11 @@ color:#d7e6ef!important;
                 <strong class="standard-compare-value"><span id="standardTotal">0</span>件</strong>
                 <div class="deadline-breakdown">
   
-  <div><span id="totalShipTomorrowLabel">→ --月--日出荷</span><b id="totalShipTomorrow">0件</b></div>
-  <div><span id="totalShipDayAfterLabel">→ --月--日出荷</span><b id="totalShipDayAfter">0件</b></div>
-  <div><span id="totalShipLaterLabel">→ --月--日以降</span><b id="totalShipLater">0件</b></div>
+  <button type="button" data-standard-bucket="today"><span id="totalShipTodayLabel">→ 本日出荷</span><b id="totalShipToday">0件</b></button>
+  <button type="button" data-standard-bucket="tomorrow"><span id="totalShipTomorrowLabel">→ --月--日出荷</span><b id="totalShipTomorrow">0件</b></button>
+  <button type="button" data-standard-bucket="dayAfter"><span id="totalShipDayAfterLabel">→ --月--日出荷</span><b id="totalShipDayAfter">0件</b></button>
+  <button type="button" data-standard-bucket="later"><span id="totalShipLaterLabel">→ --月--日以降</span><b id="totalShipLater">0件</b></button>
+  <button type="button" data-standard-bucket="unset"><span>→ 出荷日未設定</span><b id="totalShipUnset">0件</b></button>
 </div>
               </div>
               <div class="standard-compare-box remaining">
@@ -5576,9 +5600,11 @@ color:#d7e6ef!important;
                 <strong class="standard-compare-value"><span id="standardRemaining">0</span>件</strong>
                 <div class="deadline-breakdown remaining-breakdown">
   
-  <div><span id="remainingShipTomorrowLabel">→ --月--日出荷</span><b id="remainingShipTomorrow">0件</b></div>
-  <div><span id="remainingShipDayAfterLabel">→ --月--日出荷</span><b id="remainingShipDayAfter">0件</b></div>
-  <div><span id="remainingShipLaterLabel">→ --月--日以降</span><b id="remainingShipLater">0件</b></div>
+  <button type="button" data-standard-bucket="today" data-standard-unfinished="true"><span id="remainingShipTodayLabel">→ 本日出荷</span><b id="remainingShipToday">0件</b></button>
+  <button type="button" data-standard-bucket="tomorrow" data-standard-unfinished="true"><span id="remainingShipTomorrowLabel">→ --月--日出荷</span><b id="remainingShipTomorrow">0件</b></button>
+  <button type="button" data-standard-bucket="dayAfter" data-standard-unfinished="true"><span id="remainingShipDayAfterLabel">→ --月--日出荷</span><b id="remainingShipDayAfter">0件</b></button>
+  <button type="button" data-standard-bucket="later" data-standard-unfinished="true"><span id="remainingShipLaterLabel">→ --月--日以降</span><b id="remainingShipLater">0件</b></button>
+  <button type="button" data-standard-bucket="unset" data-standard-unfinished="true"><span>→ 出荷日未設定</span><b id="remainingShipUnset">0件</b></button>
 </div>
               </div>
             </div>
@@ -5720,6 +5746,7 @@ const sample=[
 ['26-J0066008-001-771','岡本電機　福山★','IE4040SG','鉄 PB 平',6,'2026-08-07','溶接','山口','福山通運　九州発送']
 ].map((r,i)=>({id:r[0],client:r[1],part:r[2],name:r[3],standard:['ｱｰｽ','穴加工','ｺﾞﾑﾊﾟｯｷﾝ付','さび止め','L65×65×6t'][i%5],qty:r[4],due:r[5],status:r[6],owner:r[7],ship:r[8],shipDate:['2026-07-20','2026-07-21','2026-07-22','2026-07-20','2026-07-21'][i%5]}));
 let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
+let standardBreakdownFilter=null;
 let selectedProcess='',selectedDelivery='',selectedMaterial='',currentChartRows=[],currentChartLabel='生産進捗';
 let csvLoading=false;
 let jNumberSearchDigits='';
@@ -7563,6 +7590,8 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   const jpShipLabel=(date,suffix='出荷')=>`→ ${date.getMonth()+1}月${date.getDate()}日${suffix}`;
   const setShipLabel=(id,label)=>{const el=$(id);if(el)el.textContent=label;};
 
+  setShipLabel('totalShipTodayLabel','→ 本日出荷');
+  setShipLabel('remainingShipTodayLabel','→ 本日出荷');
   setShipLabel('totalShipTomorrowLabel',jpShipLabel(tomorrowDate));
   setShipLabel('totalShipDayAfterLabel',jpShipLabel(dayAfterDate));
   setShipLabel('totalShipLaterLabel',jpShipLabel(laterDate,'以降'));
@@ -7576,24 +7605,38 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
     !String(row.status||'').includes('キャンセル')
   );
   const countShipBuckets=(targetRows)=>{
-    let tomorrow=0,dayAfter=0,later=0;
+    let today=0,tomorrow=0,dayAfter=0,later=0,unset=0;
     targetRows.forEach(row=>{
       const ship=String(row.shipDate||'');
-      if(ship===tomorrowKey)tomorrow++;
+      if(!ship)unset++;
+      else if(ship===todayDates.today)today++;
+      else if(ship===tomorrowKey)tomorrow++;
       else if(ship===dayAfterKey)dayAfter++;
       else if(ship>dayAfterKey)later++;
     });
-    return{tomorrow,dayAfter,later};
+    return{today,tomorrow,dayAfter,later,unset};
   };
   const totalBuckets=countShipBuckets(chartRows);
   const remainingBuckets=countShipBuckets(unfinishedStandardRows);
   const setBucket=(id,value)=>{const el=$(id);if(el)el.textContent=`${fmt(value)}件`;};
+  setBucket('totalShipToday',totalBuckets.today);
   setBucket('totalShipTomorrow',totalBuckets.tomorrow);
   setBucket('totalShipDayAfter',totalBuckets.dayAfter);
   setBucket('totalShipLater',totalBuckets.later);
+  setBucket('totalShipUnset',totalBuckets.unset);
+  setBucket('remainingShipToday',remainingBuckets.today);
   setBucket('remainingShipTomorrow',remainingBuckets.tomorrow);
   setBucket('remainingShipDayAfter',remainingBuckets.dayAfter);
   setBucket('remainingShipLater',remainingBuckets.later);
+  setBucket('remainingShipUnset',remainingBuckets.unset);
+  document.querySelectorAll('[data-standard-bucket]').forEach(button=>{
+    const unfinished=button.dataset.standardUnfinished==='true';
+    button.classList.toggle('active',Boolean(
+      standardBreakdownFilter &&
+      standardBreakdownFilter.bucket===button.dataset.standardBucket &&
+      standardBreakdownFilter.unfinished===unfinished
+    ));
+  });
   if($('standardBannerTitle')) $('standardBannerTitle').textContent=`${tabName} ミッション`;
   startStandardMessageRotation($('standardBannerMessage'),null,shipFilter,{
     total:chartTotal,
@@ -7874,7 +7917,45 @@ if(completeMessage){
 }
 }
 function refreshFilters(){let ss=[...new Set(rows.map(r=>r.status).filter(Boolean))],oo=[...new Set(rows.map(r=>r.owner).filter(Boolean))];$('statusFilter').innerHTML='<option value="">すべての進捗</option>'+ss.map(x=>`<option>${x}</option>`).join('');$('ownerFilter').innerHTML='<option value="">すべての担当者</option>'+oo.map(x=>`<option>${x}</option>`).join('')}
-function renderTable(){let q=$('search').value.toLowerCase(),s=$('statusFilter').value,o=$('ownerFilter').value,d=$('deadlineFilter').value,today=new Date(),soon=new Date(),shipDates=getShipDates();today.setHours(0,0,0,0);soon.setTime(today.getTime());soon.setDate(today.getDate()+7);soon.setHours(23,59,59,999);let list=rows.filter(r=>{let due=new Date(r.due+'T00:00:00'),late=due<today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ'),isNg=r.shipDate===shipDates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'),shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):(shipFilter==='specified'?r.due===specifiedShipDate:shipFilter==='today'?r.due===shipDates.today:r.shipDate===shipDates[shipFilter]));return shipOk&&(!q||[r.id,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon))});$('resultCount').textContent=`表示 ${fmt(list.length)}件`;$('tbody').innerHTML=list.slice(0,500).map(r=>{let late=new Date(r.due+'T00:00:00')<today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ'),todayNg=r.shipDate===shipDates.today&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル');return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}${todayNg?'':''}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`}).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>'}
+function renderTable(){
+  let q=$('search').value.toLowerCase(),s=$('statusFilter').value,o=$('ownerFilter').value,d=$('deadlineFilter').value;
+  let today=new Date(),soon=new Date(),shipDates=getShipDates();
+  today.setHours(0,0,0,0);
+  soon.setTime(today.getTime());
+  soon.setDate(today.getDate()+7);
+  soon.setHours(23,59,59,999);
+  const tomorrowDate=new Date(`${shipDates.today}T00:00:00`);
+  tomorrowDate.setDate(tomorrowDate.getDate()+1);
+  const dayAfterDate=new Date(`${shipDates.today}T00:00:00`);
+  dayAfterDate.setDate(dayAfterDate.getDate()+2);
+  const tomorrowKey=formatLocalDate(tomorrowDate);
+  const dayAfterKey=formatLocalDate(dayAfterDate);
+  const isUnfinished=r=>r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ')&&!String(r.status||'').includes('キャンセル');
+  const matchesBreakdown=r=>{
+    if(!standardBreakdownFilter)return true;
+    const ship=String(r.shipDate||'');
+    let bucketOk=false;
+    if(standardBreakdownFilter.bucket==='today')bucketOk=ship===shipDates.today;
+    else if(standardBreakdownFilter.bucket==='tomorrow')bucketOk=ship===tomorrowKey;
+    else if(standardBreakdownFilter.bucket==='dayAfter')bucketOk=ship===dayAfterKey;
+    else if(standardBreakdownFilter.bucket==='later')bucketOk=ship>dayAfterKey;
+    else if(standardBreakdownFilter.bucket==='unset')bucketOk=!ship;
+    return bucketOk&&(!standardBreakdownFilter.unfinished||isUnfinished(r));
+  };
+  let list=rows.filter(r=>{
+    let due=new Date(r.due+'T00:00:00');
+    let late=due<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
+    let isNg=r.shipDate===shipDates.today&&isUnfinished(r);
+    let shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):(shipFilter==='specified'?r.due===specifiedShipDate:shipFilter==='today'?r.due===shipDates.today:r.shipDate===shipDates[shipFilter]));
+    return shipOk&&matchesBreakdown(r)&&(!q||[r.id,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon));
+  });
+  $('resultCount').textContent=`表示 ${fmt(list.length)}件`;
+  $('tbody').innerHTML=list.slice(0,500).map(r=>{
+    let late=new Date(r.due+'T00:00:00')<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
+    let todayNg=r.shipDate===shipDates.today&&isUnfinished(r);
+    return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`;
+  }).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>';
+}
 function render(){renderStats();refreshFilters();renderTable()}
 function captureUiState(){
   return {
@@ -7911,6 +7992,25 @@ function restoreUiState(state){
 }
 ['search','statusFilter','ownerFilter','deadlineFilter'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',renderTable));
 document.addEventListener('click',event=>{
+  const breakdownButton=event.target.closest('[data-standard-bucket]');
+  if(breakdownButton){
+    const next={
+      bucket:breakdownButton.dataset.standardBucket,
+      unfinished:breakdownButton.dataset.standardUnfinished==='true'
+    };
+    const same=standardBreakdownFilter&&standardBreakdownFilter.bucket===next.bucket&&standardBreakdownFilter.unfinished===next.unfinished;
+    standardBreakdownFilter=same?null:next;
+    document.querySelectorAll('[data-standard-bucket]').forEach(button=>{
+      button.classList.toggle('active',Boolean(
+        standardBreakdownFilter &&
+        standardBreakdownFilter.bucket===button.dataset.standardBucket &&
+        standardBreakdownFilter.unfinished===(button.dataset.standardUnfinished==='true')
+      ));
+    });
+    renderTable();
+    document.querySelector('.panel.work')?.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
   const materialCard=event.target.closest('[data-material]');
   if(materialCard){
     selectedMaterial=materialCard.dataset.material||'';
@@ -7970,6 +8070,7 @@ document.addEventListener('keydown',event=>{
 document.querySelectorAll('[data-ship],[data-quick]').forEach(b=>b.addEventListener('click',()=>{
   const v=b.dataset.ship||b.dataset.quick;
   shipFilter=v;
+  standardBreakdownFilter=null;
   selectedProcess='';
   selectedDelivery='';
   selectedMaterial='';
@@ -7984,6 +8085,7 @@ $('specifiedDate').addEventListener('click',e=>e.stopPropagation());
 $('specifiedDate').addEventListener('change',e=>{
   specifiedShipDate=e.target.value;
   shipFilter='specified';
+  standardBreakdownFilter=null;
   selectedProcess='';
   selectedDelivery='';
   selectedMaterial='';
