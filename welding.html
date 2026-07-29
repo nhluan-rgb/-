@@ -550,6 +550,29 @@
 }
 .home-urgent-alert.show{display:block}
 @keyframes urgentPulse{to{filter:brightness(1.25);transform:scale(1.015)}}
+.home-urgent-title{font-size:21px;font-weight:1000}
+.home-urgent-breakdown{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  margin-top:10px
+}
+.home-urgent-category{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px 10px;
+  border:2px solid var(--urgent-category-color);
+  border-radius:8px;
+  background:#071f31;
+  color:#fff;
+  font-size:14px;
+  font-weight:1000;
+  box-shadow:inset 0 0 10px color-mix(in srgb,var(--urgent-category-color) 20%,transparent)
+}
+.home-urgent-category span{color:var(--urgent-category-color);text-align:left}
+.home-urgent-category b{white-space:nowrap}
 .home-goal-summary{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -8434,9 +8457,30 @@ if(shipFilter==='today-ng'){
   const urgentAlert=$('homeUrgentAlert');
   if(urgentAlert){
     urgentAlert.classList.toggle('show',todayUrgentRows.length>0);
-    urgentAlert.textContent=todayUrgentRows.length
-      ? `⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件（本日製造指示 → 本日生地）`
-      : '';
+    if(todayUrgentRows.length){
+      const urgentCategoryColors={
+        'ボックス':'#338cff','ダクト':'#35d6df','架台':'#ff9b3d',
+        '貫通枠':'#9b72ff','カバー':'#3ee59a','切板・金物':'#ffd43b',
+        'その他・要確認':'#ff6075'
+      };
+      const urgentCategoryMap=new Map();
+      todayUrgentRows.forEach(row=>{
+        const category=classifyProductCategory(row);
+        if(!urgentCategoryMap.has(category))urgentCategoryMap.set(category,{count:0,qty:0});
+        const item=urgentCategoryMap.get(category);
+        item.count++;
+        item.qty+=Number(row.qty)||0;
+      });
+      const urgentBreakdown=[...urgentCategoryMap.entries()]
+        .sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty)
+        .map(([category,item])=>`<div class="home-urgent-category" style="--urgent-category-color:${urgentCategoryColors[category]||'#90A4AE'}">
+          <span>${escapeHtml(category)}</span><b>${fmt(item.count)}件・${fmt(item.qty)}点</b>
+        </div>`).join('');
+      urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件（本日製造指示 → 本日生地）</div>
+        <div class="home-urgent-breakdown">${urgentBreakdown}</div>`;
+    }else{
+      urgentAlert.innerHTML='';
+    }
   }
   updateMonthlyAchievementCalendar(todaySeichibiRemaining.length,!fullStats);
   updateBonusCampaignPanel();
