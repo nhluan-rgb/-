@@ -5632,6 +5632,12 @@ color:#d7e6ef!important;
 }
 /* 本日製造期限の比較枠を製品種類ボードへ置換 */
 .product-category-overview{width:100%;height:100%;display:flex;flex-direction:column}
+.product-category-heading{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap
+}
 .product-category-title{
   padding:0 0 8px 13px;
   border-left:5px solid #5be8ff;
@@ -5641,6 +5647,35 @@ color:#d7e6ef!important;
   letter-spacing:.05em;
   text-shadow:0 0 13px rgba(67,220,255,.65)
 }
+.product-category-flow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-left:auto
+}
+.product-category-flow-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:36px;
+  padding:5px 12px;
+  border:1px solid var(--flow-color);
+  border-radius:7px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--flow-color) 24%,#09283b),#071b29);
+  color:#fff;
+  font-size:14px;
+  font-weight:1000;
+  box-shadow:inset 0 0 12px color-mix(in srgb,var(--flow-color) 18%,transparent),0 0 10px color-mix(in srgb,var(--flow-color) 20%,transparent)
+}
+.product-category-flow-chip b{color:var(--flow-color);font-size:22px;text-shadow:0 0 9px var(--flow-color)}
+.product-category-balance{
+  margin:5px 0 10px 18px;
+  color:#d9f7ff;
+  font-size:13px;
+  font-weight:900
+}
+.product-category-balance strong{color:#fff36b;font-size:15px}
 .product-category-sub{margin:5px 0 10px 18px;color:#9fd3e5;font-size:13px;font-weight:800}
 .product-category-grid{
   display:grid;
@@ -6811,6 +6846,130 @@ Object.entries(v90MessageParts).forEach(([key,parts])=>{
   // 17 × 4 = 68文を追加。既存32文と合わせて各タブ100文。
   standardMessageGroups[key].push(...generated.slice(0,68));
 });
+
+/* welding.html 専用：生地日と塗装前6工程だけを伝える独立メッセージ */
+const weldingMessageSets={
+  'today-ng':[
+    '生地日未登録は{total}件です。担当と予定日を確認し、登録を完了しましょう。',
+    '生地日が未登録のままでは工程負荷を正しく判断できません。残り{remaining}件を確認しましょう。',
+    '品名・材質・現在工程を確認し、生地日未登録を一件ずつ解消しましょう。',
+    '未登録情報は早めの共有が重要です。止まっている理由を工程間で確認しましょう。',
+    '生地日未登録の確認率は{rate}%です。正確な日付で次工程へつなげましょう。'
+  ],
+  today:[
+    '本日生地は{total}件です。未着手から仕上まで、滞留工程を先に確認しましょう。',
+    '本日生地の6工程進捗は{rate}%です。次の工程へ渡せる品物を明確にしましょう。',
+    '残り{remaining}件です。切断・曲げ・溶接・仕上の負荷をそろえて進めましょう。',
+    '本日生地の製品種類と材質を確認し、段取り替えを減らしましょう。',
+    '仕上完了後は塗装・組立へ確実に引き渡し、所在を明確にしましょう。',
+    '工程間の待ちを減らすため、完了予定と応援が必要な場所を共有しましょう。'
+  ],
+  tomorrow:[
+    '明日生地は{total}件です。製品種類と材質から必要な段取りを先に準備しましょう。',
+    '明日分の6工程進捗は{rate}%です。残り{remaining}件の着手順を確認しましょう。',
+    'CAD/CAMと切断の準備を早めに整え、後工程へ安定して流しましょう。',
+    '曲げ・溶接の負荷を確認し、明日の滞留を今日のうちに防ぎましょう。',
+    '明日生地の仕上予定を確認し、塗装への引き渡し時間を合わせましょう。'
+  ],
+  overdue:[
+    '今日から7日間の生地は{total}件です。工程別の山を見て、先に負荷をならしましょう。',
+    '7日間対象の6工程進捗は{rate}%です。残り{remaining}件の優先順位を共有しましょう。',
+    '製品種類ごとの集中を確認し、治具・材料・人員を早めに準備しましょう。',
+    '材質別のまとまりを活用し、段取り替えと待ち時間を減らしましょう。',
+    '塗装へ渡る予定数まで確認し、前工程だけで仕事を滞留させないようにしましょう。',
+    '完成・キャンセルを含む総数と生地件数が一致しているか確認しましょう。'
+  ],
+  specified:[
+    '指定日の生地は{total}件です。6工程の内訳と製品種類を確認しましょう。',
+    '指定日分の進捗は{rate}%です。残り{remaining}件の所在と担当を明確にしましょう。',
+    '材質と製品種類をまとめ、最も効率のよい加工順を決めましょう。',
+    '指定日の仕上予定から逆算し、溶接・曲げ・切断の順序を調整しましょう。',
+    '前工程から塗装への引き渡し数を確認し、全体の流れを止めないようにしましょう。'
+  ]
+};
+const weldingDepartmentActions=[
+  '【生産管理】製品種類・材質・数量を確認し、優先順位と担当を全工程で共有しましょう。',
+  '【CAD/CAM】加工データと図面変更を確認し、切断が迷わず着手できる状態にしましょう。',
+  '【切断】材質と板厚をまとめ、段取り替えを減らして曲げ工程へ確実に渡しましょう。',
+  '【曲げ】金型・曲げ方向・寸法を確認し、溶接が組みやすい品質で引き渡しましょう。',
+  '【溶接】部品の所在と組立順序をそろえ、仕上工程を待たせない流れをつくりましょう。',
+  '【仕上】外観・寸法・数量を確認し、塗装・組立へ予定どおり引き渡しましょう。'
+];
+const weldingTabSituations={
+  'today-ng':[
+    '生地日未登録は全{total}件、確認待ちは{remaining}件です。',
+    '未登録対象の確認進捗は{rate}%です。',
+    '生地日がない品物は工程負荷に正しく反映できません。',
+    '未登録品の現在工程と保管場所を明確にする時間です。',
+    '担当者が決まっていない案件を早めに拾い上げましょう。',
+    '図面待ち・材料待ち・判断待ちを区別して共有しましょう。',
+    '品名と規格を確認し、正しい製品種類へ分類しましょう。',
+    '未登録の残り{remaining}件を一件ずつ確実に処理しましょう。',
+    '生地日の登録精度が、明日以降の負荷判断を支えます。',
+    '全{total}件の情報を整え、見える工程管理へつなげましょう。'
+  ],
+  today:[
+    '本日生地は全{total}件、6工程の残りは{remaining}件です。',
+    '本日分の工程進捗は{rate}%です。',
+    '今日流す品物の製品種類と材質を先に確認しましょう。',
+    '本日のボトルネックを見つけ、必要な応援を具体化しましょう。',
+    '工程間の仕掛品を減らし、一件ずつ次へ流しましょう。',
+    '本日生地の所在・担当・完了予定を一致させましょう。',
+    '残り{remaining}件の中から、次工程を止める品物を優先しましょう。',
+    '品質確認を省略せず、手戻りのない流れをつくりましょう。',
+    '仕上完了数と塗装への引き渡し数を確認しましょう。',
+    '全{total}件を安全に流し、今日の計画を確実に達成しましょう。'
+  ],
+  tomorrow:[
+    '明日生地は全{total}件、準備が必要な残りは{remaining}件です。',
+    '明日分の6工程進捗は{rate}%です。',
+    '明日の製品種類と材質構成から段取りを先に決めましょう。',
+    '必要な図面・材料・治具がそろっているか確認しましょう。',
+    '明日の負荷が集中する工程へ早めに応援を配置しましょう。',
+    '今日のうちに着手できる品物を明確にしましょう。',
+    '残り{remaining}件の加工順と引き渡し時刻を共有しましょう。',
+    '段取り替えを減らし、安定した流れを準備しましょう。',
+    '明日の仕上予定から逆算して前工程を整えましょう。',
+    '全{total}件を余裕ある状態で明日へ引き継ぎましょう。'
+  ],
+  overdue:[
+    '今日から7日間の生地は全{total}件、6工程の残りは{remaining}件です。',
+    '7日間対象の工程進捗は{rate}%です。',
+    '一週間の製品種類別負荷を見て、集中する品種を確認しましょう。',
+    '材質別にまとめられる品物を見つけ、段取りを最適化しましょう。',
+    '工程別の山を比較し、先にボトルネックを解消しましょう。',
+    '仕掛品を前工程にためず、次へ流せる条件を整えましょう。',
+    '残り{remaining}件の優先順位を生地日順で共有しましょう。',
+    '塗装・組立へ渡る予定数まで含めて全体を判断しましょう。',
+    '完成・キャンセルを含む総数と生地件数を照合しましょう。',
+    '全{total}件の流れを見える化し、先回りした準備を行いましょう。'
+  ],
+  specified:[
+    '指定日の生地は全{total}件、6工程の残りは{remaining}件です。',
+    '指定日分の工程進捗は{rate}%です。',
+    '選択日の製品種類と材質構成を確認しましょう。',
+    '指定日から逆算し、各工程の完了時刻をそろえましょう。',
+    '負荷が集中する工程と必要な応援を明確にしましょう。',
+    '必要な図面・材料・治具を指定日前に準備しましょう。',
+    '残り{remaining}件の所在と担当者を確認しましょう。',
+    '次工程への引き渡し条件と時刻を共有しましょう。',
+    '仕上から塗装・組立までの流れを途切れさせないようにしましょう。',
+    '全{total}件を計画どおり流せるか、工程別に再確認しましょう。'
+  ]
+};
+Object.entries(weldingTabSituations).forEach(([key,situations])=>{
+  weldingMessageSets[key]=situations.flatMap(situation=>
+    weldingDepartmentActions.map(action=>`${situation} ${action}`)
+  ).slice(0,60);
+});
+Object.entries(weldingMessageSets).forEach(([key,templates])=>{
+  standardMessageGroups[key]=buildMessageGroup(
+    templates,
+    ['対象データはありません。次の生地予定と設備準備を確認しましょう。'],
+    ['対象工程はすべて完了しました。塗装・組立への引き渡しを確認しましょう。']
+  );
+});
+
 let standardMessageKey='';
 let standardMessageIndex=0;
 let standardMessageContext={total:0,remaining:0,rate:0};
@@ -7767,6 +7926,13 @@ function classifyProductCategory(row){
 function renderProductCategoryOverview(chartRows){
   const overview=$('standardOverview');
   if(!overview)return;
+  const allRows=currentChartRows;
+  const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
+  const sixProcessCount=allRows.filter(row=>managedProcesses.includes(String(row.status||'').trim())).length;
+  const downstreamCount=allRows.filter(row=>/塗装|組立/.test(String(row.status||''))).length;
+  const completedCount=allRows.filter(row=>String(row.status||'').trim()==='完成').length;
+  const cancelCount=allRows.filter(row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''))).length;
+  const accountedCount=sixProcessCount+downstreamCount+completedCount+cancelCount;
   const configs=[
     {name:'ボックス',color:'#338cff'},
     {name:'ダクト',color:'#35d6df'},
@@ -7782,8 +7948,16 @@ function renderProductCategoryOverview(chartRows){
   });
   overview.innerHTML=`
     <section class="product-category-overview">
-      <div class="product-category-title">製品種類</div>
-      <div class="product-category-sub">対象 ${fmt(chartRows.length)}件 ／ 品名・規格から自動分類</div>
+      <div class="product-category-heading">
+        <div class="product-category-title">製品種類</div>
+        <div class="product-category-flow">
+          <span class="product-category-flow-chip" style="--flow-color:#43A047">後工程（塗装・組立） <b>${fmt(downstreamCount)}件</b></span>
+          <span class="product-category-flow-chip" style="--flow-color:#41d2b2">完成 <b>${fmt(completedCount)}件</b></span>
+          <span class="product-category-flow-chip" style="--flow-color:#8997a3">キャンセル <b>${fmt(cancelCount)}件</b></span>
+        </div>
+      </div>
+      <div class="product-category-balance">6工程 ${fmt(sixProcessCount)}件 ＋ 後工程 ${fmt(downstreamCount)}件 ＋ 完成 ${fmt(completedCount)}件 ＋ キャンセル ${fmt(cancelCount)}件 ＝ <strong>生地 ${fmt(accountedCount)}件</strong></div>
+      <div class="product-category-sub">製品種類 対象 ${fmt(chartRows.length)}件 ／ 品名・規格から自動分類</div>
       <div class="product-category-grid">
         ${items.map(item=>`<button type="button" class="product-category-card${selectedProductCategory===item.name?' category-selected':''}" data-product-category="${item.name}" style="--category-color:${item.color}" aria-pressed="${selectedProductCategory===item.name}" aria-label="${item.name}の対象を表示">
           <div class="product-category-card-name">${item.name}</div>
