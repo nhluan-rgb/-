@@ -534,6 +534,41 @@
 .boss-status-card .boss-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#ff2f35,#ff7a17,#ffc400);box-shadow:inset 0 2px 3px #fff8;transition:width .8s ease}
 .boss-status-card .boss-goal{font-size:23px;color:#fff;margin-top:16px;font-weight:1000;text-shadow:0 2px 3px #000}
 .boss-status-message{margin-top:19px;border-radius:16px;padding:14px 24px;background:#ffe477;border:3px solid #fff3b0;color:#633b00;font-size:23px;font-weight:1000;box-shadow:0 5px 0 #a96b00;text-shadow:0 1px 0 #fff8}
+.home-urgent-alert{
+  display:none;
+  margin-top:13px;
+  padding:12px 14px;
+  border:3px solid #fff;
+  border-radius:12px;
+  background:linear-gradient(180deg,#ff4b39,#c90022);
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+  text-align:center;
+  box-shadow:0 4px 0 #760015,0 0 18px #ff334f;
+  animation:urgentPulse .8s ease-in-out infinite alternate
+}
+.home-urgent-alert.show{display:block}
+@keyframes urgentPulse{to{filter:brightness(1.25);transform:scale(1.015)}}
+.home-goal-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin:11px 0 2px
+}
+.home-goal-metric{
+  padding:7px 5px;
+  border:1px solid #61dfff;
+  border-radius:8px;
+  background:#062c42;
+  color:#c9f7ff;
+  text-align:center;
+  font-size:12px;
+  font-weight:900
+}
+.home-goal-metric b{display:block;margin-top:2px;color:#fff;font-size:19px;text-shadow:0 0 8px #42dfff}
+.home-goal-metric.complete b{color:#55eca9;text-shadow:0 0 8px #28d78c}
+.home-goal-metric.deadline b{color:#fff17a;text-shadow:0 0 8px #ffca28}
 .boss-status-card[data-stage="100"],.boss-status-card[data-stage="80"]{background:linear-gradient(145deg,rgba(67,13,18,.98),rgba(126,28,23,.97));border-color:#ffb23f;box-shadow:0 8px 0 #64130f,0 14px 28px #250504aa}
 .boss-status-card[data-stage="60"]{background:linear-gradient(145deg,rgba(60,48,24,.98),rgba(112,86,35,.97));border-color:#ffe07a;box-shadow:0 8px 0 #5f4517,0 14px 28px #2a1e08aa}
 .boss-status-card[data-stage="40"]{background:linear-gradient(145deg,rgba(24,63,42,.98),rgba(48,108,66,.97));border-color:#b8ee8a;box-shadow:0 8px 0 #1d5d35,0 14px 28px #0a2817aa}
@@ -2574,6 +2609,25 @@ section.panel.work{
   gap:10px;
   width:100%;
 }
+.unregistered-product-board{min-width:0;width:100%}
+.unregistered-product-title{
+  margin:0 0 10px;
+  padding:9px 15px;
+  border:2px solid #54e8ff;
+  border-radius:9px;
+  background:#06324a;
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+  text-align:left;
+  text-shadow:0 0 10px #43dcff
+}
+.ship-card[data-ship="today-ng"],
+.ship-card[data-ship="today-ng"].ng{
+  background:linear-gradient(145deg,#07557b,#07334e)!important;
+  border-color:#31dfff!important;
+  color:#fff!important
+}
 .delivery-process-card{
   --delivery-color:#2684FF;
   --delivery-soft:#e8f3ff;
@@ -3205,6 +3259,24 @@ section.panel.work{
   font-weight:850;
 }
 .j-search-result-item b{display:block;font-size:14px;color:#00679a}
+.ng-game .bonus-campaign-panel{
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  padding:24px!important
+}
+.ng-game .bonus-campaign-panel .j-number-search-host{width:100%;max-width:440px}
+.ng-game .bonus-campaign-panel .j-number-search{
+  width:100%;
+  padding:20px;
+  border-width:3px;
+  box-shadow:0 7px 0 #042033,inset 0 0 28px #37dfff33,0 0 22px #25dfff66
+}
+.ng-game .bonus-campaign-panel .j-search-title{font-size:25px}
+.ng-game .bonus-campaign-panel .j-search-display{min-height:58px;font-size:31px}
+.ng-game .bonus-campaign-panel .j-search-key{min-height:52px;font-size:25px}
+.ng-game .bonus-campaign-panel .j-search-key.command{font-size:18px}
+.ng-game .bonus-campaign-panel .j-search-result{max-height:190px}
 .standard-game .standard-visual-overlay{
   max-width:50%!important;
   padding:20px 23px!important;
@@ -5747,6 +5819,26 @@ color:#d7e6ef!important;
   text-shadow:0 2px 2px #000;
   box-shadow:inset 0 2px 0 rgba(255,255,255,.45),0 3px 0 color-mix(in srgb,var(--popup-process-color) 55%,#18242b),0 0 12px color-mix(in srgb,var(--popup-process-color) 38%,transparent)
 }
+.unregistered-confirm-label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:92px;
+  padding:7px 9px;
+  border:2px solid #58e6a5;
+  border-radius:8px;
+  background:#073c35;
+  color:#dffff0;
+  font-weight:1000;
+  cursor:pointer
+}
+.unregistered-confirm-label input{
+  width:21px;
+  height:21px;
+  accent-color:#22c983;
+  cursor:pointer
+}
 /* 製品種類を材質枠と同じ左右幅へ拡張 */
 .standard-game .standard-visual-overlay,
 .standard-game .standard-visual:has(.visual-tabs) .standard-visual-overlay{
@@ -5765,7 +5857,7 @@ color:#d7e6ef!important;
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
   <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
-    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 生地日未登録</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日生地で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 生地日</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
+    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 生地日</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全生地日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全生地日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
 
@@ -5859,21 +5951,24 @@ color:#d7e6ef!important;
         <div id="ngMissionTickerSlot" class="ng-mission-ticker-slot"></div>
         <div id="monthlyAchievementCalendar" class="monthly-achievement-calendar"></div>
         <div id="ngUtilityColumn" class="ng-utility-column">
-          <section id="bonusCampaignPanel" class="bonus-campaign-panel" aria-label="大入り3万円進捗"></section>
+          <section id="bonusCampaignPanel" class="bonus-campaign-panel" aria-label="J番号検索">
+            <div class="j-number-search-host"></div>
+          </section>
         </div>
         <div id="ngProcessBacklog" class="process-backlog-panel ng-process-backlog" hidden></div>
       </section>
 
       <section class="boss-status-card" id="bossStatusCard">
-        <div class="boss-status-label">進捗 STATUS</div>
-        <div class="boss-name">生地日未登録</div>
+        <div class="boss-status-label">本日生地</div>
+        <div class="boss-name">仕上完了まで</div>
         <div class="boss-hp-value">残り <span id="bossCount">0</span>件</div>
         <div class="boss-points">（<span id="bossPoints">0</span>点）</div>
+        <div id="homeGoalSummary" class="home-goal-summary"></div>
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
-        <div class="boss-goal">完了までの進捗 <span id="bossHpText">100%</span></div>
+        <div class="boss-goal">本日生地 残り率 <span id="bossHpText">100%</span></div>
+        <div id="homeUrgentAlert" class="home-urgent-alert"></div>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
         <div id="bossMissionSlot" class="boss-mission-slot"></div>
-        <div class="j-number-search-host"></div>
       </section>
     </div>
 
@@ -5966,7 +6061,7 @@ const sample=[
 ].map((r,i)=>({id:r[0],client:r[1],part:r[2],name:r[3],standard:['ｱｰｽ','穴加工','ｺﾞﾑﾊﾟｯｷﾝ付','さび止め','L65×65×6t'][i%5],qty:r[4],due:r[5],status:r[6],owner:r[7],ship:r[8],shipDate:['2026-07-20','2026-07-21','2026-07-22','2026-07-20','2026-07-21'][i%5]}));
 let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
 let standardBreakdownFilter=null;
-let selectedProcess='',selectedDelivery='',selectedMaterial='',selectedProductCategory='',currentChartRows=[],currentChartLabel='生産進捗';
+let selectedProcess='',selectedDelivery='',selectedMaterial='',selectedProductCategory='',selectedProductCategoryScope='current',currentChartRows=[],currentChartLabel='生産進捗';
 let csvLoading=false;
 let jNumberSearchDigits='';
 
@@ -6025,7 +6120,7 @@ function openJNumberPopup(target){
       <div class="j-detail-cell"><small>製造期限</small><b>${escapeJSearch(target.due||'—')}</b></div>
       <div class="j-detail-cell"><small>出荷日</small><b>${escapeJSearch(target.shipDate||'—')}</b></div>
       <div class="j-detail-cell"><small>担当者</small><b>${escapeJSearch(target.owner||'未設定')}</b></div>
-      <div class="j-detail-cell"><small>配送便</small><b>${escapeJSearch(target.ship||'—')}</b></div>
+      <div class="j-detail-cell"><small>製品種類</small><b>${escapeJSearch(classifyProductCategory(target))}</b></div>
     </section>`;
   selectedProcess='';
   selectedDelivery='';
@@ -6108,6 +6203,28 @@ function isOverdueItem(r){
   const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   return Boolean(r.shipDate)&&r.shipDate>=today&&r.shipDate<=seventhDay&&managedProcesses.includes(status);
 }
+const CONFIRMED_UNREGISTERED_KEY='weldingConfirmedUnregistered:v1';
+function readConfirmedUnregistered(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(CONFIRMED_UNREGISTERED_KEY)||'[]');
+    return new Set(Array.isArray(saved)?saved.map(String):[]);
+  }catch(_){
+    return new Set();
+  }
+}
+let confirmedUnregisteredIds=readConfirmedUnregistered();
+function confirmUnregistered(id){
+  const key=String(id||'').trim();
+  if(!key)return;
+  confirmedUnregisteredIds.add(key);
+  localStorage.setItem(CONFIRMED_UNREGISTERED_KEY,JSON.stringify([...confirmedUnregisteredIds]));
+}
+function isActiveUnregistered(row){
+  if(row.shipDate)return false;
+  if(confirmedUnregisteredIds.has(String(row.id||'').trim()))return false;
+  const today=getShipDates().today;
+  return !row.dispatchDate||row.dispatchDate>=today;
+}
 function updateShipLabels(){
   const dates=getShipDates();
   const cards=document.querySelectorAll('.ship-card .day');
@@ -6116,7 +6233,7 @@ function updateShipLabels(){
       const parts=String(value||'').split('-');
       return parts.length===3?`${Number(parts[1])}/${Number(parts[2])}`:value;
     };
-    cards[0].textContent='⚠ 生地日未登録';
+    cards[0].textContent='ホーム';
     cards[1].textContent=`本日生地　${shortDate(dates.today)}`;
     cards[2].textContent=`明日生地　${shortDate(dates.tomorrow)}`;
     cards[3].textContent='⚠ 今日から7日間生地';
@@ -6173,8 +6290,10 @@ function normalize(o){
     standard:String(o['規格']||'').trim(),
     color:String(o['色']||'').trim(),
     qty,
+    instructionDate:excelDate(o['製造指示日']),
     due:excelDate(o['製造期限']),
     shipDate:excelDate(o['生地日']),
+    dispatchDate:excelDate(o['出荷日']),
     status:String(o['進捗']||'').trim(),
     owner:String(o['担当者']||'').trim(),
     ship:String(o['配送便']||'').trim()
@@ -6335,44 +6454,7 @@ function remainingBonusBusinessDays(now,end){
 function updateBonusCampaignPanel(){
   const box=$('bonusCampaignPanel');
   if(!box)return;
-  const now=new Date();
-  const cycle=bonusCycleInfo(now);
-  const progress=bonusProgressFor(cycle.end);
-  const rows=[
-    {key:'east',label:'東半球',color:'#43b8ff'},
-    {key:'west',label:'西半球',color:'#ff9f32'},
-    {key:'national',label:'全世界',color:'#56e493'}
-  ];
-  const progressHtml=rows.map(item=>{
-    const rate=Math.max(0,Number(progress[item.key])||0);
-    return `<div class="bonus-progress-row" style="--bonus:${item.color};--rate:${Math.min(rate,100)}%">
-      <div class="bonus-progress-head"><span>${item.label}</span><b>${rate.toFixed(1)}%</b></div>
-      <div class="bonus-progress-track"><div class="bonus-progress-fill"></div></div>
-    </div>`;
-  }).join('');
-
-  const lastClosedEnd=now.getDate()>=21
-    ? new Date(now.getFullYear(),now.getMonth(),20)
-    : new Date(now.getFullYear(),now.getMonth()-1,20);
-  const lastKey=localDateKey(lastClosedEnd);
-  const lastProgress=bonusProgressFor(lastClosedEnd);
-  const hasLastResult=Boolean(
-    (bonusRemoteProgress&&bonusRemoteProgress.closingDate===lastKey)||
-    BONUS_PROGRESS_DEFAULTS[lastKey]||
-    localStorage.getItem(`bonusProgress:${lastKey}`)
-  );
-  const payDate=nextBonusBusinessDay(lastClosedEnd);
-  const reward=bonusReward(lastProgress);
-  const resultHtml=hasLastResult&&now>=payDate
-    ? `<div class="bonus-result"><small>${shortJapaneseDate(payDate)} 支給額</small><strong>¥${reward.toLocaleString('ja-JP')}</strong></div>`
-    : `<div class="bonus-result waiting"><small>${shortJapaneseDate(cycle.end)}の締日まで</small><strong>残り実働 ${remainingBonusBusinessDays(now,cycle.end)}日</strong></div>`;
-
-  box.innerHTML=`
-    <div class="bonus-title">🏆 大入り3万円 進捗</div>
-    <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    <div class="bonus-intro"><strong>西半球100％＝2万円<br>全世界も100％＝3万円！</strong></div>
-    <div class="bonus-progress-list">${progressHtml}</div>
-    ${resultHtml}`;
+  renderJNumberSearch();
 }
 function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const box=$('monthlyAchievementCalendar');
@@ -7399,17 +7481,27 @@ function getDeliveryItems(chartRows){
 }
 
 function renderDeliveryCards(chartRows){
-  const items=getDeliveryItems(chartRows);
-  if(!items.length)return '<div class="delivery-card-empty">配送便データはありません</div>';
-  return `<div class="delivery-card-grid" style="--delivery-count:${items.length}">${items.map((item,index)=>{
-    const color=getDeliveryThemeColor(item.name);
-    return `<button type="button" class="delivery-process-card" data-delivery="${escapeHtml(item.name)}" style="--delivery-color:${color};--delivery-soft:color-mix(in srgb,${color} 15%,#fff)" aria-label="${escapeHtml(item.name)}の製造指示を表示">
+  const categoryConfigs=[
+    {name:'ボックス',color:'#338cff'},{name:'ダクト',color:'#35d6df'},
+    {name:'架台',color:'#ff9b3d'},{name:'貫通枠',color:'#9b72ff'},
+    {name:'カバー',color:'#3ee59a'},{name:'切板・金物',color:'#ffd43b'},
+    {name:'その他・要確認',color:'#ff6075'}
+  ];
+  const unregisteredRows=rows.filter(isActiveUnregistered);
+  const items=categoryConfigs.map(item=>{
+    const target=unregisteredRows.filter(row=>classifyProductCategory(row)===item.name);
+    return{...item,count:target.length,qty:target.reduce((sum,row)=>sum+(Number(row.qty)||0),0)};
+  });
+  if(!unregisteredRows.length)return '<div class="delivery-card-empty">生地日未登録データはありません</div>';
+  return `<section class="unregistered-product-board"><div class="unregistered-product-title">生地日未登録・製品種類　全${fmt(unregisteredRows.length)}件</div><div class="delivery-card-grid" style="--delivery-count:${items.length}">${items.map((item,index)=>{
+    const color=item.color;
+    return `<button type="button" class="delivery-process-card" data-product-category="${escapeHtml(item.name)}" data-product-category-scope="unregistered" style="--delivery-color:${color};--delivery-soft:color-mix(in srgb,${color} 15%,#fff)" aria-label="生地日未登録・${escapeHtml(item.name)}を表示">
       <div class="delivery-process-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
       <div class="delivery-process-count">${fmt(item.count)}件</div>
-      <div class="delivery-process-symbol" aria-label="集荷時間">${item.time==='🚚'?'🚚':`集荷 ${item.time}`}</div>
+      <div class="delivery-process-symbol">生地日<br>未登録</div>
       <div class="delivery-process-points">${fmt(item.qty)}点</div>
     </button>`;
-  }).join('')}</div>`;
+  }).join('')}</div></section>`;
 }
 
 function renderNgProcessCards(chartRows){
@@ -7909,15 +8001,23 @@ function productPopupProcessColor(status){
     '切断':'#F57C00',
     '曲げ':'#EC6CB9',
     '溶接':'#E53935',
-    '仕上':'#B0BEC5'
+    '仕上':'#B0BEC5',
+    '塗装':'#43A047',
+    '組立':'#7E57C2',
+    '完成':'#20C997',
+    'ｷｬﾝｾﾙ':'#78909C',
+    'キャンセル':'#78909C'
   }[String(status||'')]||'#607D8B';
 }
 
 function buildProductCategoryBacklogMarkup(categoryName){
   const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
-  const targetRows=currentChartRows
+  const categorySourceRows=selectedProductCategoryScope==='unregistered'
+    ? rows.filter(isActiveUnregistered)
+    : currentChartRows;
+  const targetRows=categorySourceRows
     .filter(row=>classifyProductCategory(row)===categoryName)
-    .filter(row=>managedProcesses.includes(String(row.status||'')))
+    .filter(row=>selectedProductCategoryScope==='unregistered'||managedProcesses.includes(String(row.status||'')))
     .sort((a,b)=>String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||String(a.id||'').localeCompare(String(b.id||'')));
   const totalQty=targetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   return `
@@ -7928,15 +8028,18 @@ function buildProductCategoryBacklogMarkup(categoryName){
     <section class="process-popup-section">
       <div class="process-popup-section-head">製造指示一覧</div>
       <div class="process-backlog-table-wrap"><table class="process-backlog-table">
-        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th>生地日</th><th>担当者</th></tr></thead>
+        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th>${selectedProductCategoryScope==='unregistered'?'<th>確認済</th>':''}</tr></thead>
         <tbody>${targetRows.map(row=>`<tr>
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
           <td class="backlog-product"><b>${escapeHtml(row.part||'—')} ／ ${escapeHtml(row.name||'—')}</b><small>${escapeHtml(row.standard||'規格なし')}</small></td>
           <td class="backlog-qty">${fmt(row.qty)}点</td>
           <td><span class="popup-process-chip" style="--popup-process-color:${productPopupProcessColor(row.status)}">${escapeHtml(row.status||'未設定')}</span></td>
           <td class="backlog-date">${escapeHtml(row.shipDate||'未登録')}</td>
+          <td class="backlog-date">${escapeHtml(row.due||'未登録')}</td>
+          <td class="backlog-date">${escapeHtml(row.dispatchDate||'未登録')}</td>
           <td>${escapeHtml(row.owner||'未設定')}</td>
-        </tr>`).join('')||'<tr><td colspan="6" class="process-backlog-empty">対象データなし</td></tr>'}</tbody>
+          ${selectedProductCategoryScope==='unregistered'?`<td><label class="unregistered-confirm-label"><input type="checkbox" data-confirm-unregistered="${escapeHtml(row.id)}">確認済</label></td>`:''}
+        </tr>`).join('')||`<tr><td colspan="${selectedProductCategoryScope==='unregistered'?9:8}" class="process-backlog-empty">対象データなし</td></tr>`}</tbody>
       </table></div>
     </section>`;
 }
@@ -7996,8 +8099,9 @@ function renderProductCategoryOverview(chartRows){
       </div>
     </section>`;
 }
-function showProductCategoryBacklog(categoryName){
+function showProductCategoryBacklog(categoryName,scope='current'){
   selectedProductCategory=selectedProductCategory===categoryName?'':categoryName;
+  selectedProductCategoryScope=scope;
   selectedProcess='';
   selectedDelivery='';
   selectedMaterial='';
@@ -8026,7 +8130,7 @@ function renderStandardGame(chartRows,chartCounts,chartLabels,chartTotal,chartDo
   // Chỉ 未完成 được quyền quyết định bg_100 -> bg_0.
   const todayDates=getShipDates();
   const todayNgRows=rows.filter(row=>
-    !row.shipDate &&
+    isActiveUnregistered(row) &&
     row.status!=='完成' &&
     !row.status.includes('ｷｬﾝｾﾙ') &&
     !row.status.includes('キャンセル')
@@ -8290,6 +8394,11 @@ if(mainGrid){
   mainGrid.classList.toggle('ng-layout',shipFilter==='today-ng');
   mainGrid.classList.toggle('standard-layout',shipFilter!=='today-ng');
 }let work=['CAD/CAM','切断','曲げ','溶接','仕上','未着手'];let max=Math.max(...work.map(x=>chartCounts[x]||0),1);$('bars').innerHTML=work.map((x,i)=>`<div class="bar-row"><span>${x}</span><div class="track"><div class="fill" style="width:${(chartCounts[x]||0)/max*100}%;background:${['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'][i]}"></div></div><b>${fmt(chartCounts[x]||0)}</b></div>`).join('');let shipStat=k=>{let x=rows.filter(r=>r.shipDate===dates[k]);return`${fmt(x.length)}件（${fmt(x.reduce((a,r)=>a+r.qty,0))}点）`},todayDueRows=rows.filter(r=>r.shipDate===dates.today),ng=rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル'));$('shipToday').textContent=`${fmt(todayDueRows.length)}件（${fmt(todayDueRows.reduce((a,r)=>a+r.qty,0))}点）`;$('shipTomorrow').textContent=shipStat('tomorrow');let overdueRows=rows.filter(isOverdueItem);$('shipOverdue').textContent=`${fmt(overdueRows.length)}件（${fmt(overdueRows.reduce((a,r)=>a+r.qty,0))}点）`;let sx=rows.filter(r=>r.shipDate===specifiedShipDate);$('shipSpecified').textContent=`${fmt(sx.length)}件（${fmt(sx.reduce((a,r)=>a+r.qty,0))}点）`;
+  ng=rows.filter(isActiveUnregistered);
+  if(shipFilter==='today-ng'){
+    currentChartRows=ng;
+    currentChartLabel='ホーム・生地日未登録';
+  }
   $('shipNg').textContent=`${fmt(ng.length)}件（${fmt(ng.reduce((a,r)=>a+r.qty,0))}点）`;
   formatShipTabValues();
 
@@ -8312,19 +8421,34 @@ if(shipFilter==='today-ng'){
   const todaySeichibiRemaining=rows.filter(row=>
     row.shipDate===dates.today&&prepaintProcesses.includes(String(row.status||'').trim())
   );
+  const todaySeichibiGoalRows=rows.filter(row=>
+    row.shipDate===dates.today&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''))
+  );
+  const todayUrgentRows=rows.filter(row=>
+    row.shipDate===dates.today&&row.instructionDate===dates.today
+  );
   if(!fullStats)recordTodaySeichibiCompletion(todaySeichibiRemaining.length);
-  $('bossCount').textContent=fmt(ng.length);
-  $('bossPoints').textContent=fmt(ngPoints);
+  const homeRemainingPoints=todaySeichibiRemaining.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  $('bossCount').textContent=fmt(todaySeichibiRemaining.length);
+  $('bossPoints').textContent=fmt(homeRemainingPoints);
+  const urgentAlert=$('homeUrgentAlert');
+  if(urgentAlert){
+    urgentAlert.classList.toggle('show',todayUrgentRows.length>0);
+    urgentAlert.textContent=todayUrgentRows.length
+      ? `⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件（本日製造指示 → 本日生地）`
+      : '';
+  }
   updateMonthlyAchievementCalendar(todaySeichibiRemaining.length,!fullStats);
   updateBonusCampaignPanel();
 
-  const startBossKey=`todayNgStart:${dates.today}`;
-  const savedBossStart=Number(localStorage.getItem(startBossKey)||0);
-  if(!savedBossStart || ng.length>savedBossStart){
-    localStorage.setItem(startBossKey,String(Math.max(ng.length,1)));
-  }
-  const startBoss=Math.max(Number(localStorage.getItem(startBossKey)||ng.length),ng.length,1);
-  const bossHpPercent=ng.length===0 ? 0 : Math.max(0,Math.min(100,ng.length/startBoss*100));
+  const startBoss=Math.max(todaySeichibiGoalRows.length,todaySeichibiRemaining.length,1);
+  const bossHpPercent=todaySeichibiRemaining.length===0 ? 0 : Math.max(0,Math.min(100,todaySeichibiRemaining.length/startBoss*100));
+  const homeCompletedCount=Math.max(0,todaySeichibiGoalRows.length-todaySeichibiRemaining.length);
+  const homeGoalSummary=$('homeGoalSummary');
+  if(homeGoalSummary)homeGoalSummary.innerHTML=`
+    <div class="home-goal-metric">開始件数<b>${fmt(todaySeichibiGoalRows.length)}件</b></div>
+    <div class="home-goal-metric complete">仕上完了<b>${fmt(homeCompletedCount)}件</b></div>
+    <div class="home-goal-metric deadline">締切<b>15:00</b></div>`;
   $('bossFill').style.width=`${bossHpPercent}%`;
   if($('bossHpText')) $('bossHpText').textContent=`${bossHpPercent.toFixed(0)}%`;
 
@@ -8347,23 +8471,23 @@ if(shipFilter==='today-ng'){
   const savedCompletionAt=savedCompletionRaw?new Date(savedCompletionRaw):null;
   const forcedAchievement=forcedTodayAchievement();
   const isLateCompletion=forcedAchievement==='miss' || (forcedAchievement!=='done'
-    && ng.length===0
+    && todaySeichibiRemaining.length===0
     && savedCompletionAt
     && !Number.isNaN(savedCompletionAt.getTime())
     && savedCompletionAt.getHours()>=15);
   const completionDisplay=isLateCompletion?'本日は15時以降の完了となりました。明日は少し早めの段取りを意識しましょう。':'本日の作業が完了しました！';
-  if($('evolutionMessage')) $('evolutionMessage').innerHTML=ng.length===0?completionDisplay:`完了まであと${fmt(ng.length)}件です。`;
-  if($('bossStatusMessage')) $('bossStatusMessage').textContent=ng.length===0?completionDisplay:`完了まであと${fmt(ng.length)}件！`;
+  if($('evolutionMessage')) $('evolutionMessage').innerHTML=todaySeichibiRemaining.length===0?completionDisplay:`本日生地は仕上完了まであと${fmt(todaySeichibiRemaining.length)}件です。`;
+  if($('bossStatusMessage')) $('bossStatusMessage').textContent=todaySeichibiRemaining.length===0?completionDisplay:`本日生地 残り${fmt(todaySeichibiRemaining.length)}件！`;
   const bossStatusCard=$('bossStatusCard');
   if(bossStatusCard){
     bossStatusCard.dataset.stage=evolution.key||'100';
-    bossStatusCard.classList.toggle('boss-defeated',ng.length===0);
+    bossStatusCard.classList.toggle('boss-defeated',todaySeichibiRemaining.length===0);
   }
 
   const runnerTrack=$('runnerTrack');
   if(runnerTrack){
     runnerTrack.innerHTML=`<div class="ng-operations-stack">
-      ${renderNgProcessCards(ng)}
+      ${renderNgProcessCards(todaySeichibiRemaining)}
       <div class="delivery-bottom-layout">
         ${renderDeliveryCards(ng)}
         <div class="evolution-support-card ${ng.length===0?'complete':''}">
@@ -8378,7 +8502,7 @@ if(shipFilter==='today-ng'){
 
   const gameBanner=$('gameBanner');
   const gameBannerMessage=$('gameBannerMessage');
-  let ngRate=startBoss>0?Math.max(0,Math.min(100,(startBoss-ng.length)/startBoss*100)):100;
+  let ngRate=startBoss>0?Math.max(0,Math.min(100,(startBoss-todaySeichibiRemaining.length)/startBoss*100)):100;
   let completedAfter15=false;
   if(gameBanner){
     gameBanner.classList.remove('success','late');
@@ -8394,7 +8518,7 @@ if(shipFilter==='today-ng'){
   // completeMessage の条件(rate>=100)に入らないよう、表示用だけ99.9%にする。
   if(completedAfter15)ngRate=99.9;
   if(window.BossMotivation) window.BossMotivation.stop();
-  startNgMessageRotation({total:startBoss,remaining:ng.length,rate:ngRate,lateCompletion:completedAfter15});
+  startNgMessageRotation({total:startBoss,remaining:todaySeichibiRemaining.length,rate:ngRate,lateCompletion:completedAfter15});
 
   if(goalResult){
     goalResult.className='goal-result';
@@ -8510,14 +8634,14 @@ function renderTable(){
   let list=rows.filter(r=>{
     let due=new Date(r.due+'T00:00:00');
     let late=due<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
-    let isNg=!r.shipDate&&isUnfinished(r);
+    let isNg=isActiveUnregistered(r);
     let shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===shipDates.today:r.shipDate===shipDates[shipFilter]));
     return shipOk&&matchesBreakdown(r)&&(!q||[r.id,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon));
   });
   $('resultCount').textContent=`表示 ${fmt(list.length)}件`;
   $('tbody').innerHTML=list.slice(0,500).map(r=>{
     let late=new Date(r.due+'T00:00:00')<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
-    let todayNg=!r.shipDate&&isUnfinished(r);
+    let todayNg=isActiveUnregistered(r);
     return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`;
   }).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>';
 }
@@ -8586,6 +8710,12 @@ function restoreUiState(state){
   if(wrap) wrap.scrollTop=state.scrollTop||0;
 }
 ['search','statusFilter','ownerFilter','deadlineFilter'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',renderTable));
+document.addEventListener('change',event=>{
+  const checkbox=event.target.closest('[data-confirm-unregistered]');
+  if(!checkbox||!checkbox.checked)return;
+  confirmUnregistered(checkbox.dataset.confirmUnregistered||'');
+  render();
+});
 document.addEventListener('click',event=>{
   const breakdownButton=event.target.closest('[data-standard-bucket]');
   if(breakdownButton){
@@ -8598,7 +8728,7 @@ document.addEventListener('click',event=>{
   if(categoryCard){
     event.preventDefault();
     event.stopPropagation();
-    showProductCategoryBacklog(categoryCard.dataset.productCategory||'');
+    showProductCategoryBacklog(categoryCard.dataset.productCategory||'',categoryCard.dataset.productCategoryScope||'current');
     return;
   }
   if(event.target.closest('[data-product-category-close]')){
@@ -8648,7 +8778,7 @@ document.addEventListener('keydown',event=>{
   if(!target)return;
   event.preventDefault();
   if(target.matches('[data-product-category]')){
-    showProductCategoryBacklog(target.dataset.productCategory||'');
+    showProductCategoryBacklog(target.dataset.productCategory||'',target.dataset.productCategoryScope||'current');
     return;
   }else if(target.matches('[data-overview]')){
     selectedProcess='';
@@ -8875,9 +9005,7 @@ document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>{
   render();
   loadSharedCsv(true);
 })();
-loadBonusProgress();
 setInterval(()=>{ if(!csvLoading) loadSharedCsv(false); },30000);
-setInterval(loadBonusProgress,30000);
 // setting.json を10秒ごとに再確認し、変更時は画面を自動更新します。
 setInterval(refreshTodayResultSetting,10000);
 
