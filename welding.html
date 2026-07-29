@@ -5896,6 +5896,10 @@ color:#d7e6ef!important;
 // 日付が変わった場合は自動的に auto へ戻ります。
 // auto: 自動判定 / 達成: 強制達成 / 未達成: 強制未達成
 let TODAY_RESULT_SETTING='auto';
+let COMPANY_HOLIDAYS=new Set([
+  '2026-08-10','2026-08-11','2026-08-12',
+  '2026-08-13','2026-08-14','2026-08-15'
+]);
 function getLocalDateKey(date=new Date()){
   const y=date.getFullYear();
   const m=String(date.getMonth()+1).padStart(2,'0');
@@ -5904,6 +5908,7 @@ function getLocalDateKey(date=new Date()){
 }
 async function loadTodayResultSetting(){
   const previousSetting=TODAY_RESULT_SETTING;
+  const previousHolidays=[...COMPANY_HOLIDAYS].sort().join(',');
   try{
     const response=await fetch('setting.json?ts='+Date.now(),{cache:'no-store'});
     if(!response.ok)throw new Error('HTTP '+response.status);
@@ -5911,6 +5916,11 @@ async function loadTodayResultSetting(){
     const configuredDate=String(config?.date||'').trim();
     const today=getLocalDateKey();
     const value=String(config?.todayResult||'auto').trim();
+    COMPANY_HOLIDAYS=new Set(
+      (Array.isArray(config?.companyHolidays)?config.companyHolidays:[])
+        .map(value=>String(value||'').trim())
+        .filter(value=>/^\d{4}-\d{2}-\d{2}$/.test(value))
+    );
 
     // 強制設定は setting.json の日付が今日と一致するときだけ有効。
     // 翌日以降はファイルを変更しなくても自動判定に戻る。
@@ -5923,7 +5933,7 @@ async function loadTodayResultSetting(){
     console.warn('setting.json を読み込めないため auto で動作します。',error);
     TODAY_RESULT_SETTING='auto';
   }
-  return previousSetting!==TODAY_RESULT_SETTING;
+  return previousSetting!==TODAY_RESULT_SETTING||previousHolidays!==[...COMPANY_HOLIDAYS].sort().join(',');
 }
 async function refreshTodayResultSetting(){
   const changed=await loadTodayResultSetting();
@@ -6175,6 +6185,23 @@ function statusClass(s){if(s==='完成')return's-done';if(s==='未着手')return
 function getTodayCompletionKey(){
   return `todayNgCompletedAt:${getShipDates().today}`;
 }
+function getTodaySeichibiCompletionKey(){
+  return `weldingSeichibiFinishedAt:${getShipDates().today}`;
+}
+function recordTodaySeichibiCompletion(remainingCount){
+  const key=getTodaySeichibiCompletionKey();
+  if(remainingCount>0){
+    localStorage.removeItem(key);
+    return null;
+  }
+  let saved=localStorage.getItem(key);
+  if(!saved){
+    saved=new Date().toISOString();
+    localStorage.setItem(key,saved);
+  }
+  const completedAt=new Date(saved);
+  return Number.isNaN(completedAt.getTime())?new Date():completedAt;
+}
 function getOrRecordTodayCompletion(ngCount){
   const key=getTodayCompletionKey();
   if(ngCount>0){
@@ -6191,7 +6218,7 @@ function getOrRecordTodayCompletion(ngCount){
 }
 
 function achievementMonthKey(month){
-  return `todayNgAchievement:${month}`;
+  return `weldingSeichibiAchievement:${month}`;
 }
 function readAchievementMonth(month){
   try{return JSON.parse(localStorage.getItem(achievementMonthKey(month))||'{}')}catch(_){return{}}
@@ -6359,7 +6386,8 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const cycleEnd=new Date(year,monthNumber,20);
   const holidayKeys=new Set([
     ...japaneseHolidayKeys(cycleStart.getFullYear()),
-    ...japaneseHolidayKeys(cycleEnd.getFullYear())
+    ...japaneseHolidayKeys(cycleEnd.getFullYear()),
+    ...COMPANY_HOLIDAYS
   ]);
   const todayDate=new Date(`${today}T00:00:00`);
   const todayIsClosed=todayDate.getDay()===0||todayDate.getDay()===6||holidayKeys.has(today);
@@ -6400,7 +6428,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
       // 15時判定：
       // 15時より前に全件完了した記録がある場合だけ「達成」。
       // 15時以降に完了しても、その日の判定は必ず「未達成」のまま固定する。
-      const completedRaw=localStorage.getItem(getTodayCompletionKey());
+      const completedRaw=localStorage.getItem(getTodaySeichibiCompletionKey());
       const completedAt=completedRaw?new Date(completedRaw):null;
       const completedBefore15=completedAt
         && !Number.isNaN(completedAt.getTime())
@@ -6436,7 +6464,8 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     const result=monthDataCache.get(dataMonth)[dateKey];
     const weekday=cellDate.getDay();
     const isNationalHoliday=holidayKeys.has(dateKey);
-    const isClosed=weekday===0||weekday===6||isNationalHoliday;
+    const isCompanyHoliday=COMPANY_HOLIDAYS.has(dateKey);
+    const isClosed=weekday===0||weekday===6||isNationalHoliday||isCompanyHoliday;
     const isToday=dateKey===today;
     const isFuture=dateKey>today;
     const legacyMissDates=new Set([
@@ -6448,7 +6477,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
       // カレンダー導入前の過去分だけを固定で未達成表示する。
       stamp='<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">15:00</div>';
     }else if(isClosed){
-      const closedLabel=isNationalHoliday?'祝日':weekday===6?'土曜日':'日曜日';
+      const closedLabel=isCompanyHoliday?'会社休日':isNationalHoliday?'祝日':weekday===6?'土曜日':'日曜日';
       stamp=`<div class="achievement-stamp holiday">休日</div><div class="achievement-day-note">${closedLabel}</div>`;
     }else if(isToday&&forcedStatus==='done')stamp='<div class="achievement-stamp done">達成</div><div class="achievement-day-note">管理設定</div>';
     else if(isToday&&forcedStatus==='miss')stamp='<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">管理設定</div>';
@@ -6462,9 +6491,9 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     <div class="calendar-achievement-title">
       <b>
         <span class="calendar-title-line">📅 ${year}年${monthNumber}月20日 ～ ${cycleEnd.getMonth()+1}月20日</span>
-        <span class="calendar-title-line calendar-title-time">15時 達成カレンダー</span>
+        <span class="calendar-title-line calendar-title-time">本日生地 15時達成カレンダー</span>
       </b>
-      <span>15時までに全件達成！ 今日も全員でやり切ろう！</span>
+      <span>本日生地は15時までに全件完了（仕上まで）</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
@@ -8279,9 +8308,14 @@ if(shipFilter==='today-ng'){
   updateGameClock();
 
   const ngPoints=ng.reduce((a,r)=>a+r.qty,0);
+  const prepaintProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
+  const todaySeichibiRemaining=rows.filter(row=>
+    row.shipDate===dates.today&&prepaintProcesses.includes(String(row.status||'').trim())
+  );
+  if(!fullStats)recordTodaySeichibiCompletion(todaySeichibiRemaining.length);
   $('bossCount').textContent=fmt(ng.length);
   $('bossPoints').textContent=fmt(ngPoints);
-  updateMonthlyAchievementCalendar(ng.length,!fullStats);
+  updateMonthlyAchievementCalendar(todaySeichibiRemaining.length,!fullStats);
   updateBonusCampaignPanel();
 
   const startBossKey=`todayNgStart:${dates.today}`;
