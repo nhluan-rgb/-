@@ -5868,6 +5868,17 @@ color:#d7e6ef!important;
   accent-color:#22c983;
   cursor:pointer
 }
+.process-backlog-table tr.confirmed-row{
+  background:#071019!important;
+  color:#71808a!important;
+  filter:saturate(.25)
+}
+.process-backlog-table tr.confirmed-row td{opacity:.72}
+.process-backlog-table tr.confirmed-row .unregistered-confirm-label{
+  background:#182127;
+  border-color:#60717b;
+  color:#a8b4bb
+}
 /* 製品種類を材質枠と同じ左右幅へ拡張 */
 .standard-game .standard-visual-overlay,
 .standard-game .standard-visual:has(.visual-tabs) .standard-visual-overlay{
@@ -6242,17 +6253,20 @@ function readConfirmedUnregistered(){
   }
 }
 let confirmedUnregisteredIds=readConfirmedUnregistered();
-function confirmUnregistered(id){
+function confirmUnregistered(id,confirmed=true){
   const key=String(id||'').trim();
   if(!key)return;
-  confirmedUnregisteredIds.add(key);
+  if(confirmed)confirmedUnregisteredIds.add(key);
+  else confirmedUnregisteredIds.delete(key);
   localStorage.setItem(CONFIRMED_UNREGISTERED_KEY,JSON.stringify([...confirmedUnregisteredIds]));
 }
-function isActiveUnregistered(row){
+function isEligibleUnregistered(row){
   if(row.shipDate)return false;
-  if(confirmedUnregisteredIds.has(String(row.id||'').trim()))return false;
   const today=getShipDates().today;
   return !row.dispatchDate||row.dispatchDate>=today;
+}
+function isActiveUnregistered(row){
+  return isEligibleUnregistered(row)&&!confirmedUnregisteredIds.has(String(row.id||'').trim());
 }
 function updateShipLabels(){
   const dates=getShipDates();
@@ -8043,7 +8057,7 @@ function buildProductCategoryBacklogMarkup(categoryName){
   const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   const today=getShipDates().today;
   const categorySourceRows=selectedProductCategoryScope==='unregistered'
-    ? rows.filter(isActiveUnregistered)
+    ? rows.filter(isEligibleUnregistered)
     : selectedProductCategoryScope==='urgent-today'
       ? rows.filter(row=>row.shipDate===today&&row.instructionDate===today)
       : currentChartRows;
@@ -8051,17 +8065,21 @@ function buildProductCategoryBacklogMarkup(categoryName){
     .filter(row=>classifyProductCategory(row)===categoryName)
     .filter(row=>selectedProductCategoryScope!=='current'||managedProcesses.includes(String(row.status||'')))
     .sort((a,b)=>String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||String(a.id||'').localeCompare(String(b.id||'')));
-  const totalQty=targetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const confirmationEnabled=selectedProductCategoryScope==='unregistered'||selectedProductCategoryScope==='urgent-today';
+  const activeTargetRows=confirmationEnabled
+    ? targetRows.filter(row=>!confirmedUnregisteredIds.has(String(row.id||'').trim()))
+    : targetRows;
+  const totalQty=activeTargetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   return `
     <header class="process-backlog-header">
-      <div><div class="process-backlog-kicker">${selectedProductCategoryScope==='urgent-today'?'新規急ぎ・製品種類':'製品種類'}</div><div class="process-backlog-title">${escapeHtml(categoryName)}</div><div class="process-backlog-summary">${fmt(targetRows.length)}件 ／ ${fmt(totalQty)}点</div></div>
+      <div><div class="process-backlog-kicker">${selectedProductCategoryScope==='urgent-today'?'新規急ぎ・製品種類':'製品種類'}</div><div class="process-backlog-title">${escapeHtml(categoryName)}</div><div class="process-backlog-summary">未確認 ${fmt(activeTargetRows.length)}件 ／ ${fmt(totalQty)}点${confirmationEnabled?`　全${fmt(targetRows.length)}件`:''}</div></div>
       <button type="button" class="process-backlog-close" data-product-category-close>× 閉じる</button>
     </header>
     <section class="process-popup-section">
       <div class="process-popup-section-head">製造指示一覧</div>
       <div class="process-backlog-table-wrap"><table class="process-backlog-table">
-        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th>${selectedProductCategoryScope==='unregistered'?'<th>確認済</th>':''}</tr></thead>
-        <tbody>${targetRows.map(row=>`<tr>
+        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th>${confirmationEnabled?'<th>確認済</th>':''}</tr></thead>
+        <tbody>${targetRows.map(row=>{const confirmed=confirmedUnregisteredIds.has(String(row.id||'').trim());return `<tr class="${confirmed?'confirmed-row':''}">
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
           <td class="backlog-product"><b>${escapeHtml(row.part||'—')} ／ ${escapeHtml(row.name||'—')}</b><small>${escapeHtml(row.standard||'規格なし')}</small></td>
           <td class="backlog-qty">${fmt(row.qty)}点</td>
@@ -8070,8 +8088,8 @@ function buildProductCategoryBacklogMarkup(categoryName){
           <td class="backlog-date">${escapeHtml(row.due||'未登録')}</td>
           <td class="backlog-date">${escapeHtml(row.dispatchDate||'未登録')}</td>
           <td>${escapeHtml(row.owner||'未設定')}</td>
-          ${selectedProductCategoryScope==='unregistered'?`<td><label class="unregistered-confirm-label"><input type="checkbox" data-confirm-unregistered="${escapeHtml(row.id)}">確認済</label></td>`:''}
-        </tr>`).join('')||`<tr><td colspan="${selectedProductCategoryScope==='unregistered'?9:8}" class="process-backlog-empty">対象データなし</td></tr>`}</tbody>
+          ${confirmationEnabled?`<td><label class="unregistered-confirm-label"><input type="checkbox" data-confirm-unregistered="${escapeHtml(row.id)}" ${confirmed?'checked':''}>確認済</label></td>`:''}
+        </tr>`}).join('')||`<tr><td colspan="${confirmationEnabled?9:8}" class="process-backlog-empty">対象データなし</td></tr>`}</tbody>
       </table></div>
     </section>`;
 }
@@ -8456,8 +8474,11 @@ if(shipFilter==='today-ng'){
   const todaySeichibiGoalRows=rows.filter(row=>
     row.shipDate===dates.today&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''))
   );
-  const todayUrgentRows=rows.filter(row=>
+  const todayUrgentAllRows=rows.filter(row=>
     row.shipDate===dates.today&&row.instructionDate===dates.today
+  );
+  const todayUrgentRows=todayUrgentAllRows.filter(row=>
+    !confirmedUnregisteredIds.has(String(row.id||'').trim())
   );
   if(!fullStats)recordTodaySeichibiCompletion(todaySeichibiRemaining.length);
   const homeRemainingPoints=todaySeichibiRemaining.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
@@ -8465,27 +8486,30 @@ if(shipFilter==='today-ng'){
   $('bossPoints').textContent=fmt(homeRemainingPoints);
   const urgentAlert=$('homeUrgentAlert');
   if(urgentAlert){
-    urgentAlert.classList.toggle('show',todayUrgentRows.length>0);
-    if(todayUrgentRows.length){
+    urgentAlert.classList.toggle('show',todayUrgentAllRows.length>0);
+    if(todayUrgentAllRows.length){
       const urgentCategoryColors={
         'ボックス':'#338cff','ダクト':'#35d6df','架台':'#ff9b3d',
         '貫通枠':'#9b72ff','カバー':'#3ee59a','切板・金物':'#ffd43b',
         'その他・要確認':'#ff6075'
       };
       const urgentCategoryMap=new Map();
-      todayUrgentRows.forEach(row=>{
+      todayUrgentAllRows.forEach(row=>{
         const category=classifyProductCategory(row);
-        if(!urgentCategoryMap.has(category))urgentCategoryMap.set(category,{count:0,qty:0});
+        if(!urgentCategoryMap.has(category))urgentCategoryMap.set(category,{count:0,qty:0,total:0});
         const item=urgentCategoryMap.get(category);
-        item.count++;
-        item.qty+=Number(row.qty)||0;
+        item.total++;
+        if(!confirmedUnregisteredIds.has(String(row.id||'').trim())){
+          item.count++;
+          item.qty+=Number(row.qty)||0;
+        }
       });
       const urgentBreakdown=[...urgentCategoryMap.entries()]
         .sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty)
         .map(([category,item])=>`<button type="button" class="home-urgent-category" data-product-category="${escapeHtml(category)}" data-product-category-scope="urgent-today" style="--urgent-category-color:${urgentCategoryColors[category]||'#90A4AE'}" aria-label="新規急ぎ・${escapeHtml(category)}の詳細を表示">
-          <span>${escapeHtml(category)}</span><b>${fmt(item.count)}件・${fmt(item.qty)}点</b>
+          <span>${escapeHtml(category)}</span><b>未確認 ${fmt(item.count)}件・${fmt(item.qty)}点 ／ 全${fmt(item.total)}件</b>
         </button>`).join('');
-      urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件（本日製造指示 → 本日生地）</div>
+      urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ　未確認 ${fmt(todayUrgentRows.length)}件 ／ 全${fmt(todayUrgentAllRows.length)}件（本日製造指示 → 本日生地）</div>
         <div class="home-urgent-breakdown">${urgentBreakdown}</div>`;
     }else{
       urgentAlert.innerHTML='';
@@ -8687,14 +8711,14 @@ function renderTable(){
   let list=rows.filter(r=>{
     let due=new Date(r.due+'T00:00:00');
     let late=due<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
-    let isNg=isActiveUnregistered(r);
+    let isNg=isEligibleUnregistered(r);
     let shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===shipDates.today:r.shipDate===shipDates[shipFilter]));
     return shipOk&&matchesBreakdown(r)&&(!q||[r.id,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon));
   });
   $('resultCount').textContent=`表示 ${fmt(list.length)}件`;
   $('tbody').innerHTML=list.slice(0,500).map(r=>{
     let late=new Date(r.due+'T00:00:00')<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
-    let todayNg=isActiveUnregistered(r);
+    let todayNg=isEligibleUnregistered(r);
     return`<tr style="${todayNg?'background:#fff0ef':''}"><td class="code">${r.id}</td><td><b>${r.part}</b><br><span style="color:var(--muted)">${r.name}</span></td><td>${r.standard||'—'}</td><td><b>${fmt(r.qty)}点</b></td><td class="${todayNg?'late':''}"><b>${r.shipDate||'—'}</b></td><td class="${late?'late':''}">${r.due||'—'}${late?' ⚠':''}</td><td><span class="status ${statusClass(r.status)}">${r.status||'未設定'}</span></td><td class="${r.owner?'':'empty'}">${r.owner||'未設定'}</td><td>${r.ship||'—'}</td></tr>`;
   }).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">該当する製造指示はありません</td></tr>';
 }
@@ -8765,8 +8789,8 @@ function restoreUiState(state){
 ['search','statusFilter','ownerFilter','deadlineFilter'].forEach(x=>$(x).addEventListener(x==='search'?'input':'change',renderTable));
 document.addEventListener('change',event=>{
   const checkbox=event.target.closest('[data-confirm-unregistered]');
-  if(!checkbox||!checkbox.checked)return;
-  confirmUnregistered(checkbox.dataset.confirmUnregistered||'');
+  if(!checkbox)return;
+  confirmUnregistered(checkbox.dataset.confirmUnregistered||'',checkbox.checked);
   render();
 });
 document.addEventListener('click',event=>{
