@@ -560,6 +560,12 @@
   box-sizing:border-box
 }
 .home-urgent-title{font-size:21px;font-weight:1000}
+.home-urgent-condition{
+  margin-top:4px;
+  color:#fff5bd;
+  font-size:15px;
+  font-weight:1000
+}
 .home-urgent-breakdown{
   display:grid;
   grid-template-columns:1fr;
@@ -8541,6 +8547,7 @@ if(shipFilter==='today-ng'){
         </button>`).join('');
       const urgentActiveQty=todayUrgentRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
       urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件・${fmt(urgentActiveQty)}点</div>
+        <div class="home-urgent-condition">製造指示日＝今日 ／ 生地日＝今日</div>
         <div class="home-urgent-breakdown">${urgentBreakdown}</div>`;
     }else{
       urgentAlert.innerHTML='';
