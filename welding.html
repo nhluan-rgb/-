@@ -555,7 +555,8 @@
   width:100%;
   flex:1 1 auto;
   min-height:360px;
-  overflow:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
   box-sizing:border-box
 }
 .home-urgent-title{font-size:21px;font-weight:1000}
@@ -569,7 +570,7 @@
   width:100%;
   min-height:74px;
   display:grid;
-  grid-template-columns:minmax(130px,1fr) minmax(0,1.7fr);
+  grid-template-columns:minmax(0,1fr) auto;
   align-items:center;
   gap:14px;
   padding:11px 14px;
@@ -595,7 +596,7 @@
 }
 .home-urgent-category b{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:78px 78px;
   gap:8px;
   color:#fff;
   font-size:15px
@@ -605,7 +606,8 @@
   border-radius:6px;
   background:#ffffff12;
   font-style:normal;
-  white-space:nowrap
+  white-space:nowrap;
+  text-align:center
 }
 .home-goal-summary{
   display:grid;
@@ -8535,9 +8537,10 @@ if(shipFilter==='today-ng'){
       const urgentBreakdown=[...urgentCategoryMap.entries()]
         .sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty)
         .map(([category,item])=>`<button type="button" class="home-urgent-category" data-product-category="${escapeHtml(category)}" data-product-category-scope="urgent-today" style="--urgent-category-color:${urgentCategoryColors[category]||'#90A4AE'}" aria-label="新規急ぎ・${escapeHtml(category)}の詳細を表示">
-          <span>${escapeHtml(category)}</span><b><em>未確認 ${fmt(item.count)}件・${fmt(item.qty)}点</em><em>全 ${fmt(item.total)}件</em></b>
+          <span>${escapeHtml(category)}</span><b><em>${fmt(item.count)}件</em><em>${fmt(item.qty)}点</em></b>
         </button>`).join('');
-      urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ　未確認 ${fmt(todayUrgentRows.length)}件 ／ 全${fmt(todayUrgentAllRows.length)}件（本日製造指示 → 本日生地）</div>
+      const urgentActiveQty=todayUrgentRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+      urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件・${fmt(urgentActiveQty)}点</div>
         <div class="home-urgent-breakdown">${urgentBreakdown}</div>`;
     }else{
       urgentAlert.innerHTML='';
