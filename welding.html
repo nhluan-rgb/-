@@ -6388,8 +6388,39 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
 </style>
 
 <style id="tab6fix">
+.ship-summary{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:10px!important;
+  overflow:visible!important;
+}
+.ship-summary .ship-card{
+  min-width:0!important;
+  width:auto!important;
+  padding:12px 10px!important;
+}
+.ship-summary .ship-card .day{font-size:clamp(13px,1.15vw,18px)!important}
+.ship-summary .ship-card .ship-value{font-size:clamp(22px,2.15vw,34px)!important}
+.ship-summary .ship-card .ship-sub{font-size:clamp(10px,.85vw,13px)!important}
 .tab-buttons,.tabs{display:flex!important;flex-wrap:nowrap!important;gap:6px!important}
 .tab-buttons>*,.tabs>*{flex:1 1 0!important;min-width:0!important;font-size:14px!important;padding:10px 8px!important}
+.dipping-back-button{
+  border:2px solid #5eeaff;
+  border-radius:10px;
+  padding:10px 18px;
+  background:linear-gradient(180deg,#167db6,#07527f);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 14px rgba(94,234,255,.42);
+}
+.dipping-back-button:hover{filter:brightness(1.15)}
+@media(max-width:900px){
+  .ship-summary{gap:5px!important}
+  .ship-summary .ship-card{padding:9px 4px!important}
+  .ship-summary .ship-card .day{font-size:11px!important}
+  .ship-summary .ship-card .ship-value{font-size:18px!important}
+}
 </style>
 
 </head>
@@ -6398,7 +6429,7 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
   <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="index.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">← ホームへ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
-    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 生地日</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
+    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="process"><div class="day">工程管理</div><div class="ship-value">全体</div><div class="ship-sub">工程別の進捗を表示</div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全生地日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全生地日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
 
@@ -6484,6 +6515,7 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
   <div class="dipping-stage">
     <div class="dipping-header">
       <div><div class="dipping-title">ドブ漬け管理</div><div class="dipping-source" id="dippingSourceDate">生地日：----</div></div>
+      <button type="button" class="dipping-back-button" id="dippingBackToProcess">← 工程管理へ戻る</button>
       <div class="dipping-date-box"><small>持ち込み日</small><b id="dippingCarryDate">----</b></div>
     </div>
     <div id="dippingWarning" class="dipping-warning"></div>
@@ -9057,7 +9089,7 @@ function renderDippingManagement(targetRows){
     $('dippingProcesses').innerHTML=(activeRows.length?`<div class="dipping-card-grid">${make(processMap,processColors)}</div>`:'<div class="dipping-empty">工程データはありません</div>')+cancelHtml;
   }
 }
-function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='today-ng'?rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):shipFilter==='dipping'?rows.filter(r=>isDippingCandidate(r,dates.today)):rows.filter(r=>(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===dates.today:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'生地日未登録','today':'本日製造期限','tomorrow':'明日生地','overdue':'今日から7日間生地','specified':'指定日製造期限','dipping':'ドブ漬け管理'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
+function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='process'?rows:shipFilter==='today-ng'?rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):shipFilter==='dipping'?rows.filter(r=>isDippingCandidate(r,dates.today)):rows.filter(r=>(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===dates.today:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'生地日未登録','today':'本日製造期限','tomorrow':'明日生地','overdue':'今日から7日間生地','specified':'指定日製造期限','dipping':'ドブ漬け管理','process':'工程管理'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
   const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','未着手'];
   const processColors=['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'];
   const processData=processOrder
@@ -9106,7 +9138,7 @@ if(mainGrid){
   $('shipToday').textContent=cardText(todayTargetRows);
   $('shipTomorrow').textContent=cardText(tomorrowTargetRows);
   $('shipOverdue').textContent=cardText(overdueRows);
-  $('shipSpecified').textContent=cardText(specifiedRows);
+  if($('shipSpecified')) $('shipSpecified').textContent=cardText(specifiedRows);
   if($('shipDipping')) $('shipDipping').textContent=cardText(dippingRows);
   updateTodayShipAlarm(todayTargetRows.length);
   if(shipFilter==='today-ng'){
@@ -9378,7 +9410,7 @@ function renderTable(){
     let due=new Date(r.due+'T00:00:00');
     let late=due<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
     let isNg=isEligibleUnregistered(r);
-    let shipOk=!shipFilter||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):shipFilter==='dipping'?r.shipDate===shipDates.today:(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===shipDates.today:r.shipDate===shipDates[shipFilter]));
+    let shipOk=!shipFilter||shipFilter==='process'||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):shipFilter==='dipping'?r.shipDate===shipDates.today:(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===shipDates.today:r.shipDate===shipDates[shipFilter]));
     return shipOk&&matchesBreakdown(r)&&(!q||[r.id,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon));
   });
   $('resultCount').textContent=`表示 ${fmt(list.length)}件`;
@@ -9579,8 +9611,8 @@ document.querySelectorAll('[data-ship],[data-quick]').forEach(b=>b.addEventListe
   renderStats();
   renderTable();
 }));
-$('specifiedDate').addEventListener('click',e=>e.stopPropagation());
-$('specifiedDate').addEventListener('change',e=>{
+if($('specifiedDate')) $('specifiedDate').addEventListener('click',e=>e.stopPropagation());
+if($('specifiedDate')) $('specifiedDate').addEventListener('change',e=>{
   specifiedShipDate=e.target.value;
   shipFilter='specified';
   standardBreakdownFilter=null;
@@ -9592,6 +9624,13 @@ $('specifiedDate').addEventListener('change',e=>{
   localStorage.setItem('specifiedShipDate',specifiedShipDate);
   document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)==='specified'));
   updateShipLabels();
+  renderStats();
+  renderTable();
+});
+if($('dippingBackToProcess')) $('dippingBackToProcess').addEventListener('click',()=>{
+  shipFilter='process';
+  localStorage.setItem('shipFilter',shipFilter);
+  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)==='process'));
   renderStats();
   renderTable();
 });
@@ -9741,7 +9780,7 @@ async function loadSharedCsv(showMessage=true){
 
 $('refresh').addEventListener('click',()=>loadSharedCsv(true));
 
-const validShipFilters=['today-ng','today','tomorrow','overdue','specified','dipping'];
+const validShipFilters=['today-ng','today','tomorrow','overdue','process','dipping'];
 const savedFilter=localStorage.getItem('shipFilter');
 shipFilter=validShipFilters.includes(savedFilter)?savedFilter:'today-ng';
 localStorage.setItem('shipFilter',shipFilter);
