@@ -6429,7 +6429,7 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
   <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="index.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">← ホームへ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
-    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="process"><div class="day">工程管理</div><div class="ship-value">全体</div><div class="ship-sub">工程別の進捗を表示</div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button></section>
+    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日生地</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" aria-label="指定日生地の日付" /></div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全生地日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全生地日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
 
@@ -9944,6 +9944,72 @@ setInterval(refreshTodayResultSetting,10000);
 }
 .standard-game .status-cancel{
   --chip-color:#ff6262!important;
+}
+</style>
+
+<style id="final-six-tabs-single-row-fix">
+/* 最終指定：6タブは画面幅に関係なく必ず1行。旧レスポンシブ指定より後で上書きする。 */
+body .ship-summary,
+body .ship-summary.game-stage-tabs,
+body .ship-summary.game-stage-tabs.visual-tabs,
+body .standard-game .ship-summary.game-stage-tabs.visual-tabs,
+body .standard-game .standard-visual .ship-summary.game-stage-tabs.visual-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-rows:1fr!important;
+  grid-auto-flow:column!important;
+  grid-auto-columns:minmax(0,1fr)!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+body .ship-summary > .ship-card,
+body .ship-summary.game-stage-tabs > .ship-card,
+body .ship-summary.game-stage-tabs.visual-tabs > .ship-card{
+  grid-row:1!important;
+  min-width:0!important;
+  max-width:none!important;
+  width:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:10px 8px!important;
+}
+body .ship-summary .ship-card .day{
+  font-size:clamp(12px,1.15vw,18px)!important;
+  white-space:normal!important;
+}
+body .ship-summary .ship-card .ship-value{
+  font-size:clamp(20px,2.1vw,34px)!important;
+  white-space:nowrap!important;
+}
+body .ship-summary .ship-card .ship-sub{
+  min-width:0!important;
+  font-size:clamp(10px,.8vw,13px)!important;
+}
+body #specifiedDate{
+  display:block!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  margin-top:4px!important;
+  padding:5px 3px!important;
+  border:1px solid #5eeaff!important;
+  border-radius:5px!important;
+  background:#062d43!important;
+  color:#fff!important;
+  font-size:clamp(10px,.9vw,14px)!important;
+}
+@media(max-width:900px){
+  body .ship-summary,
+  body .ship-summary.game-stage-tabs,
+  body .ship-summary.game-stage-tabs.visual-tabs{gap:3px!important}
+  body .ship-summary > .ship-card,
+  body .ship-summary.game-stage-tabs > .ship-card{padding:7px 3px!important}
+  body .ship-summary .ship-card .day{font-size:10px!important}
+  body .ship-summary .ship-card .ship-value{font-size:16px!important}
+  body .ship-summary .ship-card .ship-sub{font-size:9px!important}
 }
 </style>
 
