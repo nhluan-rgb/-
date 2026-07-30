@@ -6372,7 +6372,8 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
 .dipping-board{min-height:430px;padding:18px;border:2px solid rgba(255,255,255,.58);border-radius:16px;background:rgba(5,43,64,.88);backdrop-filter:blur(8px)}
 .dipping-board h3{margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid #50d8ff;font-size:25px;color:#fff}
 .dipping-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.dipping-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:15px;border:2px solid var(--dip-color,#4fd7ff);border-radius:12px;background:#062b42;box-shadow:inset 0 0 14px color-mix(in srgb,var(--dip-color,#4fd7ff) 18%,transparent)}
+.dipping-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;padding:15px;border:2px solid var(--dip-color,#4fd7ff);border-radius:12px;background:#062b42;box-shadow:inset 0 0 14px color-mix(in srgb,var(--dip-color,#4fd7ff) 18%,transparent);color:inherit;text-align:left;font:inherit;cursor:pointer}
+.dipping-item:hover,.dipping-item:focus-visible{transform:translateY(-2px);filter:brightness(1.18);box-shadow:inset 0 0 18px color-mix(in srgb,var(--dip-color,#4fd7ff) 28%,transparent),0 0 16px color-mix(in srgb,var(--dip-color,#4fd7ff) 55%,transparent);outline:none}
 .dipping-item span{font-size:19px;font-weight:1000;color:var(--dip-color,#8eeaff)}
 .dipping-item b{font-size:25px;color:#fff}.dipping-item small{grid-column:1/-1;color:#c5eaf7;font-size:14px}
 .dipping-empty{display:grid;place-content:center;min-height:300px;text-align:center;font-size:24px;font-weight:900;color:#bfeeff}
@@ -9081,14 +9082,65 @@ function renderDippingManagement(targetRows){
   });
   const productColors={'ボックス':'#338cff','ダクト':'#35d6df','架台':'#ff9b3d','貫通枠':'#9b72ff','カバー':'#3ee59a','切板・金物':'#ffd43b','その他・要確認':'#ff6075'};
   const processColors={'未着手':'#90A4AE','CAD/CAM':'#F4C430','切断':'#F57C00','曲げ':'#EC6CB9','溶接':'#E53935','仕上':'#B0BEC5','塗装':'#43A047','組立':'#7E57C2','完成':'#00A67E'};
-  const make=(map,colors)=>[...map.entries()].sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty).map(([name,v])=>`<div class="dipping-item" style="--dip-color:${colors[name]||'#55d9ff'}"><span>${escapeHtml(name)}</span><b>${fmt(v.count)}件</b><small>${fmt(v.qty)}点</small></div>`).join('');
-  if($('dippingProducts')) $('dippingProducts').innerHTML=activeRows.length?`<div class="dipping-card-grid">${make(productMap,productColors)}</div>`:'<div class="dipping-empty">条件に合う通常品はありません</div>';
+  const make=(map,colors,kind)=>[...map.entries()].sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty).map(([name,v])=>`<button type="button" class="dipping-item" data-dipping-kind="${kind}" data-dipping-value="${escapeHtml(name)}" style="--dip-color:${colors[name]||'#55d9ff'}"><span>${escapeHtml(name)}</span><b>${fmt(v.count)}件</b><small>${fmt(v.qty)}点　クリックして詳細表示</small></button>`).join('');
+  if($('dippingProducts')) $('dippingProducts').innerHTML=activeRows.length?`<div class="dipping-card-grid">${make(productMap,productColors,'product')}</div>`:'<div class="dipping-empty">条件に合う通常品はありません</div>';
   if($('dippingProcesses')){
     const cancelQty=cancelRows.reduce((sum,r)=>sum+(Number(r.qty)||0),0);
-    const cancelHtml=`<div class="dipping-cancel-box"><h4>キャンセル</h4>${cancelRows.length?`<div class="dipping-item" style="--dip-color:#ff6075"><span>キャンセル</span><b>${fmt(cancelRows.length)}件</b><small>${fmt(cancelQty)}点</small></div>`:'<div>0件</div>'}</div>`;
-    $('dippingProcesses').innerHTML=(activeRows.length?`<div class="dipping-card-grid">${make(processMap,processColors)}</div>`:'<div class="dipping-empty">工程データはありません</div>')+cancelHtml;
+    const cancelHtml=`<div class="dipping-cancel-box"><h4>キャンセル</h4>${cancelRows.length?`<button type="button" class="dipping-item" data-dipping-kind="cancel" data-dipping-value="キャンセル" style="--dip-color:#ff6075"><span>キャンセル</span><b>${fmt(cancelRows.length)}件</b><small>${fmt(cancelQty)}点　クリックして詳細表示</small></button>`:'<div>0件</div>'}</div>`;
+    $('dippingProcesses').innerHTML=(activeRows.length?`<div class="dipping-card-grid">${make(processMap,processColors,'process')}</div>`:'<div class="dipping-empty">工程データはありません</div>')+cancelHtml;
   }
 }
+
+function showDippingDetailPopup(kind,value){
+  const dates=getShipDates();
+  const dippingRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===dates.today));
+  const isCancel=row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));
+  const detailRows=dippingRows.filter(row=>{
+    if(kind==='cancel')return isCancel(row);
+    if(isCancel(row))return false;
+    if(kind==='product')return classifyProductCategory(row)===value;
+    return String(row.status||'未着手').trim()===value;
+  });
+  const totalQty=detailRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const modal=document.getElementById('processModal');
+  const modalCard=document.getElementById('processModalCard');
+  const modalBody=document.getElementById('processModalBody');
+  if(!modal||!modalBody)return;
+  modalBody.innerHTML=`
+    <header class="process-backlog-header">
+      <div>
+        <div class="process-backlog-kicker">ドブ漬け管理・${kind==='product'?'製品種類':kind==='process'?'工程':'キャンセル'}</div>
+        <div class="process-backlog-title">${escapeHtml(value)}</div>
+        <div class="process-backlog-summary">${fmt(detailRows.length)}件 ／ ${fmt(totalQty)}点</div>
+      </div>
+      <button type="button" class="process-backlog-close" data-process-close>× 閉じる</button>
+    </header>
+    <section class="process-popup-section">
+      <div class="process-popup-section-head">製造指示一覧</div>
+      <div class="process-backlog-table-wrap"><table class="process-backlog-table">
+        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead>
+        <tbody>${detailRows.map(row=>`<tr>
+          <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
+          <td class="backlog-product"><b>${escapeHtml(row.part||'—')} ／ ${escapeHtml(row.name||'—')}</b><small>${escapeHtml(row.standard||'規格なし')}</small></td>
+          <td class="backlog-qty">${fmt(row.qty)}点</td>
+          <td>${escapeHtml(row.status||'未着手')}</td>
+          <td class="backlog-date">${escapeHtml(row.shipDate||'未登録')}</td>
+          <td class="backlog-date">${escapeHtml(row.due||'未登録')}</td>
+          <td class="backlog-date">${escapeHtml(row.dispatchDate||'未登録')}</td>
+          <td>${escapeHtml(row.owner||'未設定')}</td>
+        </tr>`).join('')||'<tr><td colspan="8" class="process-backlog-empty">対象データはありません</td></tr>'}</tbody>
+      </table></div>
+    </section>`;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  if(modalCard){modalCard.scrollTop=0;modalCard.style.transform='translate(0px,0px)'}
+  document.body.style.overflow='hidden';
+}
+document.addEventListener('click',event=>{
+  const card=event.target.closest('[data-dipping-kind]');
+  if(!card)return;
+  showDippingDetailPopup(card.dataset.dippingKind||'',card.dataset.dippingValue||'');
+});
 function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='process'?rows:shipFilter==='today-ng'?rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):shipFilter==='dipping'?rows.filter(r=>isDippingCandidate(r,dates.today)):rows.filter(r=>(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===dates.today:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'生地日未登録','today':'本日製造期限','tomorrow':'明日生地','overdue':'今日から7日間生地','specified':'指定日製造期限','dipping':'ドブ漬け管理','process':'工程管理'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
   const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','未着手'];
   const processColors=['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'];
@@ -9176,29 +9228,33 @@ if(shipFilter==='today-ng'){
   const todayUrgentRows=todayUrgentAllRows.filter(row=>
     !confirmedUnregisteredIds.has(String(row.id||'').trim())
   );
+  const homeShipCard=document.querySelector('.ship-card[data-ship="today-ng"]');
+  if(homeShipCard){
+    homeShipCard.classList.toggle('urgent-pending',todayUrgentRows.length>0);
+    homeShipCard.classList.toggle('urgent-cleared',todayUrgentRows.length===0);
+  }
   if(!fullStats)recordTodaySeichibiCompletion(todaySeichibiRemaining.length);
   const homeRemainingPoints=todaySeichibiRemaining.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   $('bossCount').textContent=fmt(todaySeichibiRemaining.length);
   $('bossPoints').textContent=fmt(homeRemainingPoints);
   const urgentAlert=$('homeUrgentAlert');
   if(urgentAlert){
-    urgentAlert.classList.toggle('show',todayUrgentAllRows.length>0);
-    if(todayUrgentAllRows.length){
+    urgentAlert.classList.toggle('show',todayUrgentRows.length>0);
+    urgentAlert.hidden=todayUrgentRows.length===0;
+    if(todayUrgentRows.length){
       const urgentCategoryColors={
         'ボックス':'#338cff','ダクト':'#35d6df','架台':'#ff9b3d',
         '貫通枠':'#9b72ff','カバー':'#3ee59a','切板・金物':'#ffd43b',
         'その他・要確認':'#ff6075'
       };
       const urgentCategoryMap=new Map();
-      todayUrgentAllRows.forEach(row=>{
+      todayUrgentRows.forEach(row=>{
         const category=classifyProductCategory(row);
         if(!urgentCategoryMap.has(category))urgentCategoryMap.set(category,{count:0,qty:0,total:0});
         const item=urgentCategoryMap.get(category);
         item.total++;
-        if(!confirmedUnregisteredIds.has(String(row.id||'').trim())){
-          item.count++;
-          item.qty+=Number(row.qty)||0;
-        }
+        item.count++;
+        item.qty+=Number(row.qty)||0;
       });
       const urgentBreakdown=[...urgentCategoryMap.entries()]
         .sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty)
@@ -10019,6 +10075,32 @@ body #specifiedDate{
   background:#062d43!important;
   color:#fff!important;
   font-size:clamp(10px,.9vw,14px)!important;
+}
+/* 新規急ぎを全件確認したら警告枠を消し、ホームタブを通常色へ戻す。 */
+body #homeUrgentAlert[hidden],
+body #homeUrgentAlert:not(.show){
+  display:none!important;
+}
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-cleared,
+body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"].urgent-cleared,
+body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"].urgent-cleared.active,
+body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"].urgent-cleared.ng{
+  --tab-rgb:22,157,207!important;
+  --tab-bright:#5eeaff!important;
+  --tab-deep:#06354d!important;
+  border-color:#19c7ff!important;
+  background:
+    linear-gradient(rgba(22,157,207,.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(22,157,207,.10) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(5,67,96,.96),rgba(5,40,64,.98))!important;
+  background-size:28px 28px,28px 28px,auto!important;
+  color:#fff!important;
+  box-shadow:inset 0 0 20px rgba(29,199,255,.10),0 0 15px rgba(22,157,207,.30)!important;
+  animation:none!important;
+  filter:none!important;
+}
+body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"].urgent-cleared::before{
+  border-color:#21d7ff!important;
 }
 @media(max-width:900px){
   body .ship-summary,
