@@ -6378,7 +6378,8 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
 .dipping-item b{font-size:25px;color:#fff}.dipping-item small{grid-column:1/-1;color:#c5eaf7;font-size:14px}
 .dipping-empty{display:grid;place-content:center;min-height:300px;text-align:center;font-size:24px;font-weight:900;color:#bfeeff}
 .dipping-warning{display:none;margin-top:16px;padding:14px 18px;border:3px solid #fff176;border-radius:14px;background:linear-gradient(180deg,#d64231,#9e1020);color:#fff;box-shadow:0 5px 0 #650713,0 0 18px rgba(255,52,52,.55)}
-.dipping-warning.show{display:block}
+.dipping-warning.show{display:block;cursor:pointer}
+.dipping-warning.show:hover,.dipping-warning.show:focus-visible{filter:brightness(1.14);transform:translateY(-1px);outline:3px solid #fff176;outline-offset:2px}
 .dipping-warning-title{font-size:22px;font-weight:1000;color:#fff59d}
 .dipping-warning-detail{margin-top:6px;font-size:16px;font-weight:900}
 .dipping-cancel-box{margin-top:14px;padding:14px;border:2px solid #ff6075;border-radius:12px;background:#35101a}
@@ -9070,7 +9071,12 @@ function renderDippingManagement(targetRows){
   const warning=$('dippingWarning');
   if(warning){
     warning.classList.toggle('show',warningRows.length>0);
-    warning.innerHTML=warningRows.length?`<div class="dipping-warning-title">⚠ 要確認：生地日から期限まで2営業日以内　${fmt(warningRows.length)}件</div><div class="dipping-warning-detail">持ち込み・メッキ戻り・納期への影響を確認してください。</div>`:'';
+    warning.toggleAttribute('data-dipping-kind',warningRows.length>0);
+    warning.dataset.dippingKind=warningRows.length?'warning':'';
+    warning.dataset.dippingValue=warningRows.length?'要確認':'';
+    warning.setAttribute('role',warningRows.length?'button':'');
+    warning.tabIndex=warningRows.length?0:-1;
+    warning.innerHTML=warningRows.length?`<div class="dipping-warning-title">⚠ 要確認：生地日から期限まで2営業日以内　${fmt(warningRows.length)}件</div><div class="dipping-warning-detail">持ち込み・メッキ戻り・納期への影響を確認してください。　クリックして詳細表示</div>`:'';
   }
   const productMap=new Map();
   const processMap=new Map();
@@ -9097,6 +9103,11 @@ function showDippingDetailPopup(kind,value){
   const isCancel=row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));
   const detailRows=dippingRows.filter(row=>{
     if(kind==='cancel')return isCancel(row);
+    if(kind==='warning'){
+      if(isCancel(row))return false;
+      const days=workingDaysBetween(row.shipDate,row.due);
+      return days!==null&&days<=2;
+    }
     if(isCancel(row))return false;
     if(kind==='product')return classifyProductCategory(row)===value;
     return String(row.status||'未着手').trim()===value;
@@ -9109,7 +9120,7 @@ function showDippingDetailPopup(kind,value){
   modalBody.innerHTML=`
     <header class="process-backlog-header">
       <div>
-        <div class="process-backlog-kicker">ドブ漬け管理・${kind==='product'?'製品種類':kind==='process'?'工程':'キャンセル'}</div>
+        <div class="process-backlog-kicker">ドブ漬け管理・${kind==='product'?'製品種類':kind==='process'?'工程':kind==='warning'?'要確認':'キャンセル'}</div>
         <div class="process-backlog-title">${escapeHtml(value)}</div>
         <div class="process-backlog-summary">${fmt(detailRows.length)}件 ／ ${fmt(totalQty)}点</div>
       </div>
@@ -9567,6 +9578,13 @@ document.addEventListener('change',event=>{
   });
 });
 document.addEventListener('click',event=>{
+  const dippingCard=event.target.closest('[data-dipping-kind]');
+  if(dippingCard){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    showDippingDetailPopup(dippingCard.dataset.dippingKind||'',dippingCard.dataset.dippingValue||'');
+    return;
+  }
   const breakdownButton=event.target.closest('[data-standard-bucket]');
   if(breakdownButton){
     event.preventDefault();
@@ -9624,6 +9642,12 @@ document.addEventListener('click',event=>{
 },true);
 document.addEventListener('keydown',event=>{
   if(event.key!=='Enter'&&event.key!==' ')return;
+  const dippingCard=event.target.closest('[data-dipping-kind]');
+  if(dippingCard){
+    event.preventDefault();
+    showDippingDetailPopup(dippingCard.dataset.dippingKind||'',dippingCard.dataset.dippingValue||'');
+    return;
+  }
   const target=event.target.closest('[data-product-category],[data-material],[data-process],[data-delivery],[data-overview]');
   if(!target)return;
   event.preventDefault();
