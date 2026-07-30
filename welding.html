@@ -9099,7 +9099,11 @@ function renderDippingManagement(targetRows){
 
 function showDippingDetailPopup(kind,value){
   const dates=getShipDates();
-  const dippingRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===dates.today));
+  const dippingTargetStatuses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
+  const dippingRows=rows.filter(row=>
+    row.shipDate===dates.today&&
+    dippingTargetStatuses.includes(String(row.status||'').trim())
+  );
   const isCancel=row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));
   const detailRows=dippingRows.filter(row=>{
     if(kind==='cancel')return isCancel(row);
