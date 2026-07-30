@@ -9042,9 +9042,22 @@ function formatJapaneseDateKey(key){
   return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（${weekdays[d.getDay()]}）`;
 }
 function isDippingCandidate(row, todayKey){
-  const productName=String(row.name||'').trim();
-  const allText=[row.name,row.part,row.standard].map(v=>String(v||'')).join(' ');
+  const productName=String(row.name||'').normalize('NFKC').trim();
+  const allText=[row.name,row.part,row.standard]
+    .map(v=>String(v||'').normalize('NFKC'))
+    .join(' ')
+    .replace(/\s+/g,' ')
+    .trim();
   return row.shipDate===todayKey && /^Z/i.test(productName) && !allText.includes('先メッキ');
+}
+function isDippingTargetStatus(row){
+  const status=String(row.status||'').normalize('NFKC').trim();
+  return ['未着手','CAD/CAM','切断','曲げ','溶接','仕上'].includes(status) || /キャンセル/.test(status);
+}
+function getDippingRows(sourceRows,todayKey=getShipDates().today){
+  return (sourceRows||[]).filter(row=>
+    isDippingCandidate(row,todayKey)&&isDippingTargetStatus(row)
+  );
 }
 function workingDaysBetween(startKey,endKey){
   if(!startKey||!endKey||endKey<startKey)return null;
@@ -9059,6 +9072,8 @@ function workingDaysBetween(startKey,endKey){
 }
 function renderDippingManagement(targetRows){
   const dates=getShipDates();
+  /* 呼び出し元が未絞り込みの配列を渡しても、ドブ漬け条件をここで必ず再適用する。 */
+  targetRows=getDippingRows(targetRows,dates.today);
   const carry=nextWorkingDateKey(dates.today);
   const cancelRows=targetRows.filter(r=>/ｷｬﾝｾﾙ|キャンセル/.test(String(r.status||'')));
   const activeRows=targetRows.filter(r=>!/ｷｬﾝｾﾙ|キャンセル/.test(String(r.status||'')));
@@ -9066,7 +9081,7 @@ function renderDippingManagement(targetRows){
     const days=workingDaysBetween(r.shipDate,r.due);
     return days!==null&&days<=2;
   });
-  if($('dippingSourceDate')) $('dippingSourceDate').textContent=`生地日：${formatJapaneseDateKey(dates.today)}　対象 ${fmt(targetRows.length)}件（通常 ${fmt(activeRows.length)}件／キャンセル ${fmt(cancelRows.length)}件）`;
+  if($('dippingSourceDate')) $('dippingSourceDate').textContent=`生地日：${formatJapaneseDateKey(dates.today)}　Z始まり・先メッキ除外　対象 ${fmt(targetRows.length)}件（通常 ${fmt(activeRows.length)}件／キャンセル ${fmt(cancelRows.length)}件）`;
   if($('dippingCarryDate')) $('dippingCarryDate').textContent=formatJapaneseDateKey(carry);
   const warning=$('dippingWarning');
   if(warning){
@@ -9099,11 +9114,8 @@ function renderDippingManagement(targetRows){
 
 function showDippingDetailPopup(kind,value){
   const dates=getShipDates();
-  const dippingTargetStatuses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
-  const dippingRows=rows.filter(row=>
-    row.shipDate===dates.today&&
-    dippingTargetStatuses.includes(String(row.status||'').trim())
-  );
+  /* Popupも集計画面と同じ唯一のフィルターを再適用する。 */
+  const dippingRows=getDippingRows(rows,dates.today);
   const isCancel=row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));
   const detailRows=dippingRows.filter(row=>{
     if(kind==='cancel')return isCancel(row);
@@ -9156,7 +9168,7 @@ document.addEventListener('click',event=>{
   if(!card)return;
   showDippingDetailPopup(card.dataset.dippingKind||'',card.dataset.dippingValue||'');
 });
-function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='process'?rows:shipFilter==='today-ng'?rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):shipFilter==='dipping'?rows.filter(r=>isDippingCandidate(r,dates.today)):rows.filter(r=>(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===dates.today:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'生地日未登録','today':'本日製造期限','tomorrow':'明日生地','overdue':'今日から7日間生地','specified':'指定日製造期限','dipping':'ドブ漬け管理','process':'工程管理'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
+function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='process'?rows:shipFilter==='today-ng'?rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):shipFilter==='dipping'?getDippingRows(rows,dates.today):rows.filter(r=>(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===dates.today:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'生地日未登録','today':'本日製造期限','tomorrow':'明日生地','overdue':'今日から7日間生地','specified':'指定日製造期限','dipping':'ドブ漬け管理','process':'工程管理'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
   const processOrder=['CAD/CAM','切断','曲げ','溶接','仕上','未着手'];
   const processColors=['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'];
   const processData=processOrder
@@ -9201,7 +9213,7 @@ if(mainGrid){
   const tomorrowTargetRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===dates.tomorrow));
   const overdueRows=onlyWeldingTarget(rows.filter(isOverdueItem));
   const specifiedRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===specifiedShipDate));
-  const dippingRows=rows.filter(r=>isDippingCandidate(r,dates.today));
+  const dippingRows=getDippingRows(rows,dates.today);
   $('shipToday').textContent=cardText(todayTargetRows);
   $('shipTomorrow').textContent=cardText(tomorrowTargetRows);
   $('shipOverdue').textContent=cardText(overdueRows);
@@ -9394,7 +9406,7 @@ if(dippingGame){
   if(isDipping){
     if(standardGame) standardGame.classList.remove('show');
     if(ngGame) ngGame.classList.remove('show');
-    renderDippingManagement(onlyWeldingTarget(rows.filter(r=>r.shipDate===dates.today)));
+    renderDippingManagement(getDippingRows(rows,dates.today));
   }
 }
 renderSelectedProcessBacklog();
@@ -9481,7 +9493,7 @@ function renderTable(){
     let due=new Date(r.due+'T00:00:00');
     let late=due<today&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
     let isNg=isEligibleUnregistered(r);
-    let shipOk=!shipFilter||shipFilter==='process'||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):shipFilter==='dipping'?r.shipDate===shipDates.today:(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===shipDates.today:r.shipDate===shipDates[shipFilter]));
+    let shipOk=!shipFilter||shipFilter==='process'||(shipFilter==='today-ng'?isNg:shipFilter==='overdue'?isOverdueItem(r):shipFilter==='dipping'?isDippingCandidate(r,shipDates.today)&&isDippingTargetStatus(r):(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===shipDates.today:r.shipDate===shipDates[shipFilter]));
     return shipOk&&matchesBreakdown(r)&&(!q||[r.id,r.part,r.name,r.standard].join(' ').toLowerCase().includes(q))&&(!s||r.status===s)&&(!o||r.owner===o)&&(!d||(d==='late'?late:due>=today&&due<=soon));
   });
   $('resultCount').textContent=`表示 ${fmt(list.length)}件`;
