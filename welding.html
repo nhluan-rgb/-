@@ -6392,59 +6392,13 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
 .tab-buttons>*,.tabs>*{flex:1 1 0!important;min-width:0!important;font-size:14px!important;padding:10px 8px!important}
 </style>
 
-
-<style id="v128_dipping_tabs_and_readability_fix">
-/* 6タブは必ず1行。狭い画面では折返さず横スクロール */
-.ship-summary{
-  display:grid!important;
-  grid-template-columns:repeat(6,minmax(155px,1fr))!important;
-  gap:8px!important;
-  width:100%!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  flex-wrap:nowrap!important;
-  scrollbar-width:thin;
-}
-.ship-summary .ship-card{
-  min-width:0!important;
-  width:auto!important;
-  padding:12px 13px!important;
-}
-.ship-summary .ship-card .day{font-size:clamp(14px,1.15vw,18px)!important;white-space:nowrap!important}
-.ship-summary .ship-card .ship-value{font-size:clamp(22px,2vw,30px)!important;white-space:nowrap!important}
-.ship-summary .ship-card .ship-sub{font-size:11px!important;line-height:1.25!important}
-@media(max-width:1100px), (max-width:1050px), (max-width:680px){
-  .ship-summary{grid-template-columns:repeat(6,minmax(155px,1fr))!important}
-}
-.dipping-header-actions{display:flex;align-items:center;gap:14px}
-.dipping-back-btn{
-  border:2px solid #74e6ff;border-radius:10px;padding:11px 16px;
-  background:#07344d;color:#fff;font-size:16px;font-weight:900;cursor:pointer;
-  box-shadow:0 3px 0 #001f31;
-}
-.dipping-back-btn:hover{filter:brightness(1.22);transform:translateY(-1px)}
-.dipping-item{
-  width:100%;font:inherit;text-align:left;cursor:pointer;
-  min-height:112px!important;padding:18px 18px!important;
-  transition:transform .15s ease,filter .15s ease,box-shadow .15s ease;
-}
-.dipping-item:hover,.dipping-item:focus-visible{
-  transform:translateY(-3px);filter:brightness(1.18);outline:3px solid #fff;
-  box-shadow:inset 0 0 18px color-mix(in srgb,var(--dip-color,#4fd7ff) 28%,transparent),0 6px 14px #0006!important;
-}
-.dipping-item span{font-size:25px!important;line-height:1.3!important;white-space:normal!important}
-.dipping-item b{font-size:32px!important;white-space:nowrap!important}
-.dipping-item small{font-size:17px!important;font-weight:800!important;color:#e7faff!important}
-.dipping-board h3{font-size:24px!important}
-@media(max-width:900px){.dipping-header{align-items:flex-start;flex-direction:column}.dipping-header-actions{width:100%;justify-content:space-between;flex-wrap:wrap}}
-</style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" id="topBackLink" href="index.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">← ホームへ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="index.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">← ホームへ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
-    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日生地</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
+    <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">生地日未登録・全製品</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 生地日</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全生地日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全生地日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
 
@@ -6530,10 +6484,7 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
   <div class="dipping-stage">
     <div class="dipping-header">
       <div><div class="dipping-title">ドブ漬け管理</div><div class="dipping-source" id="dippingSourceDate">生地日：----</div></div>
-      <div class="dipping-header-actions">
-        <button type="button" class="dipping-back-btn" id="dippingBackBtn">← WELDINGへ戻る</button>
-        <div class="dipping-date-box"><small>持ち込み日</small><b id="dippingCarryDate">----</b></div>
-      </div>
+      <div class="dipping-date-box"><small>持ち込み日</small><b id="dippingCarryDate">----</b></div>
     </div>
     <div id="dippingWarning" class="dipping-warning"></div>
     <div class="dipping-layout">
@@ -9098,12 +9049,12 @@ function renderDippingManagement(targetRows){
   });
   const productColors={'ボックス':'#338cff','ダクト':'#35d6df','架台':'#ff9b3d','貫通枠':'#9b72ff','カバー':'#3ee59a','切板・金物':'#ffd43b','その他・要確認':'#ff6075'};
   const processColors={'未着手':'#90A4AE','CAD/CAM':'#F4C430','切断':'#F57C00','曲げ':'#EC6CB9','溶接':'#E53935','仕上':'#B0BEC5','塗装':'#43A047','組立':'#7E57C2','完成':'#00A67E'};
-  const make=(map,colors,type)=>[...map.entries()].sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty).map(([name,v])=>`<button type="button" class="dipping-item" data-dipping-type="${type}" data-dipping-name="${escapeHtml(name)}" style="--dip-color:${colors[name]||'#55d9ff'}"><span>${escapeHtml(name)}</span><b>${fmt(v.count)}件</b><small>${fmt(v.qty)}点　▶ 詳細を見る</small></button>`).join('');
-  if($('dippingProducts')) $('dippingProducts').innerHTML=activeRows.length?`<div class="dipping-card-grid">${make(productMap,productColors,'product')}</div>`:'<div class="dipping-empty">条件に合う通常品はありません</div>';
+  const make=(map,colors)=>[...map.entries()].sort((a,b)=>b[1].count-a[1].count||b[1].qty-a[1].qty).map(([name,v])=>`<div class="dipping-item" style="--dip-color:${colors[name]||'#55d9ff'}"><span>${escapeHtml(name)}</span><b>${fmt(v.count)}件</b><small>${fmt(v.qty)}点</small></div>`).join('');
+  if($('dippingProducts')) $('dippingProducts').innerHTML=activeRows.length?`<div class="dipping-card-grid">${make(productMap,productColors)}</div>`:'<div class="dipping-empty">条件に合う通常品はありません</div>';
   if($('dippingProcesses')){
     const cancelQty=cancelRows.reduce((sum,r)=>sum+(Number(r.qty)||0),0);
-    const cancelHtml=`<div class="dipping-cancel-box"><h4>キャンセル</h4>${cancelRows.length?`<button type="button" class="dipping-item" data-dipping-type="cancel" data-dipping-name="キャンセル" style="--dip-color:#ff6075"><span>キャンセル</span><b>${fmt(cancelRows.length)}件</b><small>${fmt(cancelQty)}点　▶ 詳細を見る</small></button>`:'<div>0件</div>'}</div>`;
-    $('dippingProcesses').innerHTML=(activeRows.length?`<div class="dipping-card-grid">${make(processMap,processColors,'process')}</div>`:'<div class="dipping-empty">工程データはありません</div>')+cancelHtml;
+    const cancelHtml=`<div class="dipping-cancel-box"><h4>キャンセル</h4>${cancelRows.length?`<div class="dipping-item" style="--dip-color:#ff6075"><span>キャンセル</span><b>${fmt(cancelRows.length)}件</b><small>${fmt(cancelQty)}点</small></div>`:'<div>0件</div>'}</div>`;
+    $('dippingProcesses').innerHTML=(activeRows.length?`<div class="dipping-card-grid">${make(processMap,processColors)}</div>`:'<div class="dipping-empty">工程データはありません</div>')+cancelHtml;
   }
 }
 function renderStats(){let c=fullStats?summary:rows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});let total=fullStats?3602:rows.length,done=c['完成']||0,newc=c['未着手']||0,cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0),active=Math.max(0,total-done-newc-cancel),empty=fullStats?232:rows.filter(r=>!r.owner).length,effectiveTotal=Math.max(0,total-cancel),rate=effectiveTotal?done/effectiveTotal*100:0;$('kTotal').textContent=fmt(total);$('kDone').textContent=fmt(done);$('kActive').textContent=fmt(active);$('kNew').textContent=fmt(newc);$('kEmpty').textContent=fmt(empty);$('kRate').textContent=`完了率 ${rate.toFixed(1)}%`;let dates=getShipDates(),chartRows=shipFilter?(shipFilter==='today-ng'?rows.filter(r=>!r.shipDate&&r.status!=='完成'&&!r.status.includes('ｷｬﾝｾﾙ')&&!r.status.includes('キャンセル')):shipFilter==='overdue'?rows.filter(isOverdueItem):shipFilter==='dipping'?rows.filter(r=>isDippingCandidate(r,dates.today)):rows.filter(r=>(shipFilter==='specified'?r.shipDate===specifiedShipDate:shipFilter==='today'?r.shipDate===dates.today:r.shipDate===dates[shipFilter]))):rows,chartCounts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{}),chartLabels={'today-ng':'生地日未登録','today':'本日製造期限','tomorrow':'明日生地','overdue':'今日から7日間生地','specified':'指定日製造期限','dipping':'ドブ漬け管理'},chartTotal=chartRows.length,chartDone=chartCounts['完成']||0,chartNew=chartCounts['未着手']||0,chartCancel=(chartCounts['ｷｬﾝｾﾙ']||0)+(chartCounts['キャンセル']||0),chartActive=Math.max(0,chartTotal-chartDone-chartNew-chartCancel),chartEffective=Math.max(0,chartTotal-chartCancel),chartRate=chartEffective?chartDone/chartEffective*100:0,cp1=chartRate,cp2=cp1+(chartEffective?chartActive/chartEffective*100:0),cp3=cp2+(chartEffective?chartNew/chartEffective*100:0);if(shipFilter==='overdue'){
@@ -9337,7 +9288,6 @@ const dippingGame=$('dippingGame');
 if(dippingGame){
   const isDipping=shipFilter==='dipping';
   dippingGame.classList.toggle('show',isDipping);
-  updateTopBackLink();
   if(isDipping){
     if(standardGame) standardGame.classList.remove('show');
     if(ngGame) ngGame.classList.remove('show');
@@ -9644,53 +9594,6 @@ $('specifiedDate').addEventListener('change',e=>{
   updateShipLabels();
   renderStats();
   renderTable();
-});
-
-
-/* ドブ漬け管理：戻る・詳細表示 */
-function activateWeldingHome(){
-  shipFilter='today-ng';
-  standardBreakdownFilter=null;
-  selectedProcess=''; selectedDelivery=''; selectedMaterial=''; selectedProductCategory='';
-  localStorage.setItem('shipFilter',shipFilter);
-  document.querySelectorAll('[data-ship],[data-quick]').forEach(x=>x.classList.toggle('active',(x.dataset.ship||x.dataset.quick)===shipFilter));
-  renderStats(); renderTable();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function updateTopBackLink(){
-  const link=document.getElementById('topBackLink');
-  if(!link)return;
-  if(shipFilter==='dipping'){
-    link.textContent='← WELDINGへ戻る';
-    link.href='#';
-  }else{
-    link.textContent='← ホームへ戻る';
-    link.href='index.html';
-  }
-}
-document.getElementById('dippingBackBtn')?.addEventListener('click',activateWeldingHome);
-document.getElementById('topBackLink')?.addEventListener('click',function(e){
-  if(shipFilter==='dipping'){e.preventDefault();activateWeldingHome();}
-});
-function showDippingDetails(type,name){
-  const dates=getShipDates();
-  let list=rows.filter(r=>isDippingCandidate(r,dates.today));
-  if(type==='cancel') list=list.filter(r=>/ｷｬﾝｾﾙ|キャンセル/.test(String(r.status||'')));
-  else {
-    list=list.filter(r=>!/ｷｬﾝｾﾙ|キャンセル/.test(String(r.status||'')));
-    if(type==='product') list=list.filter(r=>(classifyProductCategory(r)||'その他・要確認')===name);
-    if(type==='process') list=list.filter(r=>(String(r.status||'未着手').trim()||'未着手')===name);
-  }
-  const qty=list.reduce((a,r)=>a+(Number(r.qty)||0),0);
-  const modal=document.getElementById('processModal');
-  const body=document.getElementById('processModalBody');
-  if(!modal||!body)return;
-  body.innerHTML=`<header class="process-backlog-header"><div><div class="process-backlog-kicker">ドブ漬け管理・${type==='product'?'製品種類':type==='process'?'工程':'キャンセル'}</div><div class="process-backlog-title">${escapeHtml(name)}</div><div class="process-backlog-summary">${fmt(list.length)}件 ／ ${fmt(qty)}点</div></div><button type="button" class="process-backlog-close" data-process-close>× 閉じる</button></header><div class="process-backlog-table-wrap"><table class="process-backlog-table"><thead><tr><th>J番号</th><th>品名</th><th>製品種類</th><th>数量</th><th>工程</th><th>生地日</th><th>持ち込み日</th><th>期限</th></tr></thead><tbody>${list.map(r=>`<tr><td class="backlog-code">${escapeHtml(r.id||'—')}</td><td class="backlog-product"><b>${escapeHtml(r.name||'—')}</b><small>${escapeHtml(r.part||'')}</small></td><td>${escapeHtml(classifyProductCategory(r)||'その他・要確認')}</td><td class="backlog-qty">${fmt(r.qty)}点</td><td><span class="status ${statusClass(r.status)}">${escapeHtml(r.status||'未着手')}</span></td><td class="backlog-date">${escapeHtml(r.shipDate||'—')}</td><td class="backlog-date">${escapeHtml(nextWorkingDateKey(r.shipDate||dates.today))}</td><td class="backlog-date">${escapeHtml(r.due||'—')}</td></tr>`).join('')||'<tr><td colspan="8" class="process-backlog-empty">対象データなし</td></tr>'}</tbody></table></div>`;
-  modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
-}
-document.addEventListener('click',function(e){
-  const item=e.target.closest('.dipping-item[data-dipping-type]');
-  if(item){e.preventDefault();showDippingDetails(item.dataset.dippingType,item.dataset.dippingName||'');}
 });
 
 
@@ -10004,92 +9907,6 @@ setInterval(refreshTodayResultSetting,10000);
   --chip-color:#ff6262!important;
 }
 </style>
-
-
-
-<style id="v128_force_six_tabs_one_row_final">
-/* 最終修正：6TABを必ず同じ1行へ固定。画面幅が狭い場合も折り返さない。 */
-body .ship-summary,
-body .ship-summary.game-stage-tabs,
-body .ship-summary.game-stage-tabs.visual-tabs,
-body .ship-summary.game-stage-tabs.sidebar-tabs{
-  display:grid!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
-  grid-auto-flow:column!important;
-  grid-auto-columns:minmax(0,1fr)!important;
-  gap:8px!important;
-  width:100%!important;
-  max-width:none!important;
-  overflow:visible!important;
-  flex-wrap:nowrap!important;
-}
-body .ship-summary.game-stage-tabs .ship-card{
-  display:block!important;
-  min-width:0!important;
-  width:auto!important;
-  max-width:none!important;
-  padding:13px 12px!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .day{
-  font-size:clamp(14px,1.15vw,19px)!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .ship-count-line{
-  font-size:clamp(26px,2.45vw,42px)!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .ship-points-line{
-  font-size:clamp(18px,1.75vw,30px)!important;
-}
-body .ship-summary.game-stage-tabs .ship-card[data-ship="dipping"]{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  order:5!important;
-}
-body .ship-summary.game-stage-tabs .ship-card[data-ship="specified"]{order:6!important}
-@media(max-width:1300px){
-  body .ship-summary,
-  body .ship-summary.game-stage-tabs,
-  body .ship-summary.game-stage-tabs.visual-tabs,
-  body .ship-summary.game-stage-tabs.sidebar-tabs{
-    grid-template-columns:repeat(6,minmax(145px,1fr))!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    scrollbar-width:thin;
-  }
-}
-</style>
-
-<script id="v128_dipping_title_and_back_final">
-(function(){
-  function normalizeDippingTab(){
-    var card=document.querySelector('.ship-card[data-ship="dipping"]');
-    if(card){
-      var day=card.querySelector('.day');
-      if(day) day.textContent='ドブ漬け管理';
-      card.style.display='block';
-    }
-  }
-  function syncDippingScreen(){
-    normalizeDippingTab();
-    var title=document.querySelector('.top h1');
-    var panelTitle=document.querySelector('.work .panel-head h2');
-    var back=document.getElementById('topBackLink');
-    if(window.shipFilter==='dipping' || (typeof shipFilter!=='undefined' && shipFilter==='dipping')){
-      if(panelTitle) panelTitle.textContent='ドブ漬け管理';
-      if(back){back.textContent='← WELDINGへ戻る';back.setAttribute('href','#');}
-    }
-  }
-  document.addEventListener('DOMContentLoaded',function(){normalizeDippingTab();syncDippingScreen();});
-  window.addEventListener('load',function(){normalizeDippingTab();syncDippingScreen();});
-  document.addEventListener('click',function(e){
-    if(e.target.closest('.ship-card[data-ship="dipping"]')) setTimeout(syncDippingScreen,0);
-  });
-  new MutationObserver(function(){normalizeDippingTab();}).observe(document.documentElement,{subtree:true,childList:true});
-})();
-</script>
 
 </body>
 </html>
