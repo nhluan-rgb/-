@@ -8947,7 +8947,7 @@ function renderProductCategoryOverview(chartRows){
   const productItems=productConfigs.map(config=>{
     const target=chartRows.filter(row=>classifyProductCategory(row)===config.name);
     return{...config,count:target.length,qty:target.reduce((sum,row)=>sum+(Number(row.qty)||0),0)};
-  });
+  }).sort((a,b)=>b.count-a.count||b.qty-a.qty);
   const productMax=Math.max(1,...productItems.map(item=>item.count));
 
   const isCancelled=row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));
@@ -8964,14 +8964,14 @@ function renderProductCategoryOverview(chartRows){
     // 製品種類側と同じ対象条件（現在表示中の6工程 chartRows）で集計
     const matched=chartRows.filter(row=>matchesStandardMaterial(row,group.name));
     return{...group,count:matched.length,qty:matched.reduce((sum,row)=>sum+(Number(row.qty)||0),0)};
-  });
+  }).sort((a,b)=>b.count-a.count||b.qty-a.qty);
   const materialMax=Math.max(1,...materialItems.map(item=>item.count));
 
-  const productBars=productItems.map(item=>`<button type="button" class="vertical-bar-button${item.count===0?' is-zero':''}${selectedProductCategory===item.name?' is-selected':''}" data-product-category="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?8:2,item.count/productMax*100)}" aria-pressed="${selectedProductCategory===item.name}" title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
-    <span class="vertical-bar-value">${fmt(item.count)}</span><span class="vertical-bar-column"></span><span class="vertical-bar-label">${escapeHtml(item.name)}</span><span class="vertical-bar-points">${fmt(item.qty)}点</span>
+  const productBars=productItems.map((item,index)=>`<button type="button" class="ranking-row${item.count===0?' is-zero':''}${selectedProductCategory===item.name?' is-selected':''}${item.name==='その他・要確認'&&item.count>0?' needs-attention':''}" data-product-category="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?4:0,item.count/productMax*100)}" aria-pressed="${selectedProductCategory===item.name}" title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
+    <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>
   </button>`).join('');
-  const materialBars=materialItems.map(item=>`<button type="button" class="vertical-bar-button${item.count===0?' is-zero':''}${selectedMaterial===item.name?' is-selected':''}" data-material="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?8:2,item.count/materialMax*100)}" aria-pressed="${selectedMaterial===item.name}" title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
-    <span class="vertical-bar-value">${fmt(item.count)}</span><span class="vertical-bar-column"></span><span class="vertical-bar-label">${escapeHtml(item.name)}</span><span class="vertical-bar-points">${fmt(item.qty)}点</span>
+  const materialBars=materialItems.map((item,index)=>`<button type="button" class="ranking-row${item.count===0?' is-zero':''}${selectedMaterial===item.name?' is-selected':''}" data-material="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?4:0,item.count/materialMax*100)}" aria-pressed="${selectedMaterial===item.name}" title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
+    <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>
   </button>`).join('');
 
   overview.innerHTML=`<section class="combined-analysis-board">
@@ -8982,7 +8982,7 @@ function renderProductCategoryOverview(chartRows){
         <span class="analysis-status-chip status-complete" style="--chip-color:#41d2b2">完成 <b>${fmt(completedCount)}件</b></span>
         <span class="analysis-status-chip status-cancel" style="--chip-color:#ff7a7a">キャンセル <b>${fmt(cancelCount)}件</b></span>
       </div>
-      <div class="vertical-chart product-chart" style="--bar-count:${productItems.length}">${productBars}</div>
+      <div class="ranking-list product-ranking">${productBars}</div>
     </div>
     <div class="analysis-chart-section material-side">
       <div class="analysis-chart-head"><div class="analysis-chart-title">材質・表面処理</div><div class="analysis-chart-meta">対象 ${fmt(chartRows.length)}件 ／ 生地 ${fmt(accountedCount)}件</div></div>
@@ -8991,7 +8991,7 @@ function renderProductCategoryOverview(chartRows){
         <span class="analysis-status-chip status-complete" style="--chip-color:#41d2b2">完成 <b>${fmt(completedCount)}件</b></span>
         <span class="analysis-status-chip status-cancel" style="--chip-color:#ff7a7a">キャンセル <b>${fmt(cancelCount)}件</b></span>
       </div>
-      <div class="vertical-chart material-chart" style="--bar-count:${materialItems.length}">${materialBars}</div>
+      <div class="ranking-list material-ranking">${materialBars}</div>
     </div>
   </section>`;
 }
@@ -10552,7 +10552,83 @@ body .ng-game .home-unregistered-alert.is-clear .home-unregistered-kicker{
   from{filter:brightness(.82);transform:scale(.985)}
   to{filter:brightness(1.22);transform:scale(1.012)}
 }
+body .standard-game .ranking-list{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+  min-width:0!important;
+  margin-top:14px!important;
+  padding:4px 2px 8px!important;
+  overflow:visible!important;
+}
+body .standard-game .ranking-row{
+  position:relative!important;
+  width:100%!important;
+  min-height:64px!important;
+  display:grid!important;
+  grid-template-columns:34px minmax(105px,.8fr) minmax(120px,1.6fr) minmax(96px,auto)!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:8px 10px!important;
+  border:1px solid color-mix(in srgb,var(--bar-color) 72%,#bfefff)!important;
+  border-left:6px solid var(--bar-color)!important;
+  border-radius:11px!important;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--bar-color) 15%,#06283b),#061e30 58%)!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  box-shadow:inset 0 0 18px rgba(70,215,255,.06),0 3px 8px rgba(0,0,0,.3)!important;
+  text-align:left!important;
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease!important;
+}
+body .standard-game .ranking-row:hover,
+body .standard-game .ranking-row:focus-visible{
+  outline:none!important;
+  transform:translateX(5px)!important;
+  filter:brightness(1.16)!important;
+  box-shadow:0 0 0 2px var(--bar-color),0 0 18px color-mix(in srgb,var(--bar-color) 55%,transparent)!important;
+}
+body .standard-game .ranking-row.is-selected{
+  box-shadow:0 0 0 3px #fff,0 0 22px var(--bar-color)!important;
+}
+body .standard-game .ranking-row.is-zero{opacity:.46!important}
+body .standard-game .ranking-index{
+  width:30px!important;height:30px!important;display:grid!important;place-items:center!important;
+  border-radius:50%!important;background:var(--bar-color)!important;color:#061421!important;
+  font-size:16px!important;font-weight:1000!important;
+}
+body .standard-game .ranking-name{
+  min-width:0!important;color:#fff!important;font-size:17px!important;font-weight:1000!important;
+  line-height:1.2!important;overflow-wrap:anywhere!important;
+}
+body .standard-game .ranking-track{
+  height:22px!important;display:block!important;overflow:hidden!important;
+  border:2px solid rgba(154,227,255,.55)!important;border-radius:999px!important;
+  background:#031522!important;box-shadow:inset 0 2px 7px rgba(0,0,0,.8)!important;
+}
+body .standard-game .ranking-fill{
+  display:block!important;width:calc(var(--bar-ratio) * 1%)!important;height:100%!important;
+  border-radius:999px!important;background:linear-gradient(90deg,color-mix(in srgb,var(--bar-color) 68%,#fff),var(--bar-color))!important;
+  box-shadow:0 0 14px var(--bar-color)!important;
+}
+body .standard-game .ranking-metrics{
+  display:grid!important;grid-template-columns:1fr!important;justify-items:end!important;line-height:1.1!important;
+}
+body .standard-game .ranking-metrics b{color:#fff!important;font-size:21px!important;font-weight:1000!important}
+body .standard-game .ranking-metrics em{margin-top:5px!important;color:#ffe66b!important;font-size:16px!important;font-style:normal!important;font-weight:1000!important}
+body .standard-game .ranking-row.needs-attention{
+  border-color:#ff506b!important;background:linear-gradient(90deg,#651021,#23101c)!important;
+  animation:rankingAttention .8s ease-in-out infinite alternate!important;
+}
+@keyframes rankingAttention{to{filter:brightness(1.22);box-shadow:0 0 18px rgba(255,67,96,.7)}}
+@media(max-width:1200px){
+  body .standard-game .combined-analysis-board{grid-template-columns:1fr!important}
+  body .standard-game .analysis-chart-section.material-side{border-left:0!important;border-top:1px solid rgba(106,220,255,.35)!important;padding-left:0!important;padding-top:14px!important}
+}
 @media(max-width:900px){
+  body .standard-game .ranking-row{grid-template-columns:30px minmax(90px,1fr) minmax(80px,1.2fr) 84px!important;gap:7px!important;padding:7px!important}
+  body .standard-game .ranking-name{font-size:14px!important}
+  body .standard-game .ranking-metrics b{font-size:17px!important}
+  body .standard-game .ranking-metrics em{font-size:13px!important}
   body .ship-marquee-group > .ship-card{
     flex-basis:205px!important;
     width:205px!important;
