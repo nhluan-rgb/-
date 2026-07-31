@@ -9481,6 +9481,9 @@ if(shipFilter==='today-ng'){
   const todayUrgentRows=todayUrgentAllRows.filter(row=>
     !confirmedUnregisteredIds.has(String(row.id||'').trim())
   );
+  const urgentActiveQty=todayUrgentRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  $('shipNg').textContent=`${fmt(todayUrgentRows.length)}件（${fmt(urgentActiveQty)}点）`;
+  formatShipTabValues();
   const homeShipCard=document.querySelector('.ship-card[data-ship="today-ng"]');
   if(homeShipCard){
     homeShipCard.classList.toggle('urgent-pending',todayUrgentRows.length>0);
@@ -9514,7 +9517,6 @@ if(shipFilter==='today-ng'){
         .map(([category,item])=>`<button type="button" class="home-urgent-category" data-product-category="${escapeHtml(category)}" data-product-category-scope="urgent-today" style="--urgent-category-color:${urgentCategoryColors[category]||'#90A4AE'}" aria-label="新規急ぎ・${escapeHtml(category)}の詳細を表示">
           <span>${escapeHtml(category)}</span><b><em>${fmt(item.count)}件</em><em>${fmt(item.qty)}点</em></b>
         </button>`).join('');
-      const urgentActiveQty=todayUrgentRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
       urgentAlert.innerHTML=`<div class="home-urgent-title">⚠ 新規急ぎ ${fmt(todayUrgentRows.length)}件・${fmt(urgentActiveQty)}点</div>
         <div class="home-urgent-condition">製造指示日＝今日 ／ 生地日＝今日</div>
         <div class="home-urgent-breakdown">${urgentBreakdown}</div>`;
@@ -10433,6 +10435,45 @@ body .ship-marquee-group > .ship-card{
 }
 body .ship-marquee-clone{pointer-events:auto!important}
 body .ship-marquee-clone input{pointer-events:none!important}
+body .ship-summary .ship-card .ship-value .ship-count-line,
+body .ship-summary .ship-card .ship-value .ship-points-line{
+  display:block!important;
+  width:100%!important;
+  white-space:nowrap!important;
+}
+body .ship-summary .ship-card .ship-value .ship-points-line{
+  margin-top:8px!important;
+}
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending,
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending.active,
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending.ng{
+  --tab-rgb:255,26,54!important;
+  --tab-bright:#ff8799!important;
+  --tab-deep:#4b000d!important;
+  border-color:#ff3659!important;
+  background:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(145deg,#c90025,#52000f)!important;
+  background-size:28px 28px,28px 28px,auto!important;
+  color:#fff!important;
+  box-shadow:0 0 28px rgba(255,25,58,.95),inset 0 0 30px rgba(255,103,123,.32)!important;
+  animation:homeUrgentTabAlarm .58s ease-in-out infinite alternate!important;
+}
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending::before{
+  border-color:#ff8a9c!important;
+}
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending .day,
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending .ship-value,
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending .ship-count-line,
+body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending .ship-points-line{
+  color:#fff!important;
+  text-shadow:0 0 8px rgba(255,255,255,.55),0 2px 2px rgba(65,0,10,.85)!important;
+}
+@keyframes homeUrgentTabAlarm{
+  from{filter:brightness(.78);transform:scale(.985)}
+  to{filter:brightness(1.35);transform:scale(1.015)}
+}
 @media(max-width:900px){
   body .ship-marquee-group > .ship-card{
     flex-basis:205px!important;
@@ -10476,11 +10517,13 @@ body .ship-marquee-clone input{pointer-events:none!important}
       if(!source||!target)return;
 
       target.className=source.className+' ship-marquee-clone';
-      ['.day','.ship-value'].forEach(function(selector){
-        const sourceEl=source.querySelector(selector);
-        const targetEl=target.querySelector(selector);
-        if(sourceEl&&targetEl)targetEl.textContent=sourceEl.textContent;
-      });
+      const sourceDay=source.querySelector('.day');
+      const targetDay=target.querySelector('.day');
+      if(sourceDay&&targetDay)targetDay.textContent=sourceDay.textContent;
+
+      const sourceValue=source.querySelector('.ship-value');
+      const targetValue=target.querySelector('.ship-value');
+      if(sourceValue&&targetValue)targetValue.innerHTML=sourceValue.innerHTML;
 
       const sourceSub=source.querySelector('.ship-sub');
       const targetSub=target.querySelector('.ship-sub');
