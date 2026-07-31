@@ -8967,11 +8967,11 @@ function renderProductCategoryOverview(chartRows){
   }).sort((a,b)=>b.count-a.count||b.qty-a.qty);
   const materialMax=Math.max(1,...materialItems.map(item=>item.count));
 
-  const productBars=productItems.map((item,index)=>`<button type="button" class="ranking-row${item.count===0?' is-zero':''}${selectedProductCategory===item.name?' is-selected':''}${item.name==='その他・要確認'&&item.count>0?' needs-attention':''}" data-product-category="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?4:0,item.count/productMax*100)}" aria-pressed="${selectedProductCategory===item.name}" title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
-    <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>
+  const productBars=productItems.map((item,index)=>`<button type="button" class="ranking-row${item.count===0?' is-zero':''}${selectedProductCategory===item.name?' is-selected':''}${item.name==='その他・要確認'&&item.count>0?' needs-attention':''}" data-product-category="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?4:0,item.count/productMax*100)}" aria-pressed="${selectedProductCategory===item.name}" ${item.count===0?'disabled aria-disabled="true"':''} title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
+    <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>${item.count===0?'<span class="ranking-excluded">対象外</span>':''}
   </button>`).join('');
-  const materialBars=materialItems.map((item,index)=>`<button type="button" class="ranking-row${item.count===0?' is-zero':''}${selectedMaterial===item.name?' is-selected':''}" data-material="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?4:0,item.count/materialMax*100)}" aria-pressed="${selectedMaterial===item.name}" title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
-    <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>
+  const materialBars=materialItems.map((item,index)=>`<button type="button" class="ranking-row${item.count===0?' is-zero':''}${selectedMaterial===item.name?' is-selected':''}" data-material="${escapeHtml(item.name)}" style="--bar-color:${item.color};--bar-ratio:${Math.max(item.count?4:0,item.count/materialMax*100)}" aria-pressed="${selectedMaterial===item.name}" ${item.count===0?'disabled aria-disabled="true"':''} title="${escapeHtml(item.name)}：${fmt(item.count)}件／${fmt(item.qty)}点">
+    <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>${item.count===0?'<span class="ranking-excluded">対象外</span>':''}
   </button>`).join('');
 
   overview.innerHTML=`<section class="combined-analysis-board">
@@ -10608,7 +10608,44 @@ body .standard-game .ranking-row:focus-visible{
 body .standard-game .ranking-row.is-selected{
   box-shadow:0 0 0 3px #fff,0 0 22px var(--bar-color)!important;
 }
-body .standard-game .ranking-row.is-zero{opacity:.46!important}
+body .standard-game .ranking-row.is-zero,
+body .standard-game .ranking-row:disabled{
+  opacity:.68!important;
+  border-color:#536b7b!important;
+  border-left-color:#536b7b!important;
+  background:linear-gradient(90deg,#263746,#112534)!important;
+  filter:grayscale(.82)!important;
+  cursor:not-allowed!important;
+  box-shadow:inset 0 0 18px rgba(0,0,0,.32)!important;
+}
+body .standard-game .ranking-row:disabled:hover,
+body .standard-game .ranking-row:disabled:focus-visible{
+  transform:none!important;
+  filter:grayscale(.82)!important;
+  box-shadow:inset 0 0 18px rgba(0,0,0,.32)!important;
+}
+body .standard-game .ranking-row:disabled .ranking-track{opacity:.38!important}
+body .standard-game .ranking-row:disabled .ranking-name,
+body .standard-game .ranking-row:disabled .ranking-metrics{opacity:.48!important}
+body .standard-game .ranking-excluded{
+  position:absolute!important;
+  z-index:4!important;
+  left:52%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%) rotate(-7deg)!important;
+  padding:5px 18px!important;
+  border:4px double #ffb14a!important;
+  border-radius:7px!important;
+  background:rgba(60,17,0,.88)!important;
+  color:#ffd07a!important;
+  font-size:24px!important;
+  font-weight:1000!important;
+  line-height:1!important;
+  letter-spacing:.12em!important;
+  text-shadow:0 2px 2px #000!important;
+  box-shadow:0 0 12px rgba(255,137,34,.55)!important;
+  pointer-events:none!important;
+}
 body .standard-game .ranking-index{
   width:38px!important;height:38px!important;display:grid!important;place-items:center!important;
   border-radius:50%!important;background:var(--bar-color)!important;color:#061421!important;
