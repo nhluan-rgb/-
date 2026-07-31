@@ -5986,7 +5986,7 @@ color:#d7e6ef!important;
 .standard-game #standardOverview{width:100%!important;max-width:none!important}
 .standard-game .standard-visual-overlay{max-width:none!important;width:100%!important;left:0!important;right:0!important;padding:14px!important}
 .standard-game .combined-analysis-board{
-  width:100%;display:grid;grid-template-columns:minmax(0,65fr) minmax(330px,35fr);gap:14px;
+  width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;
   padding:14px;border:2px solid rgba(91,225,255,.72);border-radius:18px;
   background:linear-gradient(135deg,rgba(5,39,59,.94),rgba(8,26,48,.92));
   box-shadow:inset 0 0 24px rgba(35,204,255,.12),0 6px 18px rgba(0,0,0,.34);
@@ -10561,12 +10561,30 @@ body .standard-game .ranking-list{
   padding:4px 2px 8px!important;
   overflow:visible!important;
 }
+body .standard-game .analysis-chart-title{
+  font-size:31px!important;
+  font-weight:1000!important;
+  text-shadow:0 0 12px rgba(75,224,255,.72),0 2px 2px #000!important;
+}
+body .standard-game .analysis-chart-meta{
+  font-size:17px!important;
+  font-weight:1000!important;
+}
+body .standard-game .analysis-status-chip{
+  font-size:17px!important;
+  font-weight:1000!important;
+  padding:10px 14px!important;
+}
+body .standard-game .analysis-status-chip b{
+  font-size:22px!important;
+  font-weight:1000!important;
+}
 body .standard-game .ranking-row{
   position:relative!important;
   width:100%!important;
-  min-height:64px!important;
+  min-height:78px!important;
   display:grid!important;
-  grid-template-columns:34px minmax(105px,.8fr) minmax(120px,1.6fr) minmax(96px,auto)!important;
+  grid-template-columns:42px minmax(135px,.9fr) minmax(100px,1.4fr) minmax(125px,auto)!important;
   align-items:center!important;
   gap:10px!important;
   padding:8px 10px!important;
@@ -10592,16 +10610,17 @@ body .standard-game .ranking-row.is-selected{
 }
 body .standard-game .ranking-row.is-zero{opacity:.46!important}
 body .standard-game .ranking-index{
-  width:30px!important;height:30px!important;display:grid!important;place-items:center!important;
+  width:38px!important;height:38px!important;display:grid!important;place-items:center!important;
   border-radius:50%!important;background:var(--bar-color)!important;color:#061421!important;
-  font-size:16px!important;font-weight:1000!important;
+  font-size:21px!important;font-weight:1000!important;
 }
 body .standard-game .ranking-name{
-  min-width:0!important;color:#fff!important;font-size:17px!important;font-weight:1000!important;
-  line-height:1.2!important;overflow-wrap:anywhere!important;
+  min-width:0!important;color:#fff!important;font-size:23px!important;font-weight:1000!important;
+  line-height:1.18!important;letter-spacing:.02em!important;overflow-wrap:anywhere!important;
+  text-shadow:0 2px 2px #000,0 0 9px rgba(117,225,255,.5)!important;
 }
 body .standard-game .ranking-track{
-  height:22px!important;display:block!important;overflow:hidden!important;
+  height:27px!important;display:block!important;overflow:hidden!important;
   border:2px solid rgba(154,227,255,.55)!important;border-radius:999px!important;
   background:#031522!important;box-shadow:inset 0 2px 7px rgba(0,0,0,.8)!important;
 }
@@ -10613,8 +10632,8 @@ body .standard-game .ranking-fill{
 body .standard-game .ranking-metrics{
   display:grid!important;grid-template-columns:1fr!important;justify-items:end!important;line-height:1.1!important;
 }
-body .standard-game .ranking-metrics b{color:#fff!important;font-size:21px!important;font-weight:1000!important}
-body .standard-game .ranking-metrics em{margin-top:5px!important;color:#ffe66b!important;font-size:16px!important;font-style:normal!important;font-weight:1000!important}
+body .standard-game .ranking-metrics b{color:#fff!important;font-size:30px!important;font-weight:1000!important;text-shadow:0 2px 2px #000,0 0 9px rgba(255,255,255,.45)!important}
+body .standard-game .ranking-metrics em{margin-top:6px!important;color:#ffe66b!important;font-size:22px!important;font-style:normal!important;font-weight:1000!important;text-shadow:0 2px 2px #000!important}
 body .standard-game .ranking-row.needs-attention{
   border-color:#ff506b!important;background:linear-gradient(90deg,#651021,#23101c)!important;
   animation:rankingAttention .8s ease-in-out infinite alternate!important;
@@ -10625,10 +10644,10 @@ body .standard-game .ranking-row.needs-attention{
   body .standard-game .analysis-chart-section.material-side{border-left:0!important;border-top:1px solid rgba(106,220,255,.35)!important;padding-left:0!important;padding-top:14px!important}
 }
 @media(max-width:900px){
-  body .standard-game .ranking-row{grid-template-columns:30px minmax(90px,1fr) minmax(80px,1.2fr) 84px!important;gap:7px!important;padding:7px!important}
-  body .standard-game .ranking-name{font-size:14px!important}
-  body .standard-game .ranking-metrics b{font-size:17px!important}
-  body .standard-game .ranking-metrics em{font-size:13px!important}
+  body .standard-game .ranking-row{grid-template-columns:34px minmax(105px,1fr) minmax(70px,1.1fr) 100px!important;gap:7px!important;padding:7px!important}
+  body .standard-game .ranking-name{font-size:18px!important}
+  body .standard-game .ranking-metrics b{font-size:23px!important}
+  body .standard-game .ranking-metrics em{font-size:17px!important}
   body .ship-marquee-group > .ship-card{
     flex-basis:205px!important;
     width:205px!important;
