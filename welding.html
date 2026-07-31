@@ -9436,18 +9436,18 @@ if(mainGrid){
   mainGrid.classList.toggle('standard-layout',shipFilter!=='today-ng');
 }let work=['CAD/CAM','切断','曲げ','溶接','仕上','未着手'];let max=Math.max(...work.map(x=>chartCounts[x]||0),1);$('bars').innerHTML=work.map((x,i)=>`<div class="bar-row"><span>${x}</span><div class="track"><div class="fill" style="width:${(chartCounts[x]||0)/max*100}%;background:${['#F4C430','#F57C00','#EC6CB9','#E53935','#43A047','#7E57C2','#B0BEC5','#78909C'][i]}"></div></div><b>${fmt(chartCounts[x]||0)}</b></div>`).join('');const weldingTargetStatuses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   const onlyWeldingTarget=list=>list.filter(r=>weldingTargetStatuses.includes(String(r.status||'').trim()));
-  const cardText=list=>`${fmt(list.length)}件（${fmt(list.reduce((a,r)=>a+(Number(r.qty)||0),0))}点）`;
+  const cardText=list=>`<span class="ship-count-line">${fmt(list.length)}件</span><span class="ship-points-line">${fmt(list.reduce((a,r)=>a+(Number(r.qty)||0),0))}点</span>`;
   let ng=rows.filter(isActiveUnregistered); // ホームは下段『生地日未登録・製品種類』と同じ母集団
   const todayTargetRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===dates.today));
   const tomorrowTargetRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===dates.tomorrow));
   const overdueRows=onlyWeldingTarget(rows.filter(isOverdueItem));
   const specifiedRows=onlyWeldingTarget(rows.filter(r=>r.shipDate===specifiedShipDate));
   const dippingRows=getDippingRows(rows,dates.today);
-  $('shipToday').textContent=cardText(todayTargetRows);
-  $('shipTomorrow').textContent=cardText(tomorrowTargetRows);
-  $('shipOverdue').textContent=cardText(overdueRows);
-  if($('shipSpecified')) $('shipSpecified').textContent=cardText(specifiedRows);
-  if($('shipDipping')) $('shipDipping').textContent=cardText(dippingRows);
+  $('shipToday').innerHTML=cardText(todayTargetRows);
+  $('shipTomorrow').innerHTML=cardText(tomorrowTargetRows);
+  $('shipOverdue').innerHTML=cardText(overdueRows);
+  if($('shipSpecified')) $('shipSpecified').innerHTML=cardText(specifiedRows);
+  if($('shipDipping')) $('shipDipping').innerHTML=cardText(dippingRows);
   updateTodayShipAlarm(todayTargetRows.length);
   if(shipFilter==='today-ng'){
     currentChartRows=ng;
@@ -9482,8 +9482,7 @@ if(shipFilter==='today-ng'){
     !confirmedUnregisteredIds.has(String(row.id||'').trim())
   );
   const urgentActiveQty=todayUrgentRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
-  $('shipNg').textContent=`${fmt(todayUrgentRows.length)}件（${fmt(urgentActiveQty)}点）`;
-  formatShipTabValues();
+  $('shipNg').innerHTML=`<span class="ship-count-line">${fmt(todayUrgentRows.length)}件</span><span class="ship-points-line">${fmt(urgentActiveQty)}点</span>`;
   const homeShipCard=document.querySelector('.ship-card[data-ship="today-ng"]');
   if(homeShipCard){
     homeShipCard.classList.toggle('urgent-pending',todayUrgentRows.length>0);
