@@ -10469,6 +10469,31 @@ body .ship-marquee-clone input{pointer-events:none!important}
     return clone;
   }
 
+  function syncDuplicateTabs(original,duplicate){
+    ALLOWED_TABS.forEach(function(key){
+      const source=original.querySelector('.ship-card[data-ship="'+key+'"]');
+      const target=duplicate.querySelector('.ship-card[data-ship="'+key+'"]');
+      if(!source||!target)return;
+
+      target.className=source.className+' ship-marquee-clone';
+      ['.day','.ship-value'].forEach(function(selector){
+        const sourceEl=source.querySelector(selector);
+        const targetEl=target.querySelector(selector);
+        if(sourceEl&&targetEl)targetEl.textContent=sourceEl.textContent;
+      });
+
+      const sourceSub=source.querySelector('.ship-sub');
+      const targetSub=target.querySelector('.ship-sub');
+      if(sourceSub&&targetSub&&!sourceSub.querySelector('input')){
+        targetSub.textContent=sourceSub.textContent;
+      }
+
+      const sourceInput=source.querySelector('input');
+      const targetInput=target.querySelector('input');
+      if(sourceInput&&targetInput)targetInput.value=sourceInput.value;
+    });
+  }
+
   function startAnimation(box,track,firstGroup){
     if(track._marqueeAnimation){track._marqueeAnimation.cancel()}
     requestAnimationFrame(function(){
@@ -10527,6 +10552,19 @@ body .ship-marquee-clone input{pointer-events:none!important}
     duplicate.className='ship-marquee-group ship-marquee-group-duplicate';
     cards.forEach(function(card){original.appendChild(card)});
     cards.forEach(function(card,index){duplicate.appendChild(cleanClone(card.cloneNode(true),index))});
+    syncDuplicateTabs(original,duplicate);
+    const duplicateSyncObserver=new MutationObserver(function(){
+      syncDuplicateTabs(original,duplicate);
+    });
+    duplicateSyncObserver.observe(original,{
+      subtree:true,
+      childList:true,
+      characterData:true,
+      attributes:true,
+      attributeFilter:['class','value']
+    });
+    original.addEventListener('input',function(){syncDuplicateTabs(original,duplicate)});
+    original.addEventListener('change',function(){syncDuplicateTabs(original,duplicate)});
     track.append(original,duplicate);
     box.appendChild(track);
     box.classList.add('ship-marquee-ready');
