@@ -6778,6 +6778,7 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:100%"></div></div>
         <div class="boss-goal">本日生地 残り率 <span id="bossHpText">100%</span></div>
         <div id="homeUrgentAlert" class="home-urgent-alert"></div>
+        <button type="button" id="homeUnregisteredAlert" class="home-unregistered-alert" data-product-category="__all_unregistered__" data-product-category-scope="unregistered" aria-label="生地日未登録の未確認一覧を開く"></button>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
         <div id="bossMissionSlot" class="boss-mission-slot"></div>
       </section>
@@ -8875,13 +8876,15 @@ function productPopupProcessColor(status){
 function buildProductCategoryBacklogMarkup(categoryName){
   const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   const today=getShipDates().today;
+  const allUnregistered=selectedProductCategoryScope==='unregistered'&&categoryName==='__all_unregistered__';
+  const displayCategoryName=allUnregistered?'生地日未登録・全件':categoryName;
   const categorySourceRows=selectedProductCategoryScope==='unregistered'
     ? rows.filter(isEligibleUnregistered)
     : selectedProductCategoryScope==='urgent-today'
       ? rows.filter(row=>row.shipDate===today&&row.instructionDate===today)
       : currentChartRows;
   const targetRows=categorySourceRows
-    .filter(row=>classifyProductCategory(row)===categoryName)
+    .filter(row=>allUnregistered||classifyProductCategory(row)===categoryName)
     .filter(row=>selectedProductCategoryScope!=='current'||managedProcesses.includes(String(row.status||'')))
     .sort((a,b)=>String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||String(a.id||'').localeCompare(String(b.id||'')));
   const confirmationEnabled=selectedProductCategoryScope==='unregistered'||selectedProductCategoryScope==='urgent-today';
@@ -8891,7 +8894,7 @@ function buildProductCategoryBacklogMarkup(categoryName){
   const totalQty=activeTargetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   return `
     <header class="process-backlog-header">
-      <div><div class="process-backlog-kicker">${selectedProductCategoryScope==='urgent-today'?'新規急ぎ・製品種類':'製品種類'}</div><div class="process-backlog-title">${escapeHtml(categoryName)}</div><div class="process-backlog-summary">未確認 ${fmt(activeTargetRows.length)}件 ／ ${fmt(totalQty)}点${confirmationEnabled?`　全${fmt(targetRows.length)}件`:''}</div></div>
+      <div><div class="process-backlog-kicker">${selectedProductCategoryScope==='urgent-today'?'新規急ぎ・製品種類':allUnregistered?'要確認':'製品種類'}</div><div class="process-backlog-title">${escapeHtml(displayCategoryName)}</div><div class="process-backlog-summary">未確認 ${fmt(activeTargetRows.length)}件 ／ ${fmt(totalQty)}点${confirmationEnabled?`　全${fmt(targetRows.length)}件`:''}</div></div>
       <button type="button" class="process-backlog-close" data-product-category-close>× 閉じる</button>
     </header>
     <section class="process-popup-section">
@@ -9520,6 +9523,16 @@ if(shipFilter==='today-ng'){
     }else{
       urgentAlert.innerHTML='';
     }
+  }
+  const unregisteredAlert=$('homeUnregisteredAlert');
+  if(unregisteredAlert){
+    const unregisteredQty=ng.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const hasUnregistered=ng.length>0;
+    unregisteredAlert.classList.toggle('has-items',hasUnregistered);
+    unregisteredAlert.classList.toggle('is-clear',!hasUnregistered);
+    unregisteredAlert.innerHTML=hasUnregistered
+      ? `<span class="home-unregistered-kicker">⚠ 要確認・クリックしてチェック</span><strong>生地日未登録</strong><span class="home-unregistered-values"><b>${fmt(ng.length)}件</b><b>${fmt(unregisteredQty)}点</b></span><em>未確認一覧を開く ▶</em>`
+      : `<span class="home-unregistered-kicker">✓ 確認完了</span><strong>生地日未登録</strong><span class="home-unregistered-values"><b>0件</b><b>0点</b></span>`;
   }
   updateMonthlyAchievementCalendar(todaySeichibiRemaining.length,!fullStats);
   updateBonusCampaignPanel();
@@ -10470,6 +10483,75 @@ body .ship-summary .ship-card[data-ship="today-ng"].urgent-pending .ship-points-
 @keyframes homeUrgentTabAlarm{
   from{filter:brightness(.78);transform:scale(.985)}
   to{filter:brightness(1.35);transform:scale(1.015)}
+}
+body .ng-game .home-unregistered-alert{
+  width:100%!important;
+  min-height:205px!important;
+  margin-top:18px!important;
+  padding:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  border:4px solid #ff2c43!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg,#990018,#3d000b)!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  box-shadow:0 0 28px rgba(255,22,54,.92),inset 0 0 26px rgba(255,81,105,.3)!important;
+  text-align:center!important;
+}
+body .ng-game .home-unregistered-alert.has-items{
+  animation:homeUnregisteredAttention .7s ease-in-out infinite alternate!important;
+}
+body .ng-game .home-unregistered-alert .home-unregistered-kicker{
+  padding:6px 15px!important;
+  border-radius:999px!important;
+  background:#fff12d!important;
+  color:#62000e!important;
+  font-size:17px!important;
+  font-weight:1000!important;
+}
+body .ng-game .home-unregistered-alert strong{
+  font-size:28px!important;
+  line-height:1.1!important;
+  text-shadow:0 0 12px #ff8b9c!important;
+}
+body .ng-game .home-unregistered-values{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  width:100%!important;
+  gap:12px!important;
+}
+body .ng-game .home-unregistered-values b{
+  padding:10px 6px!important;
+  border:2px solid #ff9aaa!important;
+  border-radius:10px!important;
+  background:#081e31!important;
+  color:#fff!important;
+  font-size:30px!important;
+  font-weight:1000!important;
+}
+body .ng-game .home-unregistered-alert em{
+  color:#fff59a!important;
+  font-size:17px!important;
+  font-style:normal!important;
+  font-weight:1000!important;
+}
+body .ng-game .home-unregistered-alert.is-clear{
+  border-color:#32e6a0!important;
+  background:linear-gradient(145deg,#075a48,#032c2d)!important;
+  box-shadow:0 0 18px rgba(50,230,160,.45)!important;
+  cursor:default!important;
+}
+body .ng-game .home-unregistered-alert.is-clear .home-unregistered-kicker{
+  background:#7dffd0!important;
+  color:#064332!important;
+}
+@keyframes homeUnregisteredAttention{
+  from{filter:brightness(.82);transform:scale(.985)}
+  to{filter:brightness(1.22);transform:scale(1.012)}
 }
 @media(max-width:900px){
   body .ship-marquee-group > .ship-card{
