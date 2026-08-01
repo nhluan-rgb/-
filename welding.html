@@ -3053,7 +3053,7 @@ section.panel.work{
 }
 @keyframes clockRedAlert{from{filter:brightness(.86);transform:scale(1)}to{filter:brightness(1.32);transform:scale(1.018)}}
 
-/* 生地日未登録：月間15時達成カレンダー */
+/* 生地日未登録：月間16時達成カレンダー */
 .evolution-visual:has(.monthly-achievement-calendar){min-height:1160px!important}
 .monthly-achievement-calendar{
   position:absolute;
@@ -5976,8 +5976,20 @@ color:#d7e6ef!important;
 .ng-home-product-symbol{margin-top:8px;color:var(--process-color);font-size:25px;font-weight:1000;line-height:1.12}
 .ng-home-product-points{margin-top:10px;color:#5f6f7f;font-size:21px;font-weight:1000}
 .ng-home-product-card.is-zero{filter:saturate(.5);opacity:.82}
+.home-process-control{
+  --deadline:#28c7ff;width:100%;padding:18px;border:3px solid var(--deadline);border-radius:18px;
+  background:linear-gradient(rgba(69,221,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(69,221,255,.055) 1px,transparent 1px),linear-gradient(145deg,#073e59,#031827 72%);
+  background-size:22px 22px,22px 22px,auto;color:#fff;box-shadow:0 6px 0 #02101a,0 0 26px color-mix(in srgb,var(--deadline) 38%,transparent),inset 0 0 28px rgba(45,214,255,.10)
+}
+.home-process-control.phase-yellow{--deadline:#ffe052}.home-process-control.phase-orange{--deadline:#ff9b35}.home-process-control.phase-red{--deadline:#ff3659;animation:homeDeadlinePulse .65s ease-in-out infinite alternate}.home-process-control.phase-complete{--deadline:#43e89d;background:linear-gradient(145deg,#075a48,#032b31)}
+@keyframes homeDeadlinePulse{from{filter:brightness(.86)}to{filter:brightness(1.2);box-shadow:0 6px 0 #340009,0 0 38px rgba(255,36,78,.9),inset 0 0 32px rgba(255,70,92,.18)}}
+.home-process-head{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}.home-process-title{font-size:30px;font-weight:1000;color:#fff;text-shadow:0 0 12px var(--deadline)}.home-process-rule{margin-top:5px;color:#d8f7ff;font-size:17px;font-weight:900}.home-process-rule b{color:#fff59a}.home-process-countdown{min-width:285px;padding:12px 18px;border:2px solid var(--deadline);border-radius:12px;background:#031522;text-align:center;font-size:17px;font-weight:900}.home-process-countdown b{display:block;margin-top:4px;color:var(--deadline);font:1000 31px/1.15 ui-monospace,Consolas,monospace}
+.home-process-progress-head{display:flex;justify-content:space-between;align-items:end;margin-top:16px;font-size:19px;font-weight:900}.home-process-progress-head b{font-size:28px;color:#fff}.home-process-progress-track{height:22px;margin-top:7px;border:2px solid #8deaff;border-radius:999px;background:#00121d;overflow:hidden}.home-process-progress-fill{height:100%;width:var(--rate);border-radius:999px;background:linear-gradient(90deg,#22aaff,var(--deadline));transition:width .5s ease}
+.home-process-stages{display:grid;grid-template-columns:repeat(6,minmax(105px,1fr));gap:10px;margin-top:15px}.home-process-stage{border:2px solid #54cdeb;border-radius:12px;padding:10px 7px;background:linear-gradient(160deg,#0b526d,#062638);color:#fff;cursor:pointer;text-align:center}.home-process-stage:hover{filter:brightness(1.18);transform:translateY(-2px)}.home-process-stage span{display:block;font-size:17px;font-weight:1000}.home-process-stage b{display:block;margin-top:5px;color:#fff59a;font-size:27px}.home-process-stage.complete{border-color:#43e89d;background:linear-gradient(160deg,#08705a,#07362f)}
+.home-risk-panel{margin-top:15px;padding:13px;border:2px solid #ff526d;border-radius:13px;background:rgba(82,0,17,.72)}.home-risk-title{font-size:20px;font-weight:1000;color:#fff}.home-risk-title b{color:#fff36d;font-size:25px}.home-risk-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}.home-risk-item{min-width:0;padding:9px;border:1px solid #ff8294;border-radius:9px;background:#071b2a}.home-risk-item strong,.home-risk-item span,.home-risk-item em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.home-risk-item strong{color:#fff59a;font-size:16px}.home-risk-item span{margin-top:4px;font-weight:900}.home-risk-item em{margin-top:3px;color:#bfefff;font-style:normal;font-size:13px}.home-risk-clear{margin-top:15px;padding:18px;border:2px solid #70ffc1;border-radius:12px;background:#063d35;color:#8dffd0;text-align:center;font-size:27px;font-weight:1000}
 @media(max-width:1450px){.ng-home-product-grid{grid-template-columns:repeat(4,minmax(145px,1fr))}}
-@media(max-width:850px){.ng-home-product-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}}
+@media(max-width:1100px){.home-process-head{grid-template-columns:1fr}.home-process-countdown{min-width:0}.home-process-stages{grid-template-columns:repeat(3,1fr)}.home-risk-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){.ng-home-product-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.home-process-stages{grid-template-columns:repeat(2,1fr)}.home-risk-list{grid-template-columns:1fr}}
 </style>
 
 
@@ -6265,7 +6277,7 @@ color:#d7e6ef!important;
 </style>
 
 <style id="welding_tab_target_alarm_patch">
-/* Welding上部タブは通常時すべて同じ色。赤表示は15時以降の本日生地未完了だけ。 */
+/* Welding上部タブは通常時すべて同じ色。赤表示は16時以降の本日生地未完了だけ。 */
 .ship-summary.game-stage-tabs .ship-card,
 .ship-summary.game-stage-tabs .ship-card.ng,
 .ship-summary.game-stage-tabs .ship-card.overdue,
@@ -6297,7 +6309,7 @@ color:#d7e6ef!important;
 </style>
 
 <style id="v15_home_blue_today_clock_alarm_fix">
-/* ホームと7日間を通常色へ統一。赤は15時以降に本日生地が残る時だけ。 */
+/* ホームと7日間を通常色へ統一。赤は16時以降に本日生地が残る時だけ。 */
 .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"],
 .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"].active,
 .ship-summary.game-stage-tabs .ship-card[data-ship="overdue"],
@@ -6314,7 +6326,7 @@ color:#d7e6ef!important;
 .ship-summary.game-stage-tabs .ship-card[data-ship="overdue"] .ship-count-line,
 .ship-summary.game-stage-tabs .ship-card[data-ship="overdue"] .ship-points-line{color:inherit!important;text-shadow:none!important}
 
-/* 工程ボード内の現在時刻も15時警報対象にする */
+/* 工程ボード内の現在時刻も16時警報対象にする */
 .process-board-clock.clock-alarm{
   border-color:#ff3659!important;
   background:repeating-linear-gradient(135deg,rgba(255,255,255,.06) 0 12px,transparent 12px 24px),linear-gradient(145deg,#720014,#c00022)!important;
@@ -6753,7 +6765,7 @@ body .ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"] .ship-points
 <div id="ngGame" class="ng-game">
   <div class="game-stage evolution-stage" id="evolutionStage">
     <div class="game-banner" id="gameBanner">
-    <div class="game-banner-main" id="gameBannerMessage"><strong>15時までに全件達成！</strong></div>
+    <div class="game-banner-main" id="gameBannerMessage"><strong>16時までに全件達成！</strong></div>
       <div class="game-clock"><small>現在時刻</small><b id="gameClock">--:--:--</b><small id="gameDate">----</small></div>
     </div>
 
@@ -7312,7 +7324,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     const recordWeekday=recordDate.getDay();
     const recordClosed=recordWeekday===0||recordWeekday===6||holidayKeys.has(recordKey);
     if(!recordClosed&&!recordData[recordKey]){
-      recordData[recordKey]={status:'miss',time:'15:00'};
+      recordData[recordKey]={status:'miss',time:'16:00'};
       changedAchievementMonths.add(recordMonth);
     }
   }
@@ -7328,25 +7340,25 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
       writeAchievementMonth(month,data);
     }
   }else if(allowRecord&&!todayIsClosed&&todayDate.getDate()!==20){
-    if(now.getHours()<15){
-      // 15時前は判定しない。以前の誤記録があれば当日分だけ取り消す。
+    if(now.getHours()<16){
+      // 16時前は判定しない。以前の誤記録があれば当日分だけ取り消す。
       if(data[today]){
         delete data[today];
         writeAchievementMonth(month,data);
       }
     }else{
-      // 15時判定：
-      // 15時より前に全件完了した記録がある場合だけ「達成」。
-      // 15時以降に完了しても、その日の判定は必ず「未達成」のまま固定する。
+      // 16時判定：
+      // 16時より前に全件完了した記録がある場合だけ「達成」。
+      // 16時以降に完了しても、その日の判定は必ず「未達成」のまま固定する。
       const completedRaw=localStorage.getItem(getTodaySeichibiCompletionKey());
       const completedAt=completedRaw?new Date(completedRaw):null;
       const completedBefore15=completedAt
         && !Number.isNaN(completedAt.getTime())
-        && completedAt.getHours()<15;
+        && completedAt.getHours()<16;
       const nextStatus=completedBefore15?'done':'miss';
       const nextTime=completedBefore15
         ? completedAt.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false})
-        : '15:00';
+        : '16:00';
       if(data[today]?.status!==nextStatus||data[today]?.time!==nextTime){
         data[today]={status:nextStatus,time:nextTime};
         writeAchievementMonth(month,data);
@@ -7385,25 +7397,25 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     let stamp='';
     if(isLegacyMiss){
       // カレンダー導入前の過去分だけを固定で未達成表示する。
-      stamp='<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">15:00</div>';
+      stamp='<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">16:00</div>';
     }else if(isClosed){
       const closedLabel=isCompanyHoliday?'会社休日':isNationalHoliday?'祝日':weekday===6?'土曜日':'日曜日';
       stamp=`<div class="achievement-stamp holiday">休日</div><div class="achievement-day-note">${closedLabel}</div>`;
     }else if(isToday&&forcedStatus==='done')stamp='<div class="achievement-stamp done">達成</div><div class="achievement-day-note">管理設定</div>';
     else if(isToday&&forcedStatus==='miss')stamp='<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">管理設定</div>';
-    else if(isToday&&now.getHours()<15)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
-    else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
-    else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'15:00'}</div>`;
-    else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">15:00 判定</div>';
+    else if(isToday&&now.getHours()<16)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">16:00 判定</div>';
+    else if(result?.status==='done')stamp=`<div class="achievement-stamp done">達成</div><div class="achievement-day-note">${result.time||'16:00'}</div>`;
+    else if(result?.status==='miss')stamp=`<div class="achievement-stamp miss">未達成</div><div class="achievement-day-note">${result.time||'16:00'}</div>`;
+    else if(isToday&&!isFuture)stamp='<div class="achievement-stamp pending">進行中</div><div class="achievement-day-note">16:00 判定</div>';
     cells.push(`<div class="achievement-day ${isToday?'today':''} ${isClosed&&!isLegacyMiss?'holiday':''}"><div class="achievement-day-number">${cellMonth}/${day}</div>${stamp}</div>`);
   }
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>
         <span class="calendar-title-line">📅 ${cycleStart.getFullYear()}年${cycleStart.getMonth()+1}月20日 ～ ${cycleEnd.getMonth()+1}月20日</span>
-        <span class="calendar-title-line calendar-title-time">本日生地 15時達成カレンダー</span>
+        <span class="calendar-title-line calendar-title-time">本日生地 16時達成カレンダー</span>
       </b>
-      <span>本日生地は15時までに全件完了（仕上まで）</span>
+      <span>本日生地は16時までに全件完了（仕上まで）</span>
     </div>
     <div class="achievement-weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="achievement-days">${cells.join('')}</div>`;
@@ -7418,6 +7430,7 @@ function updateGameClock(){
     year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'
   });
   updateClockAlertMode(clock.closest('.game-clock'));
+  updateHomeProcessDeadline();
 }
 
 setInterval(updateGameClock,1000);
@@ -7501,8 +7514,8 @@ const buildMessageGroup=(templates,emptyMessages,completeMessages)=>templates.ma
   )
 );
 const ngLateCompletionMessages=[
-  '本日は15時以降の完了となりました。明日は少し早めの段取りを意識しましょう。',
-  '最後まで完了できたことは大切です。次回は15時前の達成を目指しましょう。',
+  '本日は16時以降の完了となりました。明日は少し早めの段取りを意識しましょう。',
+  '最後まで完了できたことは大切です。次回は16時前の達成を目指しましょう。',
   '今日の遅れを責める必要はありません。原因を一つ確認し、明日の改善につなげましょう。',
   'あと少し早く動ければ達成につながります。明日は優先順位を早めにそろえましょう。',
   '困った工程は早めに共有しましょう。小さな相談が大きな遅れを防ぎます。',
@@ -7510,14 +7523,14 @@ const ngLateCompletionMessages=[
   '今日の経験を次に生かしましょう。朝の段取りと途中確認を少し早めることが大切です。',
   '安全と品質を守りながら、明日は時間内の完了を目指して一歩ずつ改善しましょう。',
   '遅れた理由を一つだけ振り返りましょう。小さな改善の積み重ねが達成につながります。',
-  'お疲れさまでした。明日は15時前に終えられるよう、早めの声掛けを意識しましょう。'
+  'お疲れさまでした。明日は16時前に終えられるよう、早めの声掛けを意識しましょう。'
 ];
 
 const standardMessageGroups={
   'today-ng':buildMessageGroup([
     '⚔️ 本日生地の未完成は全{total}件、討伐完了まであと{remaining}件です。全員でゴールを目指しましょう！',
     '🔥 本日ミッションの進捗は{rate}%！ 次の一件に集中し、勢いをつなげましょう！',
-    '🚀 残り{remaining}件！ 声を掛け合い、15時までの全件達成へ加速しましょう！',
+    '🚀 残り{remaining}件！ 声を掛け合い、16時までの全件達成へ加速しましょう！',
     '💪 本日生地は全{total}件。困っている工程を見つけたら、すぐに力を合わせましょう！',
     '⭐ 完成率{rate}%！ 一件ずつ確実に終わらせれば、ゴールは必ず近づきます！',
     '⚡ あと{remaining}件！ 安全・品質・スピードをそろえて、最後まで走り切りましょう！',
@@ -7713,7 +7726,7 @@ Object.keys(standardMessageGroups).forEach(key=>{
 const v90MessageParts={
   'today-ng':{
     openings:[
-      '⚔️ 本日生地の勝負はここからです。','🔥 九州工場の集中力を一つにしましょう。','🚀 15時のゴールへ向けて加速しましょう。','🎯 今日の最優先を全員でそろえましょう。','💪 一件ずつ確実に完成へ運びましょう。','🏭 現場の底力を成果に変える時間です。','⚡ 今の一歩が今日の達成を決めます。','🛠️ 技術と連携で流れをつくりましょう。','🏁 ゴールを見据えて最後まで進みましょう。','🤝 工程を越えて力を合わせましょう。','🌟 今日の仕事を最高の実績に変えましょう。','📣 困り事はすぐ共有し、すぐ動かしましょう。','🔥 安全と品質を守りながら前進しましょう。','🎮 BOSS攻略の鍵は全員の連携です。','🏆 今日のベストを更新しましょう。','🚩 次工程へ良い流れを渡しましょう。','💥 一人の集中をチームの力へ変えましょう。'
+      '⚔️ 本日生地の勝負はここからです。','🔥 九州工場の集中力を一つにしましょう。','🚀 16時のゴールへ向けて加速しましょう。','🎯 今日の最優先を全員でそろえましょう。','💪 一件ずつ確実に完成へ運びましょう。','🏭 現場の底力を成果に変える時間です。','⚡ 今の一歩が今日の達成を決めます。','🛠️ 技術と連携で流れをつくりましょう。','🏁 ゴールを見据えて最後まで進みましょう。','🤝 工程を越えて力を合わせましょう。','🌟 今日の仕事を最高の実績に変えましょう。','📣 困り事はすぐ共有し、すぐ動かしましょう。','🔥 安全と品質を守りながら前進しましょう。','🎮 BOSS攻略の鍵は全員の連携です。','🏆 今日のベストを更新しましょう。','🚩 次工程へ良い流れを渡しましょう。','💥 一人の集中をチームの力へ変えましょう。'
     ],
     endings:[
       '全{total}件のうち残り{remaining}件、完成率{rate}%です。',
@@ -8332,28 +8345,50 @@ function renderDeliveryCards(chartRows){
   }).join('')}</div></section>`;
 }
 
-function renderHomeUnregisteredProductCards(){
-  const configs=[
-    {name:'ボックス',color:'#338cff',soft:'#e7f1ff'},
-    {name:'ダクト',color:'#35cbd6',soft:'#e4fbfd'},
-    {name:'架台',color:'#ff9638',soft:'#fff0df'},
-    {name:'貫通枠',color:'#9568ef',soft:'#f0e8ff'},
-    {name:'カバー',color:'#3bdc92',soft:'#e2fbef'},
-    {name:'切板・金物',color:'#ffcf32',soft:'#fff8d7'},
-    {name:'その他・要確認',color:'#ff6075',soft:'#ffe7eb'}
+function renderHomeProcessControl(goalRows,remainingRows){
+  const now=new Date();
+  const total=goalRows.length;
+  const remaining=remainingRows.length;
+  const completed=Math.max(0,total-remaining);
+  const rate=total?Math.round(completed/total*100):100;
+  const stageConfigs=[
+    {name:'未着手',statuses:['未着手','CAD/CAM'],note:'CAD/CAM含む'},
+    {name:'切断',statuses:['切断']},{name:'曲げ',statuses:['曲げ']},
+    {name:'溶接',statuses:['溶接']},{name:'仕上',statuses:['仕上']}
   ];
-  const targetRows=rows.filter(isActiveUnregistered);
-  const cards=configs.map(item=>{
-    const targets=targetRows.filter(row=>classifyProductCategory(row)===item.name);
-    const qty=targets.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
-    return `<button type="button" class="ng-home-product-card ${targets.length===0?'is-zero':''}" data-product-category="${escapeHtml(item.name)}" data-product-category-scope="unregistered" style="--process-color:${item.color};--process-soft:${item.soft}" aria-label="生地日未登録・${escapeHtml(item.name)}を表示">
-      <div class="ng-home-product-name">${escapeHtml(item.name)}</div>
-      <div class="ng-home-product-count">${fmt(targets.length)}件</div>
-      <div class="ng-home-product-symbol">生地日<br>未登録</div>
-      <div class="ng-home-product-points">${fmt(qty)}点</div>
-    </button>`;
-  }).join('');
-  return `<section class="ng-home-product-board"><div class="ng-home-product-heading">生地日未登録・製品種類　全${fmt(targetRows.length)}件</div><div class="ng-home-product-grid">${cards}</div></section>`;
+  const stageCards=stageConfigs.map(stage=>{
+    const count=remainingRows.filter(row=>stage.statuses.includes(String(row.status||'').trim())).length;
+    return `<button type="button" class="home-process-stage" data-process="${escapeHtml(stage.statuses[0])}" aria-label="${escapeHtml(stage.name)}の案件を表示"><span>${escapeHtml(stage.name)}${stage.note?`<small>（${stage.note}）</small>`:''}</span><b>${fmt(count)}件</b></button>`;
+  }).join('')+`<div class="home-process-stage complete"><span>完了</span><b>${fmt(completed)}件</b></div>`;
+  const stageRisk={未着手:0,'CAD/CAM':1,切断:2,曲げ:3,溶接:4,仕上:5};
+  const riskRows=remainingRows.slice().sort((a,b)=>(stageRisk[String(a.status||'').trim()]??9)-(stageRisk[String(b.status||'').trim()]??9)||String(a.id||'').localeCompare(String(b.id||'')));
+  const riskItems=riskRows.slice(0,5).map(row=>`<div class="home-risk-item"><strong>${escapeHtml(row.id||row.part||'番号未設定')}</strong><span>${escapeHtml(String(row.status||'未着手'))}</span><em>担当：${escapeHtml(row.owner||'未設定')}</em></div>`).join('');
+  const riskPanel=remaining
+    ? `<div class="home-risk-panel"><div class="home-risk-title">⚠ 16時までに間に合わない可能性：<b>${fmt(remaining)}件</b></div><div class="home-risk-list">${riskItems}</div></div>`
+    : '<div class="home-risk-clear">✓ 16時目標達成！</div>';
+  return `<section class="home-process-control" data-home-process-control>
+    <div class="home-process-head"><div><div class="home-process-title">16時完了 工程管理</div><div class="home-process-rule">本日生地は16時までに全件「仕上完了」<br><b>遅れそうな案件を最優先で対応してください</b></div></div><div class="home-process-countdown">16時まで<b data-home-deadline-countdown>残り --時間--分</b></div></div>
+    <div class="home-process-progress-head"><span>全体進捗</span><b>完了 ${fmt(completed)} / ${fmt(total)}件（${rate}%）</b></div>
+    <div class="home-process-progress-track"><div class="home-process-progress-fill" style="--rate:${rate}%"></div></div>
+    <div class="home-process-stages">${stageCards}</div>${riskPanel}</section>`;
+}
+
+function updateHomeProcessDeadline(){
+  const board=document.querySelector('[data-home-process-control]');
+  if(!board)return;
+  const countdown=board.querySelector('[data-home-deadline-countdown]');
+  const now=new Date();
+  const deadline=new Date(now.getFullYear(),now.getMonth(),now.getDate(),16,0,0,0);
+  const remainingMs=deadline-now;
+  board.classList.remove('phase-yellow','phase-orange','phase-red','phase-complete');
+  if(board.querySelector('.home-risk-clear'))board.classList.add('phase-complete');
+  else if(now.getHours()>=15&&now.getMinutes()>=30||now.getHours()>=16)board.classList.add('phase-red');
+  else if(now.getHours()>=15)board.classList.add('phase-orange');
+  else if(now.getHours()>=14)board.classList.add('phase-yellow');
+  if(!countdown)return;
+  if(remainingMs<=0){countdown.textContent='締切時刻を過ぎています';return}
+  const totalMinutes=Math.ceil(remainingMs/60000);
+  countdown.textContent=`残り ${Math.floor(totalMinutes/60)}時間${String(totalMinutes%60).padStart(2,'0')}分`;
 }
 
 function mountHomeClockInJSearch(){
@@ -8513,22 +8548,22 @@ function getTodayWeldingTargetRows(){
   return rows.filter(row=>row.shipDate===today&&targetStatuses.includes(String(row.status||'').trim()));
 }
 function updateTodayShipAlarm(remainingCount=getTodayWeldingTargetRows().length){
-  const after15=new Date().getHours()>=15;
-  const alarm=after15&&remainingCount>0;
+  const after16=new Date().getHours()>=16;
+  const alarm=after16&&remainingCount>0;
   document.querySelectorAll('.ship-card').forEach(card=>card.classList.remove('today-alarm'));
   const todayCard=document.querySelector('.ship-card[data-ship="today"]');
   if(todayCard)todayCard.classList.toggle('today-alarm',alarm);
   document.querySelectorAll('.visual-hud-clock,.game-clock,.standard-clock,.process-board-clock').forEach(clock=>{
     clock.classList.toggle('clock-alarm',alarm);
-    clock.classList.toggle('clock-after15',after15&&!alarm);
+    clock.classList.toggle('clock-after15',after16&&!alarm);
   });
 }
 function updateClockAlertMode(clockBox){
   if(!clockBox)return;
   const remaining=getTodayWeldingTargetRows().length;
-  const after15=new Date().getHours()>=15;
-  const alarm=after15&&remaining>0;
-  clockBox.classList.toggle('clock-after15',after15&&!alarm);
+  const after16=new Date().getHours()>=16;
+  const alarm=after16&&remaining>0;
+  clockBox.classList.toggle('clock-after15',after16&&!alarm);
   clockBox.classList.toggle('clock-alarm',alarm);
   updateTodayShipAlarm(remaining);
 }
@@ -9555,7 +9590,7 @@ if(shipFilter==='today-ng'){
   if(homeGoalSummary)homeGoalSummary.innerHTML=`
     <div class="home-goal-metric">開始件数<b>${fmt(todaySeichibiGoalRows.length)}件</b></div>
     <div class="home-goal-metric complete">仕上完了<b>${fmt(homeCompletedCount)}件</b></div>
-    <div class="home-goal-metric deadline">締切<b>15:00</b></div>`;
+    <div class="home-goal-metric deadline">締切<b>16:00</b></div>`;
   $('bossFill').style.width=`${bossHpPercent}%`;
   if($('bossHpText')) $('bossHpText').textContent=`${bossHpPercent.toFixed(0)}%`;
 
@@ -9581,8 +9616,8 @@ if(shipFilter==='today-ng'){
     && todaySeichibiRemaining.length===0
     && savedCompletionAt
     && !Number.isNaN(savedCompletionAt.getTime())
-    && savedCompletionAt.getHours()>=15);
-  const completionDisplay=isLateCompletion?'本日は15時以降の完了となりました。明日は少し早めの段取りを意識しましょう。':'本日の作業が完了しました！';
+    && savedCompletionAt.getHours()>=16);
+  const completionDisplay=isLateCompletion?'本日は16時以降の完了となりました。明日は少し早めの段取りを意識しましょう。':'本日の作業が完了しました！';
   if($('evolutionMessage')) $('evolutionMessage').innerHTML=todaySeichibiRemaining.length===0?completionDisplay:`本日生地は仕上完了まであと${fmt(todaySeichibiRemaining.length)}件です。`;
   if($('bossStatusMessage')) $('bossStatusMessage').textContent=todaySeichibiRemaining.length===0?completionDisplay:`本日生地 残り${fmt(todaySeichibiRemaining.length)}件！`;
   const bossStatusCard=$('bossStatusCard');
@@ -9593,7 +9628,8 @@ if(shipFilter==='today-ng'){
 
   const runnerTrack=$('runnerTrack');
   if(runnerTrack){
-    runnerTrack.innerHTML=`<div class="ng-operations-stack">${renderHomeUnregisteredProductCards()}</div>`;
+    runnerTrack.innerHTML=`<div class="ng-operations-stack">${renderHomeProcessControl(todaySeichibiGoalRows,todaySeichibiRemaining)}</div>`;
+    updateHomeProcessDeadline();
     mountHomeClockInJSearch();
   }
 
@@ -9605,13 +9641,13 @@ if(shipFilter==='today-ng'){
     gameBanner.classList.remove('success','late');
     if(ng.length===0){
       const completedAt=getOrRecordTodayCompletion(0);
-      completedAfter15=forcedAchievement==='miss' || (forcedAchievement!=='done' && completedAt.getHours()>=15);
+      completedAfter15=forcedAchievement==='miss' || (forcedAchievement!=='done' && completedAt.getHours()>=16);
       gameBanner.classList.add(completedAfter15?'late':'success');
     }else{
       getOrRecordTodayCompletion(ng.length);
     }
   }
-  // 15時以降の完了は「100%達成」の祝福文を出さない。
+  // 16時以降の完了は「100%達成」の祝福文を出さない。
   // completeMessage の条件(rate>=100)に入らないよう、表示用だけ99.9%にする。
   if(completedAfter15)ngRate=99.9;
   if(window.BossMotivation) window.BossMotivation.stop();
@@ -9640,7 +9676,7 @@ if(shipFilter==='today-ng'){
   if(window.BossMotivation) window.BossMotivation.stop();
   if(gameBanner) gameBanner.classList.remove('success','late');
   if(gameBannerMessage){
-    gameBannerMessage.innerHTML='<strong>15時までに全件達成！</strong>';
+    gameBannerMessage.innerHTML='<strong>16時までに全件達成！</strong>';
   }
   if(goalResult){
     goalResult.className='goal-result';
