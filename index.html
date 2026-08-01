@@ -6504,8 +6504,13 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const month=today.slice(0,7);
   const data=readAchievementMonth(month);
   const [year,monthNumber]=month.split('-').map(Number);
-  const cycleStart=new Date(year,monthNumber-1,20);
-  const cycleEnd=new Date(year,monthNumber,20);
+  const todayDate=new Date(`${today}T00:00:00`);
+  // Before the 20th, keep showing the cycle that began on the 20th
+  // of the previous month. The new cycle starts on the 20th itself.
+  const cycleStart=todayDate.getDate()>=20
+    ? new Date(year,monthNumber-1,20)
+    : new Date(year,monthNumber-2,20);
+  const cycleEnd=new Date(cycleStart.getFullYear(),cycleStart.getMonth()+1,20);
   const nationalHolidayKeys=new Set([
     ...getNationalHolidayKeysCached(cycleStart.getFullYear()),
     ...getNationalHolidayKeysCached(cycleEnd.getFullYear())
@@ -6514,26 +6519,33 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
     ...nationalHolidayKeys,
     ...COMPANY_HOLIDAYS
   ]);
-  const todayDate=new Date(`${today}T00:00:00`);
   const todayIsClosed=todayDate.getDay()===0||todayDate.getDay()===6||holidayKeys.has(today);
 
   // 過去の営業日は、一度付いた「達成／達成」を消さずに保存する。
   // 保存データがない過去営業日は未達成として補完する。
-  let achievementDataChanged=false;
+  const achievementDataCache=new Map([[month,data]]);
+  const changedAchievementMonths=new Set();
   for(
     let recordDate=new Date(cycleStart);
     recordDate<todayDate&&recordDate<=cycleEnd;
     recordDate.setDate(recordDate.getDate()+1)
   ){
     const recordKey=formatLocalDate(recordDate);
+    const recordMonth=recordKey.slice(0,7);
+    if(!achievementDataCache.has(recordMonth)){
+      achievementDataCache.set(recordMonth,readAchievementMonth(recordMonth));
+    }
+    const recordData=achievementDataCache.get(recordMonth);
     const recordWeekday=recordDate.getDay();
     const recordClosed=recordWeekday===0||recordWeekday===6||holidayKeys.has(recordKey);
-    if(!recordClosed&&!data[recordKey]){
-      data[recordKey]={status:'miss',time:'16:00'};
-      achievementDataChanged=true;
+    if(!recordClosed&&!recordData[recordKey]){
+      recordData[recordKey]={status:'miss',time:'16:00'};
+      changedAchievementMonths.add(recordMonth);
     }
   }
-  if(achievementDataChanged)writeAchievementMonth(month,data);
+  changedAchievementMonths.forEach(changedMonth=>{
+    writeAchievementMonth(changedMonth,achievementDataCache.get(changedMonth));
+  });
 
   const forcedStatus=forcedTodayAchievement();
   if(forcedStatus&&!todayIsClosed&&todayDate.getDate()!==20){
@@ -6571,7 +6583,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
 
   const cells=[];
   for(let i=0;i<cycleStart.getDay();i++)cells.push('<div class="achievement-day empty"></div>');
-  const monthDataCache=new Map([[month,data]]);
+  const monthDataCache=achievementDataCache;
   for(
     let calendarDate=new Date(cycleStart);
     calendarDate<=cycleEnd;
@@ -6615,7 +6627,7 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   box.innerHTML=`
     <div class="calendar-achievement-title">
       <b>
-        <span class="calendar-title-line">📅 ${year}年${monthNumber}月20日 ～ ${cycleEnd.getMonth()+1}月20日</span>
+        <span class="calendar-title-line">📅 ${cycleStart.getFullYear()}年${cycleStart.getMonth()+1}月20日 ～ ${cycleEnd.getMonth()+1}月20日</span>
         <span class="calendar-title-line calendar-title-time">16時 達成カレンダー</span>
       </b>
       <span>16時までに全件達成！ 今日も全員でやり切ろう！</span>
