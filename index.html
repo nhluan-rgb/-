@@ -5915,6 +5915,51 @@ body.bonus-day-3man .top{
   background:linear-gradient(135deg,#077db3,#14bcea) !important;
   border-color:#4ce9ff !important;
 }
+
+/* Remove the remaining white frame in the today-unfinished mission tab */
+.grid.ng-layout > .panel:nth-child(2){
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 82% 0%,rgba(68,39,177,.16),transparent 32%),
+    linear-gradient(145deg,#061426 0%,#020b16 100%) !important;
+  border:1px solid rgba(42,216,255,.62) !important;
+  box-shadow:0 0 0 1px rgba(29,126,182,.22),0 0 24px rgba(0,199,255,.16),inset 0 0 24px rgba(10,83,135,.12) !important;
+}
+.grid.ng-layout > .panel:nth-child(2) > .panel-head{
+  position:relative;
+  height:58px !important;
+  padding:0 20px !important;
+  background:
+    linear-gradient(90deg,rgba(9,37,63,.98),rgba(5,19,35,.98)) !important;
+  border-bottom:1px solid rgba(46,221,255,.68) !important;
+  color:#f3fcff !important;
+  box-shadow:inset 4px 0 0 #20d9ff,0 6px 18px rgba(0,0,0,.3) !important;
+}
+.grid.ng-layout > .panel:nth-child(2) > .panel-head::after{
+  content:"MISSION ACTIVE";
+  position:absolute;
+  left:20px;
+  bottom:5px;
+  color:#42dcff;
+  font:700 8px/1 Consolas,monospace;
+  letter-spacing:.24em;
+  opacity:.72;
+}
+.grid.ng-layout > .panel:nth-child(2) > .panel-head h2{
+  color:#f5fdff !important;
+  font-size:20px !important;
+  font-weight:900 !important;
+  letter-spacing:.05em;
+  text-shadow:0 0 9px rgba(42,216,255,.45);
+}
+.grid.ng-layout > .panel:nth-child(2) > .panel-head span{
+  color:#92eaff !important;
+  font-size:13px !important;
+  font-weight:800;
+}
+.grid.ng-layout > .panel:nth-child(2) > .panel-body{
+  background:transparent !important;
+}
 @media(max-width:800px){
   .top{height:84px !important;padding:0 16px !important}
   .world-title-row{padding-left:45px}
