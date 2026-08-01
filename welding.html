@@ -6827,6 +6827,7 @@ body.bonus-day-3man .top{
 }
 .ng-game #bossMissionSlot .game-clock.visual-hud-clock.clock-alarm small{color:#ffd8dc !important}
 .ng-game .process-board-clock,
+.ng-game .home-j-clock,
 .ng-game #ngUtilityColumn .game-clock,
 .ng-game #bonusCampaignPanel .game-clock{display:none !important}
 
@@ -8670,11 +8671,8 @@ function updateHomeProcessDeadline(){
 
 function mountHomeClockInJSearch(){
   const panel=document.getElementById('bonusCampaignPanel');
-  if(!panel||panel.querySelector('.home-j-clock'))return;
-  const clock=document.createElement('section');
-  clock.className='home-j-clock';
-  clock.innerHTML='<div class="home-j-clock-title">現在時刻</div><div class="home-j-clock-time" data-process-board-clock>--:--:--</div><div class="home-j-clock-date" data-process-board-date>----</div>';
-  panel.prepend(clock);
+  if(!panel)return;
+  panel.querySelectorAll('.home-j-clock').forEach(clock=>clock.remove());
 }
 
 function renderNgProcessCards(chartRows){
