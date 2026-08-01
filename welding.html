@@ -6754,6 +6754,132 @@ body.bonus-day-3man .top{
   .top h1{font-size:27px !important}.top::after{display:none}
   .actions .btn{min-height:44px;padding:9px 12px !important;font-size:14px !important}
 }
+/* Home welding layout: clock in red frame, full-height J-number results */
+.ng-game #bossMissionSlot{
+  min-height:250px !important;
+  padding:14px !important;
+  display:grid !important;
+  place-items:stretch !important;
+}
+.ng-game #bossMissionSlot .game-clock.visual-hud-clock{
+  position:relative !important;
+  inset:auto !important;
+  display:flex !important;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  height:100% !important;
+  min-height:218px !important;
+  margin:0 !important;
+  padding:20px !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #ff6570 !important;
+  border-radius:12px !important;
+  background:
+    linear-gradient(rgba(255,76,86,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,76,86,.055) 1px,transparent 1px),
+    linear-gradient(145deg,#310811,#700c18) !important;
+  background-size:20px 20px,20px 20px,auto !important;
+  box-shadow:inset 0 0 25px rgba(255,45,65,.24),0 0 18px rgba(255,31,51,.42) !important;
+  color:#fff !important;
+}
+.ng-game #bossMissionSlot .game-clock.visual-hud-clock small{
+  color:#ffd8dc !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+}
+.ng-game #bossMissionSlot .game-clock.visual-hud-clock b{
+  margin:8px 0 !important;
+  color:#fff58a !important;
+  font:1000 54px/1 Bahnschrift,Consolas,monospace !important;
+  letter-spacing:.08em;
+  text-shadow:0 0 10px #ffdf52,0 3px 0 #79101b !important;
+}
+.ng-game .process-board-clock{display:none !important}
+
+.ng-game #ngUtilityColumn{
+  top:92px !important;
+  bottom:22px !important;
+  height:auto !important;
+  align-content:stretch !important;
+}
+.ng-game #bonusCampaignPanel{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  padding:12px !important;
+  align-items:stretch !important;
+  justify-content:stretch !important;
+}
+.ng-game #bonusCampaignPanel .j-number-search-host{
+  width:100% !important;
+  max-width:none !important;
+  height:100% !important;
+  min-height:0 !important;
+}
+.ng-game #bonusCampaignPanel .j-number-search{
+  height:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:16px !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+.ng-game #bonusCampaignPanel .j-search-result{
+  flex:1 1 auto !important;
+  min-height:150px !important;
+  max-height:none !important;
+  margin-top:12px !important;
+  padding-right:4px;
+  overflow:auto !important;
+  align-content:start;
+}
+.ng-game #bonusCampaignPanel .j-search-result-message{
+  position:sticky;
+  top:0;
+  z-index:2;
+  border:1px solid rgba(100,232,255,.42);
+  background:#07334a !important;
+  color:#dffbff !important;
+}
+.ng-game #bonusCampaignPanel .j-search-result-item{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:3px 10px;
+  padding:10px 11px !important;
+  border-radius:5px !important;
+  background:linear-gradient(145deg,#f7fcff,#dff3fa) !important;
+}
+.ng-game #bonusCampaignPanel .j-search-result-item b{
+  color:#006e9d !important;
+  font-size:17px !important;
+}
+.ng-game #bonusCampaignPanel .j-result-part{
+  grid-column:1/-1;
+  color:#153849;
+  font-size:13px;
+  font-weight:850;
+}
+.ng-game #bonusCampaignPanel .j-result-meta{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.ng-game #bonusCampaignPanel .j-result-meta em,
+.ng-game #bonusCampaignPanel .j-result-meta strong,
+.ng-game #bonusCampaignPanel .j-result-meta small{
+  padding:3px 7px;
+  border-radius:999px;
+  font-style:normal;
+  font-weight:900;
+}
+.ng-game #bonusCampaignPanel .j-result-meta em{background:#dff1f7;color:#14506a}
+.ng-game #bonusCampaignPanel .j-result-meta strong{background:#fff1a6;color:#654700}
+.ng-game #bonusCampaignPanel .j-result-meta small{margin-left:auto;background:#e8edf0;color:#405663}
+
 /* Unified navy-cyan scrollbars */
 html,body,.table-wrap,#processModalCard{
   scrollbar-width:thin;
@@ -7033,9 +7159,10 @@ function renderJNumberSearch(){
       result.innerHTML='<div class="j-search-result-message">該当するJ番号はありません。</div>';
     }else{
       result.innerHTML=`<div class="j-search-result-message">該当 ${fmt(matches.length)}件</div>`+
-        matches.slice(0,3).map(row=>`<button type="button" class="j-search-result-item" data-j-result="${escapeJSearch(row.id)}">
+        matches.slice(0,100).map(row=>`<button type="button" class="j-search-result-item" data-j-result="${escapeJSearch(row.id)}">
           <b>${escapeJSearch(shortJNumberForSearch(row.id))}</b>
-          ${escapeJSearch(row.part||'—')} ／ ${escapeJSearch(row.name||'—')} ／ ${escapeJSearch(row.status||'未設定')}
+          <span class="j-result-part">${escapeJSearch(row.part||'—')} ／ ${escapeJSearch(row.name||'—')}</span>
+          <span class="j-result-meta"><em>${escapeJSearch(row.status||'未設定')}</em><strong>${fmt(row.qty)}点</strong><small>${escapeJSearch(row.due||'期限未設定')}</small></span>
         </button>`).join('');
     }
   });
