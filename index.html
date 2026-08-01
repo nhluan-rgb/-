@@ -5811,6 +5811,119 @@ body.bonus-day-3man .content{
     radial-gradient(circle at 88% 8%,rgba(78,39,180,.13),transparent 28%),
     linear-gradient(180deg,#071322 0%,#03101e 100%) !important;
 }
+
+/* Maximum-impact command header */
+.top,
+body.bonus-day-2man .top,
+body.bonus-day-3man .top{
+  position:relative;
+  isolation:isolate;
+  height:104px !important;
+  padding:0 32px !important;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,transparent 0 9%,rgba(29,218,255,.08) 9.1% 9.2%,transparent 9.3% 72%,rgba(137,63,255,.10) 100%),
+    repeating-linear-gradient(115deg,transparent 0 35px,rgba(61,201,255,.025) 36px 37px),
+    linear-gradient(100deg,#020814 0%,#061a31 48%,#080d20 100%) !important;
+  border-top:1px solid rgba(129,225,255,.45) !important;
+  border-bottom:2px solid #21cfff !important;
+  box-shadow:0 0 24px rgba(0,202,255,.28),0 14px 34px rgba(0,0,0,.58),inset 0 -8px 30px rgba(0,157,255,.08) !important;
+}
+.top::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:0;
+  right:0;
+  bottom:7px;
+  height:1px;
+  background:linear-gradient(90deg,transparent 0 3%,#2ce6ff 14%,transparent 39%,#7c55ff 78%,transparent 98%);
+  box-shadow:0 0 10px #23dfff;
+}
+.top::after{
+  content:"SYSTEM // PRODUCTION COMMAND";
+  position:absolute;
+  left:91px;
+  bottom:10px;
+  color:rgba(94,221,255,.58);
+  font:700 9px/1 Consolas,monospace;
+  letter-spacing:.24em;
+}
+.world-title-row{
+  position:relative;
+  display:flex;
+  align-items:center;
+  min-height:68px;
+  padding-left:62px;
+}
+.world-title-row::before{
+  content:"";
+  position:absolute;
+  left:5px;
+  width:38px;
+  height:38px;
+  transform:rotate(45deg);
+  border:3px solid #38e6ff;
+  background:linear-gradient(135deg,rgba(36,220,255,.35),rgba(105,45,255,.55));
+  box-shadow:0 0 8px #23dfff,0 0 22px rgba(96,55,255,.8),inset 0 0 12px rgba(255,255,255,.28);
+}
+.world-title-row::after{
+  content:"";
+  position:absolute;
+  left:15px;
+  width:18px;
+  height:18px;
+  transform:rotate(45deg);
+  border:2px solid #d5fbff;
+  box-shadow:0 0 8px #fff;
+}
+.top h1{
+  margin:0 !important;
+  color:#f7fdff !important;
+  font-family:Bahnschrift,"Yu Gothic UI","Meiryo",sans-serif !important;
+  font-size:38px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:.14em !important;
+  transform:skewX(-4deg);
+  text-shadow:3px 0 0 rgba(83,48,255,.75),0 0 8px #2bdfff,0 0 24px rgba(36,192,255,.55) !important;
+}
+.actions{
+  align-items:center;
+  gap:14px !important;
+}
+.actions .btn{
+  min-height:52px;
+  padding:12px 21px !important;
+  border-radius:4px !important;
+  border-width:1px !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  color:#fff !important;
+  font-size:17px !important;
+  font-weight:850 !important;
+  letter-spacing:.05em;
+  text-shadow:0 1px 3px #000;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.32),0 0 14px rgba(32,205,255,.18) !important;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+.actions .btn:hover{
+  transform:translateY(-3px);
+  filter:brightness(1.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 0 22px rgba(42,220,255,.48) !important;
+}
+#refresh{
+  background:linear-gradient(135deg,#077db3,#14bcea) !important;
+  border-color:#4ce9ff !important;
+}
+@media(max-width:800px){
+  .top{height:84px !important;padding:0 16px !important}
+  .world-title-row{padding-left:45px}
+  .world-title-row::before{width:28px;height:28px}
+  .world-title-row::after{left:13px;width:12px;height:12px}
+  .top h1{font-size:27px !important}
+  .top::after{display:none}
+  .actions .btn{min-height:44px;padding:9px 12px !important;font-size:14px !important}
+}
 </style>
 </head>
 <body>
