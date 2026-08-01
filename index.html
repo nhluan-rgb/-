@@ -5774,6 +5774,44 @@ button[data-material][disabled]:focus-visible,
 #bossStatusCard.ship-complete .boss-hp-value{color:#8cff9d!important;text-shadow:0 3px 4px #075522!important}
 #bossStatusCard.ship-complete #bossFill{background:#2eae59!important;width:100%!important}
 </style>
+<style id="dark-page-shell">
+/* Dark shell: header and the space surrounding the dashboard */
+:root{
+  --shell-dark:#030b18;
+  --shell-navy:#07172a;
+  --shell-cyan:#20c9ff;
+}
+html,
+body,
+.app,
+.main{
+  background:
+    radial-gradient(circle at 82% 0%,rgba(83,36,190,.18),transparent 28%),
+    radial-gradient(circle at 12% 16%,rgba(0,190,255,.12),transparent 24%),
+    linear-gradient(180deg,var(--shell-dark) 0%,var(--shell-navy) 100%) !important;
+}
+.top,
+body.bonus-day-2man .top,
+body.bonus-day-3man .top{
+  background:
+    linear-gradient(90deg,rgba(5,16,33,.98),rgba(8,29,50,.98),rgba(5,14,30,.98)) !important;
+  border-bottom:1px solid rgba(32,201,255,.55) !important;
+  color:#f2fbff !important;
+  box-shadow:0 5px 22px rgba(0,0,0,.45),inset 0 -1px 0 rgba(80,221,255,.12) !important;
+}
+.top h1{
+  color:#f2fbff !important;
+  letter-spacing:.08em;
+  text-shadow:0 0 10px rgba(32,201,255,.38);
+}
+.content,
+body.bonus-day-2man .content,
+body.bonus-day-3man .content{
+  background:
+    radial-gradient(circle at 88% 8%,rgba(78,39,180,.13),transparent 28%),
+    linear-gradient(180deg,#071322 0%,#03101e 100%) !important;
+}
+</style>
 </head>
 <body>
 <div class="app">
