@@ -563,6 +563,67 @@ tbody tr:hover{background:rgba(24,169,207,.22) !important}
 .other h2{font-size:25px !important;letter-spacing:.05em}
 .foot{color:#77b8c9 !important;font-size:12px}
 
+/* Light reading surfaces for the two paint tables: rust prevention + baking */
+.groups .group .table-wrap{
+  background:#eef8fc !important;
+  border:2px solid #81dff1 !important;
+  box-shadow:inset 0 0 18px rgba(28,120,153,.10),0 0 13px rgba(31,211,246,.16) !important;
+}
+.groups .group .table-wrap table{
+  background:#f8fcfe !important;
+  color:#102a3b !important;
+}
+.groups .group .table-wrap thead{
+  background:linear-gradient(180deg,#0d6687,#08445f) !important;
+  color:#fff !important;
+  box-shadow:0 2px 8px rgba(0,31,49,.22);
+}
+.groups .group .table-wrap th{
+  color:#e8fbff !important;
+  border-bottom:2px solid #42d9f4 !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+.groups .group .table-wrap td{
+  color:#183547 !important;
+  border-bottom:1px solid #c5dce5 !important;
+}
+.groups .group .table-wrap tbody tr{
+  background:#f8fcfe !important;
+}
+.groups .group .table-wrap tbody tr:nth-child(even){
+  background:#e8f4f8 !important;
+}
+.groups .group .table-wrap tbody tr:hover{
+  background:#cfeefa !important;
+  box-shadow:inset 4px 0 0 #12bde4;
+}
+.groups .group .table-wrap .id{
+  color:#007ba4 !important;
+  font-weight:1000 !important;
+}
+.groups .group .table-wrap b{
+  color:#102d40 !important;
+}
+.groups .group .table-wrap .munsell{
+  color:#7b5700 !important;
+  font-weight:1000 !important;
+}
+.groups .group .table-wrap .munsell i{
+  border:2px solid #536c79 !important;
+  box-shadow:0 0 0 2px #fff,0 2px 7px rgba(0,0,0,.22);
+}
+.groups .group .table-wrap .done-row,
+.groups .group .table-wrap .done-row:hover{
+  background:#d6e0e5 !important;
+  color:#687a84 !important;
+  box-shadow:none !important;
+}
+.groups .group .table-wrap .done-row td,
+.groups .group .table-wrap .done-row b,
+.groups .group .table-wrap .done-row .munsell{
+  color:#687a84 !important;
+}
+
 @keyframes paintTitleScan{0%,20%{left:-35%;opacity:0}35%{opacity:1}62%{left:115%;opacity:1}70%,100%{left:115%;opacity:0}}
 @keyframes missionSweep{0%{left:-25%}100%{left:115%}}
 @media(max-width:700px){
