@@ -8349,8 +8349,8 @@ function renderHomeProcessControl(goalRows,remainingRows){
   const now=new Date();
   const total=goalRows.length;
   const remaining=remainingRows.length;
-  const completed=Math.max(0,total-remaining);
-  const rate=total?Math.round(completed/total*100):100;
+  const finished=Math.max(0,total-remaining);
+  const rate=total?Math.round(finished/total*100):100;
   const stageConfigs=[
     {name:'未着手',statuses:['未着手','CAD/CAM'],note:'CAD/CAM含む'},
     {name:'切断',statuses:['切断']},{name:'曲げ',statuses:['曲げ']},
@@ -8359,7 +8359,7 @@ function renderHomeProcessControl(goalRows,remainingRows){
   const stageCards=stageConfigs.map(stage=>{
     const count=remainingRows.filter(row=>stage.statuses.includes(String(row.status||'').trim())).length;
     return `<button type="button" class="home-process-stage" data-process="${escapeHtml(stage.statuses[0])}" aria-label="${escapeHtml(stage.name)}の案件を表示"><span>${escapeHtml(stage.name)}${stage.note?`<small>（${stage.note}）</small>`:''}</span><b>${fmt(count)}件</b></button>`;
-  }).join('')+`<div class="home-process-stage complete"><span>完了</span><b>${fmt(completed)}件</b></div>`;
+  }).join('')+`<div class="home-process-stage complete"><span>完了</span><b>${fmt(finished)}件</b></div>`;
   const stageRisk={未着手:0,'CAD/CAM':1,切断:2,曲げ:3,溶接:4,仕上:5};
   const riskRows=remainingRows.slice().sort((a,b)=>(stageRisk[String(a.status||'').trim()]??9)-(stageRisk[String(b.status||'').trim()]??9)||String(a.id||'').localeCompare(String(b.id||'')));
   const riskItems=riskRows.slice(0,5).map(row=>`<div class="home-risk-item"><strong>${escapeHtml(row.id||row.part||'番号未設定')}</strong><span>${escapeHtml(String(row.status||'未着手'))}</span><em>担当：${escapeHtml(row.owner||'未設定')}</em></div>`).join('');
@@ -8368,7 +8368,7 @@ function renderHomeProcessControl(goalRows,remainingRows){
     : '<div class="home-risk-clear">✓ 16時目標達成！</div>';
   return `<section class="home-process-control" data-home-process-control>
     <div class="home-process-head"><div><div class="home-process-title">16時完了 工程管理</div><div class="home-process-rule">本日生地は16時までに全件「仕上完了」<br><b>遅れそうな案件を最優先で対応してください</b></div></div><div class="home-process-countdown">16時まで<b data-home-deadline-countdown>残り --時間--分</b></div></div>
-    <div class="home-process-progress-head"><span>全体進捗</span><b>完了 ${fmt(completed)} / ${fmt(total)}件（${rate}%）</b></div>
+    <div class="home-process-progress-head"><span>全体進捗</span><b>完了 ${fmt(finished)} / ${fmt(total)}件（${rate}%）</b></div>
     <div class="home-process-progress-track"><div class="home-process-progress-fill" style="--rate:${rate}%"></div></div>
     <div class="home-process-stages">${stageCards}</div>${riskPanel}</section>`;
 }
@@ -9516,11 +9516,12 @@ if(shipFilter==='today-ng'){
 
   const ngPoints=ng.reduce((a,r)=>a+r.qty,0);
   const prepaintProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
-  const todaySeichibiRemaining=rows.filter(row=>
-    row.shipDate===dates.today&&prepaintProcesses.includes(String(row.status||'').trim())
-  );
+  // shipDate is the normalized Excel field 「生地日」.
   const todaySeichibiGoalRows=rows.filter(row=>
     row.shipDate===dates.today&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''))
+  );
+  const todaySeichibiRemaining=todaySeichibiGoalRows.filter(row=>
+    prepaintProcesses.includes(String(row.status||'').trim())
   );
   const todayUrgentAllRows=rows.filter(row=>
     row.shipDate===dates.today&&row.instructionDate===dates.today
