@@ -6760,6 +6760,22 @@ body.bonus-day-3man .top{
   padding:14px !important;
   display:grid !important;
   place-items:stretch !important;
+  border-color:#4be6ff !important;
+  background:
+    linear-gradient(rgba(66,224,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(66,224,255,.05) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(4,29,48,.97),rgba(5,70,94,.94)) !important;
+  background-size:20px 20px,20px 20px,auto !important;
+  box-shadow:inset 0 0 24px rgba(32,211,250,.18),0 0 17px rgba(37,216,255,.34) !important;
+}
+.ng-game #bossMissionSlot:has(.game-clock.clock-alarm){
+  border-color:#ff4141 !important;
+  background:
+    linear-gradient(rgba(255,65,65,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,65,65,.05) 1px,transparent 1px),
+    linear-gradient(145deg,rgba(36,7,14,.96),rgba(105,10,15,.92)) !important;
+  background-size:20px 20px,20px 20px,auto !important;
+  box-shadow:inset 0 0 24px #ff343433,0 0 17px #ff252555 !important;
 }
 .ng-game #bossMissionSlot .game-clock.visual-hud-clock{
   position:relative !important;
@@ -6775,40 +6791,55 @@ body.bonus-day-3man .top{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  border:2px solid #ff6570 !important;
+  border:2px solid #4be6ff !important;
   border-radius:12px !important;
   background:
-    linear-gradient(rgba(255,76,86,.055) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,76,86,.055) 1px,transparent 1px),
-    linear-gradient(145deg,#310811,#700c18) !important;
+    linear-gradient(rgba(66,224,255,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(66,224,255,.06) 1px,transparent 1px),
+    linear-gradient(145deg,#062b45,#074f70) !important;
   background-size:20px 20px,20px 20px,auto !important;
-  box-shadow:inset 0 0 25px rgba(255,45,65,.24),0 0 18px rgba(255,31,51,.42) !important;
+  box-shadow:inset 0 0 25px rgba(26,185,224,.20),0 0 18px rgba(35,218,255,.38) !important;
   color:#fff !important;
 }
 .ng-game #bossMissionSlot .game-clock.visual-hud-clock small{
-  color:#ffd8dc !important;
+  color:#d9f9ff !important;
   font-size:18px !important;
   font-weight:900 !important;
 }
 .ng-game #bossMissionSlot .game-clock.visual-hud-clock b{
   margin:8px 0 !important;
-  color:#fff58a !important;
+  color:#edfdff !important;
   font:1000 54px/1 Bahnschrift,Consolas,monospace !important;
   letter-spacing:.08em;
+  text-shadow:0 0 10px #3ee8ff,0 3px 0 #043b58 !important;
+}
+.ng-game #bossMissionSlot .game-clock.visual-hud-clock.clock-alarm{
+  border-color:#ff6570 !important;
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.055) 0 12px,transparent 12px 24px),
+    linear-gradient(145deg,#310811,#8b0c1b) !important;
+  box-shadow:inset 0 0 30px rgba(255,45,65,.30),0 0 25px rgba(255,31,51,.72) !important;
+  animation:clockRedAlert .72s ease-in-out infinite alternate;
+}
+.ng-game #bossMissionSlot .game-clock.visual-hud-clock.clock-alarm b{
+  color:#fff58a !important;
   text-shadow:0 0 10px #ffdf52,0 3px 0 #79101b !important;
 }
-.ng-game .process-board-clock{display:none !important}
+.ng-game #bossMissionSlot .game-clock.visual-hud-clock.clock-alarm small{color:#ffd8dc !important}
+.ng-game .process-board-clock,
+.ng-game #ngUtilityColumn .game-clock,
+.ng-game #bonusCampaignPanel .game-clock{display:none !important}
 
 .ng-game #ngUtilityColumn{
-  top:92px !important;
-  bottom:22px !important;
-  height:auto !important;
+  top:435px !important;
+  bottom:auto !important;
+  height:625px !important;
   align-content:stretch !important;
 }
 .ng-game #bonusCampaignPanel{
   width:100% !important;
-  height:100% !important;
-  min-height:0 !important;
+  height:625px !important;
+  min-height:625px !important;
   padding:12px !important;
   align-items:stretch !important;
   justify-content:stretch !important;
