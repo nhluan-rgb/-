@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>塗装工程ダッシュボード</title>
+<title>塗装工程</title>
 <style>
 :root{--cyan:#5cecff;--navy:#061b30;--panel:#0c3550e8;--rust:#df4a2f;--bake:#8b5cf6;--other:#64748b}
 *{box-sizing:border-box}body{margin:0;font-family:"Yu Gothic","Meiryo",sans-serif;color:#fff;background:#041524 url("assets/bg_40.png") center/cover fixed no-repeat}
@@ -413,11 +413,169 @@ tbody tr:hover{background:#dff7ff!important}
 }
 
 </style>
+<style id="painting-command-v2">
+/* Unified command-center redesign */
+:root{
+  --paint-bg:#020812;
+  --paint-panel:#061a2d;
+  --paint-panel-2:#092944;
+  --paint-cyan:#35ddff;
+  --paint-violet:#8754ff;
+  --paint-line:rgba(59,222,255,.62);
+}
+html,body{
+  min-height:100%;
+  background:
+    radial-gradient(circle at 15% 4%,rgba(0,207,255,.16),transparent 25%),
+    radial-gradient(circle at 88% 8%,rgba(115,54,255,.14),transparent 27%),
+    linear-gradient(155deg,#020713 0%,#061a2c 52%,#020914 100%) !important;
+}
+body:before{
+  background:
+    repeating-linear-gradient(115deg,transparent 0 38px,rgba(60,214,255,.025) 39px 40px),
+    linear-gradient(180deg,rgba(1,9,18,.35),rgba(1,12,24,.76)) !important;
+}
+.app{padding:0 18px 28px !important}
+
+/* Command header */
+.top{
+  position:relative;isolation:isolate;min-height:104px !important;margin:0 -18px 18px;padding:0 32px !important;
+  border:0 !important;border-top:1px solid rgba(127,229,255,.42) !important;border-bottom:2px solid #2ad9ff !important;
+  border-radius:0 !important;overflow:hidden;
+  background:
+    linear-gradient(90deg,transparent 0 10%,rgba(33,220,255,.08) 10.1% 10.2%,transparent 10.3% 73%,rgba(132,58,255,.11) 100%),
+    repeating-linear-gradient(115deg,transparent 0 34px,rgba(69,221,255,.025) 35px 36px),
+    linear-gradient(100deg,#020813,#061b32 50%,#080d20) !important;
+  box-shadow:0 0 25px rgba(0,201,255,.27),0 15px 35px rgba(0,0,0,.58),inset 0 -8px 28px rgba(0,153,255,.08) !important;
+}
+.top:before{
+  content:"";position:absolute;z-index:-1;inset:auto 0 7px;height:1px;opacity:1;
+  background:linear-gradient(90deg,transparent 2%,#36e6ff 15%,transparent 42%,#8459ff 79%,transparent 98%);
+  box-shadow:0 0 11px #21dcff;
+}
+.top:after{
+  content:"SYSTEM // PAINTING COMMAND";position:absolute;left:104px;bottom:10px;
+  color:rgba(97,224,255,.6);font:700 9px/1 Consolas,monospace;letter-spacing:.25em;
+}
+.title{position:relative;gap:20px !important;padding-left:4px}
+.logo{
+  position:relative;width:46px !important;height:46px !important;border:3px solid #42e7ff !important;border-radius:3px !important;
+  transform:rotate(45deg);background:linear-gradient(135deg,rgba(35,221,255,.38),rgba(107,46,255,.58)) !important;
+  color:transparent;font-size:0 !important;
+  box-shadow:0 0 9px #29dfff,0 0 23px rgba(102,54,255,.82),inset 0 0 13px rgba(255,255,255,.3) !important;
+}
+.logo:after{
+  content:"";position:absolute;inset:10px;border:2px solid #e2fcff;box-shadow:0 0 8px #fff;
+}
+.title h1{
+  position:relative;margin:0 !important;
+  font-family:Bahnschrift,"Yu Gothic UI","Meiryo",sans-serif !important;
+  font-size:42px !important;font-weight:1000 !important;line-height:1 !important;letter-spacing:.16em !important;
+  color:#f5fdff !important;transform:skewX(-4deg);
+  text-shadow:3px 0 0 rgba(91,48,255,.8),0 0 8px #30e2ff,0 0 24px rgba(38,199,255,.6) !important;
+  overflow:hidden;
+}
+.title h1:after{
+  content:"";position:absolute;inset:-10px auto -10px -35%;width:28%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);
+  transform:skewX(-20deg);mix-blend-mode:screen;
+  animation:paintTitleScan 3.2s ease-in-out infinite;
+}
+.title p{display:none !important}
+.actions{align-items:center;gap:14px !important}
+.btn{
+  min-height:52px;padding:12px 21px !important;border:1px solid #5deaff !important;border-radius:4px !important;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  background:linear-gradient(135deg,#075582,#0b9dcc) !important;color:#fff !important;
+  font-size:17px !important;font-weight:900 !important;letter-spacing:.05em;text-shadow:0 1px 3px #000;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 15px rgba(33,210,255,.23) !important;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+.btn:hover{transform:translateY(-3px);filter:brightness(1.2);box-shadow:0 0 24px rgba(43,224,255,.52) !important}
+
+/* Animated mission transmission */
+.mission{
+  min-height:104px !important;padding:17px 22px !important;border-radius:8px !important;
+  background:linear-gradient(100deg,rgba(7,40,66,.97),rgba(4,20,37,.97)) !important;
+  border:1px solid var(--paint-line) !important;border-left:5px solid var(--paint-cyan) !important;
+  box-shadow:0 0 22px rgba(0,199,255,.15),inset 0 0 28px rgba(15,113,175,.1) !important;
+}
+.mission b{
+  padding:7px 16px !important;border:1px solid #65edff !important;border-radius:3px !important;
+  background:linear-gradient(90deg,#074d78,#0b82b2) !important;color:#fff !important;
+  font-size:19px !important;letter-spacing:.08em;box-shadow:0 0 13px rgba(38,218,255,.26) !important;
+}
+.mission span{
+  position:relative;display:block;white-space:nowrap;overflow:hidden;margin-top:13px !important;
+  color:#dcfaff !important;font-size:24px !important;letter-spacing:.06em;text-align:left !important;
+}
+.mission span:after{
+  content:"";position:absolute;top:0;bottom:0;left:-25%;width:20%;
+  background:linear-gradient(90deg,transparent,rgba(62,229,255,.55),transparent);
+  animation:missionSweep 4s linear infinite;
+}
+
+/* Unified HUD cards */
+.deadline-tabs,.process-deck,.group,.other,.controls{
+  border-radius:8px !important;border:1px solid var(--paint-line) !important;
+  background:
+    linear-gradient(rgba(46,210,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(46,210,255,.04) 1px,transparent 1px),
+    linear-gradient(150deg,rgba(7,34,56,.96),rgba(3,17,31,.96)) !important;
+  background-size:28px 28px,28px 28px,auto !important;
+  box-shadow:0 0 22px rgba(0,198,255,.13),inset 0 0 25px rgba(9,99,160,.08) !important;
+}
+.deadline-tab{
+  min-height:184px !important;padding:20px 18px !important;border-radius:3px !important;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 2px,transparent 2px 18px),linear-gradient(160deg,#073b5b,#031d32) !important;
+  border:1px solid #24cfff !important;color:#fff !important;
+  box-shadow:inset 0 0 22px rgba(0,190,255,.1) !important;
+}
+.deadline-tab:hover,.deadline-tab.active{transform:translateY(-4px) !important;border-color:#85f7ff !important;box-shadow:0 0 22px rgba(51,227,255,.5),inset 0 0 26px rgba(0,212,255,.15) !important}
+.deadline-tab .tab-name{font-size:22px !important;color:#f2fcff !important}
+.deadline-tab .tab-count{font-size:45px !important;color:#57eaff !important}
+.deadline-tab .tab-points{font-size:31px !important;color:#ffe95b !important}
+.deadline-tab.active:after,.process-card.active:after{content:"表示中" !important}
+.process-card{
+  min-height:210px !important;border-radius:4px !important;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 2px,transparent 2px 17px),linear-gradient(160deg,#083652,#031d30) !important;
+}
+.process-name{font-size:22px !important;border-radius:3px !important}
+.process-icon{border-radius:4px !important;background:rgba(2,20,34,.75) !important}
+.group-head{min-height:68px;padding:15px 20px !important;background:linear-gradient(90deg,color-mix(in srgb,var(--group) 28%,#05243b),#061c30) !important}
+.group-head h2{font-size:28px !important;letter-spacing:.06em}
+.group-body{background:rgba(2,14,25,.55) !important}
+.color-chip{border-radius:4px !important;background:linear-gradient(145deg,rgba(8,48,70,.98),rgba(3,27,43,.98)) !important}
+
+/* Replace the old white data tables */
+.table-wrap{border:1px solid rgba(66,218,244,.48) !important;border-radius:5px !important;background:#03111f !important}
+table{background:#041522 !important;color:#dff9ff !important}
+thead{background:linear-gradient(180deg,#0a526f,#062e46) !important;color:#fff !important}
+th{color:#a8f0ff !important;border-bottom:1px solid #29b9d8 !important;letter-spacing:.04em}
+td{border-bottom:1px solid rgba(88,157,179,.25) !important}
+tbody tr:nth-child(even){background:rgba(19,73,97,.18) !important}
+tbody tr:hover{background:rgba(24,169,207,.22) !important}
+.id{color:#62e5ff !important}
+.munsell{color:#fff0a2 !important}
+.controls input,.controls select,.deadline-tab input{
+  background:#031522 !important;color:#e8fbff !important;border:1px solid #3cd6ed !important;border-radius:3px !important;
+}
+.other h2{font-size:25px !important;letter-spacing:.05em}
+.foot{color:#77b8c9 !important;font-size:12px}
+
+@keyframes paintTitleScan{0%,20%{left:-35%;opacity:0}35%{opacity:1}62%{left:115%;opacity:1}70%,100%{left:115%;opacity:0}}
+@keyframes missionSweep{0%{left:-25%}100%{left:115%}}
+@media(max-width:700px){
+  .top{min-height:88px !important;padding:0 15px !important}.logo{width:34px !important;height:34px !important}
+  .title h1{font-size:27px !important}.top:after{display:none}.btn{min-height:43px;padding:8px 11px !important;font-size:13px !important}
+  .mission span{font-size:18px !important;white-space:normal}
+}
+</style>
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="title"><div class="logo">🎨</div><div><h1>塗装工程ダッシュボード</h1><p>錆止め・焼付・マンセル色を一画面で確認</p></div></div>
+    <div class="title"><div class="logo">🎨</div><div><h1>塗装工程</h1><p>PAINTING PROCESS CONTROL</p></div></div>
     <div class="actions"><a class="btn" href="index.html">← ホームへ戻る</a><button class="btn" id="reload">CSV更新</button></div>
   </header>
   <section class="mission"><b>🔥 色と品質に、九州工場の誇りを込めよう！</b><span id="missionText">塗装工程を読み込んでいます。</span></section>
