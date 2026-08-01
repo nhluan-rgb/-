@@ -580,7 +580,7 @@ tbody tr:hover{background:rgba(24,169,207,.22) !important}
 }
 .groups .group .table-wrap th{
   color:#e8fbff !important;
-  border-bottom:2px solid #42d9f4 !important;
+  border-bottom:1px solid rgba(218,247,255,.45) !important;
   text-shadow:0 1px 2px rgba(0,0,0,.55);
 }
 .groups .group .table-wrap td{
@@ -681,16 +681,27 @@ tbody tr:hover{background:rgba(24,169,207,.22) !important}
   justify-content:center;
   min-width:82px;
   padding:7px 9px;
-  border:1px solid #0788ae;
+  border:1px solid color-mix(in srgb,var(--process-color,#0788ae) 75%,#fff);
   border-radius:999px;
-  background:linear-gradient(180deg,#19b6d6,#087da4) !important;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--process-color,#0788ae) 78%,#fff),var(--process-color,#0788ae)) !important;
   color:#fff !important;
   font-size:16px !important;
   font-weight:1000 !important;
   line-height:1;
   white-space:nowrap;
   text-shadow:0 1px 2px rgba(0,0,0,.45);
-  box-shadow:0 2px 0 #075f7d,0 0 9px rgba(9,172,214,.3);
+  box-shadow:0 2px 0 color-mix(in srgb,var(--process-color,#0788ae) 68%,#000),0 0 10px color-mix(in srgb,var(--process-color,#0788ae) 42%,transparent);
+}
+.groups .group .table-wrap th:nth-child(4),
+.groups .group .table-wrap td:nth-child(4){
+  min-width:160px;
+}
+.groups .group .table-wrap td:nth-child(4){
+  color:#173548 !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1.45;
+  letter-spacing:.015em;
 }
 .groups .group:first-child .table-wrap th:nth-child(5),
 .groups .group:nth-child(2) .table-wrap th:nth-child(6){
@@ -813,6 +824,19 @@ function munsellColor(value){
   return '#a9b3ba';
 }
 function qty(rows){return rows.reduce((s,r)=>s+(Number(String(r['数量']).replace(/,/g,''))||0),0)}
+function processColor(value){
+  const name=String(value||'未着手').trim();
+  const colors={
+    '未着手':'#78909c',
+    'CAD/CAM':'#c79c00',
+    '切断':'#f57c00',
+    '曲げ':'#d94fa8',
+    '溶接':'#e53935',
+    '仕上':'#607d8b',
+    '塗装':'#2e9f49'
+  };
+  return colors[name]||'#0788ae';
+}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function colorCards(rows){
   const map=new Map();
@@ -822,7 +846,7 @@ function colorCards(rows){
 function table(rows,showColor=true){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const colorHead=showColor?'<th>マンセル値</th>':'';
-  return `<table><thead><tr><th class="check-col">完了</th><th>J番号</th><th>品番・品名</th><th>規格</th>${colorHead}<th>数量</th><th>現在工程</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job);const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="check-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td class="id">${esc(job)}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b>${esc(r['進捗']||'未着手')}</b></td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+  return `<table><thead><tr><th class="check-col">完了</th><th>J番号</th><th>品番・品名</th><th>規格</th>${colorHead}<th>数量</th><th>現在工程</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),process=String(r['進捗']||'未着手');const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="check-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td class="id">${esc(job)}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
 function render(){
   const deadlineRows=rowsForDeadline(paintRows,deadlineFilter);
