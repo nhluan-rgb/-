@@ -6754,6 +6754,30 @@ body.bonus-day-3man .top{
   .top h1{font-size:27px !important}.top::after{display:none}
   .actions .btn{min-height:44px;padding:9px 12px !important;font-size:14px !important}
 }
+/* Unified navy-cyan scrollbars */
+html,body,.table-wrap,#processModalCard{
+  scrollbar-width:thin;
+  scrollbar-color:#18b9df #06182a;
+}
+::-webkit-scrollbar{width:13px;height:13px}
+::-webkit-scrollbar-track{
+  background:#06182a;
+  border-left:1px solid rgba(53,221,255,.22);
+  border-top:1px solid rgba(53,221,255,.16);
+}
+::-webkit-scrollbar-thumb{
+  min-height:42px;
+  border:3px solid #06182a;
+  border-radius:999px;
+  background:linear-gradient(180deg,#37dcf5,#087fa9);
+  box-shadow:inset 0 0 0 1px rgba(190,249,255,.55),0 0 7px rgba(24,185,223,.32);
+}
+::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,#7af2ff,#10aace);
+  box-shadow:inset 0 0 0 1px #e8feff,0 0 10px rgba(48,224,255,.6);
+}
+::-webkit-scrollbar-corner{background:#06182a}
+::-webkit-scrollbar-button{width:0;height:0;display:none}
 </style>
 </head>
 <body>
