@@ -533,6 +533,10 @@ body:before{
 }
 .deadline-tab:hover,.deadline-tab.active{transform:translateY(-4px) !important;border-color:#85f7ff !important;box-shadow:0 0 22px rgba(51,227,255,.5),inset 0 0 26px rgba(0,212,255,.15) !important}
 .deadline-tab .tab-name{font-size:22px !important;color:#f2fcff !important}
+.deadline-tab .tab-name{
+  border-bottom:0 !important;
+  padding-bottom:4px !important;
+}
 .deadline-tab .tab-count{font-size:45px !important;color:#57eaff !important}
 .deadline-tab .tab-points{font-size:31px !important;color:#ffe95b !important}
 .deadline-tab.active:after,.process-card.active:after{content:"表示中" !important}
@@ -559,6 +563,16 @@ tbody tr:hover{background:rgba(24,169,207,.22) !important}
 .munsell{color:#fff0a2 !important}
 .controls input,.controls select,.deadline-tab input{
   background:#031522 !important;color:#e8fbff !important;border:1px solid #3cd6ed !important;border-radius:3px !important;
+}
+.deadline-tab[data-deadline="specified"]{
+  cursor:default !important;
+}
+.deadline-tab[data-deadline="specified"] input{
+  position:relative;
+  z-index:12;
+  cursor:pointer;
+  pointer-events:auto !important;
+  color-scheme:dark;
 }
 .other h2{font-size:25px !important;letter-spacing:.05em}
 .foot{color:#77b8c9 !important;font-size:12px}
@@ -772,7 +786,7 @@ body,
     <button class="deadline-tab" data-deadline="day2"><span class="tab-name">明後日期限</span><span class="tab-count" id="day2Count">0件</span><span class="tab-points" id="day2Points">0点</span></button>
     <button class="deadline-tab" data-deadline="day3"><span class="tab-name">3日後期限</span><span class="tab-count" id="day3Count">0件</span><span class="tab-points" id="day3Points">0点</span></button>
     <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">本日期限未完成<br>・製造期限切れ</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
-    <button class="deadline-tab" data-deadline="specified"><span class="tab-name">指定日製造期限</span><span class="tab-count" id="specifiedCount">0件</span><span class="tab-points" id="specifiedPoints">0点</span><input id="specifiedDate" type="date"></button>
+    <div class="deadline-tab" data-deadline="specified"><span class="tab-name">指定日製造期限</span><span class="tab-count" id="specifiedCount">0件</span><span class="tab-points" id="specifiedPoints">0点</span><input id="specifiedDate" type="date"></div>
   </section>
   <section class="kpis">
     <div class="kpi" style="--c:#42e8ff"><small>塗装対象 合計</small><strong id="totalCount">0件</strong><em id="totalQty">0点</em></div>
