@@ -5773,6 +5773,15 @@ button[data-material][disabled]:focus-visible,
 #bossStatusCard.ship-complete #todayShipmentStatusLabel{background:linear-gradient(#43a047,#1b5e20)!important;border-color:#c8f7d1!important;box-shadow:0 5px 0 #14551d!important;color:#fff!important}
 #bossStatusCard.ship-complete .boss-hp-value{color:#8cff9d!important;text-shadow:0 3px 4px #075522!important}
 #bossStatusCard.ship-complete #bossFill{background:#2eae59!important;width:100%!important}
+.claim-summary-panel{width:100%;min-height:176px;margin-top:auto;padding:14px 16px;box-sizing:border-box;border:2px solid #ff5b5b;border-radius:12px;background:linear-gradient(180deg,rgba(43,8,14,.93),rgba(10,27,39,.96));box-shadow:inset 0 0 24px rgba(255,60,76,.16),0 0 14px rgba(255,39,58,.28);color:#fff;text-align:center}
+.claim-summary-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid #ff6b7680}
+.claim-summary-title{font-size:25px;font-weight:1000;color:#ffb3b8;text-shadow:0 0 9px #ff334d99}
+.claim-summary-period{font-size:13px;font-weight:800;color:#b9e8f2}
+.claim-summary-count{display:flex;align-items:baseline;justify-content:center;gap:7px;margin:13px 0 8px}
+.claim-summary-count strong{font-size:54px;line-height:.9;color:#fff36d;text-shadow:0 0 13px #ff9d00}
+.claim-summary-count span{font-size:22px;font-weight:1000}
+.claim-summary-info{min-height:38px;padding:8px 10px;border-radius:8px;background:#ffffff10;color:#eafaff;font-size:15px;font-weight:800;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.claim-summary-info.empty{color:#89aab3}
 </style>
 <style id="dark-page-shell">
 /* Dark shell: header and the space surrounding the dashboard */
@@ -6108,6 +6117,7 @@ html,body,.table-wrap,#processModalCard{
         <div class="boss-track progress-track"><div id="bossFill" class="boss-fill progress-fill" style="width:0%"></div></div>
         <div class="boss-goal">完了までの進捗 <span id="bossHpText">0%</span></div>
         <div id="bossStatusMessage" class="boss-status-message">本日の作業を進めましょう！</div>
+        <section id="claimSummaryPanel" class="claim-summary-panel" aria-label="クレーム回数"></section>
       </section>
     </div>
 
@@ -6555,6 +6565,7 @@ function closingDateForTodayCelebration(now=new Date()){
 }
 
 let bonusRemoteProgress=null;
+let claimRemoteData=null;
 async function loadBonusProgress(){
   try{
     const response=await fetch(`bonus-progress.json?ts=${Date.now()}`,{cache:'no-store'});
@@ -6571,15 +6582,46 @@ async function loadBonusProgress(){
       west:Number(data.west)||0,
       national:Number(data.national)||0
     };
+    const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
+    const rawClaimClosingDate=String(claim.closingDate||'').trim();
+    claimRemoteData={
+      closingDate:/^\d{4}-\d{2}-\d{2}$/.test(rawClaimClosingDate)?rawClaimClosingDate:'',
+      count:Math.max(0,Math.trunc(Number(claim.count)||0)),
+      info:String(claim.info||'').trim()
+    };
     localStorage.setItem(`bonusProgress:${closingDate}`,JSON.stringify({
       east:bonusRemoteProgress.east,
       west:bonusRemoteProgress.west,
       national:bonusRemoteProgress.national
     }));
     updateBonusCampaignPanel();
+    updateClaimSummaryPanel();
   }catch(error){
     console.warn('大入り進捗データを読み込めません。内蔵値を使用します。',error);
   }
+}
+function claimCycleInfo(now=new Date()){
+  const start=now.getDate()>=20
+    ? new Date(now.getFullYear(),now.getMonth(),20)
+    : new Date(now.getFullYear(),now.getMonth()-1,20);
+  const end=new Date(start.getFullYear(),start.getMonth()+1,20);
+  return {start,end};
+}
+function updateClaimSummaryPanel(){
+  const box=$('claimSummaryPanel');
+  if(!box)return;
+  const cycle=claimCycleInfo(new Date());
+  const closingKey=localDateKey(cycle.end);
+  const applies=claimRemoteData&&claimRemoteData.closingDate===closingKey;
+  const count=applies?claimRemoteData.count:0;
+  const info=applies?claimRemoteData.info:'';
+  box.innerHTML=`
+    <div class="claim-summary-head">
+      <div class="claim-summary-title">⚠ クレーム</div>
+      <div class="claim-summary-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
+    </div>
+    <div class="claim-summary-count"><strong>${fmt(count)}</strong><span>回</span></div>
+    <div class="claim-summary-info ${info?'':'empty'}">${escapeHtml(info||'クレーム情報なし')}</div>`;
 }
 function bonusCycleInfo(now=new Date()){
   const start=new Date(now.getFullYear(),now.getMonth()-(now.getDate()<=20?1:0),21);
@@ -8396,6 +8438,7 @@ if(shipFilter==='today-ng'){
   $('bossPoints').textContent=fmt(ngPoints);
   updateMonthlyAchievementCalendar(ng.length,!fullStats);
   updateBonusCampaignPanel();
+  updateClaimSummaryPanel();
 
   const startBossKey=`todayNgStart:${dates.today}`;
   const savedBossStart=Number(localStorage.getItem(startBossKey)||0);
