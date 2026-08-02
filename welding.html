@@ -5648,7 +5648,7 @@ color:#d7e6ef!important;
 <style id="v118_dyma_zn_material_patch">
 /* 6 nhóm vật liệu: ZN → ドブ、Sダイマ → ダイマ */
 .standard-game .standard-material-grid{
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-columns:repeat(8,minmax(0,1fr))!important;
   gap:8px!important;
 }
 .standard-game .standard-material-name{
@@ -8743,10 +8743,14 @@ function mountStandardMission(){
   banner.classList.add('mission-relocated');
 }
 const standardMaterialGroups=[
-  // 焼付を最優先：SUS・ダイマ・ドブ等を含んでいても「焼付」に分類する。
+  // アルミは表記揺れ（半角・全角・文字間の空白）を正規化して最優先で分類する。
+  {name:'アルミ',pattern:/ア\s*ル\s*ミ/i,color:'#26c6da'},
+  // アルミ以外では焼付を最優先：SUS・ダイマ・ドブ等を含んでいても「焼付」に分類する。
   {name:'焼付',pattern:/焼付|焼き付/i,color:'#8a5bd1'},
   {name:'SUS',pattern:/SUS/i,color:'#00a99d'},
   {name:'錆止め',pattern:/錆止|さび止|サビ止/i,color:'#e65a43'},
+  // 「鉄」を含み、上位条件の焼付・錆止めに一致しないものを鉄に分類する。
+  {name:'鉄',pattern:/鉄/i,color:'#78909c'},
   {name:'ダイマ',pattern:/S\s*ダイマ|スーパー\s*ダイマ|ダイマ|ダイマー/i,color:'#536dfe'},
   {name:'ドブ',pattern:/ドブ|溶融亜鉛|HDZ|(?:^|\s)ZN(?:\s|$)/i,color:'#8d6e63'}
 ];
