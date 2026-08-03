@@ -4925,7 +4925,9 @@ section.panel.work{
 .ng-mission-ticker-slot,
 .standard-mission-slot{
   overflow:hidden!important;
+  min-height:150px!important;
 }
+.ng-mission-ticker-slot{height:150px!important}
 .ng-mission-ticker-slot .game-banner-main,
 .standard-mission-slot .standard-banner-message{
   backface-visibility:hidden!important;
@@ -6017,13 +6019,18 @@ html,body,.table-wrap,#processModalCard{
   max-width:100%!important;
   padding-left:18px!important;
   padding-right:18px!important;
-  white-space:nowrap!important;
+  white-space:normal!important;
   overflow:hidden!important;
   text-align:left!important;
+  line-height:1.35!important;
+  max-height:2.7em!important;
   transform:none!important;
   animation:none!important;
   color:#dcfaff!important;
   letter-spacing:.06em!important;
+}
+.ng-mission-ticker-slot .game-banner-main strong{
+  white-space:normal!important;
 }
 .ng-mission-ticker-slot::after,
 .standard-mission-slot::after{
@@ -7367,7 +7374,7 @@ function restartOneLapAnimation(element){
   element.style.setProperty('display','block','important');
   element.style.setProperty('width','100%','important');
   element.style.setProperty('max-width','100%','important');
-  element.style.setProperty('white-space','nowrap','important');
+  element.style.setProperty('white-space','normal','important');
   element.style.setProperty('text-align','left','important');
   element.style.setProperty('padding-left','0','important');
   element.style.setProperty('will-change','auto','important');
