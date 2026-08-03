@@ -4925,9 +4925,7 @@ section.panel.work{
 .ng-mission-ticker-slot,
 .standard-mission-slot{
   overflow:hidden!important;
-  min-height:150px!important;
 }
-.ng-mission-ticker-slot{height:150px!important}
 .ng-mission-ticker-slot .game-banner-main,
 .standard-mission-slot .standard-banner-message{
   backface-visibility:hidden!important;
@@ -6031,6 +6029,18 @@ html,body,.table-wrap,#processModalCard{
 }
 .ng-mission-ticker-slot .game-banner-main strong{
   white-space:normal!important;
+}
+.standard-mission-slot.mission-long .standard-mission-content{
+  display:block!important;
+}
+.standard-mission-slot.mission-long .standard-banner-title{
+  float:left!important;
+  margin:0 18px 5px 0!important;
+}
+.standard-mission-slot.mission-long .standard-banner-message{
+  width:auto!important;
+  max-width:none!important;
+  padding-top:5px!important;
 }
 .ng-mission-ticker-slot::after,
 .standard-mission-slot::after{
@@ -7381,6 +7391,15 @@ function restartOneLapAnimation(element){
 
   const containerWidth=Math.max(1,container.clientWidth);
   const textWidth=Math.max(1,element.scrollWidth);
+  const slot=container.closest('.standard-mission-slot,.ng-mission-ticker-slot');
+  const fontStyle=getComputedStyle(element);
+  const measureCanvas=document.createElement('canvas');
+  const measureContext=measureCanvas.getContext('2d');
+  if(measureContext){
+    measureContext.font=`${fontStyle.fontWeight} ${fontStyle.fontSize} ${fontStyle.fontFamily}`;
+    const naturalTextWidth=measureContext.measureText(missionText).width;
+    slot?.classList.toggle('mission-long',naturalTextWidth>containerWidth-36);
+  }
   const startX=0;
   const endX=0;
   const distance=containerWidth+textWidth+60;
