@@ -6003,6 +6003,50 @@ html,body,.table-wrap,#processModalCard{
 ::-webkit-scrollbar-corner{background:#06182a}
 ::-webkit-scrollbar-button{width:0;height:0;display:none}
 </style>
+<style id="painting_mission_text_style">
+/* Mission text: same stationary cyan sweep treatment as painting.html. */
+.ng-mission-ticker-slot,
+.standard-mission-slot{
+  overflow:hidden!important;
+}
+.ng-mission-ticker-slot .game-banner-main,
+.standard-mission-slot .standard-banner-message{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  padding-left:18px!important;
+  padding-right:18px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-align:left!important;
+  transform:none!important;
+  animation:none!important;
+  color:#dcfaff!important;
+  letter-spacing:.06em!important;
+}
+.ng-mission-ticker-slot::after,
+.standard-mission-slot::after{
+  content:"";
+  position:absolute;
+  z-index:20;
+  top:0;
+  bottom:0;
+  left:-25%;
+  width:20%;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(62,229,255,.55),transparent);
+  animation:indexMissionSweep 4s linear infinite;
+}
+@keyframes indexMissionSweep{
+  from{left:-25%}
+  to{left:115%}
+}
+@media(prefers-reduced-motion:reduce){
+  .ng-mission-ticker-slot::after,
+  .standard-mission-slot::after{animation:none!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -7321,18 +7365,18 @@ function restartOneLapAnimation(element){
 
   element.style.setProperty('animation','none','important');
   element.style.setProperty('display','block','important');
-  element.style.setProperty('width','max-content','important');
-  element.style.setProperty('max-width','none','important');
+  element.style.setProperty('width','100%','important');
+  element.style.setProperty('max-width','100%','important');
   element.style.setProperty('white-space','nowrap','important');
   element.style.setProperty('text-align','left','important');
   element.style.setProperty('padding-left','0','important');
-  element.style.setProperty('will-change','transform','important');
+  element.style.setProperty('will-change','auto','important');
 
   const containerWidth=Math.max(1,container.clientWidth);
   const textWidth=Math.max(1,element.scrollWidth);
-  const startX=containerWidth+30;
-  const endX=-(textWidth+30);
-  const distance=startX-endX;
+  const startX=0;
+  const endX=0;
+  const distance=containerWidth+textWidth+60;
   const duration=distance/MISSION_SPEED_PX*1000;
 
   let ticker=smoothMissionTickers[key];
@@ -7373,7 +7417,7 @@ function restartOneLapAnimation(element){
     }
 
     const progress=Math.min(1,(now-ticker.startTime)/ticker.duration);
-    const x=ticker.startX-(ticker.startX-ticker.endX)*progress;
+    const x=0;
 
     /* サブピクセルで移動し、毎フレームのガタつきを防止 */
     if(ticker.lastX===null||Math.abs(x-ticker.lastX)>=0.01){
