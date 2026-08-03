@@ -8969,11 +8969,14 @@ function getProcessThemeColor(processName){
 }
 
 function buildProcessBacklogMarkup(processName){
-  // ホーム（生地日未登録）の工程カードと同じ母集団を使用する。
-  // currentChartRows の更新タイミング差で、カードは9件なのに詳細が0件になる不一致を防止。
+  // ホームの工程カードは「本日生地」の残件を表示しているため、
+  // 詳細ポップアップも同じ母集団を使う。
   const processSourceRows=shipFilter==='today-ng'
-    ? rows.filter(isActiveUnregistered)
+    ? getTodayWeldingTargetRows()
     : currentChartRows;
+  const processSourceLabel=shipFilter==='today-ng'
+    ? 'ホーム・本日生地'
+    : currentChartLabel;
   const backlog=processSourceRows
     .filter(row=>String(row.status||'').trim()===String(processName||'').trim())
     .slice()
@@ -9017,7 +9020,7 @@ function buildProcessBacklogMarkup(processName){
       <div class="process-popup-title-wrap">
         <span class="process-popup-icon">${escapeHtml(processName.slice(0,1))}</span>
         <div>
-          <div class="process-backlog-kicker">${escapeHtml(currentChartLabel)}・工程別滞留品</div>
+          <div class="process-backlog-kicker">${escapeHtml(processSourceLabel)}・工程別滞留品</div>
           <div class="process-backlog-title">${escapeHtml(processName)}</div>
         </div>
       </div>
