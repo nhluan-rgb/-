@@ -7502,8 +7502,13 @@ function startStandardMessageRotation(element,visualElement,filter,context){
   if(!element)return;
   mountStandardMission();
   const key=standardMessageGroups[filter]?filter:'today';
+  const contextChanged=
+    Number(standardMessageContext.total)!==Number(context.total)||
+    Number(standardMessageContext.remaining)!==Number(context.remaining)||
+    Number(standardMessageContext.rate)!==Number(context.rate);
   standardMessageContext=context;
   if(standardMessageElement===element&&standardVisualMessageElement===visualElement&&standardMessageKey===key){
+    if(contextChanged)renderStandardRotatingMessage(false);
     return;
   }
 
