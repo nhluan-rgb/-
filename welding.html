@@ -11955,14 +11955,7 @@ html.fullhd-dashboard-fit .app{
     fullHdFitFrame=requestAnimationFrame(()=>{
       const app=document.querySelector('.app');
       if(!app)return;
-      const isFullHd=window.innerWidth>=1800&&window.innerWidth<=2000&&window.innerHeight>=850&&window.innerHeight<=1100;
-      if(!isFullHd){
-        document.documentElement.classList.remove('fullhd-dashboard-fit');
-        app.style.removeProperty('zoom');
-        app.style.removeProperty('width');
-        app.style.removeProperty('max-width');
-        return;
-      }
+      /* この画面は常に24インチ・Full HD運用として自動フィットする。 */
       document.documentElement.classList.add('fullhd-dashboard-fit');
       app.style.setProperty('zoom','1');
       app.style.setProperty('width','100%');
