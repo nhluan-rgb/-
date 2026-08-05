@@ -7223,6 +7223,7 @@ const sample=[
 let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
 let standardBreakdownFilter=null;
 let selectedProcess='',selectedDelivery='',selectedMaterial='',selectedProductCategory='',selectedProductCategoryScope='current',currentChartRows=[],currentChartLabel='生産進捗';
+let activeDippingPopup=null;
 let csvLoading=false;
 let jNumberSearchDigits='';
 
@@ -7263,6 +7264,7 @@ function openJNumberPopup(target){
   const modal=document.getElementById('processModal');
   const modalCard=document.getElementById('processModalCard');
   const modalBody=document.getElementById('processModalBody');
+
   if(!modal||!modalBody)return;
   modalBody.innerHTML=`
     <header class="process-backlog-header">
@@ -8596,6 +8598,7 @@ function renderDeliveryCards(chartRows){
 
 function renderHomeProcessControl(){
   const dates=getShipDates();
+  const carry=nextWorkingDateKey(dates.today);
   const dippingRows=getDippingRows(rows,dates.today);
   const activeRows=dippingRows.filter(row=>!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
   const processMap=new Map();
@@ -8618,7 +8621,7 @@ function renderHomeProcessControl(){
     </button>`).join('');
   const totalQty=activeRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   return `<section class="home-dipping-process-board">
-    <header class="home-dipping-process-head"><div><small>ドブ漬け管理</small><h2>工程</h2></div><div class="home-dipping-total"><span>対象</span><b>${fmt(activeRows.length)}件</b><strong>${fmt(totalQty)}点</strong></div></header>
+    <header class="home-dipping-process-head"><div><small>ドブ漬け管理</small><h2>工程</h2></div><div class="home-dipping-dates"><div><span>生地日</span><b>${formatJapaneseDateKey(dates.today)}</b></div><div><span>持ち込み日</span><b>${formatJapaneseDateKey(carry)}</b></div></div><div class="home-dipping-total"><span>対象</span><b>${fmt(activeRows.length)}件</b><strong>${fmt(totalQty)}点</strong></div></header>
     <div class="home-dipping-process-grid">${cards||'<div class="home-dipping-empty">工程データはありません</div>'}</div>
   </section>`;
 }
@@ -9112,6 +9115,9 @@ function renderSelectedProcessBacklog(){
   const modal=document.getElementById('processModal');
   const modalCard=document.getElementById('processModalCard');
   const modalBody=document.getElementById('processModalBody');
+
+  /* 30秒更新中も、開いているドブ漬け詳細は閉じない。 */
+  if(activeDippingPopup&&modal&&modal.classList.contains('show'))return;
 
   document.querySelectorAll('.standard-material-card[data-material]').forEach(card=>{
     const selected=Boolean(selectedMaterial)&&card.dataset.material===selectedMaterial;
@@ -9664,6 +9670,7 @@ function showDippingDetailPopup(kind,value){
   const modalCard=document.getElementById('processModalCard');
   const modalBody=document.getElementById('processModalBody');
   if(!modal||!modalBody)return;
+  activeDippingPopup={kind,value};
   modalBody.innerHTML=`
     <header class="process-backlog-header">
       <div>
@@ -10190,6 +10197,7 @@ document.addEventListener('click',event=>{
     return;
   }
   if(event.target.closest('[data-process-close],[data-overview]')){
+    activeDippingPopup=null;
     selectedProcess='';
     selectedDelivery='';
     selectedMaterial='';
@@ -10282,6 +10290,7 @@ if($('dippingBackToProcess')) $('dippingBackToProcess').addEventListener('click'
 
   modal.addEventListener('click',event=>{
     if(event.target===modal){
+      activeDippingPopup=null;
       selectedProcess='';
       selectedDelivery='';
       selectedMaterial='';
@@ -10292,6 +10301,7 @@ if($('dippingBackToProcess')) $('dippingBackToProcess').addEventListener('click'
 
   document.addEventListener('keydown',event=>{
     if(event.key==='Escape'&&modal.classList.contains('show')){
+      activeDippingPopup=null;
       selectedProcess='';
       selectedDelivery='';
       selectedMaterial='';
@@ -11532,6 +11542,10 @@ body .standard-game .ranking-row.needs-attention{
 }
 .home-dipping-process-head small{color:#8cecff;font-size:20px;font-weight:1000}
 .home-dipping-process-head h2{margin:3px 0 0;color:#fff;font-size:38px;line-height:1;font-weight:1000}
+.home-dipping-dates{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;max-width:760px}
+.home-dipping-dates>div{padding:10px 16px;border:2px solid #44dfff;border-radius:12px;background:linear-gradient(145deg,#082f45,#031621);text-align:center;box-shadow:inset 0 0 15px rgba(68,223,255,.12)}
+.home-dipping-dates span{display:block;color:#aeefff;font-size:17px;font-weight:1000}
+.home-dipping-dates b{display:block;margin-top:5px;color:#fff36d;font-size:clamp(20px,1.7vw,29px);line-height:1.15;white-space:nowrap;text-shadow:0 0 10px rgba(255,230,65,.38)}
 .home-dipping-total{display:flex;align-items:baseline;gap:12px;padding:10px 18px;border:2px solid #25d6ff;border-radius:12px;background:#031522}
 .home-dipping-total span{color:#bdefff;font-size:17px;font-weight:900}
 .home-dipping-total b{color:#fff;font-size:30px}
@@ -11581,8 +11595,28 @@ body .standard-game .ranking-row.needs-attention{
   font-weight:1000!important;
   white-space:normal!important;
 }
+/* 数量列も製品種類と同じ優先度で強調。 */
+.process-backlog-table th:nth-child(3){
+  min-width:105px!important;
+  color:#3b2500!important;
+  background:#ffe45c!important;
+  font-size:19px!important;
+  text-align:center!important;
+}
+.process-backlog-table .backlog-qty{
+  min-width:105px!important;
+  padding:10px 12px!important;
+  color:#9a3200!important;
+  background:#fff7bf!important;
+  font-size:clamp(23px,1.9vw,32px)!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
 @media(max-width:900px){
   .home-dipping-process-head{align-items:flex-start;flex-direction:column}
+  .home-dipping-dates{width:100%;max-width:none;grid-template-columns:1fr}
   .home-dipping-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
