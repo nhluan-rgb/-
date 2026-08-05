@@ -11779,49 +11779,6 @@ body .ship-summary > .ship-card .ship-sub{
   white-space:normal!important;
   overflow-wrap:anywhere!important;
 }
-/* 通常画面で残っていた大型の件数・点数・日付入力をカード幅へ縮小。 */
-body .ship-summary.game-stage-tabs .ship-card{
-  height:auto!important;
-  min-height:0!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .day{
-  min-height:clamp(34px,3.4vw,50px)!important;
-  padding:0 2px 6px!important;
-  font-size:clamp(11px,1.05vw,18px)!important;
-  word-break:break-word!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .ship-value{
-  margin-top:clamp(5px,.7vw,10px)!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .ship-count-line{
-  font-size:clamp(18px,1.75vw,30px)!important;
-  line-height:1!important;
-  white-space:nowrap!important;
-}
-body .ship-summary.game-stage-tabs .ship-card .ship-points-line{
-  margin-top:clamp(4px,.55vw,8px)!important;
-  font-size:clamp(15px,1.35vw,24px)!important;
-  line-height:1!important;
-  white-space:nowrap!important;
-}
-body .ship-summary.game-stage-tabs .ship-card[data-ship="specified"] .ship-sub{
-  margin-top:7px!important;
-  min-width:0!important;
-  overflow:hidden!important;
-}
-body .ship-summary.game-stage-tabs .ship-card[data-ship="specified"] input{
-  width:100%!important;
-  min-width:0!important;
-  height:clamp(30px,2.7vw,40px)!important;
-  padding:2px 3px!important;
-  font-size:clamp(10px,.9vw,15px)!important;
-}
-body .ship-summary.game-stage-tabs .ship-card.active::after{
-  right:4px!important;
-  top:4px!important;
-  padding:2px 4px!important;
-  font-size:8px!important;
-}
 @media(max-width:900px){
   body .ship-summary,
   body .ship-summary.game-stage-tabs,
