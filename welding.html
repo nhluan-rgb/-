@@ -7123,8 +7123,6 @@ html,body,.table-wrap,#processModalCard{
           <video class="boss-video" autoplay muted loop playsinline preload="metadata">
             <source src="14786392_1080_1920_30fps.mp4" type="video/mp4">
           </video>
-          <div class="boss-video-badge">FACTORY VIDEO</div>
-          <button type="button" class="boss-video-sound" aria-label="ビデオの音声を切り替える">🔇</button>
         </div>
         <div class="boss-status-label">本日生地</div>
         <div class="boss-name">仕上完了まで</div>
@@ -11872,40 +11870,6 @@ body:has(#ngGame.show) .ship-summary.game-stage-tabs .ship-card[data-ship="speci
   object-position:center;
   background:#020b13;
 }
-.boss-video-badge{
-  position:absolute;
-  left:14px;
-  top:14px;
-  z-index:2;
-  padding:7px 12px;
-  border:1px solid rgba(104,231,255,.85);
-  border-radius:999px;
-  background:rgba(2,20,31,.76);
-  color:#bff7ff;
-  font-size:13px;
-  font-weight:1000;
-  letter-spacing:.12em;
-  pointer-events:none;
-}
-.boss-video-sound{
-  position:absolute;
-  right:14px;
-  bottom:14px;
-  z-index:3;
-  display:grid!important;
-  place-items:center;
-  width:48px;
-  height:48px;
-  padding:0;
-  border:2px solid #6cecff;
-  border-radius:50%;
-  background:rgba(2,20,31,.82);
-  color:#fff;
-  font-size:23px;
-  cursor:pointer;
-  box-shadow:0 0 16px rgba(51,220,255,.48);
-}
-.boss-video-sound:hover{filter:brightness(1.25)}
 
 @media(max-width:1300px){
   .ng-game .monthly-achievement-calendar.home-status-dashboard{
@@ -11969,19 +11933,9 @@ body:has(#ngGame.show) .ship-summary.game-stage-tabs .ship-card[data-ship="speci
   staticTabsObserver.observe(document.documentElement,{childList:true,subtree:true});
 
   const video=document.querySelector('.boss-video');
-  const soundButton=document.querySelector('.boss-video-sound');
   if(video){
     video.muted=true;
     video.play().catch(()=>{});
-  }
-  if(video&&soundButton){
-    soundButton.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      video.muted=!video.muted;
-      soundButton.textContent=video.muted?'🔇':'🔊';
-      video.play().catch(()=>{});
-    });
   }
 })();
 </script>
