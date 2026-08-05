@@ -7645,12 +7645,12 @@ function updateMonthlyAchievementCalendar(ngCount,allowRecord){
 
   box.classList.add('home-status-dashboard');
   box.innerHTML=`
-    <section class="home-half-card home-urgent-fixed ${hasUrgent?'has-alert':'is-clear'}" aria-live="polite">
+    <button type="button" class="home-half-card home-urgent-fixed ${hasUrgent?'has-alert':'is-clear'}" data-product-category="__all_urgent__" data-product-category-scope="urgent-today" aria-label="新規急ぎの全件詳細を表示" aria-live="polite" ${hasUrgent?'':'disabled aria-disabled="true"'}>
       <div class="home-half-kicker">${hasUrgent?'⚠ 至急確認':'✓ 現在なし'}</div>
       <div class="home-half-title">新規急ぎ</div>
       <div class="home-half-values"><b>${fmt(todayUrgentRows.length)}件</b><b>${fmt(urgentQty)}点</b></div>
       <div class="home-half-note">製造指示日＝今日 ／ 生地日＝今日</div>
-    </section>
+    </button>
     <section class="home-half-card home-mes-completion ${todayRate>=100?'is-complete':'is-running'}" aria-live="polite">
       <div class="home-mes-header">
         <span class="home-half-kicker">MES / PRODUCTION STATUS</span>
@@ -8594,32 +8594,33 @@ function renderDeliveryCards(chartRows){
   }).join('')}</div></section>`;
 }
 
-function renderHomeProcessControl(goalRows,remainingRows){
-  const now=new Date();
-  const total=goalRows.length;
-  const remaining=remainingRows.length;
-  const finished=Math.max(0,total-remaining);
-  const rate=total?Math.round(finished/total*100):100;
-  const stageConfigs=[
-    {name:'未着手',statuses:['未着手','CAD/CAM'],note:'CAD/CAM含む'},
-    {name:'切断',statuses:['切断']},{name:'曲げ',statuses:['曲げ']},
-    {name:'溶接',statuses:['溶接']},{name:'仕上',statuses:['仕上']}
-  ];
-  const stageCards=stageConfigs.map(stage=>{
-    const count=remainingRows.filter(row=>stage.statuses.includes(String(row.status||'').trim())).length;
-    return `<button type="button" class="home-process-stage" data-process="${escapeHtml(stage.statuses[0])}" aria-label="${escapeHtml(stage.name)}の案件を表示"><span>${escapeHtml(stage.name)}${stage.note?`<small>（${stage.note}）</small>`:''}</span><b>${fmt(count)}件</b></button>`;
-  }).join('')+`<div class="home-process-stage complete"><span>完了</span><b>${fmt(finished)}件</b></div>`;
-  const stageRisk={未着手:0,'CAD/CAM':1,切断:2,曲げ:3,溶接:4,仕上:5};
-  const riskRows=remainingRows.slice().sort((a,b)=>(stageRisk[String(a.status||'').trim()]??9)-(stageRisk[String(b.status||'').trim()]??9)||String(a.id||'').localeCompare(String(b.id||'')));
-  const riskItems=riskRows.slice(0,5).map(row=>`<div class="home-risk-item"><strong>${escapeHtml(row.id||row.part||'番号未設定')}</strong><span>${escapeHtml(String(row.status||'未着手'))}</span><em>担当：${escapeHtml(row.owner||'未設定')}</em></div>`).join('');
-  const riskPanel=remaining
-    ? `<div class="home-risk-panel"><div class="home-risk-title">⚠ 16時までに間に合わない可能性：<b>${fmt(remaining)}件</b></div><div class="home-risk-list">${riskItems}</div></div>`
-    : '<div class="home-risk-clear">✓ 16時目標達成！</div>';
-  return `<section class="home-process-control" data-home-process-control>
-    <div class="home-process-head"><div><div class="home-process-title">16時完了 工程管理</div><div class="home-process-rule">本日生地は16時までに全件「仕上完了」<br><b>遅れそうな案件を最優先で対応してください</b></div></div><div class="home-process-countdown">16時まで<b data-home-deadline-countdown>残り --時間--分</b></div></div>
-    <div class="home-process-progress-head"><span>全体進捗</span><b>完了 ${fmt(finished)} / ${fmt(total)}件（${rate}%）</b></div>
-    <div class="home-process-progress-track"><div class="home-process-progress-fill" style="--rate:${rate}%"></div></div>
-    <div class="home-process-stages">${stageCards}</div>${riskPanel}</section>`;
+function renderHomeProcessControl(){
+  const dates=getShipDates();
+  const dippingRows=getDippingRows(rows,dates.today);
+  const activeRows=dippingRows.filter(row=>!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
+  const processMap=new Map();
+  activeRows.forEach(row=>{
+    const process=String(row.status||'未着手').trim()||'未着手';
+    const item=processMap.get(process)||{count:0,qty:0};
+    item.count++;
+    item.qty+=Number(row.qty)||0;
+    processMap.set(process,item);
+  });
+  const processColors={'未着手':'#90A4AE','CAD/CAM':'#F4C430','切断':'#F57C00','曲げ':'#EC6CB9','溶接':'#E53935','仕上':'#B0BEC5','塗装':'#43A047','組立':'#7E57C2','完成':'#00A67E'};
+  const processOrder=['未着手','CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立','完成'];
+  const cards=[...processMap.entries()]
+    .sort((a,b)=>{
+      const ai=processOrder.indexOf(a[0]),bi=processOrder.indexOf(b[0]);
+      return (ai<0?99:ai)-(bi<0?99:bi)||b[1].count-a[1].count;
+    })
+    .map(([name,item])=>`<button type="button" class="home-dipping-process-card" data-dipping-kind="process" data-dipping-value="${escapeHtml(name)}" style="--dip-color:${processColors[name]||'#55d9ff'}" aria-label="${escapeHtml(name)}の詳細と製品種類を表示">
+      <span>${escapeHtml(name)}</span><b>${fmt(item.count)}件</b><strong>${fmt(item.qty)}点</strong><small>クリックして製品種類を表示</small>
+    </button>`).join('');
+  const totalQty=activeRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  return `<section class="home-dipping-process-board">
+    <header class="home-dipping-process-head"><div><small>ドブ漬け管理</small><h2>工程</h2></div><div class="home-dipping-total"><span>対象</span><b>${fmt(activeRows.length)}件</b><strong>${fmt(totalQty)}点</strong></div></header>
+    <div class="home-dipping-process-grid">${cards||'<div class="home-dipping-empty">工程データはありません</div>'}</div>
+  </section>`;
 }
 
 function updateHomeProcessDeadline(){
@@ -9177,14 +9178,15 @@ function buildProductCategoryBacklogMarkup(categoryName){
   const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   const today=getShipDates().today;
   const allUnregistered=selectedProductCategoryScope==='unregistered'&&categoryName==='__all_unregistered__';
-  const displayCategoryName=allUnregistered?'生地日未登録・全件':categoryName;
+  const allUrgent=selectedProductCategoryScope==='urgent-today'&&categoryName==='__all_urgent__';
+  const displayCategoryName=allUrgent?'新規急ぎ・全件':allUnregistered?'生地日未登録・全件':categoryName;
   const categorySourceRows=selectedProductCategoryScope==='unregistered'
     ? rows.filter(isEligibleUnregistered)
     : selectedProductCategoryScope==='urgent-today'
       ? rows.filter(row=>row.shipDate===today&&row.instructionDate===today)
       : currentChartRows;
   const targetRows=categorySourceRows
-    .filter(row=>allUnregistered||classifyProductCategory(row)===categoryName)
+    .filter(row=>allUnregistered||allUrgent||classifyProductCategory(row)===categoryName)
     .filter(row=>selectedProductCategoryScope!=='current'||managedProcesses.includes(String(row.status||'')))
     .sort((a,b)=>String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||String(a.id||'').localeCompare(String(b.id||'')));
   const confirmationEnabled=selectedProductCategoryScope==='unregistered'||selectedProductCategoryScope==='urgent-today';
@@ -9674,17 +9676,18 @@ function showDippingDetailPopup(kind,value){
     <section class="process-popup-section">
       <div class="process-popup-section-head">製造指示一覧</div>
       <div class="process-backlog-table-wrap"><table class="process-backlog-table">
-        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead>
+        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th class="dipping-product-type-head">製品種類</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead>
         <tbody>${detailRows.map(row=>`<tr>
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
           <td class="backlog-product"><b>${escapeHtml(row.part||'—')} ／ ${escapeHtml(row.name||'—')}</b><small>${escapeHtml(row.standard||'規格なし')}</small></td>
-          <td class="backlog-qty">${fmt(row.qty)}点</td>
-          <td>${escapeHtml(row.status||'未着手')}</td>
-          <td class="backlog-date">${escapeHtml(row.shipDate||'未登録')}</td>
+           <td class="backlog-qty">${fmt(row.qty)}点</td>
+           <td>${escapeHtml(row.status||'未着手')}</td>
+           <td class="dipping-product-type-cell"><b>${escapeHtml(classifyProductCategory(row))}</b></td>
+           <td class="backlog-date">${escapeHtml(row.shipDate||'未登録')}</td>
           <td class="backlog-date">${escapeHtml(row.due||'未登録')}</td>
           <td class="backlog-date">${escapeHtml(row.dispatchDate||'未登録')}</td>
           <td>${escapeHtml(row.owner||'未設定')}</td>
-        </tr>`).join('')||'<tr><td colspan="8" class="process-backlog-empty">対象データはありません</td></tr>'}</tbody>
+        </tr>`).join('')||'<tr><td colspan="9" class="process-backlog-empty">対象データはありません</td></tr>'}</tbody>
       </table></div>
     </section>`;
   modal.classList.add('show');
@@ -11485,6 +11488,132 @@ body .standard-game .ranking-row.needs-attention{
   height:625px!important;
   min-height:625px!important;
 }
+.ng-game button.home-urgent-fixed{
+  width:100%!important;
+  font:inherit!important;
+  cursor:pointer!important;
+  appearance:none!important;
+}
+.ng-game button.home-urgent-fixed:hover:not(:disabled){
+  filter:brightness(1.14)!important;
+}
+.ng-game button.home-urgent-fixed:focus-visible{
+  outline:4px solid #fff56b!important;
+  outline-offset:-8px!important;
+}
+.ng-game button.home-urgent-fixed:disabled{
+  cursor:default!important;
+}
+
+/* ホーム下段：ドブ漬け管理の工程だけを表示。 */
+.ng-game .evolution-runner-world{
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.home-dipping-process-board{
+  width:100%;
+  padding:22px;
+  border:3px solid #25d6ff;
+  border-radius:20px;
+  background:linear-gradient(rgba(55,213,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(55,213,255,.06) 1px,transparent 1px),linear-gradient(145deg,#073b56,#031724 72%);
+  background-size:24px 24px,24px 24px,auto;
+  color:#fff;
+  box-shadow:0 7px 0 #020d16,0 0 28px rgba(37,214,255,.3),inset 0 0 30px rgba(37,214,255,.08);
+}
+.home-dipping-process-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding-bottom:15px;
+  border-bottom:2px solid rgba(37,214,255,.7);
+}
+.home-dipping-process-head small{color:#8cecff;font-size:20px;font-weight:1000}
+.home-dipping-process-head h2{margin:3px 0 0;color:#fff;font-size:38px;line-height:1;font-weight:1000}
+.home-dipping-total{display:flex;align-items:baseline;gap:12px;padding:10px 18px;border:2px solid #25d6ff;border-radius:12px;background:#031522}
+.home-dipping-total span{color:#bdefff;font-size:17px;font-weight:900}
+.home-dipping-total b{color:#fff;font-size:30px}
+.home-dipping-total strong{color:#fff36d;font-size:27px}
+.home-dipping-process-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;margin-top:18px}
+.home-dipping-process-card{
+  min-height:190px;
+  padding:15px 12px;
+  border:3px solid var(--dip-color);
+  border-radius:14px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--dip-color) 24%,#16303c),#071a26 72%);
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:inset 0 0 22px color-mix(in srgb,var(--dip-color) 20%,transparent),0 0 14px color-mix(in srgb,var(--dip-color) 25%,transparent);
+  transition:transform .16s ease,filter .16s ease;
+}
+.home-dipping-process-card:hover,.home-dipping-process-card:focus-visible{transform:translateY(-4px);filter:brightness(1.18);outline:none}
+.home-dipping-process-card span{color:var(--dip-color);font-size:clamp(27px,2vw,36px);font-weight:1000;text-shadow:0 0 12px color-mix(in srgb,var(--dip-color) 70%,transparent)}
+.home-dipping-process-card b{margin-top:12px;color:#fff;font-size:clamp(38px,3vw,54px);line-height:1}
+.home-dipping-process-card strong{margin-top:8px;color:#fff36d;font-size:24px}
+.home-dipping-process-card small{margin-top:13px;color:#bfefff;font-size:13px;font-weight:900}
+.home-dipping-empty{grid-column:1/-1;padding:40px;text-align:center;color:#bfefff;font-size:24px;font-weight:900}
+
+/* 工程クリック後の追加列：製品種類を大きく強調。 */
+.process-backlog-table .dipping-product-type-head{
+  min-width:170px!important;
+  color:#082739!important;
+  background:#72eaff!important;
+  font-size:19px!important;
+  text-align:center!important;
+}
+.process-backlog-table .dipping-product-type-cell{
+  min-width:170px!important;
+  padding:10px 14px!important;
+  background:#e9fbff!important;
+  text-align:center!important;
+}
+.process-backlog-table .dipping-product-type-cell b{
+  display:block;
+  color:#005f87!important;
+  font-size:clamp(22px,1.8vw,31px)!important;
+  line-height:1.15!important;
+  font-weight:1000!important;
+  white-space:normal!important;
+}
+@media(max-width:900px){
+  .home-dipping-process-head{align-items:flex-start;flex-direction:column}
+  .home-dipping-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ドブ漬け管理タブを撤去し、残り5タブを固定表示。 */
+body .ship-summary,
+body .ship-summary.game-stage-tabs,
+body .ship-summary.game-stage-tabs.visual-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  overflow:visible!important;
+}
+body .ship-summary .ship-card[data-ship="dipping"],
+body .ship-marquee-group .ship-card[data-ship="dipping"]{
+  display:none!important;
+}
+body .ship-marquee-track{
+  transform:none!important;
+  animation:none!important;
+  will-change:auto!important;
+}
+body .ship-marquee-group-duplicate{
+  display:none!important;
+}
+@media(max-width:900px){
+  body .ship-summary,
+  body .ship-summary.game-stage-tabs,
+  body .ship-summary.game-stage-tabs.visual-tabs{
+    grid-template-columns:repeat(5,minmax(180px,1fr))!important;
+    overflow-x:auto!important;
+  }
+}
 
 /* Giữ nguyên khung bên phải nhưng xóa toàn bộ nội dung hiện tại. */
 .ng-game #bossStatusCard > *{
@@ -11506,6 +11635,28 @@ body .standard-game .ranking-row.needs-attention{
   }
 }
 </style>
+
+<script id="remove-dipping-tab-and-stop-marquee">
+(function(){
+  function makeTabsStatic(){
+    document.querySelectorAll('.ship-card[data-ship="dipping"]').forEach(tab=>tab.remove());
+    document.querySelectorAll('.ship-summary').forEach(box=>{
+      const track=box.querySelector(':scope > .ship-marquee-track');
+      if(track){
+        const original=track.querySelector('.ship-marquee-group-original');
+        if(original){
+          Array.from(original.children).forEach(card=>box.appendChild(card));
+        }
+        track.remove();
+      }
+      box.classList.remove('ship-marquee-ready');
+    });
+  }
+  makeTabsStatic();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',makeTabsStatic,{once:true});
+  window.addEventListener('load',makeTabsStatic,{once:true});
+})();
+</script>
 
 </body>
 </html>
