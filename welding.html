@@ -11779,6 +11779,28 @@ body .ship-summary > .ship-card .ship-sub{
   white-space:normal!important;
   overflow-wrap:anywhere!important;
 }
+body .ship-summary.game-stage-tabs .ship-card .day{
+  min-height:42px!important;
+  padding:0 2px 6px!important;
+  font-size:clamp(13px,1.05vw,19px)!important;
+}
+body .ship-summary.game-stage-tabs .ship-card .ship-value{margin-top:7px!important}
+body .ship-summary.game-stage-tabs .ship-card .ship-count-line{
+  font-size:clamp(22px,1.8vw,32px)!important;
+  white-space:nowrap!important;
+}
+body .ship-summary.game-stage-tabs .ship-card .ship-points-line{
+  margin-top:6px!important;
+  font-size:clamp(18px,1.35vw,25px)!important;
+  white-space:nowrap!important;
+}
+body .ship-summary.game-stage-tabs .ship-card[data-ship="specified"] input{
+  width:100%!important;
+  min-width:0!important;
+  height:36px!important;
+  padding:2px 4px!important;
+  font-size:clamp(11px,.85vw,15px)!important;
+}
 @media(max-width:900px){
   body .ship-summary,
   body .ship-summary.game-stage-tabs,
@@ -11824,11 +11846,36 @@ body .ship-summary > .ship-card .ship-sub{
         track.remove();
       }
       box.classList.remove('ship-marquee-ready');
+      box.style.setProperty('display','grid','important');
+      box.style.setProperty('grid-template-columns','repeat(5,minmax(0,1fr))','important');
+      box.style.setProperty('width','100%','important');
+      box.style.setProperty('max-width','100%','important');
+      box.style.setProperty('min-width','0','important');
+      box.style.setProperty('overflow','hidden','important');
+      box.style.setProperty('overflow-x','hidden','important');
+      box.style.setProperty('gap','8px','important');
+      Array.from(box.children).filter(card=>card.classList&&card.classList.contains('ship-card')).forEach(card=>{
+        card.style.setProperty('width','auto','important');
+        card.style.setProperty('min-width','0','important');
+        card.style.setProperty('max-width','none','important');
+        card.style.setProperty('flex','initial','important');
+        card.style.setProperty('transform','none','important');
+        card.style.setProperty('margin','0','important');
+      });
     });
   }
   makeTabsStatic();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',makeTabsStatic,{once:true});
   window.addEventListener('load',makeTabsStatic,{once:true});
+  document.addEventListener('click',()=>requestAnimationFrame(makeTabsStatic),true);
+  const staticTabsObserver=new MutationObserver(mutations=>{
+    if(mutations.some(item=>item.type==='childList'&&(
+      item.target.classList?.contains('ship-summary')||
+      item.target.querySelector?.('.ship-summary')||
+      Array.from(item.addedNodes).some(node=>node.nodeType===1&&(node.matches?.('.ship-summary')||node.querySelector?.('.ship-summary')))
+    )))requestAnimationFrame(makeTabsStatic);
+  });
+  staticTabsObserver.observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 
