@@ -11871,6 +11871,16 @@ body:has(#ngGame.show) .ship-summary.game-stage-tabs .ship-card[data-ship="speci
   background:#020b13;
 }
 
+/* 1920×1080専用：JSが実測した倍率で全体を1画面へ収める。 */
+html.fullhd-dashboard-fit,
+html.fullhd-dashboard-fit body{
+  width:100%;
+  height:100%;
+  overflow:hidden!important;
+}
+html.fullhd-dashboard-fit .app{
+  transform-origin:top left;
+}
 
 @media(max-width:1300px){
   .ng-game .monthly-achievement-calendar.home-status-dashboard{
@@ -11939,6 +11949,37 @@ body:has(#ngGame.show) .ship-summary.game-stage-tabs .ship-card[data-ship="speci
     video.play().catch(()=>{});
   }
 
+  let fullHdFitFrame=0;
+  function fitFullHdDashboard(){
+    cancelAnimationFrame(fullHdFitFrame);
+    fullHdFitFrame=requestAnimationFrame(()=>{
+      const app=document.querySelector('.app');
+      if(!app)return;
+      const isFullHd=window.innerWidth>=1800&&window.innerWidth<=2000&&window.innerHeight>=850&&window.innerHeight<=1100;
+      if(!isFullHd){
+        document.documentElement.classList.remove('fullhd-dashboard-fit');
+        app.style.removeProperty('zoom');
+        app.style.removeProperty('width');
+        app.style.removeProperty('max-width');
+        return;
+      }
+      document.documentElement.classList.add('fullhd-dashboard-fit');
+      app.style.setProperty('zoom','1');
+      app.style.setProperty('width','100%');
+      app.style.setProperty('max-width','none');
+      const naturalHeight=Math.max(app.scrollHeight,app.getBoundingClientRect().height,1);
+      const scale=Math.max(.35,Math.min(1,(window.innerHeight-4)/naturalHeight));
+      app.style.setProperty('zoom',String(scale));
+      app.style.setProperty('width',(100/scale)+'%');
+      app.style.setProperty('max-width','none');
+    });
+  }
+  fitFullHdDashboard();
+  window.addEventListener('load',fitFullHdDashboard,{once:true});
+  window.addEventListener('resize',fitFullHdDashboard);
+  document.addEventListener('click',()=>requestAnimationFrame(fitFullHdDashboard),true);
+  const fullHdContentObserver=new MutationObserver(()=>fitFullHdDashboard());
+  fullHdContentObserver.observe(document.querySelector('.app')||document.body,{childList:true,subtree:true});
 })();
 </script>
 
