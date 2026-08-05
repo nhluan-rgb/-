@@ -11692,6 +11692,48 @@ body .ship-marquee-group-duplicate{
   display:none!important;
 }
 
+/* 通常タブへ移動した後に残るmarqueeラッパーも5列固定にする。 */
+body .ship-summary > .ship-marquee-track{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  gap:0!important;
+  transform:none!important;
+  overflow:hidden!important;
+}
+body .ship-summary .ship-marquee-group-original{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  gap:clamp(5px,.65vw,12px)!important;
+  flex:none!important;
+}
+body .ship-summary .ship-marquee-group-original > .ship-card,
+body .ship-summary .ship-card{
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  flex:initial!important;
+  margin:0!important;
+  transform:none!important;
+  overflow:hidden!important;
+}
+body .standard-game .ship-summary,
+body .standard-game .ship-summary.game-stage-tabs,
+body .standard-game .ship-summary.visual-tabs,
+body .ng-game .ship-summary,
+body .dipping-game .ship-summary{
+  width:100%!important;
+  max-width:100%!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  overflow:hidden!important;
+  overflow-x:hidden!important;
+}
+
 /* 5タブを常に外枠内へ均等配置し、選択時も切れ・横スクロールを出さない。 */
 body .ship-summary,
 body .ship-summary.game-stage-tabs,
