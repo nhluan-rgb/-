@@ -11472,5 +11472,40 @@ body .standard-game .ranking-row.needs-attention{
 })();
 </script>
 
+<style id="home-panel-height-and-empty-right-fix">
+/* Hai ô bên trái: căn đúng mép trên và chiều cao với khung J番号. */
+.ng-game .monthly-achievement-calendar.home-status-dashboard{
+  top:435px!important;
+  bottom:auto!important;
+  height:625px!important;
+  min-height:625px!important;
+  align-items:stretch!important;
+}
+.ng-game .monthly-achievement-calendar.home-status-dashboard > .home-half-card{
+  height:625px!important;
+  min-height:625px!important;
+}
+
+/* Giữ nguyên khung bên phải nhưng xóa toàn bộ nội dung hiện tại. */
+.ng-game #bossStatusCard > *{
+  display:none!important;
+}
+
+@media(max-width:1300px){
+  .ng-game .monthly-achievement-calendar.home-status-dashboard{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:12px!important;
+  }
+  .ng-game .monthly-achievement-calendar.home-status-dashboard > .home-half-card{
+    height:auto!important;
+    min-height:300px!important;
+  }
+}
+</style>
+
 </body>
 </html>
