@@ -6153,11 +6153,31 @@ html,body,.table-wrap,#processModalCard{
 }
 @media(max-width:980px){.csv-update-status{display:none}}
 </style>
+<style id="factory_voice_alert_style">
+.voice-alert-toggle{display:inline-flex;align-items:center;gap:8px;min-width:150px;justify-content:center;font-weight:900}
+.voice-alert-toggle .voice-alert-dot{width:10px;height:10px;border-radius:50%;background:#8c98a3;box-shadow:0 0 0 3px rgba(140,152,163,.18)}
+.voice-alert-toggle.is-on{background:#087f5b!important;border-color:#087f5b!important;color:#fff!important}
+.voice-alert-toggle.is-on .voice-alert-dot{background:#58ffb3;box-shadow:0 0 8px #58ffb3,0 0 0 3px rgba(88,255,179,.22)}
+@media(max-width:820px){.voice-alert-toggle{min-width:auto}.voice-alert-label{display:none}}
+.office-broadcast-open{background:#b42318!important;border-color:#b42318!important;color:#fff!important;font-weight:900}
+#officeBroadcastOpen::after{content:"未接続";margin-left:7px;padding:2px 6px;border-radius:10px;background:#ffffff22;font-size:10px}
+#officeBroadcastOpen.net-online::after{content:"接続中";background:#087f5b}
+.office-broadcast-modal{position:fixed;inset:0;z-index:10000;display:none;place-items:center;padding:20px;background:rgba(2,12,22,.78);backdrop-filter:blur(5px)}
+.office-broadcast-modal.show{display:grid}
+.office-broadcast-card{width:min(680px,100%);border:2px solid #ff6b5f;border-radius:16px;padding:22px;background:#fff;color:#17212b;box-shadow:0 20px 70px #0008}
+.office-broadcast-card h2{margin:0 0 6px;color:#a61b14}.office-broadcast-card p{margin:0 0 14px;color:#5e6a74}
+.office-broadcast-card textarea{width:100%;min-height:150px;resize:vertical;border:2px solid #cbd5dc;border-radius:10px;padding:14px;font:700 20px/1.55 "Yu Gothic UI","Meiryo",sans-serif}
+.office-broadcast-card textarea:focus{outline:3px solid #ffb4ad;border-color:#b42318}
+.office-broadcast-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}.office-broadcast-actions button{min-width:130px}
+.office-broadcast-status{display:none;margin-top:14px;border-radius:9px;padding:12px;background:#fff0d8;color:#7d4300;font-weight:900}.office-broadcast-status.show{display:block}
+.office-broadcast-status.live{background:#ffe4e1;color:#a61b14;animation:officePulse 1s ease-in-out infinite alternate}
+@keyframes officePulse{from{box-shadow:0 0 0 rgba(180,35,24,0)}to{box-shadow:0 0 20px rgba(180,35,24,.28)}}
+</style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="csv-update-status" id="csvUpdateStatus" title="SCV.csv のGitHub最終更新時刻"><span class="csv-update-dot"></span><div class="csv-update-copy"><span class="csv-update-label">CSV 最終更新</span><b id="csvUpdated">--/-- --:--:--</b></div></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="csv-update-status" id="csvUpdateStatus" title="SCV.csv のGitHub最終更新時刻"><span class="csv-update-dot"></span><div class="csv-update-copy"><span class="csv-update-label">CSV 最終更新</span><b id="csvUpdated">--/-- --:--:--</b></div></div><div class="actions"><button type="button" class="btn voice-alert-toggle" id="voiceAlertToggle" aria-pressed="false" title="通知音と読み上げを切り替え"><span class="voice-alert-dot" aria-hidden="true"></span><span class="voice-alert-label">🔇 音声通知 OFF</span></button><button type="button" class="btn office-broadcast-open" id="officeBroadcastOpen">📢 事務所放送</button><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
@@ -9351,5 +9371,155 @@ setInterval(()=>{
 })();
 </script>
 
+<div class="office-broadcast-modal" id="officeBroadcastModal" aria-hidden="true">
+  <section class="office-broadcast-card" role="dialog" aria-modal="true" aria-labelledby="officeBroadcastTitle">
+    <h2 id="officeBroadcastTitle">📢 事務所からの重要放送</h2>
+    <p>内容を入力すると、インターネット経由で開いている全工場端末へ送信し、注意放送の30秒後に2回読み上げます。</p>
+    <textarea id="officeBroadcastText" maxlength="500" placeholder="例：14時から第2工場の電源点検を行います。"></textarea>
+    <div class="office-broadcast-status" id="officeBroadcastStatus" aria-live="polite"></div>
+    <div class="office-broadcast-actions">
+      <button type="button" class="btn" id="officeBroadcastClose">閉じる</button>
+      <button type="button" class="btn office-broadcast-open" id="officeBroadcastSend">放送開始</button>
+    </div>
+  </section>
+</div>
+
+<script id="factory_voice_alert_script">
+(function setupFactoryVoiceAlert(){
+  const toggle=document.getElementById('voiceAlertToggle');
+  if(!toggle||!('speechSynthesis' in window)){if(toggle)toggle.hidden=true;return}
+  const storageKey='factoryVoiceAlertEnabled';
+  const officeOpen=document.getElementById('officeBroadcastOpen');
+  const officeModal=document.getElementById('officeBroadcastModal');
+  const officeText=document.getElementById('officeBroadcastText');
+  const officeSend=document.getElementById('officeBroadcastSend');
+  const officeClose=document.getElementById('officeBroadcastClose');
+  const officeStatus=document.getElementById('officeBroadcastStatus');
+  const officeSyncTopic='kyushu-factory-office-7f3b9d21c64a48e8b5f06a91d2ce7430';
+  const officeSyncUrl=`https://ntfy.sh/${officeSyncTopic}`;
+  let enabled=localStorage.getItem(storageKey)==='true',unlocked=false,lastSpoken='',lastSpokenAt=0,timer=0,audioContext=null;
+  let officePriority=false,officeBroadcasting=false,countdownTimer=0;
+  let officeSocket=null,officeReconnectTimer=0;
+  const officeQueue=[],seenOfficeMessages=new Set();
+  function updateButton(){
+    toggle.classList.toggle('is-on',enabled);toggle.setAttribute('aria-pressed',String(enabled));
+    const label=toggle.querySelector('.voice-alert-label');
+    if(label)label.textContent=enabled?'🔊 音声通知 ON':'🔇 音声通知 OFF';
+  }
+  function cleanText(text){return String(text||'').replace(/[\u{1F000}-\u{1FAFF}\u2600-\u27BF]/gu,' ').replace(/[\n\r\t]+/g,' ').replace(/\s{2,}/g,' ').trim()}
+  function preferredVoice(){
+    const voices=speechSynthesis.getVoices();
+    return voices.find(voice=>/^ja-JP$/i.test(voice.lang)&&/Microsoft|Google|Kyoko|Otoya|Nanami/i.test(voice.name))||voices.find(voice=>/^ja/i.test(voice.lang))||null;
+  }
+  function playChime(){
+    try{
+      const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;
+      audioContext=audioContext||new AudioCtx();if(audioContext.state==='suspended')audioContext.resume();
+      const now=audioContext.currentTime;
+      [740,988].forEach((frequency,index)=>{const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();oscillator.type='sine';oscillator.frequency.value=frequency;gain.gain.setValueAtTime(.0001,now+index*.16);gain.gain.exponentialRampToValueAtTime(.22,now+index*.16+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+index*.16+.24);oscillator.connect(gain).connect(audioContext.destination);oscillator.start(now+index*.16);oscillator.stop(now+index*.16+.25)});
+    }catch(error){console.warn('通知音を再生できません:',error)}
+  }
+  function speak(text,force=false){
+    const message=cleanText(text),now=Date.now();if(!enabled||!unlocked||!message||officePriority)return;
+    if(!force&&message===lastSpoken&&now-lastSpokenAt<30000)return;
+    lastSpoken=message;lastSpokenAt=now;speechSynthesis.cancel();playChime();
+    setTimeout(()=>{if(!enabled)return;const utterance=new SpeechSynthesisUtterance(message);utterance.lang='ja-JP';utterance.rate=.9;utterance.pitch=1;utterance.volume=1;const voice=preferredVoice();if(voice)utterance.voice=voice;speechSynthesis.speak(utterance)},420);
+  }
+  function speakOfficeOnce(text,chime=false){
+    return new Promise(resolve=>{
+      const message=cleanText(text);if(!message){resolve();return}
+      speechSynthesis.cancel();if(chime)playChime();
+      setTimeout(()=>{
+        const utterance=new SpeechSynthesisUtterance(message);
+        utterance.lang='ja-JP';utterance.rate=.86;utterance.pitch=1;utterance.volume=1;
+        const voice=preferredVoice();if(voice)utterance.voice=voice;
+        utterance.onend=resolve;utterance.onerror=resolve;speechSynthesis.speak(utterance);
+      },chime?450:80);
+    });
+  }
+  function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+  function setOfficeStatus(text,live=false){
+    if(!officeStatus)return;officeStatus.textContent=text;officeStatus.classList.add('show');officeStatus.classList.toggle('live',live);
+  }
+  function openOfficeModal(){
+    if(!officeModal)return;officeModal.classList.add('show');officeModal.setAttribute('aria-hidden','false');setTimeout(()=>officeText?.focus(),50);
+  }
+  function closeOfficeModal(){
+    if(officeBroadcasting)return;if(!officeModal)return;officeModal.classList.remove('show');officeModal.setAttribute('aria-hidden','true');
+  }
+  async function performOfficeBroadcast(message){
+    if(officeBroadcasting){officeQueue.push(message);return}
+    enabled=true;localStorage.setItem(storageKey,'true');updateButton();
+    officePriority=true;officeBroadcasting=true;
+    clearTimeout(timer);clearInterval(countdownTimer);speechSynthesis.cancel();
+    setOfficeStatus('注意放送中…',true);
+    await speakOfficeOnce('注意、注意。30秒後に事務所より重要なお知らせがあります。',true);
+    let remaining=30;setOfficeStatus(`重要放送まで ${remaining}秒`,true);
+    countdownTimer=setInterval(()=>{remaining--;setOfficeStatus(`重要放送まで ${Math.max(0,remaining)}秒`,true);if(remaining<=0)clearInterval(countdownTimer)},1000);
+    await wait(30000);clearInterval(countdownTimer);
+    setOfficeStatus('事務所から重要放送中（1回目）',true);await speakOfficeOnce(message,true);
+    await wait(1200);
+    setOfficeStatus('事務所から重要放送中（2回目）',true);await speakOfficeOnce(message,false);
+    officePriority=false;officeBroadcasting=false;
+    setOfficeStatus('重要放送が完了しました。通常の読み上げに戻ります。');
+    if(officeQueue.length){const next=officeQueue.shift();await wait(2000);performOfficeBroadcast(next);return}
+    setTimeout(()=>{if(!officeBroadcasting)closeOfficeModal()},1800);
+  }
+  function receiveOfficePacket(packet){
+    if(!packet||packet.type!=='office-broadcast'||!packet.id||!packet.text||seenOfficeMessages.has(packet.id))return;
+    seenOfficeMessages.add(packet.id);performOfficeBroadcast(cleanText(packet.text));
+  }
+  function connectOfficeSync(){
+    clearTimeout(officeReconnectTimer);
+    try{
+      officeSocket?.close();officeSocket=new WebSocket(`wss://ntfy.sh/${officeSyncTopic}/ws`);
+      officeSocket.addEventListener('open',()=>{officeOpen?.classList.add('net-online');if(officeOpen)officeOpen.title='工場放送ネットワーク：接続中'});
+      officeSocket.addEventListener('message',event=>{
+        try{
+          const envelope=JSON.parse(event.data);if(envelope.event!=='message')return;
+          receiveOfficePacket(JSON.parse(envelope.message));
+        }catch(_){ }
+      });
+      officeSocket.addEventListener('close',()=>{officeOpen?.classList.remove('net-online');officeReconnectTimer=setTimeout(connectOfficeSync,5000)});
+      officeSocket.addEventListener('error',()=>officeSocket?.close());
+    }catch(_){officeOpen?.classList.remove('net-online');officeReconnectTimer=setTimeout(connectOfficeSync,5000)}
+  }
+  async function startOfficeBroadcast(){
+    const message=cleanText(officeText?.value);if(!message){officeText?.focus();setOfficeStatus('放送内容を入力してください。');return}
+    if(officeSend.disabled)return;
+    unlocked=true;enabled=true;localStorage.setItem(storageKey,'true');updateButton();officeSend.disabled=true;officeClose.disabled=true;
+    const packet={type:'office-broadcast',id:`${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}`,createdAt:new Date().toISOString(),text:message};
+    setOfficeStatus('工場端末へ送信中…',true);
+    try{
+      const response=await fetch(officeSyncUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(packet)});
+      if(!response.ok)throw new Error(`HTTP ${response.status}`);
+      setOfficeStatus('送信完了。すべての接続中端末で放送を開始します。',true);
+      receiveOfficePacket(packet);
+      if(officeText)officeText.value='';
+    }catch(error){
+      console.error('事務所放送の送信に失敗:',error);setOfficeStatus('送信できません。インターネット接続を確認してください。');
+    }finally{officeSend.disabled=false;officeClose.disabled=false}
+  }
+  function visibleMissionText(){
+    const candidates=[document.getElementById('gameBannerMessage'),document.getElementById('standardBannerMessage')];
+    const active=candidates.find(element=>element&&element.getClientRects().length&&getComputedStyle(element).visibility!=='hidden');
+    return active?active.textContent:'';
+  }
+  function scheduleAnnouncement(){clearTimeout(timer);timer=setTimeout(()=>speak(visibleMissionText()),500)}
+  toggle.addEventListener('click',()=>{
+    enabled=!enabled;unlocked=true;localStorage.setItem(storageKey,String(enabled));updateButton();
+    if(enabled)speak('音声通知を開始しました。',true);else speechSynthesis.cancel();
+  });
+  officeOpen?.addEventListener('click',()=>{unlocked=true;openOfficeModal()});
+  officeClose?.addEventListener('click',closeOfficeModal);
+  officeSend?.addEventListener('click',startOfficeBroadcast);
+  officeModal?.addEventListener('click',event=>{if(event.target===officeModal)closeOfficeModal()});
+  officeText?.addEventListener('keydown',event=>{if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();startOfficeBroadcast()}});
+  document.addEventListener('pointerdown',()=>{unlocked=true},{once:true,capture:true});
+  document.addEventListener('keydown',()=>{unlocked=true},{once:true,capture:true});
+  ['gameBannerMessage','standardBannerMessage'].forEach(id=>{const element=document.getElementById(id);if(element)new MutationObserver(scheduleAnnouncement).observe(element,{childList:true,characterData:true,subtree:true})});
+  speechSynthesis.addEventListener?.('voiceschanged',()=>speechSynthesis.getVoices());updateButton();connectOfficeSync();
+})();
+</script>
 </body>
 </html>
