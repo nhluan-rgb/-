@@ -9397,14 +9397,15 @@ setInterval(()=>{
   const officeStatus=document.getElementById('officeBroadcastStatus');
   const officeSyncTopic='kyushu-factory-office-7f3b9d21c64a48e8b5f06a91d2ce7430';
   const officeSyncUrl=`https://ntfy.sh/${officeSyncTopic}`;
-  let enabled=localStorage.getItem(storageKey)==='true',unlocked=false,lastSpoken='',lastSpokenAt=0,timer=0,audioContext=null;
+  let enabled=true,unlocked=false,lastSpoken='',lastSpokenAt=0,timer=0,audioContext=null;
   let officePriority=false,officeBroadcasting=false,countdownTimer=0;
+  let attentionMusicTimer=0;
   let officeSocket=null,officeReconnectTimer=0;
   const officeQueue=[],seenOfficeMessages=new Set();
   function updateButton(){
-    toggle.classList.toggle('is-on',enabled);toggle.setAttribute('aria-pressed',String(enabled));
+    enabled=true;localStorage.setItem(storageKey,'true');toggle.classList.add('is-on');toggle.setAttribute('aria-pressed','true');
     const label=toggle.querySelector('.voice-alert-label');
-    if(label)label.textContent=enabled?'🔊 音声通知 ON':'🔇 音声通知 OFF';
+    if(label)label.textContent='🔊 音声通知 ON';
   }
   function cleanText(text){return String(text||'').replace(/[\u{1F000}-\u{1FAFF}\u2600-\u27BF]/gu,' ').replace(/[\n\r\t]+/g,' ').replace(/\s{2,}/g,' ').trim()}
   function preferredVoice(){
@@ -9419,6 +9420,21 @@ setInterval(()=>{
       [740,988].forEach((frequency,index)=>{const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();oscillator.type='sine';oscillator.frequency.value=frequency;gain.gain.setValueAtTime(.0001,now+index*.16);gain.gain.exponentialRampToValueAtTime(.22,now+index*.16+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+index*.16+.24);oscillator.connect(gain).connect(audioContext.destination);oscillator.start(now+index*.16);oscillator.stop(now+index*.16+.25)});
     }catch(error){console.warn('通知音を再生できません:',error)}
   }
+  function playAttentionPattern(){
+    try{
+      const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;
+      audioContext=audioContext||new AudioCtx();if(audioContext.state==='suspended')audioContext.resume();
+      const now=audioContext.currentTime;
+      [660,880,660,1040].forEach((frequency,index)=>{
+        const oscillator=audioContext.createOscillator(),gain=audioContext.createGain(),start=now+index*.3;
+        oscillator.type=index%2?'square':'sine';oscillator.frequency.value=frequency;
+        gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.2,start+.025);gain.gain.exponentialRampToValueAtTime(.0001,start+.23);
+        oscillator.connect(gain).connect(audioContext.destination);oscillator.start(start);oscillator.stop(start+.24);
+      });
+    }catch(error){console.warn('注意音を再生できません:',error)}
+  }
+  function startAttentionMusic(){stopAttentionMusic();playAttentionPattern();attentionMusicTimer=setInterval(playAttentionPattern,1800)}
+  function stopAttentionMusic(){if(attentionMusicTimer){clearInterval(attentionMusicTimer);attentionMusicTimer=0}}
   function speak(text,force=false){
     const message=cleanText(text),now=Date.now();if(!enabled||!unlocked||!message||officePriority)return;
     if(!force&&message===lastSpoken&&now-lastSpokenAt<30000)return;
@@ -9454,9 +9470,10 @@ setInterval(()=>{
     clearTimeout(timer);clearInterval(countdownTimer);speechSynthesis.cancel();
     setOfficeStatus('注意放送中…',true);
     await speakOfficeOnce('注意、注意。30秒後に事務所より重要なお知らせがあります。',true);
+    startAttentionMusic();
     let remaining=30;setOfficeStatus(`重要放送まで ${remaining}秒`,true);
     countdownTimer=setInterval(()=>{remaining--;setOfficeStatus(`重要放送まで ${Math.max(0,remaining)}秒`,true);if(remaining<=0)clearInterval(countdownTimer)},1000);
-    await wait(30000);clearInterval(countdownTimer);
+    await wait(30000);clearInterval(countdownTimer);stopAttentionMusic();
     setOfficeStatus('事務所から重要放送中（1回目）',true);await speakOfficeOnce(message,true);
     await wait(1200);
     setOfficeStatus('事務所から重要放送中（2回目）',true);await speakOfficeOnce(message,false);
@@ -9506,10 +9523,7 @@ setInterval(()=>{
     return active?active.textContent:'';
   }
   function scheduleAnnouncement(){clearTimeout(timer);timer=setTimeout(()=>speak(visibleMissionText()),500)}
-  toggle.addEventListener('click',()=>{
-    enabled=!enabled;unlocked=true;localStorage.setItem(storageKey,String(enabled));updateButton();
-    if(enabled)speak('音声通知を開始しました。',true);else speechSynthesis.cancel();
-  });
+  toggle.addEventListener('click',()=>{unlocked=true;updateButton();playChime()});
   officeOpen?.addEventListener('click',()=>{unlocked=true;openOfficeModal()});
   officeClose?.addEventListener('click',closeOfficeModal);
   officeSend?.addEventListener('click',startOfficeBroadcast);
@@ -9517,7 +9531,7 @@ setInterval(()=>{
   officeText?.addEventListener('keydown',event=>{if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();startOfficeBroadcast()}});
   document.addEventListener('pointerdown',()=>{unlocked=true},{once:true,capture:true});
   document.addEventListener('keydown',()=>{unlocked=true},{once:true,capture:true});
-  ['gameBannerMessage','standardBannerMessage'].forEach(id=>{const element=document.getElementById(id);if(element)new MutationObserver(scheduleAnnouncement).observe(element,{childList:true,characterData:true,subtree:true})});
+  /* 通常の進捗・タブのメッセージは読み上げない。事務所放送のみ音声出力する。 */
   speechSynthesis.addEventListener?.('voiceschanged',()=>speechSynthesis.getVoices());updateButton();connectOfficeSync();
 })();
 </script>
