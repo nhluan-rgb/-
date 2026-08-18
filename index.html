@@ -9374,7 +9374,7 @@ setInterval(()=>{
 <div class="office-broadcast-modal" id="officeBroadcastModal" aria-hidden="true">
   <section class="office-broadcast-card" role="dialog" aria-modal="true" aria-labelledby="officeBroadcastTitle">
     <h2 id="officeBroadcastTitle">📢 事務所からの重要放送</h2>
-    <p>内容を入力すると、インターネット経由で開いている全工場端末へ送信し、注意放送の30秒後に2回読み上げます。</p>
+    <p>内容を入力すると、インターネット経由で開いている全工場端末へ送信し、注意放送の15秒後に2回読み上げます。</p>
     <textarea id="officeBroadcastText" maxlength="500" placeholder="例：14時から第2工場の電源点検を行います。"></textarea>
     <div class="office-broadcast-status" id="officeBroadcastStatus" aria-live="polite"></div>
     <div class="office-broadcast-actions">
@@ -9399,7 +9399,7 @@ setInterval(()=>{
   const officeSyncUrl=`https://ntfy.sh/${officeSyncTopic}`;
   let enabled=true,unlocked=false,lastSpoken='',lastSpokenAt=0,timer=0,audioContext=null;
   let officePriority=false,officeBroadcasting=false,countdownTimer=0;
-  let attentionMusicTimer=0;
+  let attentionMusicTimer=0,attentionAudio=null;
   let officeSocket=null,officeReconnectTimer=0;
   const officeQueue=[],seenOfficeMessages=new Set();
   function updateButton(){
@@ -9433,8 +9433,16 @@ setInterval(()=>{
       });
     }catch(error){console.warn('注意音を再生できません:',error)}
   }
-  function startAttentionMusic(){stopAttentionMusic();playAttentionPattern();attentionMusicTimer=setInterval(playAttentionPattern,1800)}
-  function stopAttentionMusic(){if(attentionMusicTimer){clearInterval(attentionMusicTimer);attentionMusicTimer=0}}
+  function startFallbackAttentionMusic(){playAttentionPattern();attentionMusicTimer=setInterval(playAttentionPattern,1800)}
+  function startAttentionMusic(){
+    stopAttentionMusic();attentionAudio=new Audio('office_alert.mp3');attentionAudio.loop=true;attentionAudio.volume=1;
+    const playback=attentionAudio.play();
+    if(playback&&typeof playback.catch==='function')playback.catch(()=>{attentionAudio=null;startFallbackAttentionMusic()});
+  }
+  function stopAttentionMusic(){
+    if(attentionMusicTimer){clearInterval(attentionMusicTimer);attentionMusicTimer=0}
+    if(attentionAudio){attentionAudio.pause();attentionAudio.currentTime=0;attentionAudio=null}
+  }
   function speak(text,force=false){
     const message=cleanText(text),now=Date.now();if(!enabled||!unlocked||!message||officePriority)return;
     if(!force&&message===lastSpoken&&now-lastSpokenAt<30000)return;
@@ -9461,7 +9469,7 @@ setInterval(()=>{
     if(!officeModal)return;officeModal.classList.add('show');officeModal.setAttribute('aria-hidden','false');setTimeout(()=>officeText?.focus(),50);
   }
   function closeOfficeModal(){
-    if(officeBroadcasting)return;if(!officeModal)return;officeModal.classList.remove('show');officeModal.setAttribute('aria-hidden','true');
+    if(!officeModal)return;officeModal.classList.remove('show');officeModal.setAttribute('aria-hidden','true');
   }
   async function performOfficeBroadcast(message){
     if(officeBroadcasting){officeQueue.push(message);return}
@@ -9469,11 +9477,11 @@ setInterval(()=>{
     officePriority=true;officeBroadcasting=true;
     clearTimeout(timer);clearInterval(countdownTimer);speechSynthesis.cancel();
     setOfficeStatus('注意放送中…',true);
-    await speakOfficeOnce('注意、注意。30秒後に事務所より重要なお知らせがあります。',true);
+    await speakOfficeOnce('注意、注意。15秒後に事務所より重要なお知らせがあります。',true);
     startAttentionMusic();
-    let remaining=30;setOfficeStatus(`重要放送まで ${remaining}秒`,true);
+    let remaining=15;setOfficeStatus(`重要放送まで ${remaining}秒`,true);
     countdownTimer=setInterval(()=>{remaining--;setOfficeStatus(`重要放送まで ${Math.max(0,remaining)}秒`,true);if(remaining<=0)clearInterval(countdownTimer)},1000);
-    await wait(30000);clearInterval(countdownTimer);stopAttentionMusic();
+    await wait(15000);clearInterval(countdownTimer);stopAttentionMusic();
     setOfficeStatus('事務所から重要放送中（1回目）',true);await speakOfficeOnce(message,true);
     await wait(1200);
     setOfficeStatus('事務所から重要放送中（2回目）',true);await speakOfficeOnce(message,false);
@@ -9513,6 +9521,7 @@ setInterval(()=>{
       setOfficeStatus('送信完了。すべての接続中端末で放送を開始します。',true);
       receiveOfficePacket(packet);
       if(officeText)officeText.value='';
+      closeOfficeModal();
     }catch(error){
       console.error('事務所放送の送信に失敗:',error);setOfficeStatus('送信できません。インターネット接続を確認してください。');
     }finally{officeSend.disabled=false;officeClose.disabled=false}
