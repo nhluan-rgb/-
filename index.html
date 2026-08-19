@@ -2111,6 +2111,44 @@ body.bonus-day-3man .bonus-campaign-panel{
 
 </style>
 
+<style id="senior_readable_backlog_columns">
+/* 製造指示一覧：高齢者にも読み取りやすい重要3列 */
+.process-backlog-table .backlog-key-heading{
+  font-size:16px!important;
+  font-weight:900!important;
+  letter-spacing:.04em!important;
+}
+.process-backlog-table td{min-height:64px;line-height:1.45}
+.process-backlog-table .backlog-product{
+  min-width:285px!important;padding:13px 16px!important;white-space:normal!important;
+}
+.process-backlog-table .backlog-product b{
+  color:#102a43!important;font-size:19px!important;font-weight:900!important;line-height:1.35!important;
+}
+.process-backlog-table .backlog-product small{
+  margin-top:6px!important;color:#334e68!important;font-size:15px!important;font-weight:700!important;
+}
+.process-backlog-table .backlog-size{
+  min-width:210px;color:#102a43;font-size:18px!important;font-weight:850;
+  letter-spacing:.02em;white-space:nowrap;
+}
+.process-backlog-table .backlog-qty{
+  min-width:92px;color:#8a2600!important;font-size:21px!important;font-weight:1000!important;
+  text-align:center;white-space:nowrap;
+}
+.process-backlog-table .backlog-qty strong{
+  display:inline-block;min-width:68px;padding:7px 10px;border:2px solid #f0a23b;
+  border-radius:9px;background:#fff3d6;box-shadow:inset 0 1px 0 #fff;
+}
+.process-backlog-table tbody tr:nth-child(even) td{background:#f5f9fc!important}
+.process-backlog-table tbody tr:hover td{background:#e8f4ff!important}
+@media(max-width:1100px){
+  .process-backlog-table .backlog-product{min-width:245px!important}
+  .process-backlog-table .backlog-product b{font-size:17px!important}
+  .process-backlog-table .backlog-size{min-width:180px;font-size:16px!important}
+}
+</style>
+
 <style id="v7_process_popup_patch">
 /* 新世界：工程滞留ポップアップのみ溶接画面と統一 */
 .process-backlog-panel{
@@ -8131,8 +8169,8 @@ function buildDeliveryBacklogMarkup(deliveryName){
   const body=backlog.length
     ? `<div class="process-backlog-table-wrap"><table class="process-backlog-table">
         <thead><tr>
-          <th>製造指示番号</th><th>品番・品名 / 規格</th><th>サイズ</th>
-          <th>工程</th><th>数量</th><th>出荷日</th><th>製造期限</th><th>担当者</th>
+          <th>製造指示番号</th><th class="backlog-key-heading">品番・品名 / 規格</th><th class="backlog-key-heading">サイズ</th>
+          <th>工程</th><th class="backlog-key-heading">数量</th><th>出荷日</th><th>製造期限</th><th>担当者</th>
         </tr></thead>
         <tbody>${backlog.map(row=>`<tr>
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
@@ -8140,9 +8178,9 @@ function buildDeliveryBacklogMarkup(deliveryName){
             <b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'')}</b>
             <small>規格：${escapeHtml(row.standard||'—')}</small>
           </td>
-          <td>${escapeHtml(row.sizeInfo||'—')}</td>
+          <td class="backlog-size">${escapeHtml(row.sizeInfo||'—')}</td>
           <td><span class="process-popup-chip" style="--process-chip-color:${getProcessThemeColor(row.status)}">${escapeHtml(row.status||'—')}</span></td>
-          <td class="backlog-qty">${fmt(row.qty)}点</td>
+          <td class="backlog-qty"><strong>${fmt(row.qty)}点</strong></td>
           <td class="backlog-date">${escapeHtml(row.shipDate||'—')}</td>
           <td class="backlog-date">${escapeHtml(row.due||'—')}</td>
           <td>${escapeHtml(row.owner||'未設定')}</td>
@@ -8253,8 +8291,8 @@ function buildProcessBacklogMarkup(processName){
   const body=backlog.length
     ? `<div class="process-backlog-table-wrap"><table class="process-backlog-table">
         <thead><tr>
-          <th>製造指示番号</th><th>品番・品名 / 規格</th><th>サイズ</th>
-          <th>数量</th><th>出荷日</th><th>製造期限</th><th>担当者</th>
+          <th>製造指示番号</th><th class="backlog-key-heading">品番・品名 / 規格</th><th class="backlog-key-heading">サイズ</th>
+          <th class="backlog-key-heading">数量</th><th>出荷日</th><th>製造期限</th><th>担当者</th>
         </tr></thead>
         <tbody>${backlog.map(row=>`<tr>
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
@@ -8262,8 +8300,8 @@ function buildProcessBacklogMarkup(processName){
             <b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'')}</b>
             <small>規格：${escapeHtml(row.standard||'—')}</small>
           </td>
-          <td>${escapeHtml(row.sizeInfo||'—')}</td>
-          <td class="backlog-qty">${fmt(row.qty)}点</td>
+          <td class="backlog-size">${escapeHtml(row.sizeInfo||'—')}</td>
+          <td class="backlog-qty"><strong>${fmt(row.qty)}点</strong></td>
           <td class="backlog-date">${escapeHtml(row.shipDate||'—')}</td>
           <td class="backlog-date">${escapeHtml(row.due||'—')}</td>
           <td>${escapeHtml(row.owner||'未設定')}</td>
@@ -8347,8 +8385,8 @@ function buildMaterialBacklogMarkup(materialName){
   const body=backlog.length
     ? `<div class="process-backlog-table-wrap"><table class="process-backlog-table">
         <thead><tr>
-          <th>製造指示番号</th><th>品番・品名 / 規格</th><th>サイズ</th><th>色</th>
-          <th>数量</th><th>工程</th><th>出荷日</th><th>製造期限</th>
+          <th>製造指示番号</th><th class="backlog-key-heading">品番・品名 / 規格</th><th class="backlog-key-heading">サイズ</th><th>色</th>
+          <th class="backlog-key-heading">数量</th><th>工程</th><th>出荷日</th><th>製造期限</th>
         </tr></thead>
         <tbody>${backlog.map(row=>`<tr>
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
@@ -8356,9 +8394,9 @@ function buildMaterialBacklogMarkup(materialName){
             <b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'')}</b>
             <small>規格：${escapeHtml(row.standard||'—')}</small>
           </td>
-          <td>${escapeHtml(row.sizeInfo||'—')}</td>
+          <td class="backlog-size">${escapeHtml(row.sizeInfo||'—')}</td>
           <td>${escapeHtml(row.color||'—')}</td>
-          <td class="backlog-qty">${fmt(row.qty)}点</td>
+          <td class="backlog-qty"><strong>${fmt(row.qty)}点</strong></td>
           <td><span class="process-popup-chip" style="--process-chip-color:${getProcessThemeColor(row.status)}">${escapeHtml(row.status||'—')}</span></td>
           <td class="backlog-date">${escapeHtml(row.shipDate||'—')}</td>
           <td class="backlog-date">${escapeHtml(row.due||'—')}</td>
