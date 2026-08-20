@@ -7118,6 +7118,8 @@ function remainingBonusBusinessDays(now,end){
 const shownBonusCelebrations=new Set();
 function showBonusCelebration(level,closingKey){
   const celebrationKey=`${closingKey}:${level}`;
+  const dismissedKey=`bonusCelebrationDismissed:${celebrationKey}`;
+  if(localStorage.getItem(dismissedKey)==='1')return;
   if(shownBonusCelebrations.has(celebrationKey))return;
   shownBonusCelebrations.add(celebrationKey);
   const overlay=document.createElement('div');
@@ -7133,6 +7135,7 @@ function showBonusCelebration(level,closingKey){
   </div>`;
   document.body.appendChild(overlay);
   const closeCelebration=()=>{
+    localStorage.setItem(dismissedKey,'1');
     overlay.removeEventListener('click',closeCelebration);
     document.removeEventListener('keydown',closeOnKey);
     overlay.remove();
