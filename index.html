@@ -6317,6 +6317,70 @@ body.bonus-day-3man .bonus-title::after,
 @keyframes achievementHalo{from{opacity:.42;filter:brightness(.85);transform:scale(.993)}to{opacity:1;filter:brightness(1.55);transform:scale(1.008)}}
 @keyframes achievementCircuit{0%,38%{opacity:.38;filter:brightness(.8)}50%,100%{opacity:1;filter:brightness(1.75)}}
 </style>
+<style id="bonus_frame_compact_v4">
+/* 右側の達成枠を画面内に収め、残り実働欄のはみ出しを防ぐ */
+@media (min-width:1301px){
+  .ng-game .ng-utility-column{
+    height:590px!important;
+  }
+  .ng-game .ng-utility-column .bonus-campaign-panel{
+    box-sizing:border-box!important;
+    height:590px!important;
+    min-height:590px!important;
+    padding:12px!important;
+  }
+  .ng-game .ng-utility-column .bonus-title{
+    gap:2px!important;
+    margin:0 0 6px!important;
+    padding:6px 10px 8px!important;
+  }
+  body.bonus-day-2man .ng-utility-column .bonus-title::after,
+  body.bonus-day-3man .ng-utility-column .bonus-title::after{
+    padding:3px 0 5px!important;
+    font-size:54px!important;
+  }
+  .ng-game .ng-utility-column .bonus-period{
+    margin-top:0!important;
+    line-height:1.2!important;
+  }
+  .ng-game .ng-utility-column .bonus-intro{
+    min-height:64px!important;
+    margin:8px 0!important;
+    padding:8px 12px!important;
+    font-size:21px!important;
+    line-height:1.25!important;
+  }
+  .ng-game .ng-utility-column .bonus-progress-list{
+    gap:7px!important;
+  }
+  .ng-game .ng-utility-column .bonus-progress-row{
+    padding:6px 9px!important;
+  }
+  .ng-game .ng-utility-column .bonus-progress-head{
+    font-size:18px!important;
+    line-height:1.1!important;
+  }
+  .ng-game .ng-utility-column .bonus-progress-head b{
+    font-size:25px!important;
+  }
+  .ng-game .ng-utility-column .bonus-progress-track{
+    height:10px!important;
+    margin-top:4px!important;
+  }
+  .ng-game .ng-utility-column .bonus-result.waiting{
+    flex:0 0 88px!important;
+    box-sizing:border-box!important;
+    min-height:88px!important;
+    margin-top:8px!important;
+    padding:7px 10px!important;
+  }
+  .ng-game .ng-utility-column .bonus-result.waiting strong{
+    margin-top:3px!important;
+    font-size:39px!important;
+    line-height:1!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
