@@ -2038,22 +2038,23 @@
 
 
 /* 大入り締日（20日）達成演出：2万円と3万円で別演出 */
-.bonus-celebration-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;pointer-events:none;overflow:hidden;animation:bonusOverlayFade 8s ease forwards}
-.bonus-celebration-overlay::before{content:"";position:absolute;inset:0;background:rgba(2,12,28,.58);backdrop-filter:blur(3px)}
-.bonus-celebration-card{position:relative;z-index:2;min-width:min(720px,86vw);padding:38px 52px;border-radius:28px;text-align:center;color:#fff;font-weight:1000;transform:scale(.6);animation:bonusCardPop .8s cubic-bezier(.2,1.35,.35,1) forwards}
+.bonus-celebration-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;pointer-events:auto;cursor:pointer;overflow:hidden;isolation:isolate;animation:bonusOverlayIn .35s ease-out both}
+.bonus-celebration-overlay::before{content:"";position:absolute;inset:0;background:rgba(1,7,18,.9);backdrop-filter:blur(8px) saturate(.75)}
+.bonus-celebration-card{position:relative;z-index:2;width:min(760px,calc(100vw - 48px));box-sizing:border-box;padding:42px 52px 34px;border-radius:28px;text-align:center;color:#fff;font-weight:1000;transform:scale(.6);animation:bonusCardPop .8s cubic-bezier(.2,1.35,.35,1) forwards}
+.bonus-celebration-card::after{content:"画面をクリックして閉じる";display:block;width:max-content;max-width:100%;margin:28px auto 0;padding:11px 24px;border:2px solid currentColor;border-radius:999px;background:rgba(0,0,0,.38);color:#fff;font-size:18px;line-height:1.25;letter-spacing:.04em;text-shadow:0 2px 4px #000;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .bonus-celebration-card .bonus-crown{font-size:72px;line-height:1}
 .bonus-celebration-card .bonus-main{margin-top:10px;font-size:clamp(42px,5vw,76px);line-height:1.08;letter-spacing:.04em}
 .bonus-celebration-card .bonus-sub{margin-top:14px;font-size:clamp(20px,2vw,31px)}
-.bonus-celebration-overlay.level-2man .bonus-celebration-card{background:linear-gradient(145deg,#0c4d8d,#22a9e8);border:5px solid #d9f5ff;box-shadow:0 0 0 7px #58cfff66,0 0 60px #47c7ff,0 10px 0 #06345f}
+.bonus-celebration-overlay.level-2man .bonus-celebration-card{background:linear-gradient(145deg,#062d58,#075e98 54%,#087eb6);border:5px solid #d9f5ff;box-shadow:0 0 0 7px #58cfff66,0 0 60px #47c7ff,0 10px 0 #031c38}
 .bonus-celebration-overlay.level-2man .bonus-main{color:#effcff;text-shadow:0 0 18px #8fe8ff,0 4px 0 #164f78}
-.bonus-celebration-overlay.level-3man .bonus-celebration-card{background:linear-gradient(145deg,#8b3900,#ffad00 48%,#ffe66d);border:6px solid #fff6af;box-shadow:0 0 0 8px #ffce3f88,0 0 85px #ffb000,0 12px 0 #7b3e00}
-.bonus-celebration-overlay.level-3man .bonus-main{color:#fff9b8;text-shadow:0 0 22px #fff000,0 5px 0 #9a4b00}
+.bonus-celebration-overlay.level-3man .bonus-celebration-card{background:linear-gradient(145deg,#401700,#783400 52%,#a85b00);border:6px solid #fff0a1;box-shadow:0 0 0 8px #ffce3f88,0 0 85px #ffb000,0 12px 0 #2b1000}
+.bonus-celebration-overlay.level-3man .bonus-main{color:#fff7a8;text-shadow:0 0 18px #ffda28,0 4px 0 #4b1b00}
 .bonus-particle{position:absolute;z-index:1;top:-12vh;width:13px;height:24px;border-radius:3px;animation:bonusFall var(--dur) linear var(--delay) forwards;transform:rotate(var(--rot));background:var(--pc)}
 .bonus-firework{position:absolute;z-index:1;width:8px;height:8px;border-radius:50%;left:var(--x);top:var(--y);box-shadow:0 -70px 0 #fff35c,50px -50px 0 #ff7b31,70px 0 0 #fff,50px 50px 0 #ffdc35,0 70px 0 #ff6b6b,-50px 50px 0 #fff,-70px 0 0 #7df2ff,-50px -50px 0 #ff9dea;animation:bonusFirework 1.4s ease-out var(--delay) infinite}
 .bonus-campaign-panel.bonus-2man{animation:bonusPanelBlue 1.2s ease-in-out infinite alternate;border-color:#75ddff!important}
 .bonus-campaign-panel.bonus-3man{animation:bonusPanelGold .85s ease-in-out infinite alternate;border-color:#ffe36d!important}
 @keyframes bonusCardPop{to{transform:scale(1)}}
-@keyframes bonusOverlayFade{0%,82%{opacity:1}100%{opacity:0;visibility:hidden}}
+@keyframes bonusOverlayIn{from{opacity:0}to{opacity:1}}
 @keyframes bonusFall{to{transform:translateY(120vh) rotate(720deg)}}
 @keyframes bonusFirework{0%{transform:scale(.1);opacity:0}20%{opacity:1}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1.4);opacity:0}}
 @keyframes bonusPanelBlue{from{box-shadow:0 0 12px #42c9ff55}to{box-shadow:0 0 32px #42c9ff}}
@@ -2086,14 +2087,16 @@ body.bonus-day-3man .content{
   background:linear-gradient(180deg,rgba(255,242,182,.66),rgba(255,251,229,.72))!important;
 }
 body.bonus-day-2man .bonus-campaign-panel{
-  background:linear-gradient(145deg,#dff8ff,#bdeeff)!important;
-  border-color:#45c8ef!important;
-  box-shadow:0 0 30px rgba(50,194,239,.48)!important;
+  background:linear-gradient(145deg,#062946,#0a4867)!important;
+  border-color:#63ddff!important;
+  color:#f4fcff!important;
+  box-shadow:0 0 30px rgba(50,194,239,.38),inset 0 1px 0 rgba(255,255,255,.16)!important;
 }
 body.bonus-day-3man .bonus-campaign-panel{
-  background:linear-gradient(145deg,#fff8c7,#ffd969)!important;
-  border-color:#e5b21f!important;
-  box-shadow:0 0 38px rgba(255,190,25,.58)!important;
+  background:linear-gradient(145deg,#3c2100,#6d4100)!important;
+  border-color:#ffd65a!important;
+  color:#fffdf0!important;
+  box-shadow:0 0 38px rgba(255,190,25,.42),inset 0 1px 0 rgba(255,255,255,.16)!important;
 }
 body.bonus-day-2man .bonus-title::after{
   content:"　🏆 2万円達成";
@@ -6878,6 +6881,9 @@ function showBonusCelebration(level,closingKey){
   sessionStorage.setItem(sessionKey,'1');
   const overlay=document.createElement('div');
   overlay.className=`bonus-celebration-overlay level-${level}`;
+  overlay.setAttribute('role','button');
+  overlay.setAttribute('tabindex','0');
+  overlay.setAttribute('aria-label','達成演出を閉じる');
   const isThree=level==='3man';
   overlay.innerHTML=`<div class="bonus-celebration-card">
     <div class="bonus-crown">${isThree?'👑':'🏆'}</div>
@@ -6906,7 +6912,19 @@ function showBonusCelebration(level,closingKey){
     }
   }
   document.body.appendChild(overlay);
-  setTimeout(()=>overlay.remove(),8200);
+  const closeCelebration=()=>{
+    overlay.removeEventListener('click',closeCelebration);
+    document.removeEventListener('keydown',closeOnKey);
+    overlay.remove();
+  };
+  const closeOnKey=(event)=>{
+    if(event.key==='Escape'||event.key==='Enter'||event.key===' '){
+      event.preventDefault();
+      closeCelebration();
+    }
+  };
+  overlay.addEventListener('click',closeCelebration);
+  document.addEventListener('keydown',closeOnKey);
 }
 
 function updateBonusCampaignPanel(){
