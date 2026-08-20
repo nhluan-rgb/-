@@ -7113,10 +7113,11 @@ function remainingBonusBusinessDays(now,end){
   return count;
 }
 
+const shownBonusCelebrations=new Set();
 function showBonusCelebration(level,closingKey){
-  const sessionKey=`bonusCelebration:${closingKey}:${level}`;
-  if(sessionStorage.getItem(sessionKey))return;
-  sessionStorage.setItem(sessionKey,'1');
+  const celebrationKey=`${closingKey}:${level}`;
+  if(shownBonusCelebrations.has(celebrationKey))return;
+  shownBonusCelebrations.add(celebrationKey);
   const overlay=document.createElement('div');
   overlay.className=`bonus-celebration-overlay level-${level}`;
   overlay.setAttribute('role','button');
