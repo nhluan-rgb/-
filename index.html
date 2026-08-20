@@ -6194,6 +6194,21 @@ html,body,.table-wrap,#processModalCard{
 }
 @media(max-width:980px){.csv-update-status{display:none}}
 </style>
+<style id="bonus_frame_inspiration_v2">
+.bonus-campaign-panel .bonus-title{display:grid!important;grid-template-columns:minmax(0,1fr)!important;justify-items:center!important;gap:7px!important;margin:0 0 9px!important;padding:5px 10px 12px!important;text-align:center!important;line-height:1.15!important}
+.bonus-title-kicker,.bonus-title-goal{display:block!important;width:100%!important;white-space:nowrap!important}
+.bonus-title-kicker{color:#f5fdff!important;font-size:clamp(21px,1.55vw,27px)!important;font-weight:1000!important;letter-spacing:.025em!important;text-shadow:0 2px 2px #001827,0 0 12px rgba(99,225,255,.72)!important}
+.bonus-title-goal{color:#fff08a!important;font-size:clamp(27px,2vw,35px)!important;font-weight:1000!important;letter-spacing:.035em!important;text-shadow:0 3px 2px #5a2700,0 0 14px rgba(255,208,43,.9)!important}
+body.bonus-day-2man .bonus-title::after,body.bonus-day-3man .bonus-title::after{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;min-height:32px!important;margin:3px auto 0!important;padding:5px 18px!important;border:2px solid currentColor!important;border-radius:999px!important;font-size:18px!important;line-height:1.15!important;font-weight:1000!important;letter-spacing:.055em!important;background:rgba(0,0,0,.38)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 16px currentColor!important;text-shadow:0 2px 3px #000!important}
+body.bonus-day-2man .bonus-title::after{content:"🏆 2万円 達成！"!important;color:#9cecff!important}
+body.bonus-day-3man .bonus-title::after{content:"👑 最高目標 3万円 達成！"!important;color:#fff08a!important}
+body.bonus-day-2man .bonus-campaign-panel{border:3px solid #8beeff!important;animation:bonusFrameGlow2 1.8s ease-in-out infinite alternate!important}
+body.bonus-day-3man .bonus-campaign-panel{border:3px solid #ffe66d!important;animation:bonusFrameGlow3 1.55s ease-in-out infinite alternate!important}
+@keyframes bonusFrameGlow2{from{box-shadow:0 0 0 2px rgba(91,220,255,.28),0 0 18px rgba(45,205,255,.5),inset 0 0 22px rgba(77,222,255,.12);filter:brightness(1)}to{box-shadow:0 0 0 5px rgba(116,233,255,.48),0 0 38px rgba(47,211,255,.92),0 0 72px rgba(47,150,255,.38),inset 0 0 34px rgba(91,229,255,.22);filter:brightness(1.08)}}
+@keyframes bonusFrameGlow3{from{box-shadow:0 0 0 2px rgba(255,219,72,.32),0 0 20px rgba(255,190,24,.52),inset 0 0 24px rgba(255,196,35,.13);filter:brightness(1)}to{box-shadow:0 0 0 6px rgba(255,232,109,.52),0 0 42px rgba(255,199,37,.96),0 0 82px rgba(255,126,0,.42),inset 0 0 38px rgba(255,217,76,.24);filter:brightness(1.1)}}
+@media (max-width:760px){.bonus-title-kicker{font-size:20px!important}.bonus-title-goal{font-size:27px!important}}
+@media (prefers-reduced-motion:reduce){body.bonus-day-2man .bonus-campaign-panel,body.bonus-day-3man .bonus-campaign-panel{animation:none!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -6963,7 +6978,10 @@ function updateBonusCampaignPanel(){
     : `<div class="bonus-result waiting"><small>${shortJapaneseDate(cycle.end)}の締日まで</small><strong>残り実働 ${remainingBonusBusinessDays(now,cycle.end)}日</strong></div>`;
 
   box.innerHTML=`
-    <div class="bonus-title">🏆 大入り3万円 進捗</div>
+    <div class="bonus-title">
+      <span class="bonus-title-kicker">🏆 大入りチャレンジ 👑</span>
+      <span class="bonus-title-goal">世界100％で 3万円へ！</span>
+    </div>
     <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
     <div class="bonus-intro"><strong>西半球100％＝2万円<br>全世界も100％＝3万円！</strong></div>
     <div class="bonus-progress-list">${progressHtml}</div>
