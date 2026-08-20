@@ -2049,6 +2049,8 @@
 .bonus-frame-circuit{position:absolute;z-index:-1;inset:10px;border:2px solid var(--bonus-accent);border-radius:19px;pointer-events:none;opacity:.72;box-shadow:inset 0 0 13px var(--bonus-accent),0 0 9px var(--bonus-accent);background:repeating-linear-gradient(90deg,var(--bonus-accent) 0 18px,transparent 18px 31px) top/100% 2px no-repeat,repeating-linear-gradient(180deg,var(--bonus-accent) 0 14px,transparent 14px 27px) right/2px 100% no-repeat,repeating-linear-gradient(90deg,var(--bonus-accent) 0 15px,transparent 15px 29px) bottom/100% 2px no-repeat,repeating-linear-gradient(180deg,var(--bonus-accent) 0 19px,transparent 19px 33px) left/2px 100% no-repeat;animation:bonusCircuitBlink .78s steps(2,end) infinite}
 .bonus-celebration-card .bonus-crown{font-size:72px;line-height:1}
 .bonus-celebration-card .bonus-main{margin-top:10px;font-size:clamp(42px,5vw,76px);line-height:1.08;letter-spacing:.04em}
+.bonus-celebration-card .bonus-main-line{display:block;white-space:nowrap}
+.bonus-celebration-card .bonus-main-achieved{display:block;margin-top:5px;white-space:nowrap}
 .bonus-celebration-card .bonus-sub{margin-top:14px;font-size:clamp(20px,2vw,31px)}
 .bonus-celebration-overlay.level-2man .bonus-celebration-card{--bonus-accent:#55e9ff;--bonus-halo:rgba(29,202,255,.68);background:linear-gradient(145deg,#062d58,#075e98 54%,#087eb6);border:5px solid #d9f5ff;box-shadow:0 0 0 7px #58cfff66,0 0 60px #47c7ff,0 10px 0 #031c38}
 .bonus-celebration-overlay.level-2man .bonus-main{color:#effcff;text-shadow:0 0 18px #8fe8ff,0 4px 0 #164f78}
@@ -7127,7 +7129,7 @@ function showBonusCelebration(level,closingKey){
   overlay.innerHTML=`<div class="bonus-celebration-card">
     <span class="bonus-frame-circuit" aria-hidden="true"></span>
     <div class="bonus-crown">${isThree?'👑':'🏆'}</div>
-    <div class="bonus-main">${isThree?'大入り3万円 達成！':'大入り2万円 達成！'}</div>
+    <div class="bonus-main"><span class="bonus-main-line">${isThree?'大入り3万円':'大入り2万円'}</span><span class="bonus-main-achieved">達成！</span></div>
     <div class="bonus-sub">${isThree?'全世界100％ COMPLETE！':'西半球100％ CLEAR！'}</div>
   </div>`;
   const colors=isThree?['#ffd700','#ff6b35','#fff27a','#ff3b30','#66e3ff']:['#e8fbff','#52c7ff','#ffffff','#8adfff','#b9e9ff'];
