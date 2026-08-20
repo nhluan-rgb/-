@@ -7128,31 +7128,9 @@ function showBonusCelebration(level,closingKey){
   const isThree=level==='3man';
   overlay.innerHTML=`<div class="bonus-celebration-card">
     <span class="bonus-frame-circuit" aria-hidden="true"></span>
-    <div class="bonus-crown">${isThree?'👑':'🏆'}</div>
     <div class="bonus-main"><span class="bonus-main-line">${isThree?'大入り3万円':'大入り2万円'}</span><span class="bonus-main-achieved">達成！</span></div>
     <div class="bonus-sub">${isThree?'全世界100％ COMPLETE！':'西半球100％ CLEAR！'}</div>
   </div>`;
-  const colors=isThree?['#ffd700','#ff6b35','#fff27a','#ff3b30','#66e3ff']:['#e8fbff','#52c7ff','#ffffff','#8adfff','#b9e9ff'];
-  for(let i=0;i<(isThree?80:50);i++){
-    const p=document.createElement('i');
-    p.className='bonus-particle';
-    p.style.left=`${Math.random()*100}%`;
-    p.style.setProperty('--dur',`${3.8+Math.random()*3}s`);
-    p.style.setProperty('--delay',`${Math.random()*1.8}s`);
-    p.style.setProperty('--rot',`${Math.random()*360}deg`);
-    p.style.setProperty('--pc',colors[i%colors.length]);
-    overlay.appendChild(p);
-  }
-  if(isThree){
-    for(let i=0;i<7;i++){
-      const f=document.createElement('i');
-      f.className='bonus-firework';
-      f.style.setProperty('--x',`${8+Math.random()*84}%`);
-      f.style.setProperty('--y',`${8+Math.random()*55}%`);
-      f.style.setProperty('--delay',`${Math.random()*1.5}s`);
-      overlay.appendChild(f);
-    }
-  }
   document.body.appendChild(overlay);
   const closeCelebration=()=>{
     overlay.removeEventListener('click',closeCelebration);
