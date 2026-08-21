@@ -6925,6 +6925,9 @@ function statusClass(s){if(s==='完成')return's-done';if(s==='未着手')return
 function getTodayCompletionKey(){
   return `todayNgCompletedAt:${getShipDates().today}`;
 }
+function isCompletionAtOrAfter16(date){
+  return date instanceof Date&&!Number.isNaN(date.getTime())&&date.getHours()>=16;
+}
 function getOrRecordTodayCompletion(ngCount){
   const key=getTodayCompletionKey();
   if(ngCount>0){
@@ -7003,15 +7006,21 @@ function isBonusBusinessDay(date){
     && !isCompanyHoliday(key);
 }
 
-/* 20日締めの達成演出は翌21日に表示する。22日になったら通常表示へ戻す。 */
+/* 20日が休みなら、その次の営業日を達成演出日にする */
 function bonusCelebrationBusinessDay(closingDate){
-  return new Date(closingDate.getFullYear(),closingDate.getMonth(),21);
+  const day=new Date(closingDate.getFullYear(),closingDate.getMonth(),closingDate.getDate());
+  while(!isBonusBusinessDay(day))day.setDate(day.getDate()+1);
+  return day;
 }
 
-/* 今日がどの締日の演出日かを判定する（21日のみ） */
+/* 今日がどの締日の演出日かを判定する */
 function closingDateForTodayCelebration(now=new Date()){
-  if(now.getDate()!==21)return null;
-  return new Date(now.getFullYear(),now.getMonth(),20);
+  const todayKey=localDateKey(now);
+  const candidates=[
+    new Date(now.getFullYear(),now.getMonth(),20),
+    new Date(now.getFullYear(),now.getMonth()-1,20)
+  ];
+  return candidates.find(closing=>localDateKey(bonusCelebrationBusinessDay(closing))===todayKey)||null;
 }
 
 let bonusRemoteProgress=null;
@@ -7025,15 +7034,12 @@ async function loadBonusProgress(){
     const closingDate=!rawClosingDate||rawClosingDate.toLowerCase()==='auto'
       ? localDateKey(bonusCycleInfo(new Date()).end)
       : rawClosingDate;
-    const nowForBonus=new Date();
-    const isAutoClosing=!rawClosingDate||rawClosingDate.toLowerCase()==='auto';
-    const forceCycleReset=isAutoClosing&&nowForBonus.getDate()===22;
     if(!/^\d{4}-\d{2}-\d{2}$/.test(closingDate))throw new Error('closingDate');
     bonusRemoteProgress={
       closingDate,
-      east:forceCycleReset?0:(Number(data.east)||0),
-      west:forceCycleReset?0:(Number(data.west)||0),
-      national:forceCycleReset?0:(Number(data.national)||0)
+      east:Number(data.east)||0,
+      west:Number(data.west)||0,
+      national:Number(data.national)||0
     };
     const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
     const rawClaimClosingDate=String(claim.closingDate||'').trim();
@@ -7077,10 +7083,7 @@ function updateClaimSummaryPanel(){
     <div class="claim-summary-info ${info?'':'empty'}">${escapeHtml(info||'クレーム情報なし')}</div>`;
 }
 function bonusCycleInfo(now=new Date()){
-  // 21日は20日締めの結果・達成演出をそのまま表示。
-  // 22日から新しい周期へ切り替え、進捗は0%から再スタートする。
-  const usePreviousCycle=now.getDate()<=21;
-  const start=new Date(now.getFullYear(),now.getMonth()-(usePreviousCycle?1:0),21);
+  const start=new Date(now.getFullYear(),now.getMonth()-(now.getDate()<=20?1:0),21);
   const end=new Date(start.getFullYear(),start.getMonth()+1,20);
   return {start,end};
 }
@@ -8046,10 +8049,21 @@ function renderNgRotatingMessage(restorePosition=false){
 }
 function startNgMessageRotation(context){
   mountBossMissionMessage();
+  const contextChanged=
+    Number(ngMessageContext.total)!==Number(context.total)||
+    Number(ngMessageContext.remaining)!==Number(context.remaining)||
+    Number(ngMessageContext.rate)!==Number(context.rate)||
+    Boolean(ngMessageContext.lateCompletion)!==Boolean(context.lateCompletion);
   ngMessageContext=context;
   const element=$('gameBannerMessage');
   if(!element)return;
-  if(ngMessageElement===element&&ngAnimationEndHandler)return;
+  if(ngMessageElement===element&&ngAnimationEndHandler){
+    if(contextChanged){
+      ngMessageIndex=0;
+      renderNgRotatingMessage(false);
+    }
+    return;
+  }
 
   stopNgMessageRotation();
   ngMessageElement=element;
@@ -8385,9 +8399,9 @@ function updateClockAlertMode(clockBox){
   }else if(shipFilter==='today'){
     remaining=rows.filter(row=>row.due===dates.today&&row.status!=='完成'&&!isCancelled(row.status)).length;
   }
-  const after15=now.getHours()>=15;
-  const alarm=after15&&(shipFilter==='today-ng'||shipFilter==='today')&&remaining>0;
-  clockBox.classList.toggle('clock-after15',after15&&!alarm);
+  const after16=now.getHours()>=16;
+  const alarm=after16&&(shipFilter==='today-ng'||shipFilter==='today')&&remaining>0;
+  clockBox.classList.toggle('clock-after15',after16&&!alarm);
   clockBox.classList.toggle('clock-alarm',alarm);
 }
 
@@ -9034,8 +9048,7 @@ if(shipFilter==='today-ng'){
   const isLateCompletion=forcedAchievement==='miss' || (forcedAchievement!=='done'
     && ng.length===0
     && savedCompletionAt
-    && !Number.isNaN(savedCompletionAt.getTime())
-    && savedCompletionAt.getHours()>=15);
+    && isCompletionAtOrAfter16(savedCompletionAt));
   const completionDisplay=isLateCompletion?'本日は16時以降の完了となりました。明日は少し早めの段取りを意識しましょう。':'本日の作業が完了しました！';
   if($('evolutionMessage')) $('evolutionMessage').innerHTML=ng.length===0?completionDisplay:`完了まであと${fmt(ng.length)}件です。`;
   if($('bossStatusMessage')) $('bossStatusMessage').textContent=ng.length===0?completionDisplay:`完了まであと${fmt(ng.length)}件！`;
@@ -9074,22 +9087,22 @@ if(shipFilter==='today-ng'){
   const gameBanner=$('gameBanner');
   const gameBannerMessage=$('gameBannerMessage');
   let ngRate=startBoss>0?Math.max(0,Math.min(100,(startBoss-ng.length)/startBoss*100)):100;
-  let completedAfter15=false;
+  let completedAfter16=false;
   if(gameBanner){
     gameBanner.classList.remove('success','late');
     if(ng.length===0){
       const completedAt=getOrRecordTodayCompletion(0);
-      completedAfter15=forcedAchievement==='miss' || (forcedAchievement!=='done' && completedAt.getHours()>=15);
-      gameBanner.classList.add(completedAfter15?'late':'success');
+      completedAfter16=forcedAchievement==='miss' || (forcedAchievement!=='done' && isCompletionAtOrAfter16(completedAt));
+      gameBanner.classList.add(completedAfter16?'late':'success');
     }else{
       getOrRecordTodayCompletion(ng.length);
     }
   }
   // 16時以降の完了は「100%達成」の祝福文を出さない。
   // completeMessage の条件(rate>=100)に入らないよう、表示用だけ99.9%にする。
-  if(completedAfter15)ngRate=99.9;
+  if(completedAfter16)ngRate=99.9;
   if(window.BossMotivation) window.BossMotivation.stop();
-  startNgMessageRotation({total:startBoss,remaining:ng.length,rate:ngRate,lateCompletion:completedAfter15});
+  startNgMessageRotation({total:startBoss,remaining:ng.length,rate:ngRate,lateCompletion:completedAfter16});
 
   if(goalResult){
     goalResult.className='goal-result';
