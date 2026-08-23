@@ -6434,6 +6434,15 @@ body.bonus-day-3man .bonus-title::after,
   }
 }
 </style>
+<style id="bonus_daily_west_target_v6">
+.bonus-daily-target{width:100%;margin-top:9px;padding-top:8px;border-top:1px solid rgba(18,57,75,.35);display:grid;grid-template-columns:1fr auto;gap:3px 12px;align-items:center;font-size:15px;font-weight:900;line-height:1.2}
+.bonus-daily-target .target-label{text-align:left}
+.bonus-daily-target .target-value{font-size:24px;color:#c85e00}
+.bonus-daily-target .target-compare{grid-column:1/-1;text-align:center;font-size:14px}
+.bonus-daily-target .target-compare.ahead{color:#08743d}
+.bonus-daily-target .target-compare.behind{color:#b3261e}
+@media (min-width:1301px){.ng-game .ng-utility-column .bonus-result.waiting{flex-basis:142px!important;min-height:142px!important}.ng-game .ng-utility-column .bonus-result.waiting strong{font-size:34px!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -7117,6 +7126,24 @@ function remainingBonusBusinessDays(now,end){
   }
   return count;
 }
+function bonusDailyWestTarget(now,cycle){
+  const countBusinessDays=(start,end)=>{
+    const cursor=new Date(start.getFullYear(),start.getMonth(),start.getDate());
+    const last=new Date(end.getFullYear(),end.getMonth(),end.getDate());
+    let count=0;
+    while(cursor<=last){
+      if(isSystemBusinessDay(cursor))count++;
+      cursor.setDate(cursor.getDate()+1);
+    }
+    return count;
+  };
+  const total=Math.max(1,countBusinessDays(cycle.start,cycle.end));
+  const targetEnd=now<cycle.start
+    ? new Date(cycle.start.getFullYear(),cycle.start.getMonth(),cycle.start.getDate()-1)
+    : (now>cycle.end?cycle.end:now);
+  const elapsed=targetEnd<cycle.start?0:countBusinessDays(cycle.start,targetEnd);
+  return Math.min(100,elapsed/total*100);
+}
 
 const shownBonusCelebrations=new Set();
 function showBonusCelebration(level,closingKey){
@@ -7184,9 +7211,18 @@ function updateBonusCampaignPanel(){
   );
   const payDate=nextBonusBusinessDay(lastClosedEnd);
   const reward=bonusReward(lastProgress);
-  const resultHtml=hasLastResult&&now>=payDate
+  const westActual=Math.max(0,Number(progress.west)||0);
+  const westTarget=bonusDailyWestTarget(now,cycle);
+  const westGap=westActual-westTarget;
+  const westComparison=westGap>=0
+    ? `<span class="target-compare ahead">現在 ${westActual.toFixed(1)}% ／ 目標より ${westGap.toFixed(1)}ポイント先行</span>`
+    : `<span class="target-compare behind">現在 ${westActual.toFixed(1)}% ／ 目標まであと ${Math.abs(westGap).toFixed(1)}ポイント</span>`;
+  const dailyTargetHtml=`<div class="bonus-daily-target"><span class="target-label">本日の目標（西半球）</span><b class="target-value">${westTarget.toFixed(1)}%</b>${westComparison}</div>`;
+  // 支給額は支給日当日だけ表示する。翌日からは新しい締日までの実働残りへ戻す。
+  const isPayDate=localDateKey(now)===localDateKey(payDate);
+  const resultHtml=hasLastResult&&isPayDate
     ? `<div class="bonus-result"><small>${shortJapaneseDate(payDate)} 支給額</small><strong>¥${reward.toLocaleString('ja-JP')}</strong></div>`
-    : `<div class="bonus-result waiting"><small>${shortJapaneseDate(cycle.end)}の締日まで</small><strong>残り実働 ${remainingBonusBusinessDays(now,cycle.end)}日</strong></div>`;
+    : `<div class="bonus-result waiting"><small>${shortJapaneseDate(cycle.end)}の締日まで</small><strong>残り実働 ${remainingBonusBusinessDays(now,cycle.end)}日</strong>${dailyTargetHtml}</div>`;
 
   box.innerHTML=`
     <div class="bonus-title">
