@@ -1,8 +1,8 @@
 {
   "closingDate": "auto",
-  "east": 38.5,
-  "west": 45.5,
-  "national": 41.7,
+  "east": 41.6,
+  "west": 49.0,
+  "national": 44.5,
   "claim": {
     "closingDate": "2026-08-20",
     "count": 1,
