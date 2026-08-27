@@ -865,7 +865,7 @@ body,
   <section class="deadline-tabs">
     <button class="deadline-tab" data-deadline="tomorrow"><span class="tab-name">明日期限</span><span class="tab-count" id="tomorrowCount">0件</span><span class="tab-points" id="tomorrowPoints">0点</span></button>
     <button class="deadline-tab" data-deadline="day2"><span class="tab-name">明後日期限</span><span class="tab-count" id="day2Count">0件</span><span class="tab-points" id="day2Points">0点</span></button>
-    <button class="deadline-tab" data-deadline="todayOrders"><span class="tab-name">今日受注<br>（焼付のみ）</span><span class="tab-count" id="todayOrdersCount">0件</span><span class="tab-points" id="todayOrdersPoints">0点</span></button>
+    <button class="deadline-tab" data-deadline="yesterdayOrders"><span class="tab-name">昨日受注<br>（焼付のみ）</span><span class="tab-count" id="yesterdayOrdersCount">0件</span><span class="tab-points" id="yesterdayOrdersPoints">0点</span></button>
     <button class="deadline-tab type-hidden" data-deadline="rust10Days"><span class="tab-name">10日間分期限<br>（架台・錆止め）</span><span class="tab-count" id="rust10DaysCount">0件</span><span class="tab-points" id="rust10DaysPoints">0点</span></button>
     <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">本日期限未完成<br>・製造期限切れ</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
     <div class="deadline-tab" data-deadline="specified"><span class="tab-name">指定日製造期限</span><span class="tab-count" id="specifiedCount">0件</span><span class="tab-points" id="specifiedPoints">0点</span><input id="specifiedDate" type="date"></div>
@@ -918,12 +918,13 @@ function normalizedDate(value){
   const m=raw.match(/(\d{4})[\/年.-](\d{1,2})[\/月.-](\d{1,2})/);
   return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:raw.replaceAll('/','-');
 }
-function instructionDateOf(row){
-  const preferred=['製造指示日','製造指示日付','製造指示日時','指示日','受注日'];
-  const key=preferred.find(k=>row[k])||Object.keys(row).find(k=>/製造指示.*(日|DATE)/i.test(k));
-  return normalizedDate(key?row[key]:'');
-}
+function orderDateOf(row){return normalizedDate(row['受注日']||'')}
 const COMPANY_HOLIDAYS=new Set(['2025-11-24','2025-12-26','2025-12-27','2025-12-28','2025-12-29','2025-12-30','2025-12-31','2026-01-01','2026-01-02','2026-01-03','2026-01-04','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-02','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23']);
+function previousBusinessDate(){
+  const d=new Date();d.setHours(12,0,0,0);
+  do{d.setDate(d.getDate()-1)}while(d.getDay()===0||d.getDay()===6||COMPANY_HOLIDAYS.has(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`));
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 function businessDayRange(days=10){
   const base=new Date();base.setHours(12,0,0,0);
   let d=new Date(base),count=0,first='';
@@ -942,7 +943,7 @@ function isRackRust(row){
 function rowsForDeadline(rows,key){
   const today=localDate(0),dates={tomorrow:localDate(1),day2:localDate(2),specified:specifiedDate};
   const dueOf=r=>String(r['製造期限']||'').trim().replaceAll('/','-');
-  if(key==='todayOrders')return rows.filter(r=>typeOf(r)==='bake'&&instructionDateOf(r)===today);
+  if(key==='yesterdayOrders'){const target=previousBusinessDate();return rows.filter(r=>typeOf(r)==='bake'&&orderDateOf(r)===target)}
   if(key==='rust10Days'){const range=businessDayRange(10);return rows.filter(r=>isRackRust(r)&&normalizedDate(r['製造期限'])>=range.start&&normalizedDate(r['製造期限'])<=range.end)}
   if(key==='critical')return rows.filter(r=>dueOf(r)&&dueOf(r)<=today);
   return rows.filter(r=>dueOf(r)===dates[key]);
@@ -1073,15 +1074,15 @@ function render(){
   $('bakeTable').closest('.group').style.display=paintTypeFilter==='bake'?'block':'none';
   $('otherTable').closest('.other').style.display='none';
   document.querySelector('.groups').style.gridTemplateColumns='1fr';
-  const filterNames={tomorrow:'明日期限',day2:'明後日期限',todayOrders:'今日受注（焼付のみ）',rust10Days:'10日間分期限（架台・錆止め）',critical:'本日期限未完成・製造期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
+  const filterNames={tomorrow:'明日期限',day2:'明後日期限',yesterdayOrders:`昨日受注 ${previousBusinessDate().replaceAll('-','/')}（焼付のみ）`,rust10Days:'10日間分期限（架台・錆止め）',critical:'本日期限未完成・製造期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
   const typeName=paintTypeFilter==='rust'?'錆止め':'焼付';
   $('missionText').textContent=colorFilter
     ? `${filterNames[deadlineFilter]}・色 ${colorFilter} を表示中：焼付${fmt(bake.length)}件・${fmt(qty(bake))}点です。`
     : `${typeName}専用表示：${filterNames[deadlineFilter]}は${fmt(filtered.length)}件・${fmt(qty(filtered))}点です。色・数量・期限を確認して確実に仕上げましょう！`;
-  [['tomorrow','tomorrow'],['day2','day2'],['todayOrders','todayOrders'],['rust10Days','rust10Days'],['critical','critical'],['specified','specified']].forEach(([key,id])=>{
+  [['tomorrow','tomorrow'],['day2','day2'],['yesterdayOrders','yesterdayOrders'],['rust10Days','rust10Days'],['critical','critical'],['specified','specified']].forEach(([key,id])=>{
     const list=rowsForDeadline(typeRows,key),count=key==='rust10Days'?new Set(list.map(r=>baseJNumber(r['製造指示番号']))).size:list.length;$(`${id}Count`).textContent=`${fmt(count)}件`;$(`${id}Points`).textContent=`${fmt(qty(list))}点`;
   });
-  document.querySelector('[data-deadline="todayOrders"]').classList.toggle('type-hidden',paintTypeFilter==='rust');
+  document.querySelector('[data-deadline="yesterdayOrders"]').classList.toggle('type-hidden',paintTypeFilter==='rust');
   document.querySelector('[data-deadline="rust10Days"]').classList.toggle('type-hidden',paintTypeFilter!=='rust');
   document.querySelectorAll('.paint-type-tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.paintType===paintTypeFilter));
   document.querySelectorAll('.deadline-tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.deadline===deadlineFilter));
@@ -1138,7 +1139,7 @@ document.querySelectorAll('.deadline-tab').forEach(tab=>tab.addEventListener('cl
 }));
 document.querySelectorAll('.paint-type-tab').forEach(tab=>tab.addEventListener('click',()=>{
   paintTypeFilter=tab.dataset.paintType;
-  if(paintTypeFilter==='rust'&&deadlineFilter==='todayOrders')deadlineFilter='critical';
+  if(paintTypeFilter==='rust'&&deadlineFilter==='yesterdayOrders')deadlineFilter='critical';
   if(paintTypeFilter==='bake'&&deadlineFilter==='rust10Days')deadlineFilter='critical';
   processFilter='';
   colorFilter='';
