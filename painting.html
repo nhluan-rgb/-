@@ -835,8 +835,11 @@ body,
 /* Compact process row matching the index dashboard. */
 .deadline-tabs{align-items:stretch!important}
 .deadline-tab{min-height:158px!important;height:158px!important;padding:10px 14px!important}
-.deadline-tab .tab-name{min-height:38px!important;font-size:18px!important;line-height:1.15!important}
-.deadline-tab .tab-count{margin-top:5px!important;font-size:34px!important;line-height:1!important}
+.deadline-tab .tab-name{min-height:26px!important;font-size:17px!important;line-height:1.1!important;white-space:nowrap!important}
+.deadline-tab .tab-date{display:block;margin-top:3px;padding:3px 6px;border:1px solid #ffe769;border-radius:4px;background:#041f32;color:#fff06a;font-size:15px;font-weight:1000;line-height:1.1;text-align:center;letter-spacing:.03em;white-space:nowrap;box-shadow:0 0 8px rgba(255,235,80,.22)}
+.deadline-tab .tab-date-range{font-size:13px!important;letter-spacing:0!important}
+.deadline-tab.critical .tab-date{border-color:#aff4ff;background:#06384d;color:#baf7ff}
+.deadline-tab .tab-count{margin-top:4px!important;font-size:31px!important;line-height:1!important}
 .deadline-tab .tab-points{margin-top:5px!important;font-size:24px!important;line-height:1!important}
 .deadline-tab input{margin-top:6px!important;padding:5px 8px!important}
 .process-deck{grid-template-columns:repeat(9,minmax(135px,1fr))!important;gap:10px!important;padding:12px!important;overflow-x:auto!important}
@@ -866,11 +869,11 @@ body,
     <button class="paint-type-tab active" data-paint-type="bake" style="--type-color:#b18aff">🔥 焼付<small id="bakeModeCount">0件・0点</small></button>
   </section>
   <section class="deadline-tabs">
-    <button class="deadline-tab" data-deadline="tomorrow"><span class="tab-name">明日期限</span><span class="tab-count" id="tomorrowCount">0件</span><span class="tab-points" id="tomorrowPoints">0点</span></button>
-    <button class="deadline-tab" data-deadline="day2"><span class="tab-name">明後日期限</span><span class="tab-count" id="day2Count">0件</span><span class="tab-points" id="day2Points">0点</span></button>
-    <button class="deadline-tab" data-deadline="yesterdayOrders"><span class="tab-name">昨日受注<br>（焼付のみ）</span><span class="tab-count" id="yesterdayOrdersCount">0件</span><span class="tab-points" id="yesterdayOrdersPoints">0点</span></button>
-    <button class="deadline-tab type-hidden" data-deadline="rust10Days"><span class="tab-name">10日間分期限<br>（架台・錆止め）</span><span class="tab-count" id="rust10DaysCount">0件</span><span class="tab-points" id="rust10DaysPoints">0点</span></button>
-    <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">本日期限未完成<br>・製造期限切れ</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
+    <button class="deadline-tab" data-deadline="tomorrow"><span class="tab-name">明日期限</span><span class="tab-date" id="tomorrowDate">----/--/--</span><span class="tab-count" id="tomorrowCount">0件</span><span class="tab-points" id="tomorrowPoints">0点</span></button>
+    <button class="deadline-tab" data-deadline="day2"><span class="tab-name">明後日期限</span><span class="tab-date" id="day2Date">----/--/--</span><span class="tab-count" id="day2Count">0件</span><span class="tab-points" id="day2Points">0点</span></button>
+    <button class="deadline-tab" data-deadline="yesterdayOrders"><span class="tab-name">昨日受注（焼付のみ）</span><span class="tab-date" id="yesterdayOrdersDate">----/--/--</span><span class="tab-count" id="yesterdayOrdersCount">0件</span><span class="tab-points" id="yesterdayOrdersPoints">0点</span></button>
+    <button class="deadline-tab type-hidden" data-deadline="rust10Days"><span class="tab-name">10日間分期限（架台・錆止め）</span><span class="tab-date tab-date-range" id="rust10DaysDate">----/--/-- ～ ----/--/--</span><span class="tab-count" id="rust10DaysCount">0件</span><span class="tab-points" id="rust10DaysPoints">0点</span></button>
+    <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">本日期限未完成・製造期限切れ</span><span class="tab-date" id="criticalDate">～ ----/--/--</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
     <div class="deadline-tab" data-deadline="specified"><span class="tab-name">指定日製造期限</span><span class="tab-count" id="specifiedCount">0件</span><span class="tab-points" id="specifiedPoints">0点</span><input id="specifiedDate" type="date"></div>
   </section>
   <section class="kpis">
@@ -938,6 +941,15 @@ function businessDayRange(days=10){
   }
   const end=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   return {start:first,end};
+}
+function updateDeadlineDateLabels(){
+  const show=value=>String(value||'').replaceAll('-','/');
+  const range=businessDayRange(10);
+  $('tomorrowDate').textContent=show(localDate(1));
+  $('day2Date').textContent=show(localDate(2));
+  $('yesterdayOrdersDate').textContent=show(previousBusinessDate());
+  $('rust10DaysDate').textContent=`${show(range.start)} ～ ${show(range.end)}`;
+  $('criticalDate').textContent=`～ ${show(localDate(0))}`;
 }
 function isRackRust(row){
   const name=String(row['品名']||''),code=String(row['品番']||'').trim().toUpperCase(),spec=String(row['規格']||'');
@@ -1056,6 +1068,7 @@ function groupedRackTable(rows){
   return `<div class="range-note">対象：製造期限 = ${range.start.replaceAll('-','/')} ～ ${range.end.replaceAll('-','/')}（10営業日・明日から／土日＋休日除外）<br>条件：品名に「架台 / 耐震架台」を含む、かつ 錆止めのみ（品番末尾=G または 規格に「さび止め / 錆止め」）<br>除外：キャンセル / 組立 / 完成</div><table class="print-like-table"><colgroup><col style="width:5%"><col style="width:11%"><col style="width:12%"><col style="width:36%"><col style="width:11%"><col style="width:13%"><col style="width:12%"></colgroup><thead><tr><th>完了</th><th>製造期限</th><th>製造指示番号(J6)</th><th>品名 / 規格（まとめ）</th><th>数量合計</th><th>出荷日</th><th>進捗</th></tr></thead><tbody>${body}</tbody></table>`;
 }
 function render(){
+  updateDeadlineDateLabels();
   const typeRows=paintRows.filter(r=>typeOf(r)===paintTypeFilter);
   const deadlineRows=rowsForDeadline(typeRows,deadlineFilter);
   if(processFilter&&!deadlineRows.some(r=>String(r['進捗']||'').trim()===processFilter))processFilter='';
