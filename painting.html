@@ -817,6 +817,9 @@ body,
 .item-spec-cell .item-name{margin-bottom:8px;color:#102f43;font-size:18px;font-weight:900;line-height:1.35}
 .item-spec-cell .spec-text{padding:8px 9px;border-left:5px solid #ef9c00;border-radius:4px;background:#fff2c8;color:#542e00;font-size:18px;font-weight:1000;line-height:1.4}
 .item-spec-cell .spec-text small{background:#d47c00}
+.group-head{display:grid!important;grid-template-columns:auto minmax(280px,1fr) auto!important;align-items:center!important;gap:20px!important}
+.group-filter-banner{justify-self:center;max-width:100%;padding:9px 24px;border:2px solid #63ebff;border-radius:6px;background:linear-gradient(180deg,#0d5d7e,#073c59);color:#fff36a;font-size:23px;font-weight:1000;line-height:1.15;text-align:center;letter-spacing:.05em;text-shadow:0 2px 2px #001b2b,0 0 8px #55dfff;box-shadow:0 3px 0 #04273a,0 0 14px rgba(66,232,255,.38)}
+.group-head>strong{min-width:180px;text-align:right;font-size:30px!important;color:#fff04f!important;text-shadow:0 0 10px rgba(255,234,69,.4)}
 .size-cell{white-space:nowrap;font-weight:900;color:#173548!important;min-width:150px}
 .groups .group:first-child .table-wrap th:nth-child(5),
 .groups .group:first-child .table-wrap td:nth-child(5),
@@ -889,8 +892,8 @@ body,
     <div class="process-clock" aria-label="現在時刻"><span class="clock-name">時計</span><strong class="clock-time" id="processClockTime">--:--</strong><small class="clock-date" id="processClockDate">----/--/--</small></div>
   </section>
   <main class="groups">
-    <section class="group" style="--group:var(--rust)"><header class="group-head"><h2>🛡 錆止め</h2><strong id="rustHead">0件・0点</strong></header><div class="group-body"><div class="table-wrap" id="rustTable"></div></div></section>
-    <section class="group" style="--group:var(--bake)"><header class="group-head"><h2>🔥 焼付</h2><strong id="bakeHead">0件・0点</strong></header><div class="group-body"><div class="color-summary" id="bakeColors"></div><div class="table-wrap" id="bakeTable"></div></div></section>
+    <section class="group" style="--group:var(--rust)"><header class="group-head"><h2>🛡 錆止め</h2><div class="group-filter-banner" id="rustFilterBanner">表示条件</div><strong id="rustHead">0件・0点</strong></header><div class="group-body"><div class="table-wrap" id="rustTable"></div></div></section>
+    <section class="group" style="--group:var(--bake)"><header class="group-head"><h2>🔥 焼付</h2><div class="group-filter-banner" id="bakeFilterBanner">表示条件</div><strong id="bakeHead">0件・0点</strong></header><div class="group-body"><div class="color-summary" id="bakeColors"></div><div class="table-wrap" id="bakeTable"></div></div></section>
   </main>
   <section class="other"><h2>その他の塗装対象 <span id="otherHead">0件・0点</span></h2><div class="table-wrap" id="otherTable"></div></section>
   <div class="foot">※ 錆止め・焼付の指定、または色・マンセル値が登録されている製造指示のみ塗装対象に含みます。いずれも登録されていない指示は対象外です。画面の色は近似表示のため、最終確認には正式な色見本を使用してください。</div>
@@ -1076,6 +1079,9 @@ function render(){
   document.querySelector('.groups').style.gridTemplateColumns='1fr';
   const filterNames={tomorrow:'明日期限',day2:'明後日期限',yesterdayOrders:`昨日受注 ${previousBusinessDate().replaceAll('-','/')}（焼付のみ）`,rust10Days:'10日間分期限（架台・錆止め）',critical:'本日期限未完成・製造期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
   const typeName=paintTypeFilter==='rust'?'錆止め':'焼付';
+  const bannerCount=deadlineFilter==='rust10Days'?new Set(filtered.map(r=>baseJNumber(r['製造指示番号']))).size:filtered.length;
+  const bannerText=`${filterNames[deadlineFilter]} ｜ ${fmt(bannerCount)}件・${fmt(qty(filtered))}点`;
+  $('rustFilterBanner').textContent=bannerText;$('bakeFilterBanner').textContent=bannerText;
   $('missionText').textContent=colorFilter
     ? `${filterNames[deadlineFilter]}・色 ${colorFilter} を表示中：焼付${fmt(bake.length)}件・${fmt(qty(bake))}点です。`
     : `${typeName}専用表示：${filterNames[deadlineFilter]}は${fmt(filtered.length)}件・${fmt(qty(filtered))}点です。色・数量・期限を確認して確実に仕上げましょう！`;
