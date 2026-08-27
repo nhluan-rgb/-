@@ -267,13 +267,16 @@ body:after{
 .paint-type-tab.active:after{content:"表示中";margin-left:12px;padding:4px 9px;border:1px solid #fff;border-radius:4px;background:var(--type-color);font-size:13px;vertical-align:middle}
 .deadline-tab.type-hidden{display:none!important}
 .deadline-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important}
-.print-like-table{min-width:1050px;background:#eef5fb;color:#101820}
-.print-like-table th{background:#dce8f3;color:#111;border:1px solid #41505b;text-align:center;font-size:16px}
-.print-like-table td{border:1px solid #56636c;padding:12px 10px;vertical-align:middle;font-weight:800}
-.print-like-table .print-qty{font-size:30px;text-align:center;color:#05090c}
+.print-like-table{width:100%;min-width:980px;table-layout:fixed;background:#f6fbff;color:#102b3d}
+.print-like-table th{background:#123f5c;color:#fff;border:1px solid #60798a;text-align:center;font-size:15px;font-weight:1000;text-shadow:none}
+.print-like-table td{border:1px solid #78909d;padding:10px 8px;vertical-align:middle;font-size:15px;font-weight:800;line-height:1.35}
+.print-like-table .print-qty{background:#fff08a;font-size:34px;text-align:center;color:#b20d18;font-weight:1000;text-shadow:0 1px #fff}
+.print-like-table .print-ship{background:#ffe0a8;color:#b0121b;font-size:19px;font-weight:1000;text-align:center;white-space:pre-line}
 .print-like-table .print-job{font-weight:1000;white-space:nowrap}
-.print-like-table .print-detail{white-space:pre-line;line-height:1.45}
+.print-like-table .print-detail{white-space:pre-line;line-height:1.35;overflow-wrap:anywhere}
 .print-like-table .print-process{font-size:18px;font-weight:1000;white-space:pre-line}
+.print-like-table .group-check{width:58px;text-align:center}
+.print-like-table .group-check .job-check{width:30px;height:30px}
 .range-note{margin:0 0 10px;padding:12px 15px;border:2px solid #ff5a55;border-radius:6px;background:#fff4db;color:#c41920;font-size:16px;font-weight:1000;line-height:1.5}
 .process-card:hover,.process-card.active{
   transform:translateY(-3px)!important;
@@ -804,6 +807,21 @@ body,
 .groups .group:first-child .table-wrap td:nth-child(7),
 .groups .group:nth-child(2) .table-wrap th:nth-child(8),
 .groups .group:nth-child(2) .table-wrap td:nth-child(8){width:112px!important;min-width:112px!important;text-align:center!important}
+
+/* Compact process row matching the index dashboard. */
+.process-deck{grid-template-columns:repeat(9,minmax(135px,1fr))!important;gap:10px!important;padding:12px!important;overflow-x:auto!important}
+.process-card{min-height:158px!important;height:158px!important;padding:8px!important;border-width:2px!important;clip-path:polygon(0 0,94% 0,100% 8%,100% 100%,7% 100%,0 92%)!important}
+.process-name{min-height:42px!important;padding:5px!important;font-size:19px!important;line-height:1.05!important}
+.process-count{margin-top:7px!important;font-size:29px!important;line-height:1!important}
+.process-icon{width:54px!important;height:48px!important;margin:9px auto 0!important;border-width:2px!important;font-size:29px!important}
+.process-card.zero:before{width:72px!important;height:42px!important;margin:14px auto 0!important;border-width:3px!important;font-size:22px!important}
+.process-card.zero .process-name{display:grid!important}
+.process-card.active:after{bottom:4px!important;padding:2px 7px!important;font-size:10px!important}
+.process-clock{--pc:#7b5cff;min-width:135px;height:158px;padding:8px;border:2px solid var(--pc);clip-path:polygon(0 0,94% 0,100% 8%,100% 100%,7% 100%,0 92%);background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 2px,transparent 2px 17px),linear-gradient(160deg,#173356,#090e27);color:#fff;text-align:center;box-shadow:inset 0 0 22px rgba(123,92,255,.25),0 0 12px rgba(123,92,255,.5)}
+.process-clock .clock-name{display:grid;place-items:center;min-height:42px;border:1px solid #b9a9ff;border-radius:3px;background:linear-gradient(180deg,#7958c9,#49308e);font-size:19px;font-weight:1000}
+.process-clock .clock-time{display:block;margin-top:11px;color:#f2eeff;font-size:29px;font-weight:1000;letter-spacing:.05em;text-shadow:0 0 10px #a88aff}
+.process-clock .clock-date{display:block;margin-top:7px;color:#cddfff;font-size:13px;font-weight:900}
+@media(max-width:1300px){.process-deck{grid-template-columns:repeat(9,135px)!important}}
 </style>
 </head>
 <body>
@@ -841,6 +859,7 @@ body,
     <button class="process-card" data-process="溶接" style="--pc:#e53935"><span class="process-name">溶接</span><span class="process-count">0件</span><span class="process-icon">⚡</span></button>
     <button class="process-card" data-process="仕上" style="--pc:#90a4ae"><span class="process-name">仕上</span><span class="process-count">0件</span><span class="process-icon">✦</span></button>
     <button class="process-card" data-process="塗装" style="--pc:#43a047"><span class="process-name">塗装</span><span class="process-count">0件</span><span class="process-icon">▥</span></button>
+    <div class="process-clock" aria-label="現在時刻"><span class="clock-name">時計</span><strong class="clock-time" id="processClockTime">--:--</strong><small class="clock-date" id="processClockDate">----/--/--</small></div>
   </section>
   <main class="groups">
     <section class="group" style="--group:var(--rust)"><header class="group-head"><h2>🛡 錆止め</h2><strong id="rustHead">0件・0点</strong></header><div class="group-body"><div class="table-wrap" id="rustTable"></div></div></section>
@@ -860,6 +879,11 @@ function shortJNumber(value){
   const raw=String(value||'').trim();
   const match=raw.match(/^\d{2}-(J.+)-\d{3}$/);
   return match?match[1]:raw;
+}
+function baseJNumber(value){
+  const short=shortJNumber(value).replace(/-\d{3}$/,'');
+  const match=short.match(/^J0*(\d+)$/i);
+  return match?`J${match[1].padStart(6,'0')}`:short;
 }
 function localDate(offset=0){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function normalizedDate(value){
@@ -985,14 +1009,15 @@ function table(rows,showColor=true){
 function groupedRackTable(rows){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const groups=new Map();
-  rows.forEach(r=>{const job=shortJNumber(r['製造指示番号']);if(!groups.has(job))groups.set(job,[]);groups.get(job).push(r)});
+  rows.forEach(r=>{const job=baseJNumber(r['製造指示番号']);if(!groups.has(job))groups.set(job,[]);groups.get(job).push(r)});
   const unique=(list,key)=>[...new Set(list.map(r=>String(r[key]||'').trim()).filter(Boolean))];
   const body=[...groups.entries()].sort((a,b)=>normalizedDate(a[1][0]['製造期限']).localeCompare(normalizedDate(b[1][0]['製造期限']))).map(([job,list])=>{
     const details=[...new Set(list.map(r=>`${String(r['品名']||'').trim()}\n・${String(r['規格']||'').trim()}`))].join('\n');
-    return `<tr><td>${esc(normalizedDate(list[0]['製造期限']).replaceAll('-','/'))}</td><td class="print-job">${esc(job)}</td><td class="print-detail">${esc(details)}</td><td class="print-qty">${fmt(qty(list))}</td><td>${esc(unique(list,'出荷日').join('\n')||'未設定')}</td><td class="print-process">${esc(unique(list,'進捗').join('\n')||'未着手')}</td></tr>`;
+    const done=completedJobs.has(job);
+    return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="group-check"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td>${esc(normalizedDate(list[0]['製造期限']).replaceAll('-','/'))}</td><td class="print-job">${esc(job)}</td><td class="print-detail">${esc(details)}</td><td class="print-qty">${fmt(qty(list))}</td><td class="print-ship">${esc(unique(list,'出荷日').join('\n')||'未設定')}</td><td class="print-process">${esc(unique(list,'進捗').join('\n')||'未着手')}</td></tr>`;
   }).join('');
   const range=businessDayRange(10);
-  return `<div class="range-note">対象：製造期限 = ${range.start.replaceAll('-','/')} ～ ${range.end.replaceAll('-','/')}（10営業日・明日から／土日＋休日除外）<br>条件：品名に「架台 / 耐震架台」を含む、かつ 錆止めのみ（品番末尾=G または 規格に「さび止め / 錆止め」）<br>除外：キャンセル / 組立 / 完成</div><table class="print-like-table"><thead><tr><th>製造期限</th><th>製造指示番号(J6)</th><th>品名 / 規格（まとめ）</th><th>数量合計</th><th>出荷日</th><th>進捗</th></tr></thead><tbody>${body}</tbody></table>`;
+  return `<div class="range-note">対象：製造期限 = ${range.start.replaceAll('-','/')} ～ ${range.end.replaceAll('-','/')}（10営業日・明日から／土日＋休日除外）<br>条件：品名に「架台 / 耐震架台」を含む、かつ 錆止めのみ（品番末尾=G または 規格に「さび止め / 錆止め」）<br>除外：キャンセル / 組立 / 完成</div><table class="print-like-table"><colgroup><col style="width:5%"><col style="width:11%"><col style="width:12%"><col style="width:36%"><col style="width:11%"><col style="width:13%"><col style="width:12%"></colgroup><thead><tr><th>完了</th><th>製造期限</th><th>製造指示番号(J6)</th><th>品名 / 規格（まとめ）</th><th>数量合計</th><th>出荷日</th><th>進捗</th></tr></thead><tbody>${body}</tbody></table>`;
 }
 function render(){
   const typeRows=paintRows.filter(r=>typeOf(r)===paintTypeFilter);
@@ -1022,7 +1047,7 @@ function render(){
     ? `${filterNames[deadlineFilter]}・色 ${colorFilter} を表示中：焼付${fmt(bake.length)}件・${fmt(qty(bake))}点です。`
     : `${typeName}専用表示：${filterNames[deadlineFilter]}は${fmt(filtered.length)}件・${fmt(qty(filtered))}点です。色・数量・期限を確認して確実に仕上げましょう！`;
   [['tomorrow','tomorrow'],['day2','day2'],['todayOrders','todayOrders'],['rust10Days','rust10Days'],['critical','critical'],['specified','specified']].forEach(([key,id])=>{
-    const list=rowsForDeadline(typeRows,key),count=key==='rust10Days'?new Set(list.map(r=>shortJNumber(r['製造指示番号']))).size:list.length;$(`${id}Count`).textContent=`${fmt(count)}件`;$(`${id}Points`).textContent=`${fmt(qty(list))}点`;
+    const list=rowsForDeadline(typeRows,key),count=key==='rust10Days'?new Set(list.map(r=>baseJNumber(r['製造指示番号']))).size:list.length;$(`${id}Count`).textContent=`${fmt(count)}件`;$(`${id}Points`).textContent=`${fmt(qty(list))}点`;
   });
   document.querySelector('[data-deadline="todayOrders"]').classList.toggle('type-hidden',paintTypeFilter==='rust');
   document.querySelector('[data-deadline="rust10Days"]').classList.toggle('type-hidden',paintTypeFilter!=='rust');
@@ -1064,6 +1089,12 @@ async function autoLoad(){
   }catch(e){
     $('missionText').textContent='⚠ '+(e?.message||'SCV.csvを読み込めませんでした。');
   }
+}
+function updateProcessClock(){
+  const now=new Date();
+  const time=$('processClockTime'),date=$('processClockDate');
+  if(time)time.textContent=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  if(date)date.textContent=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
 }
 $('reload').onclick=autoLoad;
 $('specifiedDate').value=localDate(4);specifiedDate=$('specifiedDate').value;
@@ -1113,6 +1144,7 @@ document.addEventListener('change',event=>{
     item.closest('tr')?.classList.toggle('done-row',checkbox.checked);
   });
 });
+updateProcessClock();setInterval(updateProcessClock,1000);
 autoLoad();setInterval(autoLoad,30000);
 </script>
 
