@@ -259,7 +259,14 @@ body:after{
 }
 .process-card[data-process="調達"]{border-width:4px!important;box-shadow:inset 0 0 26px rgba(0,229,255,.28),0 0 22px #00e5ff!important}
 .process-card[data-process="調達"] .process-name{font-weight:1000!important;letter-spacing:.12em;text-shadow:0 0 10px #fff,0 2px 2px #000!important}
-.procurement-info{color:#d3152f;font-size:16px;font-weight:1000;white-space:nowrap;text-shadow:0 0 1px #fff}
+.procurement-info{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:86px;padding:7px 10px;border:2px solid currentColor;border-radius:6px;font-size:18px;font-weight:1000;white-space:nowrap;letter-spacing:.08em;box-shadow:0 3px 0 #23374655}
+.procurement-info:before{font-size:19px}
+.procurement-manufacturing{background:#ffe2e5;color:#c60020;border-color:#ed173a;box-shadow:0 3px 0 #9d0a20,0 0 10px #ff315055}
+.procurement-manufacturing:before{content:"🏭"}
+.procurement-processing{background:#fff0ad;color:#854900;border-color:#f09a00;box-shadow:0 3px 0 #a86000,0 0 10px #ffb30055}
+.procurement-processing:before{content:"⚙"}
+.procurement-other{background:#e2f6ff;color:#075f89;border-color:#14a8d1}
+.procurement-other:before{content:"◆"}
 .paint-type-tabs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;padding:12px;border:2px solid #39dfff;border-radius:10px;background:#05283fe8}
 .paint-type-tab{min-height:82px;border:3px solid var(--type-color);border-radius:8px;background:linear-gradient(160deg,#073653,#031d30);color:#fff;font-size:27px;font-weight:1000;letter-spacing:.08em;cursor:pointer;box-shadow:inset 0 0 18px color-mix(in srgb,var(--type-color) 20%,transparent)}
 .paint-type-tab small{display:block;margin-top:5px;color:#dff8ff;font-size:17px;letter-spacing:0}
@@ -796,6 +803,8 @@ body,
 </style>
 
 <style id="painting-size-column-v1">
+.mission{display:none!important}
+.paint-type-tabs{margin-top:8px!important}
 .size-cell{white-space:nowrap;font-weight:900;color:#173548!important;min-width:150px}
 .groups .group:first-child .table-wrap th:nth-child(6),
 .groups .group:first-child .table-wrap td:nth-child(6),
@@ -1001,10 +1010,15 @@ function sizeText(r){
   const vals=keys.map(k=>clean(r[k]));
   return vals.some(Boolean)?vals.map(v=>v||'-').join(' × '):'未登録';
 }
+function procurementBadge(value){
+  const text=String(value||'-').trim()||'-';
+  const kind=/製造/.test(text)?'manufacturing':/加工/.test(text)?'processing':'other';
+  return `<strong class="procurement-info procurement-${kind}">${esc(text)}</strong>`;
+}
 function table(rows,showColor=true){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const colorHead=showColor?'<th>マンセル値</th>':'';
-  return `<table><thead><tr><th class="check-col">完了</th><th>J番号</th><th>品番・品名</th><th>規格</th><th>サイズ</th>${colorHead}<th>数量</th><th>現在工程</th><th>調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="check-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td class="id">${esc(job)}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td><strong class="procurement-info">${esc(procurement)}</strong></td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+  return `<table><thead><tr><th class="check-col">完了</th><th>J番号</th><th>品番・品名</th><th>規格</th><th>サイズ</th>${colorHead}<th>数量</th><th>現在工程</th><th>調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="check-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td class="id">${esc(job)}</td><td><b>${esc(r['品番'])}</b><br>${esc(r['品名'])}</td><td>${esc(r['規格'])}</td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td>${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
 function groupedRackTable(rows){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
