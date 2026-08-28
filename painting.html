@@ -1184,6 +1184,36 @@ body,
     min-width:48px!important;padding:3px 6px!important;font-size:13px!important
   }
 }
+
+/* Portrait usability fixes: full quantity, stable hover, stronger item separation. */
+@media (orientation:portrait) and (min-width:761px) and (max-width:1400px){
+  .groups .group .table-wrap tbody tr{
+    grid-template-columns:78px 86px minmax(170px,1fr) 116px 116px 128px 104px!important
+  }
+  .groups .group:first-child .table-wrap tbody tr{
+    grid-template-columns:78px minmax(170px,1fr) 116px 116px 128px 104px!important
+  }
+  .groups .group .table-wrap .qty-cell{overflow:visible!important;padding-left:5px!important;padding-right:5px!important}
+  .groups .group .table-wrap .qty-cell b{width:116px!important;min-width:116px!important;max-width:116px!important}
+}
+@media (orientation:portrait) and (max-width:1400px){
+  .groups .group .table-wrap tbody{gap:13px!important}
+  .groups .group .table-wrap tbody tr{
+    border-top:2px solid #6e8f9d!important;border-right:2px solid #6e8f9d!important;
+    border-bottom:4px solid #466c7c!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap tbody tr:nth-child(odd),
+  .groups .group .table-wrap tbody tr:nth-child(odd):hover{background:#fff!important;box-shadow:none!important}
+  .groups .group .table-wrap tbody tr:nth-child(even),
+  .groups .group .table-wrap tbody tr:nth-child(even):hover{background:#dcecf2!important;box-shadow:none!important}
+  .groups .group .table-wrap tbody tr:nth-child(odd):hover td{background:#fff!important}
+  .groups .group .table-wrap tbody tr:nth-child(even):hover td{background:#dcecf2!important}
+  .groups .group .table-wrap tbody tr.degreased-row:not(.done-row):hover .degreased-col{background:#dff1e6!important}
+  .groups .group .table-wrap tbody tr:hover .qty-cell b{background:#fff2b3!important}
+  .groups .group .table-wrap tbody tr:hover .process-cell .current-process{background:var(--process-color,#607d8b)!important}
+  .groups .group .table-wrap tbody tr:hover .procurement-manufacturing{background:#d9364f!important}
+  .groups .group .table-wrap tbody tr:hover .procurement-processing{background:#eda13a!important}
+}
 </style>
 </head>
 <body>
@@ -1250,6 +1280,9 @@ function baseJNumber(value){
   const short=shortJNumber(value).replace(/-\d{3}$/,'');
   const match=short.match(/^J0*(\d+)$/i);
   return match?`J${match[1].padStart(6,'0')}`:short;
+}
+function compareJRows(a,b){
+  return shortJNumber(a['製造指示番号']).localeCompare(shortJNumber(b['製造指示番号']),'ja',{numeric:true,sensitivity:'base'});
 }
 function localDate(offset=0){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function normalizedDate(value){
@@ -1386,14 +1419,14 @@ function table(rows,showColor=true,showDegreased=false){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const degreasedHead=showDegreased?'<th class="degreased-col">脱脂済</th>':'';
   const colorHead=showColor?'<th class="color-cell">マンセル値</th>':'';
-  return `<table class="${showDegreased?'bake-data-table':''}"><thead><tr><th class="check-col completion-col">完了</th>${degreasedHead}<th class="job-id-cell">J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th class="qty-cell">数量</th><th class="process-cell">現在工程</th><th class="procurement-cell">調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),degreased=degreasedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const degreasedCell=showDegreased?`<td class="degreased-col"><input class="degreased-check" type="checkbox" data-job="${esc(job)}" ${degreased?'checked':''} aria-label="${esc(job)} 脱脂済"><span class="degreased-mark">${degreased?'済':'未'}</span></td>`:'';const colorCell=showColor?`<td class="color-cell"><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row ':''}${degreased?'degreased-row':''}" data-job-row="${esc(job)}"><td class="check-col completion-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td>${degreasedCell}<td class="id job-id-cell">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td class="qty-cell"><b>${fmt(r['数量'])}点</b></td><td class="process-cell"><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td class="procurement-cell">${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+  return `<table class="${showDegreased?'bake-data-table':''}"><thead><tr><th class="check-col completion-col">完了</th>${degreasedHead}<th class="job-id-cell">J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th class="qty-cell">数量</th><th class="process-cell">現在工程</th><th class="procurement-cell">調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${[...rows].sort(compareJRows).slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),degreased=degreasedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const degreasedCell=showDegreased?`<td class="degreased-col"><input class="degreased-check" type="checkbox" data-job="${esc(job)}" ${degreased?'checked':''} aria-label="${esc(job)} 脱脂済"><span class="degreased-mark">${degreased?'済':'未'}</span></td>`:'';const colorCell=showColor?`<td class="color-cell"><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row ':''}${degreased?'degreased-row':''}" data-job-row="${esc(job)}"><td class="check-col completion-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td>${degreasedCell}<td class="id job-id-cell">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td class="qty-cell"><b>${fmt(r['数量'])}点</b></td><td class="process-cell"><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td class="procurement-cell">${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
 function groupedRackTable(rows){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const groups=new Map();
   rows.forEach(r=>{const job=baseJNumber(r['製造指示番号']);if(!groups.has(job))groups.set(job,[]);groups.get(job).push(r)});
   const unique=(list,key)=>[...new Set(list.map(r=>String(r[key]||'').trim()).filter(Boolean))];
-  const body=[...groups.entries()].sort((a,b)=>normalizedDate(a[1][0]['製造期限']).localeCompare(normalizedDate(b[1][0]['製造期限']))).map(([job,list])=>{
+  const body=[...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0],'ja',{numeric:true,sensitivity:'base'})).map(([job,list])=>{
     const details=[...new Set(list.map(r=>`${String(r['品名']||'').trim()}\n・${String(r['規格']||'').trim()}`))].join('\n');
     const done=completedJobs.has(job);
     return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="group-check"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td>${esc(normalizedDate(list[0]['製造期限']).replaceAll('-','/'))}</td><td class="print-job">${esc(job)}</td><td class="print-detail">${esc(details)}</td><td class="print-qty">${fmt(qty(list))}</td><td class="print-ship">${esc(unique(list,'出荷日').join('\n')||'未設定')}</td><td class="print-process">${esc(unique(list,'進捗').join('\n')||'未着手')}</td></tr>`;
