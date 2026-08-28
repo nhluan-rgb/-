@@ -1049,9 +1049,8 @@ body,
       "process process process process"
       "item item item item"
       "size size color color"
-      "procurement procurement procurement procurement"
-      "deadline deadline ship ship"
-      "owner owner owner owner"!important;
+      "procurement procurement owner owner"
+      "deadline deadline ship ship"!important;
   }
   .groups .group:first-child .table-wrap tbody tr{
     grid-template-areas:
@@ -1059,9 +1058,8 @@ body,
       "process process process process"
       "item item item item"
       "size size size size"
-      "procurement procurement procurement procurement"
-      "deadline deadline ship ship"
-      "owner owner owner owner"!important;
+      "procurement procurement owner owner"
+      "deadline deadline ship ship"!important;
   }
   .groups .group:first-child .table-wrap .print-like-table tbody tr{
     grid-template-columns:72px minmax(0,1fr) 112px!important;
@@ -1142,6 +1140,49 @@ body,
   .groups .group .table-wrap tbody td:nth-last-child(3),
   .groups .group .table-wrap tbody td:nth-last-child(2),
   .groups .group .table-wrap tbody td:last-child{font-size:15px!important;font-weight:800!important}
+}
+
+/* Portrait row hierarchy: dates beside J-number, three compact information bands. */
+@media (orientation:portrait) and (min-width:761px) and (max-width:1400px){
+  .groups .group .table-wrap tbody tr{
+    grid-template-columns:78px 86px minmax(190px,1fr) 118px 118px 112px 104px!important;
+    grid-template-areas:
+      "complete deg job deadline ship qty process"
+      "item item item item item item item"
+      "size size size color procurement owner owner"!important;
+  }
+  .groups .group:first-child .table-wrap tbody tr{
+    grid-template-columns:78px minmax(190px,1fr) 118px 118px 112px 104px!important;
+    grid-template-areas:
+      "complete job deadline ship qty process"
+      "item item item item item item"
+      "size size size procurement owner owner"!important;
+  }
+  .groups .group .table-wrap tbody td:nth-last-child(3),
+  .groups .group .table-wrap tbody td:nth-last-child(2){
+    display:flex!important;align-items:flex-end!important;padding:25px 9px 8px!important;font-size:15px!important;white-space:nowrap!important
+  }
+  .groups .group .table-wrap tbody td:last-child{
+    display:flex!important;align-items:flex-end!important;padding:25px 10px 8px!important;font-size:16px!important
+  }
+}
+
+@media (orientation:portrait) and (max-width:1400px){
+  .groups .group .table-wrap tbody tr:nth-child(odd){border-left:6px solid #246f8c!important}
+  .groups .group .table-wrap tbody tr:nth-child(even){border-left:6px solid #70aebf!important}
+  .groups .group .table-wrap tbody tr:nth-child(even) td{background:#e8f3f7!important}
+  .groups .group .table-wrap tbody tr:nth-child(even).degreased-row:not(.done-row) .degreased-col,
+  .groups .group .table-wrap tbody tr:nth-child(odd).degreased-row:not(.done-row) .degreased-col{background:#dff1e6!important}
+  .groups .group .table-wrap .item-spec-cell .part-code,
+  .groups .group .table-wrap .item-spec-cell .item-name{
+    font-size:19px!important;font-weight:1000!important;line-height:1.3!important
+  }
+  .groups .group .table-wrap .item-spec-cell .spec-text{
+    padding:7px 9px!important;font-size:18px!important;font-weight:1000!important;line-height:1.3!important
+  }
+  .groups .group .table-wrap .item-spec-cell small{
+    min-width:48px!important;padding:3px 6px!important;font-size:13px!important
+  }
 }
 </style>
 </head>
