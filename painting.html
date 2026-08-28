@@ -903,6 +903,28 @@ body,
   box-shadow:0 3px 0 #075c78,0 0 8px rgba(18,185,218,.28)!important;
 }
 
+/* High-legibility process labels and unmistakable procurement types. */
+.groups .group .table-wrap .current-process,
+.groups .group .table-wrap .process-cell .current-process{
+  color:#fff!important;font-size:19px!important;font-weight:1000!important;letter-spacing:.04em!important;
+  -webkit-text-stroke:.35px rgba(0,0,0,.72);text-shadow:0 2px 2px rgba(0,0,0,.78),0 0 3px rgba(0,0,0,.5)!important;
+}
+.groups .group .table-wrap .procurement-manufacturing{
+  border-color:#ed173a!important;border-radius:5px!important;
+  background:linear-gradient(180deg,#ff6378,#d51031)!important;color:#fff!important;
+  box-shadow:0 3px 0 #94051d,0 0 10px rgba(255,36,70,.45)!important;
+  text-shadow:0 1px 2px #720016!important;
+}
+.groups .group .table-wrap .procurement-processing{
+  border-color:#ee8b00!important;border-radius:999px!important;
+  background:linear-gradient(180deg,#ffc54d,#ed7b00)!important;color:#321b00!important;
+  box-shadow:0 3px 0 #a44d00,0 0 10px rgba(255,151,0,.42)!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.72)!important;
+}
+.groups .group .table-wrap .procurement-other{
+  border-color:#0e9cbd!important;background:linear-gradient(180deg,#22b8d4,#087e9f)!important;color:#fff!important;
+}
+
 /* Portrait monitor: turn each order into a readable multi-line card. */
 @media (orientation:portrait) and (max-width:1400px){
   .app{padding-left:10px!important;padding-right:10px!important}
@@ -923,7 +945,7 @@ body,
     grid-template-areas:
       "complete deg job job qty process"
       "item item item item item item"
-      "size size color color procurement procurement"
+      "size size size color procurement procurement"
       "deadline deadline ship ship owner owner"!important;
     overflow:hidden;border:2px solid #76cfe4!important;border-radius:9px!important;
     background:#f8fcfe!important;box-shadow:0 4px 0 #1d718b,0 6px 14px rgba(0,39,57,.25)!important;
@@ -966,6 +988,39 @@ body,
   .groups .group .table-wrap .qty-cell b{min-width:110px!important;min-height:54px!important;font-size:28px!important}
   .groups .group .table-wrap .procurement-info{max-width:none!important}
   .groups .group .table-wrap .done-row{opacity:.72!important}
+
+  /* Compact portrait card: labeled checks, compressed item details, prominent size. */
+  .groups .group .table-wrap .completion-col,
+  .groups .group .table-wrap .degreased-col{position:relative!important;padding:27px 5px 5px!important;align-content:center!important}
+  .groups .group .table-wrap .completion-col:before,
+  .groups .group .table-wrap .degreased-col:before{
+    position:absolute;top:6px;left:0;width:100%;color:#285d70;font-size:12px;font-weight:1000;line-height:1;text-align:center
+  }
+  .groups .group .table-wrap .completion-col:before{content:"完了"}
+  .groups .group .table-wrap .degreased-col:before{content:"脱脂済";color:#087347}
+  .groups .group .table-wrap .job-check,.groups .group .table-wrap .degreased-check{width:30px!important;height:30px!important;margin:0!important}
+  .groups .group .table-wrap .degreased-mark{margin-top:1px!important;font-size:10px!important}
+  .groups .group .table-wrap .item-spec-cell{
+    display:grid!important;grid-template-columns:minmax(220px,.8fr) minmax(0,1.6fr)!important;
+    gap:5px 12px!important;padding:8px 12px!important
+  }
+  .groups .group .table-wrap .item-spec-cell .part-code,
+  .groups .group .table-wrap .item-spec-cell .item-name{margin:0!important;font-size:16px!important;line-height:1.25!important}
+  .groups .group .table-wrap .item-spec-cell .spec-text{
+    grid-column:1/-1!important;margin:0!important;padding:5px 8px!important;font-size:16px!important;line-height:1.25!important
+  }
+  .groups .group .table-wrap .item-spec-cell small{min-width:43px!important;margin-right:6px!important;padding:2px 5px!important;font-size:11px!important}
+  .groups .group .table-wrap .size-cell{
+    display:flex!important;align-items:center!important;padding:29px 14px 9px!important;
+    background:linear-gradient(180deg,#fff8c8,#ffe689)!important;color:#173548!important;
+    font-size:25px!important;font-weight:1000!important;letter-spacing:.02em!important;white-space:nowrap!important
+  }
+  .groups .group .table-wrap .size-cell:before{color:#a65300!important;font-size:13px!important;letter-spacing:.08em!important}
+  .groups .group .table-wrap .qty-cell b{min-width:104px!important;min-height:49px!important;font-size:26px!important;padding:7px 10px!important}
+  .groups .group .table-wrap .process-cell .current-process{min-width:88px!important;padding:7px 8px!important;font-size:18px!important}
+  .groups .group .table-wrap tbody td:nth-last-child(3),
+  .groups .group .table-wrap tbody td:nth-last-child(2),
+  .groups .group .table-wrap tbody td:last-child{padding-top:25px!important;padding-bottom:7px!important}
   .groups .group .table-wrap .print-like-table tbody tr{
     grid-template-columns:82px 150px 145px minmax(0,1fr) 128px 118px!important;
     grid-template-areas:
