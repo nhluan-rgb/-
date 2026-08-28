@@ -1072,6 +1072,77 @@ body,
       "ship ship ship"!important;
   }
 }
+
+/* Portrait clarity pass: neutral surfaces, restrained accents, clear hierarchy. */
+@media (orientation:portrait) and (max-width:1400px){
+  .group-body{padding:8px!important;background:#eef3f5!important}
+  .groups .group .table-wrap tbody{gap:8px!important}
+  .groups .group .table-wrap tbody tr{
+    border:1px solid #aebfc7!important;border-radius:6px!important;background:#fff!important;
+    box-shadow:0 2px 0 #7894a0!important
+  }
+  .groups .group .table-wrap tbody td{
+    background:#fff!important;border:0!important;border-bottom:1px solid #d5e0e5!important;
+    color:#173548!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap .completion-col,
+  .groups .group .table-wrap .degreased-col{
+    background:#f7fafb!important;border-right:1px solid #d5e0e5!important
+  }
+  .groups .group .table-wrap tr.degreased-row:not(.done-row){box-shadow:0 2px 0 #7894a0!important}
+  .groups .group .table-wrap tr.degreased-row:not(.done-row) .degreased-col{background:#e8f5ed!important}
+  .groups .group .table-wrap .job-id-cell{
+    position:relative!important;align-items:flex-end!important;padding:24px 12px 8px!important;
+    background:#fff!important;color:#006f99!important;font-size:20px!important;font-weight:1000!important
+  }
+  .groups .group .table-wrap .job-id-cell:before{
+    content:"J番号";position:absolute;top:6px;left:12px;color:#657d88;font-size:11px;font-weight:900
+  }
+  .groups .group .table-wrap .item-spec-cell{background:#fff!important;padding:7px 12px!important}
+  .groups .group .table-wrap .item-spec-cell small{
+    background:#526d79!important;color:#fff!important;border-radius:3px!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap .item-spec-cell .part-code,
+  .groups .group .table-wrap .item-spec-cell .item-name{color:#173548!important}
+  .groups .group .table-wrap .item-spec-cell .spec-text{
+    border-left:3px solid #8299a3!important;background:#f3f6f7!important;color:#293f49!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap .item-spec-cell .spec-text small{background:#6f858f!important}
+  .groups .group .table-wrap .size-cell{
+    border-left:5px solid #0b7ca1!important;background:#f4f8fa!important;color:#102f43!important;
+    font-size:24px!important;text-shadow:none!important
+  }
+  .groups .group .table-wrap .size-cell:before{color:#526f7b!important}
+  .groups .group .table-wrap .color-cell,
+  .groups .group .table-wrap .procurement-cell,
+  .groups .group .table-wrap tbody td:nth-last-child(3),
+  .groups .group .table-wrap tbody td:nth-last-child(2),
+  .groups .group .table-wrap tbody td:last-child{background:#f8fafb!important}
+  .groups .group .table-wrap .munsell{
+    min-width:0!important;padding:4px 6px!important;border:1px solid #9aabb3!important;border-radius:4px!important;
+    background:#fff!important;color:#354b55!important;font-size:16px!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap .munsell i{width:29px!important;height:29px!important;flex-basis:29px!important;border:1px solid #71858e!important;outline:0!important;box-shadow:none!important}
+  .groups .group .table-wrap .qty-cell b{
+    min-width:98px!important;min-height:46px!important;padding:6px 10px!important;border:1px solid #c49a00!important;
+    border-radius:5px!important;background:#fff2b3!important;color:#7d2e00!important;font-size:25px!important;
+    text-shadow:none!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap .process-cell .current-process{
+    min-width:82px!important;padding:7px 9px!important;border:0!important;border-radius:5px!important;
+    background:var(--process-color,#607d8b)!important;color:#fff!important;font-size:17px!important;
+    -webkit-text-stroke:0!important;text-shadow:0 1px 2px rgba(0,0,0,.55)!important;box-shadow:none!important
+  }
+  .groups .group .table-wrap .procurement-info{
+    min-width:68px!important;min-height:32px!important;padding:5px 8px!important;border-width:1px!important;
+    border-radius:4px!important;font-size:15px!important;box-shadow:none!important;text-shadow:none!important
+  }
+  .groups .group .table-wrap .procurement-manufacturing{background:#d9364f!important;color:#fff!important}
+  .groups .group .table-wrap .procurement-processing{background:#eda13a!important;color:#352000!important;border-radius:4px!important}
+  .groups .group .table-wrap tbody td:nth-last-child(3),
+  .groups .group .table-wrap tbody td:nth-last-child(2),
+  .groups .group .table-wrap tbody td:last-child{font-size:15px!important;font-weight:800!important}
+}
 </style>
 </head>
 <body>
