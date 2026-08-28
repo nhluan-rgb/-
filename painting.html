@@ -368,6 +368,24 @@ tbody tr:hover{background:#dff7ff!important}
   .mission span{font-size:20px!important}
 }
 
+/* Single-page scrolling + clearly separated degreasing status for 焼付. */
+.groups .group .table-wrap{max-height:none!important;overflow-x:auto!important;overflow-y:visible!important}
+.bake-data-table .completion-col,.bake-data-table .degreased-col{width:82px!important;min-width:82px!important;max-width:82px!important;padding-left:6px!important;padding-right:6px!important;text-align:center!important;white-space:nowrap}
+.bake-data-table .degreased-col{background:#e9fff4!important;border-left:2px solid #34c985!important;border-right:2px solid #34c985!important;color:#075d38!important}
+.bake-data-table thead .degreased-col{background:linear-gradient(180deg,#159c67,#08734b)!important;color:#fff!important;text-shadow:0 1px 2px #003c26!important}
+.bake-data-table .job-id-cell{width:128px!important;min-width:128px!important;max-width:128px!important;padding-left:8px!important;padding-right:8px!important;white-space:nowrap}
+.bake-data-table .size-cell{width:auto!important;min-width:160px!important;text-align:left!important}
+.bake-data-table .color-cell{width:140px!important;min-width:140px!important;text-align:center!important}
+.bake-data-table .qty-cell{width:94px!important;min-width:94px!important;text-align:center!important}
+.bake-data-table .process-cell{width:112px!important;min-width:112px!important;text-align:center!important}
+.bake-data-table .qty-cell b{display:inline-block!important;min-width:62px!important;padding:5px 7px!important;border:1px solid #c89b00!important;border-radius:4px!important;background:linear-gradient(180deg,#fff2a3,#ffd94e)!important;color:#483300!important;font-size:22px!important;font-weight:1000!important;line-height:1.05!important;text-align:center!important;box-shadow:0 2px 0 #aa7f00,0 0 8px rgba(255,193,0,.25)!important}
+.bake-data-table .process-cell b{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:82px!important;padding:7px 9px!important;border:1px solid color-mix(in srgb,var(--process-color,#0788ae) 75%,#fff)!important;border-radius:999px!important;background:linear-gradient(180deg,color-mix(in srgb,var(--process-color,#0788ae) 78%,#fff),var(--process-color,#0788ae))!important;color:#fff!important;font-size:16px!important;font-weight:1000!important;line-height:1!important;white-space:nowrap!important;text-shadow:0 1px 2px rgba(0,0,0,.45)!important;box-shadow:0 2px 0 color-mix(in srgb,var(--process-color,#0788ae) 68%,#000),0 0 10px color-mix(in srgb,var(--process-color,#0788ae) 42%,transparent)!important}
+.degreased-check{width:30px;height:30px;accent-color:#08a861;cursor:pointer}
+.degreased-mark{display:block;margin-top:2px;color:#087347;font-size:11px;font-weight:1000;line-height:1}
+.bake-data-table tr.degreased-row:not(.done-row){box-shadow:inset 5px 0 0 #12b86c}
+.bake-data-table tr.degreased-row:not(.done-row) .degreased-col{background:#bff3d8!important}
+.bake-data-table tr:not(.degreased-row) .degreased-mark{color:#7b8c84}
+
 
 /* v2：件数0（完了）の工程カードは工程カラーも含めて全体を暗色化 */
 .process-card.zero{
@@ -855,6 +873,16 @@ body,
 .process-clock .clock-time{display:block;margin-top:11px;color:#f2eeff;font-size:29px;font-weight:1000;letter-spacing:.05em;text-shadow:0 0 10px #a88aff}
 .process-clock .clock-date{display:block;margin-top:7px;color:#cddfff;font-size:13px;font-weight:900}
 @media(max-width:1300px){.process-deck{grid-template-columns:repeat(9,135px)!important}}
+
+/* Final column map after adding 脱脂済 next to 完了. */
+.groups .group .table-wrap{max-height:none!important;overflow-x:auto!important;overflow-y:visible!important}
+.groups .group:nth-child(2) .table-wrap .bake-data-table .completion-col,
+.groups .group:nth-child(2) .table-wrap .bake-data-table .degreased-col{width:82px!important;min-width:82px!important;max-width:82px!important;text-align:center!important}
+.groups .group:nth-child(2) .table-wrap .bake-data-table .job-id-cell{width:128px!important;min-width:128px!important;max-width:128px!important;text-align:left!important}
+.groups .group:nth-child(2) .table-wrap .bake-data-table .size-cell{width:auto!important;min-width:160px!important;text-align:left!important}
+.groups .group:nth-child(2) .table-wrap .bake-data-table .color-cell{width:140px!important;min-width:140px!important;text-align:center!important}
+.groups .group:nth-child(2) .table-wrap .bake-data-table .qty-cell{width:94px!important;min-width:94px!important;text-align:center!important}
+.groups .group:nth-child(2) .table-wrap .bake-data-table .process-cell{width:112px!important;min-width:112px!important;text-align:center!important}
 </style>
 </head>
 <body>
@@ -905,9 +933,13 @@ body,
 const $=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString('ja-JP');
 let paintRows=[],deadlineFilter='critical',specifiedDate='',processFilter='',colorFilter='',paintTypeFilter='bake';
 const DONE_STORAGE_KEY='paintingCompletedJNumbers';
+const DEGREASED_STORAGE_KEY='paintingDegreasedJNumbers';
 let completedJobs=new Set();
+let degreasedJobs=new Set();
 try{completedJobs=new Set(JSON.parse(localStorage.getItem(DONE_STORAGE_KEY)||'[]'))}catch(e){completedJobs=new Set()}
+try{degreasedJobs=new Set(JSON.parse(localStorage.getItem(DEGREASED_STORAGE_KEY)||'[]'))}catch(e){degreasedJobs=new Set()}
 function saveCompletedJobs(){localStorage.setItem(DONE_STORAGE_KEY,JSON.stringify([...completedJobs]))}
+function saveDegreasedJobs(){localStorage.setItem(DEGREASED_STORAGE_KEY,JSON.stringify([...degreasedJobs]))}
 function shortJNumber(value){
   const raw=String(value||'').trim();
   const match=raw.match(/^\d{2}-(J.+)-\d{3}$/);
@@ -1049,10 +1081,11 @@ function procurementBadge(value){
   const kind=/製造/.test(text)?'manufacturing':/加工/.test(text)?'processing':'other';
   return `<strong class="procurement-info procurement-${kind}">${esc(text)}</strong>`;
 }
-function table(rows,showColor=true){
+function table(rows,showColor=true,showDegreased=false){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
-  const colorHead=showColor?'<th>マンセル値</th>':'';
-  return `<table><thead><tr><th class="check-col">完了</th><th>J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th>数量</th><th>現在工程</th><th>調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const colorCell=showColor?`<td><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="check-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td class="id">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td><b>${fmt(r['数量'])}点</b></td><td><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td>${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+  const degreasedHead=showDegreased?'<th class="degreased-col">脱脂済</th>':'';
+  const colorHead=showColor?'<th class="color-cell">マンセル値</th>':'';
+  return `<table class="${showDegreased?'bake-data-table':''}"><thead><tr><th class="check-col completion-col">完了</th>${degreasedHead}<th class="job-id-cell">J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th class="qty-cell">数量</th><th class="process-cell">現在工程</th><th>調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${rows.slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),degreased=degreasedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const degreasedCell=showDegreased?`<td class="degreased-col"><input class="degreased-check" type="checkbox" data-job="${esc(job)}" ${degreased?'checked':''} aria-label="${esc(job)} 脱脂済"><span class="degreased-mark">${degreased?'済':'未'}</span></td>`:'';const colorCell=showColor?`<td class="color-cell"><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row ':''}${degreased?'degreased-row':''}" data-job-row="${esc(job)}"><td class="check-col completion-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td>${degreasedCell}<td class="id job-id-cell">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td class="qty-cell"><b>${fmt(r['数量'])}点</b></td><td class="process-cell"><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td>${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
 function groupedRackTable(rows){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
@@ -1085,7 +1118,7 @@ function render(){
   const allRust=paintRows.filter(r=>typeOf(r)==='rust'),allBake=paintRows.filter(r=>typeOf(r)==='bake');
   set('rustModeCount',`${fmt(allRust.length)}件・${fmt(qty(allRust))}点`);set('bakeModeCount',`${fmt(allBake.length)}件・${fmt(qty(allBake))}点`);
   $('bakeColors').innerHTML=colorCards(bakeAll);
-  $('rustTable').innerHTML=deadlineFilter==='rust10Days'?groupedRackTable(rust):table(rust,false);$('bakeTable').innerHTML=table(bake,true);$('otherTable').innerHTML=table(other,true);
+  $('rustTable').innerHTML=deadlineFilter==='rust10Days'?groupedRackTable(rust):table(rust,false);$('bakeTable').innerHTML=table(bake,true,true);$('otherTable').innerHTML=table(other,true);
   $('rustTable').closest('.group').style.display=paintTypeFilter==='rust'?'block':'none';
   $('bakeTable').closest('.group').style.display=paintTypeFilter==='bake'?'block':'none';
   $('otherTable').closest('.other').style.display='none';
@@ -1185,6 +1218,20 @@ document.addEventListener('click',event=>{
 });
 
 document.addEventListener('change',event=>{
+  const degreasedCheckbox=event.target.closest('.degreased-check');
+  if(degreasedCheckbox){
+    const job=degreasedCheckbox.dataset.job;
+    if(degreasedCheckbox.checked)degreasedJobs.add(job);else degreasedJobs.delete(job);
+    saveDegreasedJobs();
+    document.querySelectorAll('.degreased-check').forEach(item=>{
+      if(item.dataset.job!==job)return;
+      item.checked=degreasedCheckbox.checked;
+      item.closest('tr')?.classList.toggle('degreased-row',degreasedCheckbox.checked);
+      const mark=item.parentElement?.querySelector('.degreased-mark');
+      if(mark)mark.textContent=degreasedCheckbox.checked?'済':'未';
+    });
+    return;
+  }
   const checkbox=event.target.closest('.job-check');
   if(!checkbox)return;
   const job=checkbox.dataset.job;
