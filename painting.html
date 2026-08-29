@@ -1507,13 +1507,14 @@ function render(){
   const deadlineRows=rowsForDeadline(typeRows,deadlineFilter);
   if(processFilter&&!deadlineRows.some(r=>String(r['進捗']||'').trim()===processFilter))processFilter='';
   const searchKey=jobSearch.normalize('NFKC').trim().toUpperCase().replace(/[\s-]/g,'');
-  const filtered=deadlineRows.filter(r=>{
-    const processMatches=!processFilter||String(r['進捗']||'').trim()===processFilter;
+  const searchSource=searchKey?typeRows:deadlineRows;
+  const filtered=searchSource.filter(r=>{
+    const processMatches=searchKey||!processFilter||String(r['進捗']||'').trim()===processFilter;
     const jobKey=String(r['製造指示番号']||'').normalize('NFKC').toUpperCase().replace(/[\s-]/g,'');
     return processMatches&&(!searchKey||jobKey.includes(searchKey));
   });
   const rust=filtered.filter(r=>typeOf(r)==='rust'),bakeAll=filtered.filter(r=>typeOf(r)==='bake'),other=filtered.filter(r=>typeOf(r)==='other');
-  const bake=colorFilter?bakeAll.filter(r=>(cleanColor(r['色'])||'色未登録')===colorFilter):bakeAll;
+  const bake=!searchKey&&colorFilter?bakeAll.filter(r=>(cleanColor(r['色'])||'色未登録')===colorFilter):bakeAll;
   const set=(id,v)=>$(id).textContent=v;
   set('totalCount',`${fmt(filtered.length)}件`);set('totalQty',`${fmt(qty(filtered))}点`);
   set('rustCount',`${fmt(rust.length)}件`);set('rustQty',`${fmt(qty(rust))}点`);
