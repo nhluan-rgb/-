@@ -1215,6 +1215,31 @@ body,
   .groups .group .table-wrap tbody tr:hover .procurement-processing{background:#eda13a!important}
 }
 </style>
+<style id="munsell-visibility-and-completion-v1">
+.groups .group:nth-child(2) .table-wrap .bake-data-table .color-cell{
+  width:220px!important;min-width:220px!important;padding:7px!important;text-align:center!important
+}
+.groups .group .table-wrap .color-cell .munsell{
+  box-sizing:border-box!important;display:flex!important;width:100%!important;min-width:0!important;min-height:64px!important;
+  align-items:center!important;justify-content:center!important;padding:10px 14px!important;border:3px solid rgba(255,255,255,.92)!important;
+  outline:2px solid #405866!important;border-radius:8px!important;background:var(--munsell-color,#d9e1e5)!important;
+  color:#fff!important;font-size:23px!important;font-weight:1000!important;letter-spacing:.03em!important;
+  text-shadow:-2px -2px 1px #10212b,2px -2px 1px #10212b,-2px 2px 1px #10212b,2px 2px 1px #10212b,0 3px 4px rgba(0,0,0,.75)!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.24),0 3px 0 #526b78,0 4px 10px rgba(0,0,0,.28)!important
+}
+.groups .group .table-wrap .color-cell .munsell i{display:none!important}
+.groups .group .table-wrap .bake-data-table tr.fully-done-row,
+.groups .group .table-wrap .bake-data-table tr.fully-done-row:hover{
+  background:#172229!important;color:#718089!important;opacity:.46!important;filter:grayscale(1) brightness(.62)!important;
+  box-shadow:inset 0 4px 10px rgba(0,0,0,.52),inset 0 -2px 5px rgba(0,0,0,.34)!important
+}
+.groups .group .table-wrap .bake-data-table tr.fully-done-row td{background:#27343a!important;border-bottom-color:#111b20!important}
+.groups .group .table-wrap .bake-data-table tr.fully-done-row .id{text-decoration:line-through!important;color:#8b999f!important}
+@media (orientation:portrait) and (max-width:1400px){
+  .groups .group .table-wrap .color-cell{padding:28px 10px 10px!important}
+  .groups .group .table-wrap .color-cell .munsell{min-height:72px!important;font-size:24px!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1421,6 +1446,12 @@ function table(rows,showColor=true,showDegreased=false){
   const colorHead=showColor?'<th class="color-cell">マンセル値</th>':'';
   return `<table class="${showDegreased?'bake-data-table':''}"><thead><tr><th class="check-col completion-col">完了</th>${degreasedHead}<th class="job-id-cell">J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th class="qty-cell">数量</th><th class="process-cell">現在工程</th><th class="procurement-cell">調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${[...rows].sort(compareJRows).slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),degreased=degreasedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const degreasedCell=showDegreased?`<td class="degreased-col"><input class="degreased-check" type="checkbox" data-job="${esc(job)}" ${degreased?'checked':''} aria-label="${esc(job)} 脱脂済"><span class="degreased-mark">${degreased?'済':'未'}</span></td>`:'';const colorCell=showColor?`<td class="color-cell"><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row ':''}${degreased?'degreased-row':''}" data-job-row="${esc(job)}"><td class="check-col completion-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td>${degreasedCell}<td class="id job-id-cell">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td class="qty-cell"><b>${fmt(r['数量'])}点</b></td><td class="process-cell"><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td class="procurement-cell">${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
+function syncFullyDoneRow(row){
+  if(!row?.closest('.bake-data-table'))return;
+  const done=Boolean(row.querySelector('.job-check')?.checked);
+  const degreased=Boolean(row.querySelector('.degreased-check')?.checked);
+  row.classList.toggle('fully-done-row',done&&degreased);
+}
 function groupedRackTable(rows){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const groups=new Map();
@@ -1453,6 +1484,11 @@ function render(){
   set('rustModeCount',`${fmt(allRust.length)}件・${fmt(qty(allRust))}点`);set('bakeModeCount',`${fmt(allBake.length)}件・${fmt(qty(allBake))}点`);
   $('bakeColors').innerHTML=colorCards(bakeAll);
   $('rustTable').innerHTML=deadlineFilter==='rust10Days'?groupedRackTable(rust):table(rust,false);$('bakeTable').innerHTML=table(bake,true,true);$('otherTable').innerHTML=table(other,true);
+  document.querySelectorAll('.color-cell .munsell').forEach(sample=>{
+    const swatch=sample.querySelector('i');
+    if(swatch)sample.style.setProperty('--munsell-color',swatch.style.background||'#d9e1e5');
+  });
+  document.querySelectorAll('.bake-data-table tbody tr').forEach(syncFullyDoneRow);
   $('rustTable').closest('.group').style.display=paintTypeFilter==='rust'?'block':'none';
   $('bakeTable').closest('.group').style.display=paintTypeFilter==='bake'?'block':'none';
   $('otherTable').closest('.other').style.display='none';
@@ -1561,6 +1597,7 @@ document.addEventListener('change',event=>{
       if(item.dataset.job!==job)return;
       item.checked=degreasedCheckbox.checked;
       item.closest('tr')?.classList.toggle('degreased-row',degreasedCheckbox.checked);
+      syncFullyDoneRow(item.closest('tr'));
       const mark=item.parentElement?.querySelector('.degreased-mark');
       if(mark)mark.textContent=degreasedCheckbox.checked?'済':'未';
     });
@@ -1575,6 +1612,7 @@ document.addEventListener('change',event=>{
     if(item.dataset.job!==job)return;
     item.checked=checkbox.checked;
     item.closest('tr')?.classList.toggle('done-row',checkbox.checked);
+    syncFullyDoneRow(item.closest('tr'));
   });
 });
 updateProcessClock();setInterval(updateProcessClock,1000);
