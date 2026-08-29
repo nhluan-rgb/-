@@ -1236,8 +1236,13 @@ body,
 .groups .group .table-wrap .bake-data-table tr.fully-done-row td{background:#27343a!important;border-bottom-color:#111b20!important}
 .groups .group .table-wrap .bake-data-table tr.fully-done-row .id{text-decoration:line-through!important;color:#8b999f!important}
 @media (orientation:portrait) and (max-width:1400px){
-  .groups .group .table-wrap .color-cell{padding:28px 10px 10px!important}
-  .groups .group .table-wrap .color-cell .munsell{min-height:72px!important;font-size:24px!important}
+  .groups .group .table-wrap .color-cell{
+    min-width:0!important;width:auto!important;padding:28px 4px 10px!important;overflow:visible!important;z-index:2!important
+  }
+  .groups .group .table-wrap .color-cell:before{left:-96px!important}
+  .groups .group .table-wrap .color-cell .munsell{
+    width:210px!important;min-height:72px!important;font-size:24px!important;transform:translateX(-104px)!important
+  }
 }
 </style>
 </head>
