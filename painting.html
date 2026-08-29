@@ -844,6 +844,11 @@ body,
 .job-search-input::placeholder{color:#718894;font-size:16px;font-weight:800}
 .group-head>strong{min-width:180px;text-align:right;font-size:30px!important;color:#fff04f!important;text-shadow:0 0 10px rgba(255,234,69,.4)}
 .size-cell{white-space:nowrap;font-weight:900;color:#173548!important;min-width:150px}
+.size-dimensions{display:flex;align-items:stretch;justify-content:center;gap:5px;white-space:nowrap}
+.size-dimension{display:inline-grid;grid-template-rows:auto auto;place-items:center;min-width:58px;padding:5px 8px;border:1px solid #6a95a8;border-radius:5px;background:linear-gradient(180deg,#fff,#e9f5fa);box-shadow:0 2px 0 #8ba8b4}
+.size-dimension small{color:#397087;font-size:11px;font-weight:1000;line-height:1;letter-spacing:.06em}
+.size-dimension b{margin-top:3px;color:#082f47!important;font-size:20px;font-weight:1000;line-height:1;text-shadow:0 1px 0 #fff}
+.size-times{align-self:center;color:#16728f;font-size:18px;font-weight:1000}
 .groups .group:first-child .table-wrap th:nth-child(5),
 .groups .group:first-child .table-wrap td:nth-child(5),
 .groups .group:nth-child(2) .table-wrap th:nth-child(6),
@@ -1445,6 +1450,12 @@ function sizeText(r){
   const vals=keys.map(k=>clean(r[k]));
   return vals.some(Boolean)?vals.map(v=>v||'-').join(' × '):'未登録';
 }
+function sizeHtml(r){
+  const values=sizeText(r).split(' × ');
+  if(values.length!==4)return `<span class="size-dimensions"><span class="size-dimension"><small>サイズ</small><b>${esc(sizeText(r))}</b></span></span>`;
+  const labels=['厚','縦','横','高'];
+  return `<span class="size-dimensions">${values.map((value,index)=>`${index?'<i class="size-times">×</i>':''}<span class="size-dimension"><small>${labels[index]}</small><b>${esc(value)}</b></span>`).join('')}</span>`;
+}
 function procurementBadge(value){
   const text=String(value||'-').trim()||'-';
   const kind=/製造/.test(text)?'manufacturing':/加工/.test(text)?'processing':'other';
@@ -1454,7 +1465,7 @@ function table(rows,showColor=true,showDegreased=false){
   if(!rows.length)return '<div class="empty">対象データはありません</div>';
   const degreasedHead=showDegreased?'<th class="degreased-col">脱脂済</th>':'';
   const colorHead=showColor?'<th class="color-cell">マンセル値</th>':'';
-  return `<table class="${showDegreased?'bake-data-table':''}"><thead><tr><th class="check-col completion-col">完了</th>${degreasedHead}<th class="job-id-cell">J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th class="qty-cell">数量</th><th class="process-cell">現在工程</th><th class="procurement-cell">調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${[...rows].sort(compareJRows).slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),degreased=degreasedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const degreasedCell=showDegreased?`<td class="degreased-col"><input class="degreased-check" type="checkbox" data-job="${esc(job)}" ${degreased?'checked':''} aria-label="${esc(job)} 脱脂済"><span class="degreased-mark">${degreased?'済':'未'}</span></td>`:'';const colorCell=showColor?`<td class="color-cell"><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row ':''}${degreased?'degreased-row':''}" data-job-row="${esc(job)}"><td class="check-col completion-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td>${degreasedCell}<td class="id job-id-cell">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${esc(sizeText(r))}</td>${colorCell}<td class="qty-cell"><b>${fmt(r['数量'])}点</b></td><td class="process-cell"><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td class="procurement-cell">${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
+  return `<table class="${showDegreased?'bake-data-table':''}"><thead><tr><th class="check-col completion-col">完了</th>${degreasedHead}<th class="job-id-cell">J番号</th><th>品番・品名・規格</th><th>サイズ</th>${colorHead}<th class="qty-cell">数量</th><th class="process-cell">現在工程</th><th class="procurement-cell">調達情報</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead><tbody>${[...rows].sort(compareJRows).slice(0,300).map(r=>{const color=cleanColor(r['色']),job=shortJNumber(r['製造指示番号']),done=completedJobs.has(job),degreased=degreasedJobs.has(job),process=String(r['進捗']||'未着手'),procurement=r['調達情報']||r['調達状況']||r['調達']||r['手配状況']||(process==='調達'?'調達中':'-');const degreasedCell=showDegreased?`<td class="degreased-col"><input class="degreased-check" type="checkbox" data-job="${esc(job)}" ${degreased?'checked':''} aria-label="${esc(job)} 脱脂済"><span class="degreased-mark">${degreased?'済':'未'}</span></td>`:'';const colorCell=showColor?`<td class="color-cell"><span class="munsell"><i style="background:${munsellColor(color)}"></i>${esc(color||'未登録')}</span></td>`:'';return `<tr class="${done?'done-row ':''}${degreased?'degreased-row':''}" data-job-row="${esc(job)}"><td class="check-col completion-col"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td>${degreasedCell}<td class="id job-id-cell">${esc(job)}</td><td class="item-spec-cell"><div class="part-code"><small>品番</small><strong>${esc(r['品番']||'未登録')}</strong></div><div class="item-name"><small>品名</small><span>${esc(r['品名']||'未登録')}</span></div><div class="spec-text"><small>規格</small><span>${esc(r['規格']||'未登録')}</span></div></td><td class="size-cell">${sizeHtml(r)}</td>${colorCell}<td class="qty-cell"><b>${fmt(r['数量'])}点</b></td><td class="process-cell"><b class="current-process" style="--process-color:${processColor(process)}">${esc(process)}</b></td><td class="procurement-cell">${procurementBadge(procurement)}</td><td>${esc(r['製造期限'])}</td><td><b>${esc(r['出荷日']||'未設定')}</b></td><td>${esc(r['担当者']||'未設定')}</td></tr>`}).join('')}</tbody></table>`;
 }
 function syncFullyDoneRow(row){
   if(!row?.closest('.bake-data-table'))return;
