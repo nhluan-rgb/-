@@ -849,6 +849,18 @@ body,
 .size-dimension small{color:#397087;font-size:11px;font-weight:1000;line-height:1;letter-spacing:.06em}
 .size-dimension b{margin-top:3px;color:#082f47!important;font-size:20px;font-weight:1000;line-height:1;text-shadow:0 1px 0 #fff}
 .size-times{align-self:center;color:#16728f;font-size:18px;font-weight:1000}
+.size-date-band{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.size-date-item{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:7px;padding:6px 9px;border:1px solid #a9c3ce;border-radius:5px;background:#f3f8fa}
+.size-date-item small{color:#4b7282;font-size:11px;font-weight:1000;white-space:nowrap}
+.size-date-item b{color:#073650!important;font-size:15px;font-weight:1000;white-space:nowrap;text-align:right}
+.size-date-item.ship-date{border-left:4px solid #e6a900;background:#fff8d8}
+.size-date-item.deadline-date{border-left:4px solid #1686ad}
+@media (orientation:landscape){
+  .paint-data-table thead th:nth-last-child(3),.paint-data-table thead th:nth-last-child(2),
+  .paint-data-table tbody td:nth-last-child(3),.paint-data-table tbody td:nth-last-child(2){display:none!important}
+  .paint-data-table .size-cell{min-width:390px!important;padding:9px 12px!important}
+}
+@media (orientation:portrait){.size-date-band{display:none!important}}
 .groups .group:first-child .table-wrap th:nth-child(5),
 .groups .group:first-child .table-wrap td:nth-child(5),
 .groups .group:nth-child(2) .table-wrap th:nth-child(6),
@@ -1454,7 +1466,10 @@ function sizeHtml(r){
   const values=sizeText(r).split(' × ');
   if(values.length!==4)return `<span class="size-dimensions"><span class="size-dimension"><small>サイズ</small><b>${esc(sizeText(r))}</b></span></span>`;
   const labels=['厚','縦','横','高'];
-  return `<span class="size-dimensions">${values.map((value,index)=>`${index?'<i class="size-times">×</i>':''}<span class="size-dimension"><small>${labels[index]}</small><b>${esc(value)}</b></span>`).join('')}</span>`;
+  const dimensions=`<span class="size-dimensions">${values.map((value,index)=>`${index?'<i class="size-times">×</i>':''}<span class="size-dimension"><small>${labels[index]}</small><b>${esc(value)}</b></span>`).join('')}</span>`;
+  const deadline=String(r['製造期限']||'未設定').replaceAll('-','/');
+  const ship=String(r['出荷日']||'未設定').replaceAll('-','/');
+  return `${dimensions}<span class="size-date-band"><span class="size-date-item deadline-date"><small>製造期限</small><b>${esc(deadline)}</b></span><span class="size-date-item ship-date"><small>出荷日</small><b>${esc(ship)}</b></span></span>`;
 }
 function procurementBadge(value){
   const text=String(value||'-').trim()||'-';
@@ -1510,6 +1525,7 @@ function render(){
   set('rustModeCount',`${fmt(allRust.length)}件・${fmt(qty(allRust))}点`);set('bakeModeCount',`${fmt(allBake.length)}件・${fmt(qty(allBake))}点`);
   $('bakeColors').innerHTML=colorCards(bakeAll);
   $('rustTable').innerHTML=deadlineFilter==='rust10Days'?groupedRackTable(rust):table(rust,false);$('bakeTable').innerHTML=table(bake,true,true);$('otherTable').innerHTML=table(other,true);
+  document.querySelectorAll('.table-wrap table:not(.print-like-table)').forEach(dataTable=>dataTable.classList.add('paint-data-table'));
   document.querySelectorAll('.color-cell .munsell').forEach(sample=>{
     const swatch=sample.querySelector('i');
     if(swatch)sample.style.setProperty('--munsell-color',swatch.style.background||'#d9e1e5');
