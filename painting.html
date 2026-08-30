@@ -1280,6 +1280,63 @@ body,
   }
 }
 </style>
+<style id="index-style-process-cards-v1">
+/* Large process cards matching the index dashboard. */
+.process-deck{
+  display:grid!important;grid-template-columns:repeat(8,minmax(150px,1fr))!important;gap:14px!important;
+  padding:16px!important;border:1px solid #42dff5!important;border-radius:20px!important;
+  background:linear-gradient(180deg,rgba(4,38,57,.96),rgba(2,24,39,.96))!important;
+  box-shadow:inset 0 0 26px rgba(47,218,255,.12),0 5px 20px rgba(0,0,0,.42)!important;
+  overflow-x:auto!important
+}
+.process-card{
+  position:relative!important;min-width:150px!important;min-height:266px!important;height:266px!important;padding:10px!important;
+  border:2px solid var(--pc)!important;border-radius:4px!important;
+  clip-path:polygon(0 0,93% 0,100% 7%,100% 100%,7% 100%,0 93%)!important;
+  background:
+    linear-gradient(115deg,transparent 0 45%,rgba(255,255,255,.12) 47%,transparent 54%),
+    radial-gradient(circle at 50% 76%,color-mix(in srgb,var(--pc) 24%,transparent),transparent 38%),
+    linear-gradient(180deg,#102d3d,#071a27)!important;
+  color:#fff!important;box-shadow:inset 0 0 24px color-mix(in srgb,var(--pc) 18%,transparent),0 4px 0 color-mix(in srgb,var(--pc) 65%,#07131b)!important;
+  text-align:center!important;overflow:hidden!important
+}
+.process-card .process-name{
+  display:grid!important;place-items:center!important;min-height:68px!important;padding:8px!important;border:1px solid color-mix(in srgb,var(--pc) 65%,#fff)!important;
+  border-radius:10px!important;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 85%,#fff),color-mix(in srgb,var(--pc) 62%,#17242b))!important;
+  color:#fff!important;font-size:29px!important;font-weight:1000!important;line-height:1!important;
+  text-shadow:0 3px 2px rgba(0,0,0,.72)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.28),0 4px 0 rgba(0,0,0,.35)!important
+}
+.process-card .process-count{
+  display:block!important;margin-top:14px!important;color:var(--pc)!important;font-size:39px!important;font-weight:1000!important;line-height:1!important;
+  text-shadow:0 0 8px var(--pc),0 3px 2px #000!important
+}
+.process-card .process-icon{
+  display:grid!important;place-items:center!important;width:82px!important;height:82px!important;margin:14px auto 0!important;
+  border:4px solid color-mix(in srgb,var(--pc) 72%,#fff)!important;border-radius:50%!important;background:#f4f7f8!important;
+  color:var(--pc)!important;font-size:45px!important;font-weight:1000!important;line-height:1!important;
+  box-shadow:0 0 14px var(--pc),inset 0 0 0 5px color-mix(in srgb,var(--pc) 12%,#fff)!important
+}
+.process-card.zero{
+  --pc:#68777f!important;filter:grayscale(1) brightness(.66)!important;
+  background:linear-gradient(115deg,transparent 0 44%,rgba(255,255,255,.12) 48%,transparent 55%),linear-gradient(180deg,#3d474c,#1d2529)!important
+}
+.process-card.zero .process-name{background:linear-gradient(180deg,#596267,#30383c)!important;color:#e4e8ea!important}
+.process-card.zero .process-count,.process-card.zero .process-icon{display:none!important}
+.process-card.zero:before{
+  content:"完了"!important;position:absolute!important;left:50%!important;top:136px!important;width:98px!important;height:58px!important;margin:0!important;
+  display:grid!important;place-items:center!important;border:3px solid #fff!important;border-radius:3px!important;background:#263036!important;color:#fff!important;
+  font-size:27px!important;font-weight:1000!important;line-height:1!important;transform:translateX(-50%) rotate(-6deg)!important;
+  box-shadow:0 4px 10px rgba(0,0,0,.55)!important
+}
+.process-card:hover:not(.zero),.process-card.active{
+  transform:translateY(-4px)!important;filter:brightness(1.12)!important;
+  box-shadow:inset 0 0 28px color-mix(in srgb,var(--pc) 24%,transparent),0 0 18px var(--pc),0 6px 0 color-mix(in srgb,var(--pc) 62%,#07131b)!important
+}
+.process-clock{min-width:150px!important;height:266px!important;border-radius:4px!important}
+@media(max-width:1400px){
+  .process-deck{grid-template-columns:repeat(8,190px)!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1309,7 +1366,6 @@ body,
   </section>
   <section class="process-deck">
     <button class="process-card" data-process="未着手" style="--pc:#78909c"><span class="process-name">未着手</span><span class="process-count">0件</span><span class="process-icon">○</span></button>
-    <button class="process-card" data-process="調達" style="--pc:#00d7ff"><span class="process-name">調達</span><span class="process-count">0件</span><span class="process-icon">◆</span></button>
     <button class="process-card" data-process="CAD/CAM" style="--pc:#f4c430"><span class="process-name">CAD/CAM</span><span class="process-count">0件</span><span class="process-icon">▣</span></button>
     <button class="process-card" data-process="切断" style="--pc:#f57c00"><span class="process-name">切断</span><span class="process-count">0件</span><span class="process-icon">◉</span></button>
     <button class="process-card" data-process="曲げ" style="--pc:#ec6cb9"><span class="process-name">曲げ</span><span class="process-count">0件</span><span class="process-icon">↪</span></button>
