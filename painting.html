@@ -1270,6 +1270,18 @@ body,
 .groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row) .procurement-info{
   filter:grayscale(1)!important
 }
+/* 錆止め: one 完了 check is the final state, so sink the whole row. */
+#rustTable tr.done-row,
+#rustTable tr.done-row:hover{
+  background:#202b30!important;color:#718087!important;opacity:.48!important;filter:grayscale(1) brightness(.66)!important;
+  box-shadow:inset 0 4px 10px rgba(0,0,0,.48),inset 0 -2px 5px rgba(0,0,0,.3)!important
+}
+#rustTable tr.done-row td{background:#344148!important;border-bottom-color:#172126!important;color:#879399!important}
+#rustTable tr.done-row .id,
+#rustTable tr.done-row .print-job{text-decoration:line-through!important;color:#93a0a5!important}
+#rustTable tr.done-row .qty-cell b,
+#rustTable tr.done-row .current-process,
+#rustTable tr.done-row .procurement-info{filter:grayscale(1)!important}
 @media (orientation:portrait) and (max-width:1400px){
   .groups .group .table-wrap .color-cell{
     min-width:0!important;width:auto!important;padding:28px 4px 10px!important;overflow:visible!important;z-index:2!important
