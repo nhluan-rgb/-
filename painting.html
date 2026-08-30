@@ -1337,6 +1337,83 @@ body,
   .process-deck{grid-template-columns:repeat(8,190px)!important}
 }
 </style>
+<style id="future-clock-v1">
+/* Use the free deadline-panel space for a large Future 5.0 clock. */
+.process-deck{grid-template-columns:repeat(7,minmax(170px,1fr))!important}
+.deadline-tabs>.process-clock{
+  position:absolute!important;z-index:5!important;right:14px!important;top:14px!important;bottom:14px!important;
+  width:clamp(270px,30vw,470px)!important;height:auto!important;min-width:270px!important;padding:18px 26px!important;
+  display:grid!important;grid-template-rows:auto 1fr auto!important;place-items:center!important;
+  border:2px solid #8c68ff!important;border-radius:8px!important;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)!important;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(116,76,255,.24),transparent 38%),
+    repeating-linear-gradient(135deg,transparent 0 17px,rgba(129,104,255,.055) 18px 19px),
+    linear-gradient(145deg,#111d4a,#08152f)!important;
+  box-shadow:inset 0 0 34px rgba(104,77,255,.25),0 0 22px rgba(104,78,255,.48)!important;
+  overflow:hidden!important
+}
+.deadline-tabs>.process-clock:before{
+  content:"FUTURE 5.0  //  LIVE SYSTEM TIME"!important;position:static!important;width:auto!important;height:auto!important;
+  color:#7cecff!important;background:none!important;border:0!important;box-shadow:none!important;
+  font:900 12px/1 Consolas,monospace!important;letter-spacing:.18em!important;transform:none!important
+}
+.deadline-tabs>.process-clock:after{
+  content:"";position:absolute;left:8%;right:8%;top:50%;height:1px;background:linear-gradient(90deg,transparent,#76eaff,transparent);
+  box-shadow:0 0 12px #5ceaff;animation:clockScan 3s ease-in-out infinite
+}
+.deadline-tabs>.process-clock .clock-name{
+  position:absolute!important;left:18px!important;bottom:14px!important;padding:4px 9px!important;border:1px solid #4edcf8!important;border-radius:3px!important;
+  background:#082946!important;color:#b7f6ff!important;font-size:12px!important;font-weight:1000!important;letter-spacing:.12em!important
+}
+.deadline-tabs>.process-clock .clock-time{
+  align-self:center!important;color:#fff!important;font-family:Bahnschrift,"Yu Gothic UI",sans-serif!important;font-size:68px!important;font-weight:1000!important;line-height:1!important;
+  letter-spacing:.08em!important;text-shadow:3px 0 #684eff,-3px 0 #20dfff,0 0 18px rgba(128,100,255,.9)!important
+}
+.deadline-tabs>.process-clock .clock-date{
+  justify-self:end!important;margin:0!important;color:#d7e5ff!important;font-size:20px!important;font-weight:1000!important;letter-spacing:.12em!important
+}
+@keyframes clockScan{0%,100%{transform:translateY(-48px);opacity:.25}50%{transform:translateY(48px);opacity:.9}}
+@media(max-width:1400px){
+  .process-deck{grid-template-columns:repeat(7,190px)!important}
+  .deadline-tabs>.process-clock{width:300px!important;min-width:300px!important}
+  .deadline-tabs>.process-clock .clock-time{font-size:52px!important}
+}
+@media(orientation:portrait){
+  .deadline-tabs>.process-clock{position:relative!important;right:auto!important;top:auto!important;bottom:auto!important;width:100%!important;min-width:0!important;height:180px!important;grid-column:1/-1!important}
+}
+@media(orientation:landscape){
+  .deadline-tabs{
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:14px!important;padding:16px!important;
+    min-height:298px!important;height:298px!important;align-items:start!important
+  }
+  .deadline-tabs .deadline-tab{min-height:266px!important;height:266px!important}
+  .deadline-tabs>.process-clock{
+    position:relative!important;grid-column:span 2!important;right:auto!important;top:auto!important;bottom:auto!important;
+    width:100%!important;min-width:0!important;height:266px!important
+  }
+  .deadline-tabs>.process-clock .clock-time{font-size:clamp(42px,4vw,68px)!important}
+  .deadline-tabs>.process-clock:before{display:none!important;content:none!important}
+  .deadline-tabs>.process-clock .clock-name{display:none!important}
+  .deadline-tabs>.process-clock .clock-time{
+    box-sizing:border-box!important;display:grid!important;place-items:center!important;width:92%!important;min-height:126px!important;margin:auto!important;padding:12px 18px!important;
+    border:2px solid #46e7ff!important;border-radius:8px!important;background:linear-gradient(180deg,#020b18,#07182a)!important;
+    color:#eaffff!important;font-family:Consolas,"Courier New",monospace!important;font-size:clamp(52px,4.8vw,86px)!important;font-weight:1000!important;
+    font-variant-numeric:tabular-nums!important;letter-spacing:.02em!important;
+    text-shadow:0 0 5px #fff,0 0 13px #25dfff,4px 0 #684eff!important;
+    box-shadow:inset 0 0 25px rgba(38,224,255,.12),0 0 16px rgba(38,224,255,.35)!important
+  }
+  .deadline-tabs>.process-clock .clock-date{
+    justify-self:center!important;margin:0!important;padding:9px 25px!important;border:2px solid #8d78ff!important;border-radius:999px!important;
+    background:#111d45!important;color:#fff!important;font-size:34px!important;font-weight:1000!important;letter-spacing:.06em!important;
+    text-shadow:0 0 8px #7564ff,0 2px 2px #000!important;box-shadow:0 0 13px rgba(127,99,255,.38)!important
+  }
+  .deadline-tabs .deadline-tab .tab-name{min-height:50px!important;font-size:21px!important;line-height:1.2!important;white-space:normal!important}
+  .deadline-tabs .deadline-tab .tab-date{margin-top:8px!important;padding:7px 8px!important;font-size:25px!important;line-height:1!important}
+  .deadline-tabs .deadline-tab .tab-date-range{font-size:21px!important}
+  .deadline-tabs .deadline-tab .tab-count{margin-top:12px!important;font-size:43px!important;line-height:1!important}
+  .deadline-tabs .deadline-tab .tab-points{margin-top:8px!important;font-size:31px!important;line-height:1!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1354,8 +1431,9 @@ body,
     <button class="deadline-tab" data-deadline="day2"><span class="tab-name">明後日期限</span><span class="tab-date" id="day2Date">----/--/--</span><span class="tab-count" id="day2Count">0件</span><span class="tab-points" id="day2Points">0点</span></button>
     <button class="deadline-tab" data-deadline="yesterdayOrders"><span class="tab-name">昨日受注（焼付のみ）</span><span class="tab-date" id="yesterdayOrdersDate">----/--/--</span><span class="tab-count" id="yesterdayOrdersCount">0件</span><span class="tab-points" id="yesterdayOrdersPoints">0点</span></button>
     <button class="deadline-tab type-hidden" data-deadline="rust10Days"><span class="tab-name">10日間分期限（架台・錆止め）</span><span class="tab-date tab-date-range" id="rust10DaysDate">----/--/-- ～ ----/--/--</span><span class="tab-count" id="rust10DaysCount">0件</span><span class="tab-points" id="rust10DaysPoints">0点</span></button>
-    <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">本日期限未完成・製造期限切れ</span><span class="tab-date" id="criticalDate">～ ----/--/--</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
+    <button class="deadline-tab critical active" data-deadline="critical"><span class="tab-name">期限切れ</span><span class="tab-date" id="criticalDate">～ ----/--/--</span><span class="tab-count" id="criticalCount">0件</span><span class="tab-points" id="criticalPoints">0点</span></button>
     <div class="deadline-tab" data-deadline="specified"><span class="tab-name">指定日製造期限</span><span class="tab-count" id="specifiedCount">0件</span><span class="tab-points" id="specifiedPoints">0点</span><input id="specifiedDate" type="date"></div>
+    <div class="process-clock" aria-label="現在時刻"><span class="clock-name">現在時刻</span><strong class="clock-time" id="processClockTime">--:--</strong><small class="clock-date" id="processClockDate">----/--/--</small></div>
   </section>
   <section class="kpis">
     <div class="kpi" style="--c:#42e8ff"><small>塗装対象 合計</small><strong id="totalCount">0件</strong><em id="totalQty">0点</em></div>
@@ -1372,7 +1450,6 @@ body,
     <button class="process-card" data-process="溶接" style="--pc:#e53935"><span class="process-name">溶接</span><span class="process-count">0件</span><span class="process-icon">⚡</span></button>
     <button class="process-card" data-process="仕上" style="--pc:#90a4ae"><span class="process-name">仕上</span><span class="process-count">0件</span><span class="process-icon">✦</span></button>
     <button class="process-card" data-process="塗装" style="--pc:#43a047"><span class="process-name">塗装</span><span class="process-count">0件</span><span class="process-icon">▥</span></button>
-    <div class="process-clock" aria-label="現在時刻"><span class="clock-name">時計</span><strong class="clock-time" id="processClockTime">--:--</strong><small class="clock-date" id="processClockDate">----/--/--</small></div>
   </section>
   <main class="groups">
     <section class="group" style="--group:var(--rust)"><header class="group-head"><h2>🛡 錆止め</h2><div class="group-filter-banner job-search-box" id="rustFilterBanner"><label for="rustJobSearch">J番号検索</label><input id="rustJobSearch" class="job-search-input" type="search" placeholder="J番号を入力すると下の表を絞り込み" autocomplete="off"></div><strong id="rustHead">0件・0点</strong></header><div class="group-body"><div class="table-wrap" id="rustTable"></div></div></section>
@@ -1430,7 +1507,10 @@ function businessDayRange(days=10){
   return {start:first,end};
 }
 function updateDeadlineDateLabels(){
-  const show=value=>String(value||'').replaceAll('-','/');
+  const show=value=>{
+    const parts=String(value||'').replaceAll('/','-').split('-');
+    return parts.length>=3?`${parts[1]}/${parts[2]}`:String(value||'').replaceAll('-','/');
+  };
   const range=businessDayRange(10);
   $('tomorrowDate').textContent=show(localDate(1));
   $('day2Date').textContent=show(localDate(2));
@@ -1609,7 +1689,7 @@ function render(){
   $('bakeTable').closest('.group').style.display=paintTypeFilter==='bake'?'block':'none';
   $('otherTable').closest('.other').style.display='none';
   document.querySelector('.groups').style.gridTemplateColumns='1fr';
-  const filterNames={tomorrow:'明日期限',day2:'明後日期限',yesterdayOrders:`昨日受注 ${previousBusinessDate().replaceAll('-','/')}（焼付のみ）`,rust10Days:'10日間分期限（架台・錆止め）',critical:'本日期限未完成・製造期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
+  const filterNames={tomorrow:'明日期限',day2:'明後日期限',yesterdayOrders:`昨日受注 ${previousBusinessDate().replaceAll('-','/')}（焼付のみ）`,rust10Days:'10日間分期限（架台・錆止め）',critical:'期限切れ',specified:`指定日 ${specifiedDate||'未選択'}`};
   const typeName=paintTypeFilter==='rust'?'錆止め':'焼付';
   document.querySelectorAll('.job-search-input').forEach(input=>{if(input.value!==jobSearch)input.value=jobSearch});
   $('missionText').textContent=colorFilter
@@ -1662,8 +1742,8 @@ async function autoLoad(){
 function updateProcessClock(){
   const now=new Date();
   const time=$('processClockTime'),date=$('processClockDate');
-  if(time)time.textContent=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  if(date)date.textContent=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+  if(time)time.textContent=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  if(date)date.textContent=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
 }
 $('reload').onclick=autoLoad;
 $('specifiedDate').value=localDate(4);specifiedDate=$('specifiedDate').value;
