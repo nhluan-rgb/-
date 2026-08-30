@@ -1257,6 +1257,19 @@ body,
 }
 .groups .group .table-wrap .bake-data-table tr.fully-done-row td{background:#27343a!important;border-bottom-color:#111b20!important}
 .groups .group .table-wrap .bake-data-table tr.fully-done-row .id{text-decoration:line-through!important;color:#8b999f!important}
+/* 完了 only: remove colour, but keep the row lighter than a fully completed row. */
+.groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row),
+.groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row):hover{
+  filter:grayscale(1)!important;opacity:.72!important
+}
+.groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row) td{
+  background:#dbe1e4!important;color:#68777e!important
+}
+.groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row) .munsell,
+.groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row) .current-process,
+.groups .group .table-wrap .bake-data-table tr.done-row:not(.degreased-row) .procurement-info{
+  filter:grayscale(1)!important
+}
 @media (orientation:portrait) and (max-width:1400px){
   .groups .group .table-wrap .color-cell{
     min-width:0!important;width:auto!important;padding:28px 4px 10px!important;overflow:visible!important;z-index:2!important
