@@ -1493,7 +1493,11 @@ function groupedRackTable(rows){
   const groups=new Map();
   rows.forEach(r=>{const job=baseJNumber(r['製造指示番号']);if(!groups.has(job))groups.set(job,[]);groups.get(job).push(r)});
   const unique=(list,key)=>[...new Set(list.map(r=>String(r[key]||'').trim()).filter(Boolean))];
-  const body=[...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0],'ja',{numeric:true,sensitivity:'base'})).map(([job,list])=>{
+  const body=[...groups.entries()].sort((a,b)=>{
+    const dateA=normalizedDate(a[1][0]?.['製造期限']);
+    const dateB=normalizedDate(b[1][0]?.['製造期限']);
+    return dateA.localeCompare(dateB)||a[0].localeCompare(b[0],'ja',{numeric:true,sensitivity:'base'});
+  }).map(([job,list])=>{
     const details=[...new Set(list.map(r=>`${String(r['品名']||'').trim()}\n・${String(r['規格']||'').trim()}`))].join('\n');
     const done=completedJobs.has(job);
     return `<tr class="${done?'done-row':''}" data-job-row="${esc(job)}"><td class="group-check"><input class="job-check" type="checkbox" data-job="${esc(job)}" ${done?'checked':''} aria-label="${esc(job)} 完了"></td><td>${esc(normalizedDate(list[0]['製造期限']).replaceAll('-','/'))}</td><td class="print-job">${esc(job)}</td><td class="print-detail">${esc(details)}</td><td class="print-qty">${fmt(qty(list))}</td><td class="print-ship">${esc(unique(list,'出荷日').join('\n')||'未設定')}</td><td class="print-process">${esc(unique(list,'進捗').join('\n')||'未着手')}</td></tr>`;
