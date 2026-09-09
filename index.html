@@ -6522,6 +6522,24 @@ body.bonus-day-3man .bonus-title::after,
 .capacity-launch-button strong{font-size:27px!important;line-height:1.1!important;letter-spacing:.045em!important}.capacity-launch-button small{margin:0 0 12px!important;color:#fff5c7!important;font-size:14px!important}.capacity-launch-arrow{display:none!important}
 @keyframes capacityEmergencyPulse{0%,100%{filter:brightness(.96);box-shadow:0 0 0 7px #35110b,0 0 0 10px #ffca28,0 14px 0 #3c0708,0 20px 30px rgba(255,20,34,.48),inset 0 5px 9px rgba(255,255,255,.42),inset 0 -14px 24px rgba(76,0,0,.58)}50%{filter:brightness(1.12);box-shadow:0 0 0 7px #35110b,0 0 0 10px #fff06a,0 14px 0 #3c0708,0 20px 48px rgba(255,36,42,.92),inset 0 5px 9px rgba(255,255,255,.48),inset 0 -14px 24px rgba(76,0,0,.58)}}
 @media(prefers-reduced-motion:reduce){.capacity-launch-button{animation:none!important}}
+
+/* NG tab: clock/status ↔ bonus panel, compact summary */
+.ng-game .j-number-search-host{display:none!important}
+.ng-game .ng-utility-column{display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
+.ng-clock-status-panel{width:100%;box-sizing:border-box;padding:18px 20px 20px;border:2px solid #ffe45f;border-radius:20px;background:linear-gradient(160deg,rgba(71,55,0,.92),rgba(8,31,48,.96) 52%,rgba(5,20,36,.98));box-shadow:0 0 24px rgba(255,220,57,.24),inset 0 0 24px rgba(255,220,57,.08);display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff}
+.ng-clock-status-panel .boss-mission-slot{width:100%!important;min-height:0!important;margin:0 0 12px!important;display:block!important;order:0!important}
+.ng-clock-status-panel .game-clock.visual-hud-clock{position:relative!important;inset:auto!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;margin:0!important;padding:12px 16px!important;border:0!important;border-bottom:1px solid rgba(255,237,143,.45)!important;border-radius:10px 10px 0 0!important;background:transparent!important;box-shadow:none!important}
+.ng-clock-status-panel .game-clock.visual-hud-clock b{font-size:52px!important}.ng-clock-status-panel .game-clock.visual-hud-clock small{font-size:14px!important}
+.ng-clock-status-panel .boss-status-label{width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 12px;border:2px solid #c8f7d1;border-radius:11px;background:linear-gradient(#43a047,#1b5e20);font-size:24px;font-weight:1000;box-shadow:0 4px 0 #14551d}
+.ng-clock-status-panel .boss-hp-value{margin:8px 0 0;color:#75ff91;font-size:48px;font-weight:1000;line-height:1.05;text-shadow:0 0 12px #20ff6799}.ng-clock-status-panel .boss-points{font-size:20px;font-weight:900}.ng-clock-status-panel .boss-track{width:100%;height:26px;margin:16px 0 8px;border:3px solid #fff08a;border-radius:99px;background:#233449;overflow:hidden}.ng-clock-status-panel .boss-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#24c66e,#47ec82)}.ng-clock-status-panel .boss-goal{font-size:16px;font-weight:900}.ng-clock-status-panel .boss-status-message{display:none!important}
+.ng-clock-status-panel.ship-incomplete .boss-status-label{background:linear-gradient(#e53935,#b71c1c);border-color:#ffb3b3;box-shadow:0 4px 0 #7f1010}.ng-clock-status-panel.ship-incomplete .boss-hp-value{color:#fff36e;text-shadow:0 0 12px #ffb30099}
+.ng-game .boss-status-card{justify-content:flex-start!important;gap:12px!important;min-height:0!important;height:auto!important;padding:18px!important}
+.ng-game .boss-status-card .bonus-campaign-panel{position:relative!important;inset:auto!important;order:1!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:16px!important;box-sizing:border-box!important;border:2px solid #47dfff!important;border-radius:16px!important;background:linear-gradient(150deg,rgba(4,39,58,.96),rgba(3,20,36,.98))!important;box-shadow:0 0 18px rgba(35,218,255,.18)!important;animation:none!important}
+.ng-game .boss-status-card .bonus-title{display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:10px!important;margin:0 0 4px!important;padding:0!important;border:0!important;text-align:left!important}.ng-game .boss-status-card .bonus-title-kicker{font-size:25px!important}.ng-game .boss-status-card .bonus-title-goal{font-size:14px!important;color:#ffe56d!important;white-space:nowrap!important}.ng-game .boss-status-card .bonus-period{margin:0 0 10px!important;font-size:13px!important;color:#8eddec!important;text-align:left!important}.ng-game .boss-status-card .bonus-intro{margin:0 0 10px!important;padding:7px 10px!important;font-size:13px!important;line-height:1.2!important}.ng-game .boss-status-card .bonus-intro br{display:none}.ng-game .boss-status-card .bonus-intro br::after{content:" / "}
+.ng-game .boss-status-card .bonus-progress-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}.ng-game .boss-status-card .bonus-progress-row{margin:0!important;padding:8px 9px!important}.ng-game .boss-status-card .bonus-progress-head{font-size:13px!important}.ng-game .boss-status-card .bonus-progress-head b{font-size:20px!important}.ng-game .boss-status-card .bonus-progress-track{height:8px!important}
+.ng-game .boss-status-card .bonus-result{margin-top:10px!important;padding:9px 11px!important;display:grid!important;grid-template-columns:auto 1fr!important;align-items:center!important;gap:6px 12px!important;text-align:left!important}.ng-game .boss-status-card .bonus-result>small{font-size:12px!important}.ng-game .boss-status-card .bonus-result>strong{font-size:25px!important;text-align:right!important}.ng-game .boss-status-card .bonus-daily-target{grid-column:1/-1!important;margin:0!important;padding-top:7px!important;display:grid!important;grid-template-columns:auto auto!important;gap:3px 10px!important;align-items:center!important}.ng-game .boss-status-card .target-label{font-size:12px!important}.ng-game .boss-status-card .target-value{font-size:18px!important;text-align:right!important}.ng-game .boss-status-card .target-compare{grid-column:1/-1!important;font-size:12px!important;text-align:left!important}
+.ng-game .boss-status-card .claim-summary-panel{order:2!important;margin-top:0!important}
+@media(max-width:900px){.ng-game .boss-status-card .bonus-progress-list{grid-template-columns:1fr!important}.ng-game .boss-status-card .bonus-title{align-items:flex-start!important;flex-direction:column!important}.ng-clock-status-panel .game-clock.visual-hud-clock b{font-size:42px!important}}
 </style>
 </head>
 <body>
@@ -7319,11 +7337,11 @@ function updateBonusCampaignPanel(){
 
   box.innerHTML=`
     <div class="bonus-title">
-      <span class="bonus-title-kicker">🏆 大入りチャレンジ 👑</span>
-      <span class="bonus-title-goal">世界100％で 3万円へ！</span>
+      <span class="bonus-title-kicker">🏆 大入り</span>
+      <span class="bonus-title-goal">西100%=2万円 ／ 世界100%=3万円</span>
     </div>
     <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    <div class="bonus-intro"><strong>西半球100％＝2万円<br>全世界も100％＝3万円！</strong></div>
+    <div class="bonus-intro"><strong>目標進捗と現在値</strong></div>
     <div class="bonus-progress-list">${progressHtml}</div>
     ${resultHtml}`;
 
@@ -8492,6 +8510,38 @@ function mountVisualClock(clockBox,targetVisual){
   const mountTarget=clockSlot||targetVisual;
   if(clockBox.parentElement!==mountTarget)mountTarget.append(clockBox);
 }
+function arrangeNgUtilityPanels(){
+  const utility=document.getElementById('ngUtilityColumn');
+  const boss=document.getElementById('bossStatusCard');
+  const bonus=document.getElementById('bonusCampaignPanel');
+  if(!utility||!boss||!bonus)return;
+  let statusPanel=document.getElementById('ngClockStatusPanel');
+  if(!statusPanel){
+    statusPanel=document.createElement('section');
+    statusPanel.id='ngClockStatusPanel';
+    statusPanel.className='ng-clock-status-panel';
+    statusPanel.setAttribute('aria-label','本日出荷進捗');
+  }
+  utility.appendChild(statusPanel);
+  ['bossMissionSlot','todayShipmentStatusLabel'].forEach(id=>{
+    const element=document.getElementById(id);
+    if(element)statusPanel.appendChild(element);
+  });
+  ['.boss-hp-value','.boss-points','.boss-track','.boss-goal','.boss-status-message'].forEach(selector=>{
+    const element=boss.querySelector(selector)||document.querySelector(`#ngClockStatusPanel ${selector}`);
+    if(element)statusPanel.appendChild(element);
+  });
+  boss.insertBefore(bonus,boss.querySelector('.claim-summary-panel'));
+  syncNgStatusPanelState();
+}
+function syncNgStatusPanelState(){
+  const boss=document.getElementById('bossStatusCard');
+  const panel=document.getElementById('ngClockStatusPanel');
+  if(!boss||!panel)return;
+  panel.classList.toggle('ship-complete',boss.classList.contains('ship-complete'));
+  panel.classList.toggle('ship-incomplete',boss.classList.contains('ship-incomplete'));
+  panel.classList.toggle('boss-defeated',boss.classList.contains('boss-defeated'));
+}
 function mountStandardMission(){
   const banner=document.querySelector('.standard-banner');
   const slot=document.getElementById('standardMissionSlot');
@@ -9205,6 +9255,7 @@ if(shipFilter==='today-ng'){
   updateDailyProcessTargets();
   updateBonusCampaignPanel();
   updateClaimSummaryPanel();
+  arrangeNgUtilityPanels();
 
   const startBossKey=`todayNgStart:${dates.today}`;
   const savedBossStart=Number(localStorage.getItem(startBossKey)||0);
@@ -9255,6 +9306,7 @@ if(shipFilter==='today-ng'){
     bossStatusCard.classList.toggle('ship-complete',ng.length===0);
     bossStatusCard.classList.toggle('ship-incomplete',ng.length>0);
   }
+  syncNgStatusPanelState();
   if($('bossFill')){
     $('bossFill').style.width=ng.length===0?'100%':`${completionPercent}%`;
   }
