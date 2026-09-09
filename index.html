@@ -6577,6 +6577,15 @@ body.bonus-day-3man .bonus-title::after,
 .ng-game .boss-status-card .capacity-launch-button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;flex:1 1 auto!important;width:100%!important;height:100%!important;min-height:0!important;padding:28px!important;text-align:center!important;border-radius:20px!important;background:radial-gradient(circle at 50% 25%,rgba(48,176,222,.2),transparent 38%),linear-gradient(155deg,rgba(8,62,91,.96),rgba(12,35,68,.98) 55%,rgba(29,31,76,.98))!important;border:1px solid rgba(104,224,255,.62)!important;box-shadow:inset 0 0 38px rgba(53,198,255,.09),0 10px 28px rgba(0,8,25,.45)!important}
 .ng-game .boss-status-card .capacity-launch-button::after{content:"OPEN CAPACITY"!important;position:absolute!important;bottom:24px!important;color:#7edff4!important;font-size:13px!important;letter-spacing:.18em!important}.ng-game .boss-status-card .capacity-launch-icon{width:82px!important;height:82px!important;border-radius:22px!important;font-size:42px!important}.ng-game .boss-status-card .capacity-launch-button strong{font-size:34px!important;margin-top:10px!important}.ng-game .boss-status-card .capacity-launch-button small{font-size:18px!important;margin-top:7px!important}
 @media(max-width:1300px){.ng-game .boss-status-card{height:auto!important;min-height:760px!important}.ng-game .boss-status-card .bonus-campaign-panel{flex-basis:520px!important;height:520px!important;min-height:520px!important}.ng-game .boss-status-card .claim-summary-panel{min-height:220px!important}.ng-game .boss-status-card .bonus-progress-track{height:160px!important;min-height:160px!important}}
+.ng-game .boss-status-card .bonus-result.remaining-days-only{width:100%!important;min-height:92px!important;box-sizing:border-box!important;display:grid!important;place-items:center!important;margin:0!important;padding:12px 18px!important;border:2px solid rgba(91,226,255,.72)!important;border-radius:15px!important;background:linear-gradient(180deg,rgba(10,73,98,.96),rgba(4,37,59,.98))!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,12,29,.45),0 5px 0 #021a2a,0 0 20px rgba(54,211,255,.2)!important;text-align:center!important}
+.ng-game .boss-status-card .bonus-result.remaining-days-only strong{display:block!important;width:100%!important;color:#eafdff!important;font-size:clamp(34px,2.45vw,48px)!important;font-weight:1000!important;line-height:1.1!important;letter-spacing:.055em!important;text-align:center!important;text-shadow:0 3px 0 #07384d,0 0 12px rgba(115,235,255,.48)!important}
+.ng-game .boss-status-card .bonus-result.remaining-days-only strong span{display:inline-block!important;margin:0 .08em!important;color:#7ff3ff!important;font-size:1.2em!important;text-shadow:0 3px 0 #075066,0 0 18px rgba(74,231,255,.72)!important}
+
+/* Analog clock for the NG status panel */
+.ng-clock-status-panel .game-clock.visual-hud-clock{height:330px!important;min-height:330px!important;padding:8px!important;display:grid!important;place-items:center!important;border-bottom:0!important;overflow:visible!important}
+.ng-clock-status-panel .game-clock.visual-hud-clock>small,.ng-clock-status-panel .game-clock.visual-hud-clock>#gameClock{display:none!important}
+.analog-clock{display:block;width:min(100%,310px);height:auto;overflow:visible;filter:drop-shadow(0 12px 18px rgba(0,0,0,.42))}
+.analog-clock .clock-frame{fill:url(#analogFaceGradient);stroke:#66dfff;stroke-width:5;filter:drop-shadow(0 0 9px rgba(66,219,255,.45))}.analog-clock .clock-inner{fill:none;stroke:rgba(154,235,255,.32);stroke-width:2}.analog-clock .clock-tick{stroke:#8ccfe0;stroke-width:2;stroke-linecap:round}.analog-clock .clock-tick.major{stroke:#e6fbff;stroke-width:4}.analog-clock .clock-number{fill:#f2fdff;font-size:25px;font-weight:1000;text-anchor:middle;dominant-baseline:middle;text-shadow:0 2px 3px #00111f}.analog-clock .clock-date{fill:#8feeff;font-size:14px;font-weight:900;text-anchor:middle;letter-spacing:.06em}.analog-clock .clock-caption{fill:#8eb9c7;font-size:9px;font-weight:800;text-anchor:middle;letter-spacing:.24em}.analog-clock .clock-hand{transform-origin:150px 150px;stroke-linecap:round}.analog-clock .hour-hand{stroke:#eefcff;stroke-width:9}.analog-clock .minute-hand{stroke:#8deaff;stroke-width:6}.analog-clock .second-hand{stroke:#ff6e82;stroke-width:2}.analog-clock .clock-pin{fill:#ffdf72;stroke:#fff4bd;stroke-width:2;filter:drop-shadow(0 0 5px #ffd34f)}
 </style>
 </head>
 <body>
@@ -7368,9 +7377,7 @@ function updateBonusCampaignPanel(){
   const dailyTargetHtml=`<div class="bonus-daily-target"><span class="target-label">本日の目標（西半球）</span><b class="target-value">${westTarget.toFixed(1)}%</b>${westComparison}</div>`;
   // 支給額は支給日当日だけ表示する。翌日からは新しい締日までの実働残りへ戻す。
   const isPayDate=localDateKey(now)===localDateKey(payDate);
-  const resultHtml=hasLastResult&&isPayDate
-    ? `<div class="bonus-result"><small>${shortJapaneseDate(payDate)} 支給額</small><strong>¥${reward.toLocaleString('ja-JP')}</strong></div>`
-    : `<div class="bonus-result waiting"><small>${shortJapaneseDate(cycle.end)}の締日まで</small><strong>残り実働 ${remainingBonusBusinessDays(now,cycle.end)}日</strong>${dailyTargetHtml}</div>`;
+  const resultHtml=`<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span>日</strong></div>`;
 
   box.innerHTML=`
     <div class="bonus-title">
@@ -7705,8 +7712,54 @@ function updateGameClock(){
   date.textContent=now.toLocaleDateString('ja-JP',{
     year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'
   });
+  updateAnalogClock(now);
   updateClockAlertMode(clock.closest('.game-clock'));
   updateDailyProcessTargets();
+}
+
+function ensureAnalogClock(){
+  const host=document.querySelector('.game-clock');
+  if(!host)return null;
+  let svg=host.querySelector('.analog-clock');
+  if(svg)return svg;
+  const ticks=Array.from({length:60},(_,index)=>{
+    const major=index%5===0;
+    return `<line class="clock-tick${major?' major':''}" x1="150" y1="${major?20:24}" x2="150" y2="${major?33:30}" transform="rotate(${index*6} 150 150)"/>`;
+  }).join('');
+  const numbers=Array.from({length:12},(_,index)=>{
+    const value=index+1;
+    const angle=value*30*Math.PI/180;
+    const x=150+101*Math.sin(angle);
+    const y=150-101*Math.cos(angle);
+    return `<text class="clock-number" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${value}</text>`;
+  }).join('');
+  host.insertAdjacentHTML('beforeend',`<svg class="analog-clock" viewBox="0 0 300 300" role="img" aria-label="現在時刻のアナログ時計">
+    <defs><radialGradient id="analogFaceGradient"><stop offset="0" stop-color="#12384d"/><stop offset=".72" stop-color="#071f32"/><stop offset="1" stop-color="#031522"/></radialGradient></defs>
+    <circle class="clock-frame" cx="150" cy="150" r="143"/><circle class="clock-inner" cx="150" cy="150" r="132"/>
+    ${ticks}${numbers}
+    <text class="clock-caption" x="150" y="111">KYUSHU FACTORY</text>
+    <text class="clock-date" id="analogClockDate" x="150" y="187">----</text>
+    <line class="clock-hand hour-hand" id="analogHourHand" x1="150" y1="158" x2="150" y2="88"/>
+    <line class="clock-hand minute-hand" id="analogMinuteHand" x1="150" y1="162" x2="150" y2="58"/>
+    <line class="clock-hand second-hand" id="analogSecondHand" x1="150" y1="174" x2="150" y2="45"/>
+    <circle class="clock-pin" cx="150" cy="150" r="7"/>
+  </svg>`);
+  return host.querySelector('.analog-clock');
+}
+function updateAnalogClock(now=new Date()){
+  const svg=ensureAnalogClock();
+  if(!svg)return;
+  const seconds=now.getSeconds()+now.getMilliseconds()/1000;
+  const minutes=now.getMinutes()+seconds/60;
+  const hours=(now.getHours()%12)+minutes/60;
+  const hourHand=svg.querySelector('#analogHourHand');
+  const minuteHand=svg.querySelector('#analogMinuteHand');
+  const secondHand=svg.querySelector('#analogSecondHand');
+  if(hourHand)hourHand.style.transform=`rotate(${hours*30}deg)`;
+  if(minuteHand)minuteHand.style.transform=`rotate(${minutes*6}deg)`;
+  if(secondHand)secondHand.style.transform=`rotate(${seconds*6}deg)`;
+  const date=svg.querySelector('#analogClockDate');
+  if(date)date.textContent=now.toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit',weekday:'short'});
 }
 
 setInterval(updateGameClock,1000);
