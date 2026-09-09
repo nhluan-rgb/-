@@ -6491,6 +6491,24 @@ body.bonus-day-3man .bonus-title::after,
 @keyframes targetAlarm{from{filter:brightness(.9);transform:scale(.995)}to{filter:brightness(1.25);transform:scale(1.006);box-shadow:0 0 28px #ff263ccc}}
 @media(max-width:1100px){.process-target-row{grid-template-columns:86px 1fr 108px;gap:8px}.process-target-time{font-size:25px}.process-target-chip{font-size:20px;padding:7px 8px}.process-target-title{font-size:23px}.process-target-processes{gap:4px}}
 </style>
+<style id="capacity-modal-patch">
+.claim-summary-panel{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;min-height:112px!important}
+.capacity-launch-button{width:100%;min-height:112px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:18px 20px;border:2px solid #37e5ff;border-radius:14px;background:linear-gradient(145deg,rgba(3,55,70,.96),rgba(4,24,42,.98));color:#effdff;text-align:left;cursor:pointer;box-shadow:inset 0 0 24px rgba(41,220,255,.12),0 0 16px rgba(25,215,255,.24);transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.capacity-launch-button:hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:inset 0 0 28px rgba(41,220,255,.18),0 0 24px rgba(25,215,255,.36)}
+.capacity-launch-button:focus-visible{outline:3px solid #fff36d;outline-offset:3px}
+.capacity-launch-icon{display:grid;place-items:center;width:48px;height:48px;border:1px solid #6beaff;border-radius:12px;background:#0c6075;color:#bff8ff;font-size:26px}
+.capacity-launch-button strong{display:block;font-size:23px;letter-spacing:.03em}.capacity-launch-button small{display:block;margin-top:6px;color:#9bddea;font-size:13px;font-weight:800}.capacity-launch-arrow{font-size:38px;color:#63eaff}
+.capacity-modal{position:fixed;inset:0;z-index:999999;display:none}.capacity-modal.show{display:block}.capacity-modal-backdrop{position:absolute;inset:0;background:rgba(0,7,14,.84);backdrop-filter:blur(8px)}
+.capacity-modal-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1500px,96vw);max-height:92vh;overflow:auto;padding:22px;border:1px solid rgba(65,221,255,.55);border-radius:22px;background:linear-gradient(180deg,#061c2d,#030f1c);box-shadow:0 0 40px rgba(35,198,255,.3),inset 0 0 35px rgba(35,198,255,.06);color:#ecfbff}
+.capacity-modal-close{position:sticky;z-index:9;float:right;right:8px;top:0;width:42px;height:42px;border:1px solid #5cdbf5;border-radius:50%;background:#092b3d;color:#bdf5ff;font-size:28px;line-height:1;cursor:pointer}
+.sp-bridge{clear:both;padding:8px 4px 4px;color:#eefaff}.sp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px}.sp-title{font-size:27px;font-weight:1000}.sp-period{font-size:15px;font-weight:800;color:#72e9ff}.sp-badge{padding:8px 12px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff2b;font-size:13px;font-weight:900}
+.sp-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.sp-kpi{background:linear-gradient(145deg,rgba(11,42,63,.78),rgba(4,22,38,.88));border:1px solid rgba(91,221,255,.22);border-radius:13px;padding:12px 14px}.sp-kpi span{display:block;color:#8bdcec;font-size:12px;font-weight:800}.sp-kpi b{display:block;font-size:32px;margin-top:4px;line-height:1.05}.sp-kpi small{color:#9fcbd8;font-size:12px}.sp-kpi.primary{background:linear-gradient(145deg,#0e6c74,#124e67);border-color:#52d9df}.sp-kpi.danger{background:#651c2b;border-color:#ff6d86}.sp-kpi.good{background:#10553e;border-color:#43d99a}
+.sp-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(230px,.5fr);gap:12px;margin-top:12px}.sp-panel{background:rgba(5,24,39,.82);border:1px solid rgba(75,218,255,.2);border-radius:14px;padding:13px}.sp-panel-title{font-weight:1000;margin-bottom:10px}.sp-chart-wrap{position:relative;height:390px;padding:32px 12px 48px;border:1px solid rgba(73,223,255,.23);border-radius:16px;background:linear-gradient(rgba(48,211,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(48,211,255,.035) 1px,transparent 1px),linear-gradient(180deg,#03101e,#030d19);background-size:100% 25%,5% 100%,auto;overflow:hidden}.sp-target-line{position:absolute;left:12px;right:12px;z-index:4;border-top:2px dashed #ff637d}.sp-target-label{position:absolute;right:8px;transform:translateY(-22px);padding:2px 7px;border-radius:6px;background:#160b18;color:#ff7890;font-size:12px;font-weight:1000}.sp-target-label:before{content:"CAPACITY ";font-weight:800}
+.sp-days{height:100%;display:flex;gap:4px;align-items:stretch;position:relative;z-index:2}.sp-day{flex:1;min-width:0;height:100%;padding:0;border:0;background:transparent;color:#effaff;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:pointer;position:relative}.sp-day .bar{width:70%;min-width:10px;max-width:34px;border:1px solid #78ffdd;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#5dffd0,#00b985);box-shadow:0 0 9px rgba(22,255,185,.44)}.sp-day.warn .bar{background:linear-gradient(180deg,#ffe978,#ffc23f);border-color:#ffe98b}.sp-day.over .bar{background:linear-gradient(180deg,#ff5574,#a70f2c);border-color:#ff6b86}.sp-day .n{margin-bottom:7px;color:#edffff;font-size:14px;font-weight:1000}.sp-day .d{margin-top:8px;color:#82bccc;font-size:10px;font-weight:900;white-space:nowrap}.sp-day.off{opacity:.22;cursor:default}.sp-day .over-tag{position:absolute;left:50%;transform:translateX(-50%);top:2px;color:#ff718b;font-size:10px;font-weight:1000;white-space:nowrap}.sp-legend{margin-top:8px;color:#a9cfdb;font-size:11px}.sp-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.sp-advice{display:grid;gap:9px}.sp-advice-card{padding:13px;border:1px solid #285160;border-radius:11px;background:#0c2b39}.sp-advice-card strong{display:block;margin-bottom:8px}.sp-reco{display:flex;flex-wrap:wrap;gap:7px}.sp-reco button{border:1px solid #50bfc7;border-radius:8px;background:#0f5661;color:#fff;padding:7px 9px;font-weight:900;cursor:pointer}
+.sp-decision-modal{position:fixed;inset:0;z-index:1000000;display:none}.sp-decision-modal.show{display:block}.sp-decision-backdrop{position:absolute;inset:0;background:rgba(0,7,14,.74);backdrop-filter:blur(7px)}.sp-decision-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,92vw);max-height:82vh;overflow:auto;padding:24px;border:1px solid rgba(65,221,255,.55);border-radius:22px;background:linear-gradient(180deg,#041827,#030f1c);color:#ecfbff}.sp-decision-close{position:absolute;right:14px;top:10px;border:0;background:none;color:#9feeff;font-size:28px;cursor:pointer}.sp-decision-kicker{font-size:11px;font-weight:900;letter-spacing:.18em;color:#55ddff}.sp-decision-card h3{margin:5px 0 18px;font-size:29px}.sp-decision-main{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.sp-decision-main>div{padding:14px 16px;border:1px solid rgba(87,220,255,.25);border-radius:14px;background:rgba(11,46,66,.45)}.sp-decision-label{font-size:12px;font-weight:900;color:#91dcec}.sp-decision-value{margin-top:3px;font-size:34px;font-weight:1000}.sp-decision-status{margin:14px 0 10px;padding:10px 14px;border-radius:12px;font-size:18px;font-weight:1000;text-align:center}.sp-decision-status.ok{background:#23cd8e24;border:1px solid #34efad80;color:#76ffc7}.sp-decision-status.warn{background:#ffc2401f;border:1px solid #ffd55a8c;color:#ffe071}.sp-decision-status.over{background:#ff375921;border:1px solid #ff547099;color:#ff7f98}.sp-decision-orders{margin-top:12px;border-top:1px solid rgba(124,224,255,.16);padding-top:10px}.sp-decision-orders table{width:100%;border-collapse:collapse;font-size:13px}.sp-decision-orders th,.sp-decision-orders td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}.sp-decision-orders th{color:#8bdff2}.sp-empty{padding:14px;color:#8aaeb8}
+@media(max-width:900px){.sp-kpis{grid-template-columns:1fr 1fr}.sp-grid{grid-template-columns:1fr}.sp-chart-wrap{height:320px}.sp-day .n{font-size:11px}.sp-day .d{font-size:8px}.sp-decision-main{grid-template-columns:1fr}.capacity-modal-card{width:94vw;padding:14px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -7126,18 +7144,31 @@ function claimCycleInfo(now=new Date()){
 function updateClaimSummaryPanel(){
   const box=$('claimSummaryPanel');
   if(!box)return;
+  box.innerHTML=`<button type="button" class="capacity-launch-button" onclick="openCapacityModal()">
+    <span class="capacity-launch-icon" aria-hidden="true">▥</span>
+    <span><strong>受注キャパシティ</strong><small>クリックして確認</small></span>
+    <span class="capacity-launch-arrow" aria-hidden="true">›</span>
+  </button>`;
+  refreshClaimMissionText();
+}
+
+function currentClaimMissionText(){
   const cycle=claimCycleInfo(new Date());
   const closingKey=localDateKey(cycle.end);
   const applies=claimRemoteData&&claimRemoteData.closingDate===closingKey;
   const count=applies?claimRemoteData.count:0;
   const info=applies?claimRemoteData.info:'';
-  box.innerHTML=`
-    <div class="claim-summary-head">
-      <div class="claim-summary-title">⚠ クレーム</div>
-      <div class="claim-summary-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
-    </div>
-    <div class="claim-summary-count"><strong>${fmt(count)}</strong><span>回</span></div>
-    <div class="claim-summary-info ${info?'':'empty'}">${escapeHtml(info||'クレーム情報なし')}</div>`;
+  return `⚠ クレーム ${fmt(count)}回｜${info||'クレーム情報なし'}｜${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}`;
+}
+
+function refreshClaimMissionText(){
+  const text=currentClaimMissionText();
+  ['standardBannerMessage','gameBannerMessage'].forEach(id=>{
+    const element=$(id);
+    if(!element)return;
+    element.textContent=text;
+    element.dataset.missionText=text;
+  });
 }
 function bonusCycleInfo(now=new Date()){
   const start=new Date(now.getFullYear(),now.getMonth()-(now.getDate()<=20?1:0),21);
@@ -8121,15 +8152,12 @@ function stopStandardMessageRotation(){
 
 function renderStandardRotatingMessage(restorePosition=false){
   if(!standardMessageElement)return;
-  const lines=standardMessageGroups[standardMessageKey]||standardMessageGroups.today;
-  const createLine=lines[standardMessageIndex%lines.length];
-  const missionText=createLine(standardMessageContext);
+  const missionText=currentClaimMissionText();
   standardMessageElement.dataset.missionText=missionText;
   standardMessageElement.dataset.missionKey=`standard-${standardMessageKey}`;
   standardMessageElement.textContent=missionText;
   if(standardVisualMessageElement){
-    const visualLine=lines[(standardMessageIndex+1)%lines.length];
-    standardVisualMessageElement.textContent=visualLine(standardMessageContext);
+    standardVisualMessageElement.textContent=missionText;
   }
   restartOneLapAnimation(standardMessageElement);
   if(restorePosition){
@@ -8187,11 +8215,7 @@ function stopNgMessageRotation(){
 function renderNgRotatingMessage(restorePosition=false){
   const element=ngMessageElement||$('gameBannerMessage');
   if(!element)return;
-  const lateLines=ngLateCompletionMessages;
-  const lines=ngMessageContext.lateCompletion?lateLines:standardMessageGroups['today-ng'];
-  const text=ngMessageContext.lateCompletion
-    ? lines[ngMessageIndex%lines.length]
-    : lines[ngMessageIndex%lines.length](ngMessageContext);
+  const text=currentClaimMissionText();
   element.textContent=text;
   element.dataset.missionKey='today-ng';
   restartOneLapAnimation(element);
@@ -9825,5 +9849,164 @@ setInterval(()=>{
 })();
 </script>
 
+<div id="capacityModal" class="capacity-modal" aria-hidden="true">
+  <div class="capacity-modal-backdrop" onclick="closeCapacityModal()"></div>
+  <section class="capacity-modal-card" role="dialog" aria-modal="true" aria-labelledby="capacityModalTitle">
+    <button class="capacity-modal-close" type="button" onclick="closeCapacityModal()" aria-label="閉じる">×</button>
+    <section class="sp-bridge" id="salesProductionBridge">
+      <div class="sp-head">
+        <div><div class="sp-title" id="capacityModalTitle">受注キャパシティ</div><div class="sp-period" id="spPeriod">本日 → 20営業日先</div></div>
+        <div class="sp-badge">450件 / 日</div>
+      </div>
+      <div class="sp-kpis">
+        <div class="sp-kpi primary"><span>CAPACITY</span><b>450</b><small>件 / 日</small></div>
+        <div class="sp-kpi" id="spBookedCard"><span>MAX</span><b><span id="spBooked">0</span><span style="font-size:.48em"> / 450</span></b><small id="spBookedSub">製造期限</small></div>
+        <div class="sp-kpi" id="spRemainCard"><span>余力</span><b id="spRemain">450</b><small id="spRemainSub">数量</small></div>
+        <div class="sp-kpi" id="spRiskCard"><span>OVER</span><b><span id="spRisk">0</span><span style="font-size:.48em">日</span></b><small id="spDailyTarget">450 / 日</small></div>
+      </div>
+      <div class="sp-grid">
+        <div class="sp-panel">
+          <div class="sp-panel-title">製造期限</div>
+          <div class="sp-chart-wrap"><div class="sp-target-line" id="spTargetLine"><span class="sp-target-label" id="spTargetLabel">450</span></div><div class="sp-days" id="spDays"></div></div>
+          <div class="sp-legend"><span><i class="sp-dot" style="background:#38b879"></i>製造期限 数量</span></div>
+        </div>
+        <div class="sp-panel"><div class="sp-panel-title">おすすめ</div><div class="sp-advice" id="spAdvice"></div></div>
+      </div>
+    </section>
+  </section>
+</div>
+
+<div id="spDecisionModal" class="sp-decision-modal" aria-hidden="true">
+  <div class="sp-decision-backdrop" onclick="spCloseDecision()"></div>
+  <section class="sp-decision-card" role="dialog" aria-modal="true" aria-labelledby="spDecisionTitle">
+    <button class="sp-decision-close" type="button" onclick="spCloseDecision()" aria-label="閉じる">×</button>
+    <div class="sp-decision-kicker">SALES × PRODUCTION</div>
+    <h3 id="spDecisionTitle">製造期限</h3>
+    <div class="sp-decision-main">
+      <div><div class="sp-decision-label">現在</div><div id="spDecisionCurrent" class="sp-decision-value">0</div></div>
+      <div><div class="sp-decision-label">CAPACITY</div><div class="sp-decision-value">450</div></div>
+      <div><div id="spDecisionRemainLabel" class="sp-decision-label">余力</div><div id="spDecisionRemain" class="sp-decision-value">450</div></div>
+    </div>
+    <div id="spDecisionStatus" class="sp-decision-status ok">投入可能</div>
+    <div id="spDecisionOrders" class="sp-decision-orders"></div>
+  </section>
+</div>
+
+<script>
+const SP_DAILY_CAPACITY=450;
+let SP_BRIDGE_DAYS=[];
+let SP_BRIDGE_ROW_MAP=new Map();
+
+function spCycleRange(){
+  const start=new Date();
+  start.setHours(0,0,0,0);
+  const end=new Date(start);
+  let businessDays=0;
+  while(businessDays<20){
+    end.setDate(end.getDate()+1);
+    if(isSystemBusinessDay(end))businessDays++;
+  }
+  end.setHours(0,0,0,0);
+  return {start,end};
+}
+function spIsCancel(row){return /ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));}
+function spShortDate(date){return `${date.getMonth()+1}/${date.getDate()}`;}
+
+function openCapacityModal(){
+  renderSalesProductionBridge();
+  const modal=$('capacityModal');
+  if(!modal)return;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  modal.querySelector('.capacity-modal-close')?.focus();
+}
+function closeCapacityModal(){
+  const modal=$('capacityModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+function spOpenDate(key){
+  const day=SP_BRIDGE_DAYS.find(item=>item.key===key);
+  if(!day)return;
+  const current=Math.round(day.count||0);
+  const delta=SP_DAILY_CAPACITY-current;
+  $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
+  $('spDecisionCurrent').textContent=current;
+  $('spDecisionRemainLabel').textContent=delta>=0?'余力':'OVER';
+  $('spDecisionRemain').textContent=Math.abs(delta);
+  const status=$('spDecisionStatus');
+  status.className='sp-decision-status '+(delta<0?'over':current>=SP_DAILY_CAPACITY*.9?'warn':'ok');
+  status.textContent=delta<0?`CAPACITY超過　${Math.abs(delta)}`:current>=SP_DAILY_CAPACITY*.9?`残り ${delta}　要注意`:`投入可能　残り ${delta}`;
+  const list=(SP_BRIDGE_ROW_MAP.get(key)||[]).slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
+  $('spDecisionOrders').innerHTML=list.length?`<table><thead><tr><th>製造指示番号</th><th>品番 / 品名</th><th>数量</th><th>進捗</th></tr></thead><tbody>${list.map(row=>`<tr><td>${escapeHtml(row.no||'—')}</td><td>${escapeHtml([row.part,row.name].filter(Boolean).join(' / ')||'—')}</td><td>${Math.round(Number(row.qty)||0)}</td><td>${escapeHtml(row.status||'—')}</td></tr>`).join('')}</tbody></table>`:'<div class="sp-empty">対象データなし</div>';
+  const modal=$('spDecisionModal');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+}
+function spCloseDecision(){
+  const modal=$('spDecisionModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+function renderSalesProductionBridge(){
+  if(!$('salesProductionBridge')||typeof rows==='undefined')return;
+  const {start,end}=spCycleRange();
+  const startKey=formatLocalDate(start),endKey=formatLocalDate(end);
+  const days=[];
+  for(let date=new Date(start);date<=end;date.setDate(date.getDate()+1)){
+    const copy=new Date(date);
+    days.push({date:copy,key:formatLocalDate(copy),business:isSystemBusinessDay(copy),count:0});
+  }
+  const dayMap=new Map(days.map(day=>[day.key,day]));
+  SP_BRIDGE_ROW_MAP=new Map();
+  rows.filter(row=>!spIsCancel(row)).forEach(row=>{
+    if(row.due&&row.due>=startKey&&row.due<=endKey){
+      const day=dayMap.get(row.due);
+      if(day)day.count+=(Number(row.qty)||0);
+      if(!SP_BRIDGE_ROW_MAP.has(row.due))SP_BRIDGE_ROW_MAP.set(row.due,[]);
+      SP_BRIDGE_ROW_MAP.get(row.due).push(row);
+    }
+  });
+  SP_BRIDGE_DAYS=days;
+  const business=days.filter(day=>day.business);
+  const peak=business.length?Math.max(...business.map(day=>day.count)):0;
+  const peakDay=business.find(day=>day.count===peak);
+  const remain=Math.max(0,SP_DAILY_CAPACITY-peak);
+  const overloaded=business.filter(day=>day.count>SP_DAILY_CAPACITY);
+  $('spPeriod').textContent=`${spShortDate(start)} → ${spShortDate(end)}`;
+  $('spBooked').textContent=Math.round(peak);
+  $('spBookedSub').textContent=peakDay?`${spShortDate(peakDay.date)} 製造期限`:'製造期限';
+  $('spRemain').textContent=Math.round(remain);
+  $('spRisk').textContent=overloaded.length;
+  $('spRiskCard').className='sp-kpi '+(overloaded.length?'danger':'good');
+  $('spRemainCard').className='sp-kpi '+(peak>SP_DAILY_CAPACITY*.9?'danger':peak<SP_DAILY_CAPACITY*.7?'good':'');
+  const dataMax=Math.max(SP_DAILY_CAPACITY,...business.map(day=>day.count),1);
+  const niceStep=dataMax<=600?100:dataMax<=1200?200:500;
+  const chartMax=Math.ceil((dataMax*1.12)/niceStep)*niceStep;
+  const targetPct=SP_DAILY_CAPACITY/chartMax*100;
+  $('spTargetLine').style.top=`calc(32px + ${(100-targetPct)*.78}%)`;
+  const best=business.filter(day=>day.count<SP_DAILY_CAPACITY).sort((a,b)=>a.date-b.date).slice(0,5);
+  $('spDays').innerHTML=days.map(day=>{
+    const height=day.business?Math.max(1.5,Math.min(100,day.count/chartMax*100)):1;
+    if(!day.business)return `<button class="sp-day off" disabled><div class="bar" style="height:${height}%"></div><div class="d">${spShortDate(day.date)}</div></button>`;
+    const ratio=day.count/SP_DAILY_CAPACITY;
+    const state=ratio>1?'over':ratio>=.9?'warn':'';
+    const over=day.count>SP_DAILY_CAPACITY?Math.round(day.count-SP_DAILY_CAPACITY):0;
+    return `<button class="sp-day ${state}" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 数量 ${Math.round(day.count)}">${over?`<div class="over-tag">+${over} OVER</div>`:''}<div class="n">${Math.round(day.count)}</div><div class="bar" style="height:${height}%"></div><div class="d">${spShortDate(day.date)}</div></button>`;
+  }).join('');
+  const recommendations=best.map(day=>`<button onclick="spOpenDate('${day.key}')">${spShortDate(day.date)}</button>`).join('');
+  $('spAdvice').innerHTML=`<div class="sp-advice-card"><strong>投入可能日</strong><div class="sp-reco">${recommendations||'—'}</div></div>`;
+}
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Escape')return;
+  if($('spDecisionModal')?.classList.contains('show'))spCloseDecision();
+  else closeCapacityModal();
+});
+updateClaimSummaryPanel();
+</script>
 </body>
 </html>
