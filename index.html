@@ -6621,6 +6621,14 @@ body.bonus-day-3man .bonus-title::after,
 .ng-clock-status-panel .game-clock.visual-hud-clock>#gameDate{position:absolute!important;top:12px!important;left:12px!important;right:12px!important;width:auto!important;margin:0!important}
 .ng-clock-status-panel .analog-clock{position:absolute!important;top:66px!important;left:50%!important;width:326px!important;max-width:calc(100% - 12px)!important;transform:translateX(-50%)!important}
 .ng-clock-status-panel .boss-status-label{position:relative!important;z-index:8!important;margin-top:0!important}
+
+/* Capacity modal: chart-only, senior-readable */
+.capacity-modal-card{width:calc(100vw - 36px)!important;max-width:none!important;height:calc(100vh - 36px)!important;max-height:none!important;box-sizing:border-box!important;padding:24px 28px!important;overflow:hidden!important}
+.capacity-modal-card .sp-bridge{height:100%!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;padding:0!important}
+.capacity-modal-card .sp-head{flex:0 0 auto!important;margin:0 0 14px!important;align-items:center!important}.capacity-modal-card .sp-title{font-size:36px!important}.capacity-modal-card .sp-period{font-size:20px!important}.capacity-modal-card .sp-badge{font-size:18px!important;padding:10px 16px!important}
+.capacity-modal-card .sp-kpis{display:none!important}.capacity-modal-card .sp-grid{display:block!important;flex:1 1 auto!important;min-height:0!important;margin:0!important}.capacity-modal-card .sp-grid>.sp-panel:first-child{height:100%!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;padding:16px!important}.capacity-modal-card .sp-grid>.sp-panel:nth-child(2){display:none!important}
+.capacity-modal-card .sp-panel-title{display:block!important;flex:0 0 auto!important;margin:0 0 10px!important;font-size:27px!important;color:#effdff!important}.capacity-modal-card .sp-chart-wrap{position:relative!important;flex:1 1 auto!important;height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important}.capacity-modal-card .sp-days{position:absolute!important;z-index:2!important;left:18px!important;right:18px!important;top:58px!important;bottom:62px!important;height:auto!important;display:flex!important;gap:7px!important;align-items:stretch!important}.capacity-modal-card .sp-day{display:grid!important;grid-template-rows:minmax(0,1fr) 42px!important;height:100%!important;min-width:0!important;overflow:visible!important}.capacity-modal-card .sp-bar-zone{position:relative!important;width:100%!important;height:100%!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;overflow:visible!important}.capacity-modal-card .sp-day .bar{position:relative!important;flex:0 0 auto!important;width:min(72%,42px)!important;min-width:18px!important;max-width:42px!important}.capacity-modal-card .sp-day .n{position:absolute!important;left:50%!important;top:-34px!important;transform:translateX(-50%)!important;margin:0!important;color:#f3fdff!important;font-size:22px!important;line-height:1!important;white-space:nowrap!important;text-shadow:0 2px 3px #001522,0 0 8px rgba(101,230,255,.5)!important}.capacity-modal-card .sp-day .d{align-self:center!important;margin:0!important;color:#b8e5ef!important;font-size:16px!important;line-height:1!important;white-space:nowrap!important}.capacity-modal-card .sp-day.off .d{color:#567b86!important}.capacity-modal-card .sp-day .over-tag{top:0!important;font-size:15px!important}.capacity-modal-card .sp-target-line{left:18px!important;right:18px!important;border-top-width:3px!important}.capacity-modal-card .sp-target-label{font-size:17px!important;transform:translateY(-28px)!important}.capacity-modal-card .sp-legend{display:none!important}
+@media(max-width:1100px){.capacity-modal-card .sp-days{overflow-x:auto!important;gap:10px!important}.capacity-modal-card .sp-day{min-width:54px!important}.capacity-modal-card .sp-title{font-size:29px!important}.capacity-modal-card .sp-panel-title{font-size:23px!important}}
 </style>
 </head>
 <body>
@@ -10106,12 +10114,12 @@ function spIsCancel(row){return /ｷｬﾝｾﾙ|キャンセル/.test(String(ro
 function spShortDate(date){return `${date.getMonth()+1}/${date.getDate()}`;}
 
 function openCapacityModal(){
-  renderSalesProductionBridge();
   const modal=$('capacityModal');
   if(!modal)return;
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
   document.body.style.overflow='hidden';
+  renderSalesProductionBridge();
   modal.querySelector('.capacity-modal-close')?.focus();
 }
 function closeCapacityModal(){
@@ -10181,15 +10189,20 @@ function renderSalesProductionBridge(){
   const niceStep=dataMax<=600?100:dataMax<=1200?200:500;
   const chartMax=Math.ceil((dataMax*1.12)/niceStep)*niceStep;
   const targetPct=SP_DAILY_CAPACITY/chartMax*100;
-  $('spTargetLine').style.top=`calc(32px + ${(100-targetPct)*.78}%)`;
+  const chartWrap=$('spDays')?.parentElement;
+  const plotTop=58;
+  const plotBottom=62;
+  const dateRow=42;
+  const barZoneHeight=Math.max(1,(chartWrap?.clientHeight||500)-plotTop-plotBottom-dateRow);
+  $('spTargetLine').style.top=`${plotTop+(1-targetPct/100)*barZoneHeight}px`;
   const best=business.filter(day=>day.count<SP_DAILY_CAPACITY).sort((a,b)=>a.date-b.date).slice(0,5);
   $('spDays').innerHTML=days.map(day=>{
     const height=day.business?Math.max(1.5,Math.min(100,day.count/chartMax*100)):1;
-    if(!day.business)return `<button class="sp-day off" disabled><div class="bar" style="height:${height}%"></div><div class="d">${spShortDate(day.date)}</div></button>`;
+    if(!day.business)return `<button class="sp-day off" disabled><div class="sp-bar-zone"><div class="bar" style="height:${height}%"></div></div><div class="d">${spShortDate(day.date)}</div></button>`;
     const ratio=day.count/SP_DAILY_CAPACITY;
     const state=ratio>1?'over':ratio>=.9?'warn':'';
     const over=day.count>SP_DAILY_CAPACITY?Math.round(day.count-SP_DAILY_CAPACITY):0;
-    return `<button class="sp-day ${state}" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 数量 ${Math.round(day.count)}">${over?`<div class="over-tag">+${over} OVER</div>`:''}<div class="n">${Math.round(day.count)}</div><div class="bar" style="height:${height}%"></div><div class="d">${spShortDate(day.date)}</div></button>`;
+    return `<button class="sp-day ${state}" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 数量 ${Math.round(day.count)}"><div class="sp-bar-zone">${over?`<div class="over-tag">+${over} OVER</div>`:''}<div class="bar" style="height:${height}%"><div class="n">${Math.round(day.count)}</div></div></div><div class="d">${spShortDate(day.date)}</div></button>`;
   }).join('');
   const recommendations=best.map(day=>`<button onclick="spOpenDate('${day.key}')">${spShortDate(day.date)}</button>`).join('');
   $('spAdvice').innerHTML=`<div class="sp-advice-card"><strong>投入可能日</strong><div class="sp-reco">${recommendations||'—'}</div></div>`;
