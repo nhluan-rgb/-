@@ -6613,6 +6613,14 @@ body.bonus-day-3man .bonus-title::after,
 .ng-clock-status-panel .boss-mission-slot{height:398px!important;min-height:398px!important;flex-basis:398px!important;margin:-10px 0 16px!important}
 .ng-clock-status-panel .game-clock.visual-hud-clock{position:relative!important;height:398px!important;min-height:398px!important;padding:0!important;display:block!important;overflow:hidden!important}
 .ng-clock-status-panel .game-clock.visual-hud-clock>#gameDate{top:8px!important;left:10px!important;right:10px!important;z-index:5!important;height:42px!important;line-height:20px!important;padding:10px 12px!important;background:linear-gradient(180deg,rgba(8,62,84,.98),rgba(4,37,59,.98))!important;box-shadow:0 4px 0 #021b2c,0 0 14px rgba(65,218,255,.18)!important}
+
+/* Absolute clock geometry: header, face and status never overlap */
+.ng-clock-status-panel{position:relative!important;padding-top:0!important}
+.ng-clock-status-panel .boss-mission-slot{position:relative!important;width:100%!important;height:410px!important;min-height:410px!important;flex:0 0 410px!important;margin:0 0 10px!important;display:block!important;overflow:visible!important}
+.ng-clock-status-panel .game-clock.visual-hud-clock{position:static!important;width:100%!important;height:410px!important;min-height:410px!important;display:block!important;overflow:visible!important}
+.ng-clock-status-panel .game-clock.visual-hud-clock>#gameDate{position:absolute!important;top:12px!important;left:12px!important;right:12px!important;width:auto!important;margin:0!important}
+.ng-clock-status-panel .analog-clock{position:absolute!important;top:66px!important;left:50%!important;width:326px!important;max-width:calc(100% - 12px)!important;transform:translateX(-50%)!important}
+.ng-clock-status-panel .boss-status-label{position:relative!important;z-index:8!important;margin-top:0!important}
 </style>
 </head>
 <body>
