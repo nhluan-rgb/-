@@ -6586,6 +6586,15 @@ body.bonus-day-3man .bonus-title::after,
 .ng-clock-status-panel .game-clock.visual-hud-clock>small,.ng-clock-status-panel .game-clock.visual-hud-clock>#gameClock{display:none!important}
 .analog-clock{display:block;width:min(100%,310px);height:auto;overflow:visible;filter:drop-shadow(0 12px 18px rgba(0,0,0,.42))}
 .analog-clock .clock-frame{fill:url(#analogFaceGradient);stroke:#66dfff;stroke-width:5;filter:drop-shadow(0 0 9px rgba(66,219,255,.45))}.analog-clock .clock-inner{fill:none;stroke:rgba(154,235,255,.32);stroke-width:2}.analog-clock .clock-tick{stroke:#8ccfe0;stroke-width:2;stroke-linecap:round}.analog-clock .clock-tick.major{stroke:#e6fbff;stroke-width:4}.analog-clock .clock-number{fill:#f2fdff;font-size:25px;font-weight:1000;text-anchor:middle;dominant-baseline:middle;text-shadow:0 2px 3px #00111f}.analog-clock .clock-date{fill:#8feeff;font-size:14px;font-weight:900;text-anchor:middle;letter-spacing:.06em}.analog-clock .clock-caption{fill:#8eb9c7;font-size:9px;font-weight:800;text-anchor:middle;letter-spacing:.24em}.analog-clock .clock-hand{transform-origin:150px 150px;stroke-linecap:round}.analog-clock .hour-hand{stroke:#eefcff;stroke-width:9}.analog-clock .minute-hand{stroke:#8deaff;stroke-width:6}.analog-clock .second-hand{stroke:#ff6e82;stroke-width:2}.analog-clock .clock-pin{fill:#ffdf72;stroke:#fff4bd;stroke-width:2;filter:drop-shadow(0 0 5px #ffd34f)}
+
+/* Keep the analog face inside its own zone; never overlap shipment status */
+.ng-clock-status-panel{justify-content:flex-start!important;padding:14px 20px 18px!important;gap:0!important;overflow:hidden!important}
+.ng-clock-status-panel .boss-mission-slot{height:292px!important;min-height:292px!important;margin:0 0 10px!important;display:grid!important;place-items:center!important;flex:0 0 292px!important}
+.ng-clock-status-panel .game-clock.visual-hud-clock{height:292px!important;min-height:292px!important;padding:5px!important;overflow:hidden!important}
+.ng-clock-status-panel .analog-clock{width:276px!important;max-width:100%!important;filter:drop-shadow(0 8px 12px rgba(0,0,0,.38))}
+.ng-clock-status-panel .boss-status-label{position:relative!important;z-index:3!important;flex:0 0 auto!important;margin:0 0 12px!important}
+.ng-clock-status-panel .boss-hp-value{font-size:45px!important;margin:4px 0 0!important}.ng-clock-status-panel .boss-points{font-size:18px!important}.ng-clock-status-panel .boss-track{height:23px!important;margin:14px 0 7px!important}.ng-clock-status-panel .boss-goal{font-size:15px!important}
+@media(max-width:1500px){.ng-clock-status-panel .boss-mission-slot,.ng-clock-status-panel .game-clock.visual-hud-clock{height:270px!important;min-height:270px!important;flex-basis:270px!important}.ng-clock-status-panel .analog-clock{width:254px!important}.ng-clock-status-panel .boss-hp-value{font-size:40px!important}}
 </style>
 </head>
 <body>
