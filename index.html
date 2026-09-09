@@ -6629,6 +6629,8 @@ body.bonus-day-3man .bonus-title::after,
 .capacity-modal-card .sp-kpis{display:none!important}.capacity-modal-card .sp-grid{display:block!important;flex:1 1 auto!important;min-height:0!important;margin:0!important}.capacity-modal-card .sp-grid>.sp-panel:first-child{height:100%!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;padding:16px!important}.capacity-modal-card .sp-grid>.sp-panel:nth-child(2){display:none!important}
 .capacity-modal-card .sp-panel-title{display:block!important;flex:0 0 auto!important;margin:0 0 10px!important;font-size:27px!important;color:#effdff!important}.capacity-modal-card .sp-chart-wrap{position:relative!important;flex:1 1 auto!important;height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important}.capacity-modal-card .sp-days{position:absolute!important;z-index:2!important;left:18px!important;right:18px!important;top:58px!important;bottom:62px!important;height:auto!important;display:flex!important;gap:7px!important;align-items:stretch!important}.capacity-modal-card .sp-day{display:grid!important;grid-template-rows:minmax(0,1fr) 42px!important;height:100%!important;min-width:0!important;overflow:visible!important}.capacity-modal-card .sp-bar-zone{position:relative!important;width:100%!important;height:100%!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;overflow:visible!important}.capacity-modal-card .sp-day .bar{position:relative!important;flex:0 0 auto!important;width:min(72%,42px)!important;min-width:18px!important;max-width:42px!important}.capacity-modal-card .sp-day .n{position:absolute!important;left:50%!important;top:-34px!important;transform:translateX(-50%)!important;margin:0!important;color:#f3fdff!important;font-size:22px!important;line-height:1!important;white-space:nowrap!important;text-shadow:0 2px 3px #001522,0 0 8px rgba(101,230,255,.5)!important}.capacity-modal-card .sp-day .d{align-self:center!important;margin:0!important;color:#b8e5ef!important;font-size:16px!important;line-height:1!important;white-space:nowrap!important}.capacity-modal-card .sp-day.off .d{color:#567b86!important}.capacity-modal-card .sp-day .over-tag{top:0!important;font-size:15px!important}.capacity-modal-card .sp-target-line{left:18px!important;right:18px!important;border-top-width:3px!important}.capacity-modal-card .sp-target-label{font-size:17px!important;transform:translateY(-28px)!important}.capacity-modal-card .sp-legend{display:none!important}
 @media(max-width:1100px){.capacity-modal-card .sp-days{overflow-x:auto!important;gap:10px!important}.capacity-modal-card .sp-day{min-width:54px!important}.capacity-modal-card .sp-title{font-size:29px!important}.capacity-modal-card .sp-panel-title{font-size:23px!important}}
+.sp-decision-card{width:min(980px,94vw)!important}.sp-category-view{display:grid;grid-template-columns:360px 1fr;gap:26px;align-items:center;padding:18px 4px 8px}.sp-category-pie-wrap{display:grid;place-items:center}.sp-category-pie{position:relative;width:320px;height:320px;border-radius:50%;box-shadow:0 0 30px rgba(63,218,255,.18),inset 0 0 22px rgba(0,0,0,.35)}.sp-category-pie::after{content:"";position:absolute;inset:82px;border-radius:50%;background:#061b2b;border:2px solid rgba(117,226,255,.3)}.sp-category-pie-center{position:absolute;z-index:2;inset:95px;display:grid;place-items:center;align-content:center;text-align:center}.sp-category-pie-center strong{font-size:42px;line-height:1;color:#fff}.sp-category-pie-center small{margin-top:8px;font-size:16px;color:#9edcea;font-weight:900}.sp-category-legend{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sp-category-button{display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border:1px solid rgba(104,213,238,.28);border-radius:11px;background:rgba(8,42,61,.82);color:#effcff;text-align:left;cursor:pointer}.sp-category-button:hover{border-color:#79e7ff;background:#0c526d}.sp-category-dot{width:14px;height:14px;border-radius:50%;box-shadow:0 0 8px currentColor}.sp-category-name{font-size:17px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sp-category-value{font-size:20px;font-weight:1000;color:#8cecff}.sp-detail-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.sp-back-button{padding:9px 14px;border:1px solid #62dff8;border-radius:9px;background:#0b4b64;color:#fff;font-size:15px;font-weight:900;cursor:pointer}.sp-detail-type{font-size:20px;font-weight:1000;color:#9cecff}.sp-decision-orders table{font-size:15px!important}.sp-decision-orders th,.sp-decision-orders td{padding:11px 8px!important}.sp-decision-hint{margin-top:14px;color:#92cbd8;font-size:14px;font-weight:800;text-align:center}
+@media(max-width:760px){.sp-category-view{grid-template-columns:1fr}.sp-category-pie{width:260px;height:260px}.sp-category-pie::after{inset:68px}.sp-category-pie-center{inset:78px}.sp-category-legend{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -10097,6 +10099,8 @@ setInterval(()=>{
 const SP_DAILY_CAPACITY=450;
 let SP_BRIDGE_DAYS=[];
 let SP_BRIDGE_ROW_MAP=new Map();
+let SP_SELECTED_DAY_KEY='';
+let SP_SELECTED_CATEGORIES=[];
 
 function spCycleRange(){
   const start=new Date();
@@ -10141,11 +10145,45 @@ function spOpenDate(key){
   const status=$('spDecisionStatus');
   status.className='sp-decision-status '+(delta<0?'over':current>=SP_DAILY_CAPACITY*.9?'warn':'ok');
   status.textContent=delta<0?`CAPACITY超過　${Math.abs(delta)}`:current>=SP_DAILY_CAPACITY*.9?`残り ${delta}　要注意`:`投入可能　残り ${delta}`;
-  const list=(SP_BRIDGE_ROW_MAP.get(key)||[]).slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
-  $('spDecisionOrders').innerHTML=list.length?`<table><thead><tr><th>製造指示番号</th><th>品番 / 品名</th><th>数量</th><th>進捗</th></tr></thead><tbody>${list.map(row=>`<tr><td>${escapeHtml(row.no||'—')}</td><td>${escapeHtml([row.part,row.name].filter(Boolean).join(' / ')||'—')}</td><td>${Math.round(Number(row.qty)||0)}</td><td>${escapeHtml(row.status||'—')}</td></tr>`).join('')}</tbody></table>`:'<div class="sp-empty">対象データなし</div>';
+  const list=(SP_BRIDGE_ROW_MAP.get(key)||[]).slice();
+  const grouped=new Map();
+  list.forEach(row=>{
+    const label=String(row.name||row.part||'その他').trim()||'その他';
+    if(!grouped.has(label))grouped.set(label,{label,qty:0,rows:[]});
+    const group=grouped.get(label);
+    group.qty+=Number(row.qty)||0;
+    group.rows.push(row);
+  });
+  let categories=[...grouped.values()].sort((a,b)=>b.qty-a.qty);
+  if(categories.length>8){
+    const rest=categories.slice(7);
+    categories=categories.slice(0,7).concat({label:'その他',qty:rest.reduce((sum,item)=>sum+item.qty,0),rows:rest.flatMap(item=>item.rows)});
+  }
+  SP_SELECTED_DAY_KEY=key;
+  SP_SELECTED_CATEGORIES=categories;
+  const colors=['#46d9ff','#ff9f43','#55e6a5','#b88cff','#ff6682','#ffd75f','#55a8ff','#8ed36f'];
+  const total=Math.max(1,categories.reduce((sum,item)=>sum+item.qty,0));
+  let cursor=0;
+  const slices=categories.map((item,index)=>{
+    const start=cursor;
+    cursor+=item.qty/total*100;
+    return `${colors[index%colors.length]} ${start.toFixed(2)}% ${cursor.toFixed(2)}%`;
+  });
+  $('spDecisionOrders').innerHTML=categories.length?`<div class="sp-category-view">
+    <div class="sp-category-pie-wrap"><div class="sp-category-pie" style="background:conic-gradient(${slices.join(',')})"><div class="sp-category-pie-center"><strong>${Math.round(total)}</strong><small>数量</small></div></div></div>
+    <div><div class="sp-category-legend">${categories.map((item,index)=>`<button type="button" class="sp-category-button" onclick="spOpenCategory(${index})"><span class="sp-category-dot" style="background:${colors[index%colors.length]};color:${colors[index%colors.length]}"></span><span class="sp-category-name" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</span><span class="sp-category-value">${Math.round(item.qty)}</span></button>`).join('')}</div><div class="sp-decision-hint">品種を選択すると詳細を表示します</div></div>
+  </div>`:'<div class="sp-empty">対象データなし</div>';
   const modal=$('spDecisionModal');
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
+}
+function spOpenCategory(index){
+  const category=SP_SELECTED_CATEGORIES[index];
+  const day=SP_BRIDGE_DAYS.find(item=>item.key===SP_SELECTED_DAY_KEY);
+  if(!category||!day)return;
+  $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
+  const list=category.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-detail-type">${escapeHtml(category.label)}　${Math.round(category.qty)}</div></div><table><thead><tr><th>製造指示番号</th><th>品番 / 品名</th><th>数量</th><th>進捗</th></tr></thead><tbody>${list.map(row=>`<tr><td>${escapeHtml(row.no||'—')}</td><td>${escapeHtml([row.part,row.name].filter(Boolean).join(' / ')||'—')}</td><td>${Math.round(Number(row.qty)||0)}</td><td>${escapeHtml(row.status||'—')}</td></tr>`).join('')}</tbody></table>`;
 }
 function spCloseDecision(){
   const modal=$('spDecisionModal');
