@@ -6641,6 +6641,7 @@ body.bonus-day-3man .bonus-title::after,
 .capacity-modal-card .sp-day .d{display:flex!important;flex-direction:column!important;align-items:center!important;gap:1px!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important;letter-spacing:0!important}.capacity-modal-card .sp-day .d .date-number{display:block!important;min-width:2ch!important;text-align:center!important;white-space:nowrap!important;letter-spacing:0!important}.capacity-modal-card .sp-day .over-tag{left:50%!important;top:8px!important;transform:translateX(-50%)!important;z-index:9!important;min-width:max-content!important;padding:4px 7px!important;font-size:13px!important;line-height:1!important;white-space:nowrap!important}.capacity-modal-card .sp-target-line{z-index:1!important;border-top:7px solid rgba(255,83,116,.38)!important}.capacity-modal-card .sp-target-label{z-index:3!important;transform:translateY(-31px)!important}.capacity-modal-card .sp-target-label:before{content:'上限 '!important}.capacity-modal-card .sp-days{z-index:2!important}
 .capacity-modal-card .sp-over-summary{display:flex;flex:0 0 auto;align-items:center;flex-wrap:wrap;gap:8px 12px;min-height:42px;margin:0 0 10px;padding:7px 12px;border:1px solid rgba(255,91,119,.45);border-radius:10px;background:rgba(83,8,27,.5);font-size:16px;font-weight:1000}.sp-over-heading{display:inline-flex;align-items:center;gap:7px;color:#ff91a5}.sp-over-heading i{width:16px;height:16px;border-radius:50%;background:#ff294f;box-shadow:0 0 12px #ff294f;animation:spAlertPulse .8s ease-in-out infinite alternate}.sp-over-item{padding:5px 10px;border-radius:7px;background:#8b1430;color:#fff}.sp-over-item b{color:#ffe66b;font-size:19px}.sp-over-clear{color:#69efb6}.capacity-modal-card .sp-day.over .sp-stacked-bar{border:3px solid #ff3659!important;box-shadow:0 0 15px rgba(255,54,89,.85)!important}.capacity-modal-card .sp-target-label{right:30px!important;white-space:nowrap!important}.capacity-modal-card .sp-target-line{z-index:1!important}.capacity-modal-card .sp-days{z-index:2!important}@keyframes spAlertPulse{from{opacity:.5;transform:scale(.82)}to{opacity:1;transform:scale(1.15)}}
 .capacity-modal-card .sp-days{bottom:12px!important;gap:12px!important}.capacity-modal-card .sp-day{grid-template-rows:minmax(0,1fr) 92px!important}.capacity-modal-card .sp-day .bar{width:68%!important;min-width:42px!important;max-width:72px!important}.capacity-modal-card .sp-day .n{min-width:58px!important;text-align:center!important;font-size:27px!important}.capacity-modal-card .sp-target-line{left:18px!important;right:18px!important}
+.capacity-modal-card .sp-overtime-line{position:absolute;left:18px;right:18px;z-index:1;border-top:3px dashed;pointer-events:none}.capacity-modal-card .sp-overtime-line span{position:absolute;right:30px;transform:translateY(-50%);padding:4px 10px;border-radius:7px;font-size:16px;font-weight:1000;white-space:nowrap;text-shadow:0 1px 2px #000}.capacity-modal-card .sp-overtime-line.overtime-60{border-color:#ffc83d}.capacity-modal-card .sp-overtime-line.overtime-60 span{right:245px;background:#5b4305;color:#ffe27a}.capacity-modal-card .sp-overtime-line.overtime-80{border-color:#ff7a3d}.capacity-modal-card .sp-overtime-line.overtime-80 span{right:455px;background:#632507;color:#ffb184}
 @media(max-width:760px){.sp-category-view{grid-template-columns:1fr}.sp-category-pie{width:260px;height:260px}.sp-category-pie::after{inset:68px}.sp-category-pie-center{inset:78px}.sp-category-legend{grid-template-columns:1fr}.sp-product-table .col-product{width:50%!important}.sp-product-table .col-size{width:32%!important}.sp-product-table .col-qty{width:18%!important}.sp-product-cell b,.sp-decision-orders .sp-product-table .sp-size-cell{font-size:18px!important}.sp-product-cell small{font-size:15px!important}.sp-decision-orders .sp-product-table tbody td.sp-qty-cell:last-child{font-size:28px!important}}
 @media(max-width:760px){.sp-box-type-grid{grid-template-columns:1fr}.sp-box-type-name{font-size:21px}.sp-box-type-qty strong{font-size:29px}}
 </style>
@@ -10082,7 +10083,7 @@ setInterval(()=>{
       <div class="sp-grid">
         <div class="sp-panel">
           <div class="sp-panel-title">製造期限</div><div class="sp-legend sp-color-legend" id="spLegend"></div><div class="sp-over-summary" id="spOverSummary"></div>
-          <div class="sp-chart-wrap"><div class="sp-target-line" id="spTargetLine"><span class="sp-target-label" id="spTargetLabel">450点 / 日</span></div><div class="sp-days" id="spDays"></div></div>
+          <div class="sp-chart-wrap"><div class="sp-target-line" id="spTargetLine"><span class="sp-target-label" id="spTargetLabel">450点 / 日</span></div><div class="sp-overtime-line overtime-60" id="spOvertime60Line"><span>500点　残業60分予想</span></div><div class="sp-overtime-line overtime-80" id="spOvertime80Line"><span>550点　残業80分予想</span></div><div class="sp-days" id="spDays"></div></div>
         </div>
         <div class="sp-panel"><div class="sp-panel-title">おすすめ</div><div class="sp-advice" id="spAdvice"></div></div>
       </div>
@@ -10394,7 +10395,7 @@ function renderSalesProductionBridge(){
   $('spRisk').textContent=overloaded.length;
   $('spRiskCard').className='sp-kpi '+(overloaded.length?'danger':'good');
   $('spRemainCard').className='sp-kpi '+(peak>SP_DAILY_CAPACITY*.9?'danger':peak<SP_DAILY_CAPACITY*.7?'good':'');
-  const dataMax=Math.max(SP_DAILY_CAPACITY,...business.map(day=>day.count),1);
+  const dataMax=Math.max(SP_DAILY_CAPACITY,550,...business.map(day=>day.count),1);
   const niceStep=dataMax<=600?100:dataMax<=1200?200:500;
   const chartMax=Math.ceil((dataMax*1.12)/niceStep)*niceStep;
   const targetPct=SP_DAILY_CAPACITY/chartMax*100;
@@ -10421,6 +10422,8 @@ function renderSalesProductionBridge(){
   const daysTop=$('spDays').offsetTop;
   const measuredBarHeight=Math.max(1,firstBarZone?.clientHeight||1);
   $('spTargetLine').style.top=`${daysTop+(1-targetPct/100)*measuredBarHeight}px`;
+  $('spOvertime60Line').style.top=`${daysTop+(1-500/chartMax)*measuredBarHeight}px`;
+  $('spOvertime80Line').style.top=`${daysTop+(1-550/chartMax)*measuredBarHeight}px`;
   const recommendations=best.map(day=>`<button onclick="spOpenDate('${day.key}')">${spShortDate(day.date)}</button>`).join('');
   $('spAdvice').innerHTML=`<div class="sp-advice-card"><strong>投入可能日</strong><div class="sp-reco">${recommendations||'—'}</div></div>`;
 }
