@@ -10113,6 +10113,8 @@ let SP_SELECTED_BOX_SIZE_BUCKETS=[];
 let SP_SELECTED_BOX_SIZE_INDEX=-1;
 let SP_SELECTED_RACK_TYPES=[];
 let SP_SELECTED_RACK_CATEGORY_INDEX=-1;
+let SP_SELECTED_DUCT_TYPES=[];
+let SP_SELECTED_DUCT_CATEGORY_INDEX=-1;
 
 function spCycleRange(){
   const start=new Date();
@@ -10132,6 +10134,7 @@ function spCategoryLabel(row){
   const name=String(row.name||'').trim();
   const part=String(row.part||'').trim().toUpperCase();
   if(name.includes('架台'))return '架台';
+  if(name.includes('ダクト'))return 'ダクト';
   if(part.startsWith('ZKW'))return '\u30c9\u30d6\u8cab\u901a\u67a0';
   if(part.startsWith('DD'))return '\u30c0\u30a4\u30de\u30fc\u30c0\u30af\u30c8';
   if(part.startsWith('IDC'))return 'ダクトカバー';
@@ -10164,6 +10167,15 @@ function spRackTypeLabel(row){
   if(source.includes('焼付'))return '焼付';
   if(source.includes('SUS'))return 'SUS';
   if(source.includes('ZN'))return 'ZN';
+  return 'その他';
+}
+function spDuctTypeLabel(row){
+  const name=String(row.name||'').toUpperCase();
+  if(name.includes('ダクトカバー'))return 'ダクトカバー';
+  if(name.includes('SUS'))return 'SUS';
+  if(name.includes('ダイマー'))return 'ダイマー';
+  if(name.includes('鉄'))return '鉄';
+  if(name.includes('ZN'))return 'ZN';
   return 'その他';
 }
 
@@ -10247,6 +10259,21 @@ function spOpenCategory(index){
     $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-box-total">架台合計 <strong>${Math.round(category.qty)}</strong> 点</div></div><div class="sp-box-guide">架台の材質・表面処理を選択してください</div><div class="sp-box-type-grid">${SP_SELECTED_RACK_TYPES.map((item,typeIndex)=>`<button type="button" class="sp-box-type-button" onclick="spOpenRackType(${typeIndex})"><span class="sp-box-type-copy"><span class="sp-box-type-name">${escapeHtml(item.label)}</span><span class="sp-box-type-rule">品名・品番で分類</span></span><span class="sp-box-type-qty"><strong>${Math.round(item.qty)}</strong><small>点</small></span></button>`).join('')}</div>`;
     return;
   }
+  if(category.label==='ダクト'){
+    SP_SELECTED_DUCT_CATEGORY_INDEX=index;
+    const grouped=new Map();
+    category.rows.forEach(row=>{
+      const label=spDuctTypeLabel(row);
+      if(!grouped.has(label))grouped.set(label,{label,qty:0,rows:[]});
+      const group=grouped.get(label);
+      group.qty+=Number(row.qty)||0;
+      group.rows.push(row);
+    });
+    const order=['ダクトカバー','SUS','ダイマー','鉄','ZN','その他'];
+    SP_SELECTED_DUCT_TYPES=[...grouped.values()].sort((a,b)=>order.indexOf(a.label)-order.indexOf(b.label));
+    $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-box-total">ダクト合計 <strong>${Math.round(category.qty)}</strong> 点</div></div><div class="sp-box-guide">品名によるダクト分類を選択してください</div><div class="sp-box-type-grid">${SP_SELECTED_DUCT_TYPES.map((item,typeIndex)=>`<button type="button" class="sp-box-type-button" onclick="spOpenDuctType(${typeIndex})"><span class="sp-box-type-copy"><span class="sp-box-type-name">${escapeHtml(item.label)}</span><span class="sp-box-type-rule">品名で分類</span></span><span class="sp-box-type-qty"><strong>${Math.round(item.qty)}</strong><small>点</small></span></button>`).join('')}</div>`;
+    return;
+  }
   if(category.label==='ボックス'){
     SP_SELECTED_BOX_CATEGORY_INDEX=index;
     const large={label:'600mm以上',rule:'1面でも600mm以上',qty:0,rows:[]};
@@ -10270,6 +10297,14 @@ function spOpenRackType(index){
   $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
   const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
   $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_RACK_CATEGORY_INDEX})">← 架台分類</button><div class="sp-detail-type">架台 / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+}
+function spOpenDuctType(index){
+  const type=SP_SELECTED_DUCT_TYPES[index];
+  const day=SP_BRIDGE_DAYS.find(item=>item.key===SP_SELECTED_DAY_KEY);
+  if(!type||!day)return;
+  $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
+  const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_DUCT_CATEGORY_INDEX})">← ダクト分類</button><div class="sp-detail-type">ダクト / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
 }
 function spOpenBoxSize(index){
   const sizeBucket=SP_SELECTED_BOX_SIZE_BUCKETS[index];
