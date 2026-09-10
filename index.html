@@ -10131,7 +10131,7 @@ function spCycleRange(){
 function spIsCancel(row){return /ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));}
 function spShortDate(date){return `${date.getMonth()+1}/${date.getDate()}`;}
 function spCategoryLabel(row){
-  const name=String(row.name||'').trim();
+  const name=String(row.name||'').normalize('NFKC').replace(/\s+/g,' ').trim();
   const part=String(row.part||'').trim().toUpperCase();
   if(name.includes('架台'))return '架台';
   if(name.includes('ダクト'))return 'ダクト';
@@ -10161,7 +10161,7 @@ function spIsLargeBox(row){
   return dimensions.some(value=>Number(value)>=600);
 }
 function spRackTypeLabel(row){
-  const source=`${String(row.name||'')} ${String(row.part||'')}`.toUpperCase();
+  const source=`${String(row.name||'')} ${String(row.part||'')}`.normalize('NFKC').replace(/\s+/g,' ').toUpperCase();
   if(source.includes('先メッキ'))return '先メッキ';
   if(source.includes('錆止め'))return '錆止め';
   if(source.includes('焼付'))return '焼付';
@@ -10170,7 +10170,7 @@ function spRackTypeLabel(row){
   return 'その他';
 }
 function spDuctTypeLabel(row){
-  const name=String(row.name||'').toUpperCase();
+  const name=String(row.name||'').normalize('NFKC').replace(/\s+/g,'').toUpperCase();
   if(name.includes('ダクトカバー'))return 'ダクトカバー';
   if(name.includes('SUS'))return 'SUS';
   if(name.includes('ダイマー'))return 'ダイマー';
