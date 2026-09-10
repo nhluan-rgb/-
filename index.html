@@ -10109,6 +10109,8 @@ let SP_SELECTED_DAY_KEY='';
 let SP_SELECTED_CATEGORIES=[];
 let SP_SELECTED_BOX_TYPES=[];
 let SP_SELECTED_BOX_CATEGORY_INDEX=-1;
+let SP_SELECTED_BOX_SIZE_BUCKETS=[];
+let SP_SELECTED_BOX_SIZE_INDEX=-1;
 
 function spCycleRange(){
   const start=new Date();
@@ -10127,6 +10129,8 @@ function spShortDate(date){return `${date.getMonth()+1}/${date.getDate()}`;}
 function spCategoryLabel(row){
   const name=String(row.name||'').trim();
   const part=String(row.part||'').trim().toUpperCase();
+  if(part.startsWith('ZKW'))return '\u30c9\u30d6\u8cab\u901a\u67a0';
+  if(part.startsWith('DD'))return '\u30c0\u30a4\u30de\u30fc\u30c0\u30af\u30c8';
   if(part.startsWith('IDC'))return 'ダクトカバー';
   if(part.startsWith('IKW'))return '鉄貫通枠';
   if(part.startsWith('IBG'))return '防球ガード';
@@ -10145,6 +10149,10 @@ function spBoxTypeLabel(row){
 }
 function spBoxTypeRule(label){
   return ({SUS:'品番が S で始まる',ドブ:'品番に Z を含む',錆止め:'品番に G を含む',焼付:'品番に C を含む',ダイマー:'品番に D を含む',その他:'上記以外'})[label]||'';
+}
+function spIsLargeBox(row){
+  const dimensions=String(row.sizeInfo||'').match(/\d+(?:\.\d+)?/g)||[];
+  return dimensions.some(value=>Number(value)>=600);
 }
 
 function openCapacityModal(){
@@ -10214,8 +10222,27 @@ function spOpenCategory(index){
   $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
   if(category.label==='ボックス'){
     SP_SELECTED_BOX_CATEGORY_INDEX=index;
-    const grouped=new Map();
+    const large={label:'600mm以上',rule:'1面でも600mm以上',qty:0,rows:[]};
+    const small={label:'600mm未満',rule:'すべての面が600mm未満',qty:0,rows:[]};
     category.rows.forEach(row=>{
+      const bucket=spIsLargeBox(row)?large:small;
+      bucket.qty+=Number(row.qty)||0;
+      bucket.rows.push(row);
+    });
+    SP_SELECTED_BOX_SIZE_BUCKETS=[large,small];
+    $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-box-total">ボックス合計 <strong>${Math.round(category.qty)}</strong> 点</div></div><div class="sp-box-guide">最初にサイズ区分を選択してください</div><div class="sp-box-type-grid">${SP_SELECTED_BOX_SIZE_BUCKETS.map((item,sizeIndex)=>`<button type="button" class="sp-box-type-button" onclick="spOpenBoxSize(${sizeIndex})"><span class="sp-box-type-copy"><span class="sp-box-type-name">${item.label}</span><span class="sp-box-type-rule">${item.rule}</span></span><span class="sp-box-type-qty"><strong>${Math.round(item.qty)}</strong><small>点</small></span></button>`).join('')}</div>`;
+    return;
+  }
+  const list=category.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-detail-type">${escapeHtml(category.label)}　合計 ${Math.round(category.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+}
+function spOpenBoxSize(index){
+  const sizeBucket=SP_SELECTED_BOX_SIZE_BUCKETS[index];
+  const day=SP_BRIDGE_DAYS.find(item=>item.key===SP_SELECTED_DAY_KEY);
+  if(!sizeBucket||!day)return;
+  SP_SELECTED_BOX_SIZE_INDEX=index;
+    const grouped=new Map();
+    sizeBucket.rows.forEach(row=>{
       const label=spBoxTypeLabel(row);
       if(!grouped.has(label))grouped.set(label,{label,qty:0,rows:[]});
       const group=grouped.get(label);
@@ -10224,11 +10251,7 @@ function spOpenCategory(index){
     });
     const order=['SUS','ドブ','錆止め','焼付','ダイマー','その他'];
     SP_SELECTED_BOX_TYPES=[...grouped.values()].sort((a,b)=>order.indexOf(a.label)-order.indexOf(b.label));
-    $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-box-total">ボックス合計 <strong>${Math.round(category.qty)}</strong> 点</div></div><div class="sp-box-guide">処理区分を選択すると、対象品番の明細を表示します</div><div class="sp-box-type-grid">${SP_SELECTED_BOX_TYPES.map((item,typeIndex)=>`<button type="button" class="sp-box-type-button" onclick="spOpenBoxType(${typeIndex})"><span class="sp-box-type-copy"><span class="sp-box-type-name">${escapeHtml(item.label)}</span><span class="sp-box-type-rule">${escapeHtml(spBoxTypeRule(item.label))}</span></span><span class="sp-box-type-qty"><strong>${Math.round(item.qty)}</strong><small>点</small></span></button>`).join('')}</div>`;
-    return;
-  }
-  const list=category.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
-  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-detail-type">${escapeHtml(category.label)}　合計 ${Math.round(category.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+    $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_BOX_CATEGORY_INDEX})">← サイズ区分</button><div class="sp-box-total">${sizeBucket.label} <strong>${Math.round(sizeBucket.qty)}</strong> 点</div></div><div class="sp-box-guide">次に処理区分を選択してください</div><div class="sp-box-type-grid">${SP_SELECTED_BOX_TYPES.map((item,typeIndex)=>`<button type="button" class="sp-box-type-button" onclick="spOpenBoxType(${typeIndex})"><span class="sp-box-type-copy"><span class="sp-box-type-name">${escapeHtml(item.label)}</span><span class="sp-box-type-rule">${escapeHtml(spBoxTypeRule(item.label))}</span></span><span class="sp-box-type-qty"><strong>${Math.round(item.qty)}</strong><small>点</small></span></button>`).join('')}</div>`;
 }
 function spOpenBoxType(index){
   const type=SP_SELECTED_BOX_TYPES[index];
@@ -10236,7 +10259,8 @@ function spOpenBoxType(index){
   if(!type||!day)return;
   $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
   const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
-  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_BOX_CATEGORY_INDEX})">← ボックス分類</button><div class="sp-detail-type">ボックス / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+  const sizeBucket=SP_SELECTED_BOX_SIZE_BUCKETS[SP_SELECTED_BOX_SIZE_INDEX];
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenBoxSize(${SP_SELECTED_BOX_SIZE_INDEX})">← 処理区分</button><div class="sp-detail-type">ボックス / ${escapeHtml(sizeBucket?.label||'')} / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
 }
 function spCloseDecision(){
   const modal=$('spDecisionModal');
