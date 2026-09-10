@@ -9396,12 +9396,13 @@ function buildProductCategoryBacklogMarkup(categoryName){
 
 function classifyProductCategory(row){
   const name=String(row.name||'').normalize('NFKC').toUpperCase().replace(/[　\s_・･\-]+/g,'');
+  const part=String(row.part||'').normalize('NFKC').toUpperCase().replace(/[　\s_・･\-]+/g,'');
   const spec=String(row.standard||'').normalize('NFKC').toUpperCase().replace(/[　\s_・･\-]+/g,'');
   if(/切り?板|プレート|曲げ金物/.test(spec))return '切板・金物';
-  if(/貫通枠|貫通スリーブ|スリーブ/.test(name))return '貫通枠';
-  if(/ダクト|DUCT/.test(name))return 'ダクト';
   if(/架台|スタンション|STANCHION/.test(name))return '架台';
-  if(/カバー|COVER|ふた|蓋|ガード/.test(name))return 'カバー';
+  if(/ダクト|DUCT/.test(name)||/^(DD|IDC|SD|ID)/.test(part))return 'ダクト';
+  if(/^(IKW|ZKW)/.test(part)||/貫通枠|貫通スリーブ|スリーブ/.test(name))return '貫通枠';
+  if(/^IBG/.test(part)||/防球ガード/.test(name))return '防球ガード';
   if(/ボックス|BOX|被せ|水切り?|盤|箱|平蓋|かぶせ|PB/i.test(name))return 'ボックス';
   return 'その他・要確認';
 }
@@ -9419,7 +9420,7 @@ function renderProductCategoryOverview(chartRows){
   const productConfigs=[
     {name:'ボックス',color:'#338cff'},{name:'ダクト',color:'#35d6df'},
     {name:'架台',color:'#ff9b3d'},{name:'貫通枠',color:'#9b72ff'},
-    {name:'カバー',color:'#3ee59a'},{name:'切板・金物',color:'#ffd43b'},
+    {name:'防球ガード',color:'#3ee59a'},{name:'切板・金物',color:'#ffd43b'},
     {name:'その他・要確認',color:'#ff6075'}
   ];
   const productItems=productConfigs.map(config=>{
@@ -9452,24 +9453,15 @@ function renderProductCategoryOverview(chartRows){
     <span class="ranking-index">${index+1}</span><span class="ranking-name">${escapeHtml(item.name)}</span><span class="ranking-track"><span class="ranking-fill"></span></span><span class="ranking-metrics"><b>${fmt(item.count)}件</b><em>${fmt(item.qty)}点</em></span>${item.count===0?'<span class="ranking-excluded">対象外</span>':''}
   </button>`).join('');
 
-  overview.innerHTML=`<section class="combined-analysis-board">
+  overview.innerHTML=`<section class="combined-analysis-board capacity-filter-mode">
     <div class="analysis-chart-section product-side">
-      <div class="analysis-chart-head"><div class="analysis-chart-title">製品種類</div><div class="analysis-chart-meta">対象 ${fmt(chartRows.length)}件 ／ 生地 ${fmt(accountedCount)}件</div></div>
+      <div class="analysis-chart-head"><div class="analysis-chart-title">製品分類（受注キャパシティー方式）</div><div class="analysis-chart-meta">対象 ${fmt(chartRows.length)}件 ／ 生地 ${fmt(accountedCount)}件</div></div>
       <div class="analysis-status-row">
         <span class="analysis-status-chip status-downstream" style="--chip-color:#43A047">後工程 <b>${fmt(downstreamCount)}件</b></span>
         <span class="analysis-status-chip status-complete" style="--chip-color:#41d2b2">完成 <b>${fmt(completedCount)}件</b></span>
         <span class="analysis-status-chip status-cancel" style="--chip-color:#ff7a7a">キャンセル <b>${fmt(cancelCount)}件</b></span>
       </div>
       <div class="ranking-list product-ranking">${productBars}</div>
-    </div>
-    <div class="analysis-chart-section material-side">
-      <div class="analysis-chart-head"><div class="analysis-chart-title">材質・表面処理</div><div class="analysis-chart-meta">対象 ${fmt(chartRows.length)}件 ／ 生地 ${fmt(accountedCount)}件</div></div>
-      <div class="analysis-status-row">
-        <span class="analysis-status-chip status-downstream" style="--chip-color:#43A047">後工程 <b>${fmt(downstreamCount)}件</b></span>
-        <span class="analysis-status-chip status-complete" style="--chip-color:#41d2b2">完成 <b>${fmt(completedCount)}件</b></span>
-        <span class="analysis-status-chip status-cancel" style="--chip-color:#ff7a7a">キャンセル <b>${fmt(cancelCount)}件</b></span>
-      </div>
-      <div class="ranking-list material-ranking">${materialBars}</div>
     </div>
   </section>`;
 }
@@ -12491,5 +12483,11 @@ html.fullhd-dashboard-fit .app{
 })();
 </script>
 
+<style id="capacity-filter-mode-layout">
+body .standard-game .combined-analysis-board.capacity-filter-mode{grid-template-columns:minmax(0,1fr)!important}
+body .standard-game .combined-analysis-board.capacity-filter-mode .product-side{grid-column:1/-1!important}
+body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+@media(max-width:900px){body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{grid-template-columns:1fr!important}}
+</style>
 </body>
 </html>
