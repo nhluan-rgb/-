@@ -7360,7 +7360,7 @@ const sample=[
 ].map((r,i)=>({id:r[0],client:r[1],part:r[2],name:r[3],standard:['ｱｰｽ','穴加工','ｺﾞﾑﾊﾟｯｷﾝ付','さび止め','L65×65×6t'][i%5],qty:r[4],due:r[5],status:r[6],owner:r[7],ship:r[8],shipDate:['2026-07-20','2026-07-21','2026-07-22','2026-07-20','2026-07-21'][i%5]}));
 let rows=[...sample]; let fullStats=true,shipFilter='',specifiedShipDate='';
 let standardBreakdownFilter=null;
-let selectedProcess='',selectedDelivery='',selectedMaterial='',selectedProductCategory='',selectedProductCategoryScope='current',currentChartRows=[],currentChartLabel='生産進捗';
+let selectedProcess='',selectedDelivery='',selectedMaterial='',selectedProductCategory='',selectedProductCategoryScope='current',selectedProductDrillLevel='',selectedProductDrillValue='',currentChartRows=[],currentChartLabel='生産進捗';
 let activeDippingPopup=null;
 let csvLoading=false;
 let jNumberSearchDigits='';
@@ -9349,6 +9349,46 @@ function productPopupProcessColor(status){
   }[String(status||'')]||'#607D8B';
 }
 
+function weldingIsLargeBox(row){
+  const values=String(row.size||'').normalize('NFKC').match(/\d+(?:\.\d+)?/g)||[];
+  return values.some(value=>Number(value)>=600);
+}
+function weldingBoxType(row){
+  const part=String(row.part||'').normalize('NFKC').replace(/\s+/g,'').toUpperCase();
+  if(part.startsWith('S'))return 'SUS';
+  if(part.includes('Z'))return 'ドブ';
+  if(part.includes('G'))return '錆止め';
+  if(part.includes('C'))return '焼付';
+  if(part.includes('D'))return 'ダイマー';
+  return 'その他';
+}
+function weldingRackType(row){
+  const text=`${row.name||''} ${row.part||''}`.normalize('NFKC').toUpperCase();
+  if(text.includes('先メッキ'))return '先メッキ';
+  if(text.includes('錆止め'))return '錆止め';
+  if(text.includes('焼付'))return '焼付';
+  if(text.includes('SUS'))return 'SUS';
+  if(text.includes('ZN'))return 'ZN';
+  return 'その他';
+}
+function weldingDuctType(row){
+  const name=String(row.name||'').normalize('NFKC').replace(/\s+/g,'').toUpperCase();
+  if(name.includes('ダクトカバー'))return 'ダクトカバー';
+  if(name.includes('SUS'))return 'SUS';
+  if(name.includes('ダイマー'))return 'ダイマー';
+  if(name.includes('鉄'))return '鉄';
+  if(name.includes('ZN'))return 'ZN';
+  return 'その他';
+}
+function weldingDrillCards(title,rows,labels,classifier,level,valuePrefix=''){
+  const cards=labels.map(label=>{
+    const matched=rows.filter(row=>classifier(row)===label);
+    const qty=matched.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const value=valuePrefix?`${valuePrefix}|${label}`:label;
+    return `<button type="button" class="capacity-drill-card${matched.length?'':' is-zero'}" data-product-drill-level="${level}" data-product-drill-value="${escapeHtml(value)}" ${matched.length?'':'disabled'}><span>${escapeHtml(label)}</span><b>${fmt(matched.length)}件</b><strong>${fmt(qty)}点</strong></button>`;
+  }).join('');
+  return `<section class="process-popup-section"><div class="process-popup-section-head">${escapeHtml(title)}</div><div class="capacity-drill-grid">${cards}</div></section>`;
+}
 function buildProductCategoryBacklogMarkup(categoryName){
   const managedProcesses=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
   const today=getShipDates().today;
@@ -9360,21 +9400,44 @@ function buildProductCategoryBacklogMarkup(categoryName){
     : selectedProductCategoryScope==='urgent-today'
       ? rows.filter(row=>row.shipDate===today&&row.instructionDate===today)
       : currentChartRows;
-  const targetRows=categorySourceRows
+  let targetRows=categorySourceRows
     .filter(row=>allUnregistered||allUrgent||classifyProductCategory(row)===categoryName)
     .filter(row=>selectedProductCategoryScope!=='current'||managedProcesses.includes(String(row.status||'')))
     .sort((a,b)=>String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||String(a.id||'').localeCompare(String(b.id||'')));
+  const drillHeader=(subtitle='分類を選択してください')=>`<header class="process-backlog-header"><div><div class="process-backlog-kicker">製品分類</div><div class="process-backlog-title">${escapeHtml(categoryName)}</div><div class="process-backlog-summary">${escapeHtml(subtitle)}</div></div><button type="button" class="process-backlog-close" data-product-category-close>× 閉じる</button></header>`;
+  if(categoryName==='ボックス'){
+    if(!selectedProductDrillLevel){
+      return drillHeader('最初にサイズ区分を選択してください')+weldingDrillCards('サイズ区分',targetRows,['600mm以上','600mm未満'],row=>weldingIsLargeBox(row)?'600mm以上':'600mm未満','box-size');
+    }
+    if(selectedProductDrillLevel==='box-size'){
+      const sizeName=selectedProductDrillValue;
+      const sizeRows=targetRows.filter(row=>(weldingIsLargeBox(row)?'600mm以上':'600mm未満')===sizeName);
+      return drillHeader(`${sizeName} → 処理区分を選択してください`)+`<button type="button" class="sp-back-button capacity-drill-back" data-product-drill-back="root">← サイズ区分</button>`+weldingDrillCards('処理区分',sizeRows,['SUS','ドブ','錆止め','焼付','ダイマー','その他'],weldingBoxType,'box-type',sizeName);
+    }
+    if(selectedProductDrillLevel==='box-type'){
+      const [sizeName,typeName]=selectedProductDrillValue.split('|');
+      targetRows=targetRows.filter(row=>(weldingIsLargeBox(row)?'600mm以上':'600mm未満')===sizeName&&weldingBoxType(row)===typeName);
+    }
+  }else if(categoryName==='架台'){
+    if(!selectedProductDrillLevel)return drillHeader('材質・表面処理を選択してください')+weldingDrillCards('架台分類',targetRows,['ZN','錆止め','SUS','焼付','先メッキ','その他'],weldingRackType,'rack-type');
+    if(selectedProductDrillLevel==='rack-type')targetRows=targetRows.filter(row=>weldingRackType(row)===selectedProductDrillValue);
+  }else if(categoryName==='ダクト'){
+    if(!selectedProductDrillLevel)return drillHeader('品名による分類を選択してください')+weldingDrillCards('ダクト分類',targetRows,['ダクトカバー','SUS','ダイマー','鉄','ZN','その他'],weldingDuctType,'duct-type');
+    if(selectedProductDrillLevel==='duct-type')targetRows=targetRows.filter(row=>weldingDuctType(row)===selectedProductDrillValue);
+  }
   const confirmationEnabled=selectedProductCategoryScope==='unregistered'||selectedProductCategoryScope==='urgent-today';
   const activeTargetRows=confirmationEnabled
     ? targetRows.filter(row=>!confirmedUnregisteredIds.has(String(row.id||'').trim()))
     : targetRows;
   const totalQty=activeTargetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const drillName=selectedProductDrillLevel==='box-type'?selectedProductDrillValue.replace('|',' / '):selectedProductDrillValue;
+  const drillNav=selectedProductDrillLevel?`<button type="button" class="capacity-drill-back" data-product-drill-back="root">← ${categoryName==='ボックス'?'サイズ・処理区分':'分類'}へ戻る</button>`:'';
   return `
     <header class="process-backlog-header">
-      <div><div class="process-backlog-kicker">${selectedProductCategoryScope==='urgent-today'?'新規急ぎ・製品種類':allUnregistered?'要確認':'製品種類'}</div><div class="process-backlog-title">${escapeHtml(displayCategoryName)}</div><div class="process-backlog-summary">未確認 ${fmt(activeTargetRows.length)}件 ／ ${fmt(totalQty)}点${confirmationEnabled?`　全${fmt(targetRows.length)}件`:''}</div></div>
+      <div><div class="process-backlog-kicker">${selectedProductCategoryScope==='urgent-today'?'新規急ぎ・製品種類':allUnregistered?'要確認':'製品種類'}</div><div class="process-backlog-title">${escapeHtml(displayCategoryName)}${drillName?` / ${escapeHtml(drillName)}`:''}</div><div class="process-backlog-summary">未確認 ${fmt(activeTargetRows.length)}件 ／ ${fmt(totalQty)}点${confirmationEnabled?`　全${fmt(targetRows.length)}件`:''}</div></div>
       <button type="button" class="process-backlog-close" data-product-category-close>× 閉じる</button>
     </header>
-    <section class="process-popup-section">
+    ${drillNav}<section class="process-popup-section">
       <div class="process-popup-section-head">製造指示一覧</div>
       <div class="process-backlog-table-wrap"><table class="process-backlog-table">
         <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>サイズ</th><th>数量</th><th>工程</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th>${confirmationEnabled?'<th>確認済</th>':''}</tr></thead>
@@ -9455,7 +9518,7 @@ function renderProductCategoryOverview(chartRows){
 
   overview.innerHTML=`<section class="combined-analysis-board capacity-filter-mode">
     <div class="analysis-chart-section product-side">
-      <div class="analysis-chart-head"><div class="analysis-chart-title">製品分類（受注キャパシティー方式）</div><div class="analysis-chart-meta">対象 ${fmt(chartRows.length)}件 ／ 生地 ${fmt(accountedCount)}件</div></div>
+      <div class="analysis-chart-head"><div class="analysis-chart-title">製品分類</div><div class="analysis-chart-meta">対象 ${fmt(chartRows.length)}件 ／ 生地 ${fmt(accountedCount)}件</div></div>
       <div class="analysis-status-row">
         <span class="analysis-status-chip status-downstream" style="--chip-color:#43A047">後工程 <b>${fmt(downstreamCount)}件</b></span>
         <span class="analysis-status-chip status-complete" style="--chip-color:#41d2b2">完成 <b>${fmt(completedCount)}件</b></span>
@@ -9468,6 +9531,8 @@ function renderProductCategoryOverview(chartRows){
 function showProductCategoryBacklog(categoryName,scope='current'){
   selectedProductCategory=selectedProductCategory===categoryName?'':categoryName;
   selectedProductCategoryScope=scope;
+  selectedProductDrillLevel='';
+  selectedProductDrillValue='';
   selectedProcess='';
   selectedDelivery='';
   selectedMaterial='';
@@ -10319,6 +10384,24 @@ document.addEventListener('click',event=>{
     applyStandardBreakdown(breakdownButton);
     return;
   }
+  const drillCard=event.target.closest('[data-product-drill-level]');
+  if(drillCard){
+    event.preventDefault();
+    event.stopPropagation();
+    selectedProductDrillLevel=drillCard.dataset.productDrillLevel||'';
+    selectedProductDrillValue=drillCard.dataset.productDrillValue||'';
+    renderSelectedProcessBacklog();
+    return;
+  }
+  const drillBack=event.target.closest('[data-product-drill-back]');
+  if(drillBack){
+    event.preventDefault();
+    event.stopPropagation();
+    selectedProductDrillLevel='';
+    selectedProductDrillValue='';
+    renderSelectedProcessBacklog();
+    return;
+  }
   const categoryCard=event.target.closest('[data-product-category]');
   if(categoryCard){
     event.preventDefault();
@@ -10328,6 +10411,8 @@ document.addEventListener('click',event=>{
   }
   if(event.target.closest('[data-product-category-close]')){
     selectedProductCategory='';
+    selectedProductDrillLevel='';
+    selectedProductDrillValue='';
     renderSelectedProcessBacklog();
     return;
   }
@@ -12487,7 +12572,9 @@ html.fullhd-dashboard-fit .app{
 body .standard-game .combined-analysis-board.capacity-filter-mode{grid-template-columns:minmax(0,1fr)!important}
 body .standard-game .combined-analysis-board.capacity-filter-mode .product-side{grid-column:1/-1!important}
 body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.capacity-drill-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:12px}.capacity-drill-card{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:16px;min-height:92px;padding:16px 20px;border:2px solid #36ccec;border-radius:13px;background:linear-gradient(135deg,#0b526d,#082b42);color:#fff;text-align:left;cursor:pointer}.capacity-drill-card:hover{filter:brightness(1.18);transform:translateY(-1px)}.capacity-drill-card span{font-size:25px;font-weight:1000}.capacity-drill-card b{font-size:22px;color:#bcefff}.capacity-drill-card strong{font-size:30px;color:#fff16c}.capacity-drill-card.is-zero{opacity:.42;cursor:not-allowed}.capacity-drill-back{margin:12px 18px 2px;padding:10px 16px;border:2px solid #42d9f7;border-radius:9px;background:#0b536d;color:#fff;font-size:17px;font-weight:1000;cursor:pointer}
 @media(max-width:900px){body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{grid-template-columns:1fr!important}}
+@media(max-width:900px){.capacity-drill-grid{grid-template-columns:1fr}.capacity-drill-card span{font-size:21px}}
 </style>
 </body>
 </html>
