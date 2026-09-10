@@ -10126,6 +10126,12 @@ function spIsCancel(row){return /ｷｬﾝｾﾙ|キャンセル/.test(String(ro
 function spShortDate(date){return `${date.getMonth()+1}/${date.getDate()}`;}
 function spCategoryLabel(row){
   const name=String(row.name||'').trim();
+  const part=String(row.part||'').trim().toUpperCase();
+  if(part.startsWith('IDC'))return 'ダクトカバー';
+  if(part.startsWith('IKW'))return '鉄貫通枠';
+  if(part.startsWith('IBG'))return '防球ガード';
+  if(part.startsWith('SD'))return 'SUS ダクト';
+  if(part.startsWith('ID'))return '鉄ダクト';
   return /PBトク|PB/i.test(name)?'ボックス':(name||String(row.part||'その他').trim()||'その他');
 }
 function spBoxTypeLabel(row){
