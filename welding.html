@@ -8453,8 +8453,10 @@ Object.entries(weldingMessageSets).forEach(([key,templates])=>{
   );
 });
 
-const seichibiComplianceMessage='出荷日が変更になった場合でも、生地日を必ず遵守してください。';
+const seichibiComplianceText='出荷日が変更になった場合でも、生地日を必ず遵守してください。';
+const seichibiComplianceMessage=()=>seichibiComplianceText;
 Object.keys(standardMessageGroups).forEach(key=>{standardMessageGroups[key]=[seichibiComplianceMessage]});
+ngLateCompletionMessages.splice(0,ngLateCompletionMessages.length,seichibiComplianceText);
 
 let standardMessageKey='';
 let standardMessageIndex=0;
