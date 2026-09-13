@@ -7239,6 +7239,47 @@ body:not(:has(#ngGame.show)) .home-priority-actions{display:none!important}
 body.welding-show-compliance .ng-mission-ticker-slot::before{content:"生地日遵守"!important}
 body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"クレーム情報"!important}
 </style>
+
+<style id="welding-hard-stop-marquee-v14">
+.standard-mission-content,.ng-mission-ticker-slot{position:relative!important}
+.welding-moving-message-hidden{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+.welding-static-notice{
+  position:absolute!important;inset:0!important;z-index:20!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;height:100%!important;padding:8px 22px!important;
+  box-sizing:border-box!important;color:#fff!important;background:transparent!important;
+  font-size:clamp(22px,2vw,34px)!important;font-weight:1000!important;line-height:1.25!important;
+  white-space:nowrap!important;text-align:center!important;overflow:hidden!important;
+  transform:none!important;animation:none!important;
+  text-shadow:0 2px 2px #00345d,0 0 8px #36cfff!important;
+}
+.standard-mission-content>.welding-static-notice{left:220px!important;width:calc(100% - 220px)!important}
+.ng-mission-ticker-slot>.welding-static-notice{top:46px!important;height:calc(100% - 46px)!important}
+@media(max-width:800px){.standard-mission-content>.welding-static-notice{left:170px!important;width:calc(100% - 170px)!important;font-size:18px!important}}
+</style>
+
+<style id="welding-merged-home-dipping-v15">
+.ng-game #monthlyAchievementCalendar.home-dipping-merged-host{
+  position:absolute!important;left:24px!important;right:24px!important;top:200px!important;
+  width:auto!important;height:520px!important;min-width:0!important;margin:0!important;
+  padding:0!important;border:0!important;border-radius:20px!important;
+  background:transparent!important;box-shadow:none!important;overflow:auto!important;
+}
+.ng-game #monthlyAchievementCalendar.home-dipping-merged-host .home-dipping-process-board{
+  min-height:100%!important;height:auto!important;box-sizing:border-box!important;
+}
+.ng-game #ngUtilityColumn{display:none!important}
+.ng-game .evolution-runner-world{display:none!important}
+.ng-game .evolution-visual:has(.home-dipping-merged-host){min-height:750px!important;height:750px!important}
+.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important}
+@media(max-width:1300px){
+  .ng-game #monthlyAchievementCalendar.home-dipping-merged-host{
+    position:relative!important;inset:auto!important;width:calc(100% - 24px)!important;
+    height:auto!important;min-height:500px!important;margin:12px!important;
+  }
+  .ng-game .evolution-visual:has(.home-dipping-merged-host){height:auto!important;min-height:0!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -7920,6 +7961,9 @@ function updateBonusCampaignPanel(){
 function updateMonthlyAchievementCalendar(ngCount,allowRecord){
   const box=$('monthlyAchievementCalendar');
   if(!box)return;
+  box.classList.add('home-dipping-merged-host');
+  box.innerHTML=renderHomeProcessControl();
+  return;
   const dates=getShipDates();
   const todayUrgentRows=rows.filter(row=>
     row.shipDate===dates.today&&
@@ -12907,10 +12951,16 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     ['standardBannerMessage','gameBannerMessage'].forEach(id=>{
       const element=document.getElementById(id);
       if(!element)return;
-      if(element.textContent!==text)element.textContent=text;
-      element.dataset.missionText=text;
-      element.style.setProperty('animation','none','important');
-      element.style.setProperty('transform','none','important');
+      element.classList.add('welding-moving-message-hidden');
+      const host=element.parentElement;
+      if(!host)return;
+      let staticMessage=host.querySelector('.welding-static-notice');
+      if(!staticMessage){
+        staticMessage=document.createElement('div');
+        staticMessage.className='welding-static-notice';
+        host.append(staticMessage);
+      }
+      staticMessage.textContent=text;
     });
   }
   updateWeldingNotice();
