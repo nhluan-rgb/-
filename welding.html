@@ -7113,13 +7113,65 @@ html,body,.table-wrap,#processModalCard{
   font-weight:850!important;
 }
 </style>
+
+<style id="daily-process-command-board-v1">
+.daily-process-board{display:none;margin:0 0 16px;color:#eefaff;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif}
+body.daily-command-mode .daily-process-board{display:block}
+body.daily-command-mode .grid,body.daily-command-mode .panel.work{display:none!important}
+.daily-process-tab{border-color:#32d5ff!important;background:linear-gradient(145deg,#092f4d,#105c73)!important;color:#fff!important}
+.daily-process-tab .day,.daily-process-tab .ship-value,.daily-process-tab .ship-sub{color:#fff!important}
+.daily-process-tab.active{box-shadow:0 0 0 3px rgba(50,213,255,.25),0 0 25px rgba(50,213,255,.42)!important}
+.dpc-shell{border:1px solid #39d7fa;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#06182a,#03101c);box-shadow:0 0 28px rgba(30,204,255,.18)}
+.dpc-head{display:grid;grid-template-columns:minmax(280px,1fr) auto;gap:18px;align-items:center;padding:18px 22px;background:linear-gradient(90deg,#08344f,#071c31);border-bottom:1px solid rgba(78,224,255,.55)}
+.dpc-kicker{color:#5ee9ff;font:800 12px/1.2 Consolas,monospace;letter-spacing:.2em}.dpc-title{margin:5px 0 0;font-size:clamp(25px,3vw,39px);font-weight:1000;letter-spacing:.04em}.dpc-title strong{color:#fff36e}.dpc-sub{margin-top:5px;color:#bce9f4;font-size:14px}
+.dpc-date-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.dpc-date-tools button,.dpc-date-tools input{min-height:44px;border:1px solid #42dafa;border-radius:8px;background:#092c43;color:#fff;padding:8px 12px;font-weight:900}.dpc-date-tools button{cursor:pointer}.dpc-date-tools button:hover{background:#0d5973}.dpc-date-tools input{color-scheme:dark}
+.dpc-alert{display:flex;align-items:center;gap:12px;padding:12px 22px;background:#70200d;color:#fff4ca;border-bottom:1px solid #ff9d44;font-weight:900}.dpc-alert.clear{background:#07513f;color:#baffdf;border-color:#3ce6aa}.dpc-alert b{font-size:20px}
+.dpc-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:14px}.dpc-kpi{padding:13px 15px;border:1px solid rgba(95,220,255,.35);border-radius:11px;background:linear-gradient(145deg,rgba(13,59,83,.88),rgba(5,27,45,.92))}.dpc-kpi span{display:block;color:#a8dce8;font-size:12px;font-weight:800}.dpc-kpi strong{display:block;margin-top:4px;color:#fff;font-size:clamp(23px,2.4vw,34px);line-height:1}.dpc-kpi small{display:block;margin-top:5px;color:#78dff5}.dpc-kpi.danger{border-color:#ff6b6b;background:linear-gradient(145deg,#581c24,#260c16)}.dpc-kpi.warn{border-color:#ffb64c;background:linear-gradient(145deg,#573112,#26190c)}.dpc-kpi.good{border-color:#42dfa5;background:linear-gradient(145deg,#075442,#092b2c)}
+.dpc-section{padding:0 14px 14px}.dpc-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:3px 0 10px;color:#fff;font-size:18px;font-weight:1000}.dpc-section-title small{color:#9bdbe8;font-size:12px}
+.dpc-processes{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:9px}.dpc-process{position:relative;min-height:112px;padding:12px;border:1px solid var(--pc);border-radius:10px;background:linear-gradient(155deg,color-mix(in srgb,var(--pc) 25%,#08263a),#061724);color:#fff;text-align:left;cursor:pointer;overflow:hidden}.dpc-process:hover,.dpc-process.active{transform:translateY(-2px);box-shadow:0 0 0 2px color-mix(in srgb,var(--pc) 55%,transparent),0 0 18px color-mix(in srgb,var(--pc) 38%,transparent)}.dpc-process span{display:block;font-size:16px;font-weight:1000}.dpc-process strong{display:block;margin-top:6px;color:#fff36e;font-size:30px}.dpc-process small{color:#c8eaf1}.dpc-process.is-zero{opacity:.45}
+.dpc-tasks-wrap{border:1px solid rgba(76,210,242,.38);border-radius:11px;overflow:auto;max-height:560px;background:#f7fbfd;color:#142a3a}.dpc-task-table{width:100%;border-collapse:collapse;white-space:nowrap}.dpc-task-table th{position:sticky;top:0;z-index:2;padding:11px 12px;background:#092e46;color:#dff9ff;border-bottom:2px solid #42d9f7;text-align:left;font-size:13px}.dpc-task-table td{padding:11px 12px;border-bottom:1px solid #dbe8ee;background:#fff;vertical-align:middle}.dpc-task-table tr:nth-child(even) td{background:#eef6fa}.dpc-task-table tr:hover td{background:#e1f3fb}.dpc-priority{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:#0c6d91;color:#fff;font-weight:1000}.dpc-priority.hot{background:#c62828}.dpc-id{font:800 14px/1.2 Consolas,monospace;color:#075b82}.dpc-product{max-width:330px;white-space:normal}.dpc-product b{display:block}.dpc-product small{display:block;color:#5b7180;margin-top:3px}.dpc-qty{font-size:20px;font-weight:1000;color:#a34000}.dpc-status{display:inline-block;padding:5px 9px;border-radius:999px;background:#e4f0f7;color:#175a7b;font-weight:900}.dpc-next{font-weight:1000;color:#7a3212}.dpc-owner.missing{color:#c62828;font-weight:1000}.dpc-detail{border:1px solid #1689b2;border-radius:7px;background:#e8f7fc;color:#075b7c;padding:7px 10px;font-weight:900;cursor:pointer}.dpc-empty{padding:36px;text-align:center;color:#31708a;font-size:18px;font-weight:900}
+@media(max-width:1100px){.dpc-kpis{grid-template-columns:repeat(3,1fr)}.dpc-processes{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.dpc-head{grid-template-columns:1fr}.dpc-date-tools{justify-content:flex-start}.dpc-kpis{grid-template-columns:repeat(2,1fr)}.dpc-processes{grid-template-columns:repeat(2,1fr)}.dpc-kpi:last-child{grid-column:1/-1}}
+</style>
+
+<style id="two-main-tabs-and-home-return-v2">
+/* Chỉ giữ hai lối điều hướng chính; các node cũ vẫn tồn tại để logic hiện hữu không bị hỏng. */
+.ship-summary .ship-card:not([data-ship="today-ng"]):not([data-ship="process"]),
+.ship-marquee-group .ship-card:not([data-ship="today-ng"]):not([data-ship="process"]){display:none!important}
+.ship-summary,.ship-summary.game-stage-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.ship-summary .ship-card[data-ship="today-ng"],.ship-summary .ship-card[data-ship="process"]{display:block!important;min-height:150px!important}
+.dpc-home-button{border-color:#ffe26b!important;background:linear-gradient(145deg,#a96205,#e49a17)!important;color:#fff!important;box-shadow:0 3px 0 #704000,0 0 14px rgba(255,194,55,.28)!important}
+.dpc-home-button:hover{background:linear-gradient(145deg,#c57b0a,#ffb52e)!important}
+@media(max-width:600px){.ship-summary,.ship-summary.game-stage-tabs{grid-template-columns:1fr 1fr!important}.ship-summary .ship-card[data-ship="today-ng"],.ship-summary .ship-card[data-ship="process"]{min-height:120px!important}}
+</style>
+
+<style id="home-priority-actions-v3">
+body:has(#ngGame.show) .achievement-calendar-panel .compact-achievement-calendar{display:none!important}
+body:not(:has(#ngGame.show)) .home-priority-actions{display:none!important}
+.achievement-calendar-panel:has(.home-priority-actions){display:block!important;overflow:auto!important;background:linear-gradient(160deg,#061b2c,#03101c)!important;border-color:#42dcff!important;padding:14px!important}
+.home-priority-actions{display:flex;min-height:100%;flex-direction:column;color:#eefcff;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif}
+.hpa-head{padding:8px 7px 13px;border-bottom:1px solid rgba(72,221,255,.48)}
+.hpa-kicker{color:#53e4ff;font:800 10px/1.2 Consolas,monospace;letter-spacing:.18em}.hpa-title{margin:5px 0 0;font-size:clamp(22px,2.3vw,31px);font-weight:1000}.hpa-date{margin-top:4px;color:#a9dce9;font-size:13px;font-weight:800}
+.hpa-alert{margin:11px 0 8px;padding:11px 12px;border:1px solid #ffb449;border-radius:9px;background:linear-gradient(145deg,#64250d,#351407);color:#fff1c0;font-weight:1000}.hpa-alert.clear{border-color:#40dca2;background:linear-gradient(145deg,#07513f,#052c2a);color:#b8ffdf}.hpa-alert strong{font-size:18px}.hpa-alert span{display:block;margin-top:3px;font-size:12px}
+.hpa-list{display:grid;gap:7px}.hpa-item{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px;width:100%;padding:9px 10px;border:1px solid var(--hpa-color);border-radius:9px;background:linear-gradient(145deg,color-mix(in srgb,var(--hpa-color) 18%,#0b3148),#061a29);color:#fff;text-align:left;cursor:pointer}.hpa-item:hover{filter:brightness(1.16);transform:translateY(-1px)}.hpa-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:var(--hpa-color);font-size:20px;box-shadow:0 0 10px color-mix(in srgb,var(--hpa-color) 55%,transparent)}.hpa-copy b{display:block;font-size:15px}.hpa-copy small{display:block;margin-top:2px;color:#b9dfe8;font-size:11px}.hpa-value{text-align:right}.hpa-value strong{display:block;color:#fff472;font-size:22px;line-height:1}.hpa-value small{color:#c4e9f1;font-size:11px}.hpa-item.is-zero{opacity:.56}.hpa-bottleneck{margin-top:8px;padding:10px 11px;border:1px solid #b08cff;border-radius:9px;background:linear-gradient(145deg,#2e205d,#10162c)}.hpa-bottleneck span{display:block;color:#d5c5ff;font-size:11px;font-weight:800}.hpa-bottleneck strong{display:block;margin-top:4px;color:#fff;font-size:17px}.hpa-bottleneck b{color:#fff36e}.hpa-open{margin-top:auto;width:100%;min-height:46px;border:2px solid #65e7ff;border-radius:9px;background:linear-gradient(145deg,#087ca7,#0db4cf);color:#fff;font-size:16px;font-weight:1000;cursor:pointer;box-shadow:0 4px 0 #044c69,0 0 15px rgba(48,218,255,.24)}.hpa-open:hover{filter:brightness(1.16)}
+@media(max-width:900px){.home-priority-actions{min-height:520px}.hpa-title{font-size:24px}}
+</style>
+
+<style id="home-today-product-grid-v4">
+.achievement-calendar-panel:has(.home-today-products){display:block!important;overflow:auto!important;padding:14px!important;background:linear-gradient(160deg,#061b2c,#03101c)!important;border-color:#42dcff!important}
+.home-today-products{display:flex;min-height:100%;flex-direction:column;color:#eefcff;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif}
+.htp-head{padding:8px 8px 14px;border-bottom:2px solid #35d8f5;text-align:center}.htp-title{margin:0;color:#fff;font-size:clamp(25px,2.7vw,36px);font-weight:1000;letter-spacing:.06em}.htp-sub{margin-top:5px;color:#aeeafb;font-size:14px;font-weight:850}.htp-total{display:flex;justify-content:center;gap:18px;margin-top:8px;color:#fff59a;font-size:17px;font-weight:1000}
+.htp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.htp-card{position:relative;display:flex;min-height:164px;flex-direction:column;align-items:center;justify-content:center;padding:15px 10px;border:3px solid var(--htp-color);border-radius:11px;background:linear-gradient(155deg,color-mix(in srgb,var(--htp-color) 30%,#133448),#071b2b 72%);color:#fff;text-align:center;cursor:pointer;box-shadow:inset 0 0 24px color-mix(in srgb,var(--htp-color) 16%,transparent),0 5px 0 color-mix(in srgb,var(--htp-color) 42%,#020913)}.htp-card:hover,.htp-card:focus-visible{transform:translateY(-3px);filter:brightness(1.14);outline:none}.htp-card-name{font-size:clamp(21px,2.1vw,29px);font-weight:1000;line-height:1.15;text-shadow:0 2px 2px #000}.htp-card-count{margin-top:13px;color:#fff36e;font-size:clamp(34px,3.5vw,48px);font-weight:1000;line-height:1}.htp-card-qty{margin-top:8px;color:#e4faff;font-size:18px;font-weight:900}.htp-card-process{margin-top:8px;color:#bce9f2;font-size:11px;font-weight:800}.htp-card.is-zero{opacity:.42;filter:saturate(.4);cursor:default}.htp-card:last-child:nth-child(odd){grid-column:1/-1;min-height:132px}.htp-note{margin-top:13px;padding:9px;text-align:center;color:#9bdbe8;font-size:12px;font-weight:800}
+@media(max-width:700px){.htp-grid{gap:8px}.htp-card{min-height:130px;padding:11px 6px}.htp-card-name{font-size:18px}.htp-card-count{font-size:32px}}
+</style>
 </head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
   <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="index.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">← ホームへ戻る</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
-<section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">新規急ぎ・未確認</div></button><button class="ship-card" data-ship="today"><div class="day">今日生地</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日生地</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日生地</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" aria-label="指定日生地の日付" /></div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button></section>
+<section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">ホーム</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">新規急ぎ・未確認</div></button><button class="ship-card" data-ship="today"><div class="day">今日生地</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日生地</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 今日から7日間生地</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">生地日が今日から7日以内の塗装前工程</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日生地</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" aria-label="指定日生地の日付" /></div></button><button class="ship-card" data-ship="dipping"><div class="day">ドブ漬け管理</div><div class="ship-value" id="shipDipping">0件（0点）</div><div class="ship-sub">本日生地・品名Z始まり・先メッキ除外</div></button><button class="ship-card daily-process-tab" data-ship="process"><div class="day">工程管理</div><div class="ship-value" id="shipProcess">0件（0点）</div><div class="ship-sub">生地日別・今日やること</div></button></section>
+    <section id="dailyProcessBoard" class="daily-process-board" aria-label="生地日別工程管理"></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
     <section class="grid"><div class="panel"><div class="panel-head"><h2 id="workTitle">工程別の仕掛状況（全生地日）</h2><span style="font-size:11px;color:var(--muted)">件数</span></div><div class="panel-body bars" id="bars"></div></div><div class="panel"><div class="panel-head"><h2 id="progressTitle">全体進捗（全生地日）</h2><span id="progressCount" style="font-size:11px;color:var(--muted)">3,602件</span></div><div class="panel-body"><div class="donut-wrap"><div class="donut" id="donut"><div class="donut-center"><b id="donutRate">73.9%</b><small>完成率</small></div></div><div class="legend" id="chartLegend"><div><span class="dot" style="background:#00A67E"></span>完成 <b id="lDone">2,661</b></div><div><span class="dot" style="background:#1976D2"></span>進行中 <b id="lActive">630</b></div><div><span class="dot" style="background:#B0BEC5"></span>未着手 <b id="lNew">218</b></div><div><span class="dot" style="background:#455A64"></span>キャンセル <b id="lCancel">93</b></div></div></div>
 
@@ -9399,10 +9451,12 @@ function buildProductCategoryBacklogMarkup(categoryName){
     ? rows.filter(isEligibleUnregistered)
     : selectedProductCategoryScope==='urgent-today'
       ? rows.filter(row=>row.shipDate===today&&row.instructionDate===today)
-      : currentChartRows;
+      : selectedProductCategoryScope==='today-seichibi'
+        ? rows.filter(row=>row.shipDate===today)
+        : currentChartRows;
   let targetRows=categorySourceRows
     .filter(row=>allUnregistered||allUrgent||classifyProductCategory(row)===categoryName)
-    .filter(row=>selectedProductCategoryScope!=='current'||managedProcesses.includes(String(row.status||'')))
+    .filter(row=>!['current','today-seichibi'].includes(selectedProductCategoryScope)||managedProcesses.includes(String(row.status||'')))
     .sort((a,b)=>String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||String(a.id||'').localeCompare(String(b.id||'')));
   const drillHeader=(subtitle='分類を選択してください')=>`<header class="process-backlog-header"><div><div class="process-backlog-kicker">製品分類</div><div class="process-backlog-title">${escapeHtml(categoryName)}</div><div class="process-backlog-summary">${escapeHtml(subtitle)}</div></div><button type="button" class="process-backlog-close" data-product-category-close>× 閉じる</button></header>`;
   if(categoryName==='ボックス'){
@@ -12320,7 +12374,7 @@ html.fullhd-dashboard-fit .app{
       }
       box.classList.remove('ship-marquee-ready');
       box.style.setProperty('display','grid','important');
-      box.style.setProperty('grid-template-columns','repeat(5,minmax(0,1fr))','important');
+      box.style.setProperty('grid-template-columns','repeat(2,minmax(0,1fr))','important');
       box.style.setProperty('width','100%','important');
       box.style.setProperty('max-width','100%','important');
       box.style.setProperty('min-width','0','important');
@@ -12576,5 +12630,148 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
 @media(max-width:900px){body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{grid-template-columns:1fr!important}}
 @media(max-width:900px){.capacity-drill-grid{grid-template-columns:1fr}.capacity-drill-card span{font-size:21px}}
 </style>
+<script id="daily-process-command-board-script">(function dailyProcessInjected(){
+  const PROCESS_ORDER=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
+  const PROCESS_COLORS={'未着手':'#9b7cff','CAD/CAM':'#f0c32f','切断':'#ff9138','曲げ':'#ee68b0','溶接':'#ff4c4c','仕上':'#47d47a'};
+  const NEXT_ACTION={'未着手':'CAD/CAM着手','CAD/CAM':'切断へ送る','切断':'曲げへ送る','曲げ':'溶接へ送る','溶接':'仕上へ送る','仕上':'完成確認'};
+  let selectedDate=localStorage.getItem('weldingDailyBoardDate')||formatLocalDate(new Date());
+  let selectedProcess='';
+
+  function active(row){
+    const status=String(row.status||'').trim();
+    return PROCESS_ORDER.includes(status)&&!/ｷｬﾝｾﾙ|キャンセル/.test(status);
+  }
+  function safe(value){return typeof escapeHtml==='function'?escapeHtml(String(value??'')):String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+  function shortDate(key){const p=String(key||'').split('-');return p.length===3?`${Number(p[1])}月${Number(p[2])}日`:key}
+  function shiftDate(days){const date=new Date(`${selectedDate}T00:00:00`);date.setDate(date.getDate()+days);selectedDate=formatLocalDate(date);localStorage.setItem('weldingDailyBoardDate',selectedDate);selectedProcess='';renderDailyProcessBoard()}
+  function sortTasks(a,b){
+    const ownerA=a.owner?1:0,ownerB=b.owner?1:0;
+    return ownerA-ownerB||PROCESS_ORDER.indexOf(b.status)-PROCESS_ORDER.indexOf(a.status)||String(a.due||'9999').localeCompare(String(b.due||'9999'))||String(a.id||'').localeCompare(String(b.id||''));
+  }
+  function processButton(status,list){
+    const processRows=list.filter(row=>row.status===status),qty=processRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    return `<button type="button" class="dpc-process ${selectedProcess===status?'active':''} ${processRows.length?'':'is-zero'}" data-dpc-process="${safe(status)}" style="--pc:${PROCESS_COLORS[status]}"><span>${safe(status)}</span><strong>${fmt(processRows.length)}件</strong><small>${fmt(qty)}点 ／ 次：${safe(NEXT_ACTION[status])}</small></button>`;
+  }
+  function taskRow(row,index,isPast){
+    const noOwner=!String(row.owner||'').trim();
+    return `<tr><td><span class="dpc-priority ${isPast||noOwner?'hot':''}">${index+1}</span></td><td class="dpc-id">${safe(row.id||'—')}</td><td class="dpc-product"><b>${safe(row.part||'—')}　${safe(row.name||'')}</b><small>${safe(row.standard||'—')}</small></td><td class="dpc-qty">${fmt(row.qty)}点</td><td><span class="dpc-status">${safe(row.status||'未着手')}</span></td><td class="dpc-next">${safe(NEXT_ACTION[row.status]||'確認')}</td><td class="dpc-owner ${noOwner?'missing':''}">${safe(row.owner||'⚠ 未割当')}</td><td>${safe(row.due||'—')}</td><td><button type="button" class="dpc-detail" data-dpc-id="${safe(row.id)}">詳細</button></td></tr>`;
+  }
+  window.openDailyProcessBoard=function(date){
+    selectedDate=date||formatLocalDate(new Date());
+    localStorage.setItem('weldingDailyBoardDate',selectedDate);
+    selectedProcess='';
+    shipFilter='process';
+    localStorage.setItem('shipFilter',shipFilter);
+    document.querySelectorAll('[data-ship],[data-quick]').forEach(item=>item.classList.toggle('active',(item.dataset.ship||item.dataset.quick)===shipFilter));
+    renderStats();
+    renderTable();
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  window.renderDailyProcessBoard=function(){
+    const board=document.getElementById('dailyProcessBoard');
+    if(!board||typeof rows==='undefined')return;
+    const today=formatLocalDate(new Date());
+    const allActive=rows.filter(active);
+    const allQty=allActive.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const processCard=document.getElementById('shipProcess');
+    if(processCard)processCard.innerHTML=`<span class="ship-count-line">${fmt(allActive.length)}件</span><span class="ship-points-line">${fmt(allQty)}点</span>`;
+    document.body.classList.toggle('daily-command-mode',shipFilter==='process');
+    if(shipFilter!=='process')return;
+    const dateRows=rows.filter(row=>row.shipDate===selectedDate&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
+    const workRows=dateRows.filter(active);
+    const completed=dateRows.filter(row=>String(row.status||'').trim()==='完成').length;
+    const totalQty=dateRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const workQty=workRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const unassigned=workRows.filter(row=>!String(row.owner||'').trim()).length;
+    const overdue=allActive.filter(row=>row.shipDate&&row.shipDate<today).length;
+    const rate=dateRows.length?Math.round(completed/dateRows.length*100):100;
+    const isPast=selectedDate<today,isToday=selectedDate===today;
+    const visibleRows=(selectedProcess?workRows.filter(row=>row.status===selectedProcess):workRows).slice().sort(sortTasks);
+    board.innerHTML=`<div class="dpc-shell">
+      <header class="dpc-head"><div><div class="dpc-kicker">DAILY WELDING COMMAND</div><h2 class="dpc-title"><strong>${safe(shortDate(selectedDate))}</strong> 生地日の作業指示</h2><div class="dpc-sub">生地日を基準に、未完了品と次に進める工程を一画面で確認</div></div><div class="dpc-date-tools"><button type="button" class="dpc-home-button" data-dpc-home>← ホームへ戻る</button><button type="button" data-dpc-shift="-1">← 前日</button><button type="button" data-dpc-today>今日</button><input id="dpcDate" type="date" value="${safe(selectedDate)}" aria-label="管理する生地日"><button type="button" data-dpc-shift="1">翌日 →</button></div></header>
+      <div class="dpc-alert ${workRows.length?'':'clear'}"><b>${workRows.length?`▶ ${isToday?'今日やること':safe(shortDate(selectedDate))+'の残作業'}：${fmt(workRows.length)}件・${fmt(workQty)}点`:'✓ この生地日の作業は完了しています'}</b><span>${unassigned?`⚠ 未割当 ${fmt(unassigned)}件を先に担当決定`:'担当割当済み'}${isPast&&workRows.length?' ／ 生地日超過・最優先':''}</span></div>
+      <div class="dpc-kpis"><div class="dpc-kpi"><span>対象</span><strong>${fmt(dateRows.length)}件</strong><small>${fmt(totalQty)}点</small></div><div class="dpc-kpi ${workRows.length?'warn':'good'}"><span>残作業</span><strong>${fmt(workRows.length)}件</strong><small>${fmt(workQty)}点</small></div><div class="dpc-kpi ${unassigned?'danger':'good'}"><span>担当者未割当</span><strong>${fmt(unassigned)}件</strong><small>${unassigned?'要割当':'割当済み'}</small></div><div class="dpc-kpi ${overdue?'danger':'good'}"><span>全体の生地日超過</span><strong>${fmt(overdue)}件</strong><small>今日より前の未完了</small></div><div class="dpc-kpi ${rate===100?'good':''}"><span>完了率</span><strong>${fmt(rate)}%</strong><small>${fmt(completed)} / ${fmt(dateRows.length)}件</small></div></div>
+      <section class="dpc-section"><div class="dpc-section-title"><span>工程別の残作業</span><small>クリックで作業一覧を絞り込み</small></div><div class="dpc-processes">${PROCESS_ORDER.map(status=>processButton(status,workRows)).join('')}</div></section>
+      <section class="dpc-section"><div class="dpc-section-title"><span>${selectedProcess?safe(selectedProcess)+'：':'今日の優先順：'}次にやること</span><small>${fmt(visibleRows.length)}件 ／ 未割当を上位表示</small></div><div class="dpc-tasks-wrap"><table class="dpc-task-table"><thead><tr><th>優先</th><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>現在工程</th><th>次にやること</th><th>担当者</th><th>製造期限</th><th></th></tr></thead><tbody>${visibleRows.length?visibleRows.slice(0,200).map((row,index)=>taskRow(row,index,isPast)).join(''):`<tr><td colspan="9"><div class="dpc-empty">${selectedProcess?'この工程の残作業はありません':'この生地日の残作業はありません'}</div></td></tr>`}</tbody></table></div></section>
+    </div>`;
+  };
+  document.addEventListener('click',event=>{
+    if(event.target.closest('[data-dpc-home]')){shipFilter='today-ng';localStorage.setItem('shipFilter',shipFilter);document.querySelectorAll('[data-ship],[data-quick]').forEach(item=>item.classList.toggle('active',(item.dataset.ship||item.dataset.quick)===shipFilter));renderStats();renderTable();window.scrollTo({top:0,behavior:'smooth'});return}
+    const shift=event.target.closest('[data-dpc-shift]');if(shift){shiftDate(Number(shift.dataset.dpcShift)||0);return}
+    if(event.target.closest('[data-dpc-today]')){selectedDate=formatLocalDate(new Date());localStorage.setItem('weldingDailyBoardDate',selectedDate);selectedProcess='';renderDailyProcessBoard();return}
+    const process=event.target.closest('[data-dpc-process]');if(process){selectedProcess=selectedProcess===process.dataset.dpcProcess?'':process.dataset.dpcProcess;renderDailyProcessBoard();return}
+    const detail=event.target.closest('[data-dpc-id]');if(detail){const row=rows.find(item=>String(item.id)===String(detail.dataset.dpcId));if(row&&typeof openJNumberPopup==='function')openJNumberPopup(row)}
+  });
+  document.addEventListener('change',event=>{if(event.target.id==='dpcDate'&&event.target.value){selectedDate=event.target.value;localStorage.setItem('weldingDailyBoardDate',selectedDate);selectedProcess='';renderDailyProcessBoard()}});
+  const originalRenderStats=renderStats;
+  renderStats=function(){originalRenderStats();renderDailyProcessBoard()};
+  renderDailyProcessBoard();
+})();</script>
+<script id="home-priority-actions-script">(function injectedHomeActions(){
+  const MANAGED=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
+  function safe(value){return typeof escapeHtml==='function'?escapeHtml(String(value??'')):String(value??'')}
+  function active(row){return MANAGED.includes(String(row.status||'').trim())}
+  function sumQty(list){return list.reduce((sum,row)=>sum+(Number(row.qty)||0),0)}
+  function shortDate(key){const p=String(key||'').split('-');return p.length===3?`${Number(p[1])}/${Number(p[2])}`:key}
+  function mount(){
+    const panel=document.querySelector('.achievement-calendar-panel');
+    if(!panel)return null;
+    let host=panel.querySelector('#homePriorityActions');
+    if(!host){host=document.createElement('section');host.id='homePriorityActions';host.className='home-priority-actions';host.setAttribute('aria-label','本日の優先アクション');panel.appendChild(host)}
+    return host;
+  }
+  window.renderHomePriorityActions=function(){
+    const host=mount();
+    if(!host||typeof rows==='undefined'||shipFilter!=='today-ng')return;
+    const today=formatLocalDate(new Date());
+    const current=rows.filter(active);
+    const todayRows=current.filter(row=>row.shipDate===today);
+    const overdue=current.filter(row=>row.shipDate&&row.shipDate<today);
+    const unassigned=todayRows.filter(row=>!String(row.owner||'').trim());
+    const urgent=todayRows.filter(row=>row.instructionDate===today);
+    const unregistered=current.filter(row=>!row.shipDate&&(typeof isActiveUnregistered!=='function'||isActiveUnregistered(row)));
+    const processCounts=MANAGED.map(status=>({status,rows:todayRows.filter(row=>row.status===status)})).sort((a,b)=>b.rows.length-a.rows.length);
+    const bottleneck=processCounts[0];
+    const earliestOverdue=overdue.map(row=>row.shipDate).filter(Boolean).sort()[0]||today;
+    const item=(icon,label,note,list,color,date)=>`<button type="button" class="hpa-item ${list.length?'':'is-zero'}" data-hpa-date="${safe(date||today)}" style="--hpa-color:${color}"><span class="hpa-icon">${icon}</span><span class="hpa-copy"><b>${label}</b><small>${note}</small></span><span class="hpa-value"><strong>${fmt(list.length)}件</strong><small>${fmt(sumQty(list))}点</small></span></button>`;
+    host.innerHTML=`<header class="hpa-head"><div class="hpa-kicker">TODAY ACTION CENTER</div><h3 class="hpa-title">本日の優先アクション</h3><div class="hpa-date">${safe(shortDate(today))} ／ 生地日基準</div></header>
+      <div class="hpa-alert ${overdue.length||todayRows.length?'':'clear'}"><strong>${overdue.length?'⚠ 生地日超過を最優先':'▶ 今日生地を順番に完了へ'}</strong><span>${overdue.length?`${fmt(overdue.length)}件が今日より前の生地日です`:`今日の残作業 ${fmt(todayRows.length)}件・${fmt(sumQty(todayRows))}点`}</span></div>
+      <div class="hpa-list">${item('🚨','生地日超過','最優先で工程を進める',overdue,'#ef4444',earliestOverdue)}${item('📌','本日生地・残作業','今日中に仕上完了へ',todayRows,'#f59e0b',today)}${item('👤','担当者未割当','作業前に担当を決定',unassigned,'#e879f9',today)}${item('⚡','本日新規・急ぎ','製造指示日も今日',urgent,'#38bdf8',today)}${item('❓','生地日未登録','日付確認が必要',unregistered,'#94a3b8',today)}</div>
+      <div class="hpa-bottleneck"><span>今日のボトルネック工程</span><strong>${bottleneck&&bottleneck.rows.length?`${safe(bottleneck.status)}　<b>${fmt(bottleneck.rows.length)}件・${fmt(sumQty(bottleneck.rows))}点</b>`:'今日の残作業なし'}</strong></div>
+      <button type="button" class="hpa-open" data-hpa-date="${safe(today)}">工程管理で今日の作業を開く →</button>`;
+  };
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-hpa-date]');
+    if(!button)return;
+    if(typeof openDailyProcessBoard==='function')openDailyProcessBoard(button.dataset.hpaDate||formatLocalDate(new Date()));
+  });
+  const previousRenderStats=renderStats;
+  renderStats=function(){previousRenderStats();renderHomePriorityActions()};
+  renderHomePriorityActions();
+})();</script>
+<script id="home-today-product-grid-script">(function injectedTodayProducts(){
+  const CONFIG=[
+    {name:'ボックス',color:'#338cff'},{name:'ダクト',color:'#35d6df'},
+    {name:'架台',color:'#ff9b3d'},{name:'貫通枠',color:'#9b72ff'},
+    {name:'防球ガード',color:'#3ee59a'},{name:'切板・金物',color:'#ffd43b'},
+    {name:'その他・要確認',color:'#ff6075'}
+  ];
+  const MANAGED=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
+  function safe(value){return typeof escapeHtml==='function'?escapeHtml(String(value??'')):String(value??'')}
+  function qty(list){return list.reduce((sum,row)=>sum+(Number(row.qty)||0),0)}
+  window.renderHomeTodayProducts=function(){
+    const host=document.getElementById('homePriorityActions');
+    if(!host||typeof rows==='undefined'||shipFilter!=='today-ng')return;
+    host.className='home-priority-actions home-today-products';
+    const today=formatLocalDate(new Date());
+    const target=rows.filter(row=>row.shipDate===today&&MANAGED.includes(String(row.status||'').trim()));
+    const items=CONFIG.map(item=>{const list=target.filter(row=>classifyProductCategory(row)===item.name);return{...item,list,count:list.length,qty:qty(list)}});
+    const processSummary=list=>MANAGED.map(status=>({status,count:list.filter(row=>row.status===status).length})).filter(item=>item.count).map(item=>`${item.status} ${item.count}`).join(' / ')||'残作業なし';
+    host.innerHTML=`<header class="htp-head"><h3 class="htp-title">今日生地（品種）</h3><div class="htp-sub">生地日 ${today} ／ 塗装前の残作業</div><div class="htp-total"><span>合計 ${fmt(target.length)}件</span><span>${fmt(qty(target))}点</span></div></header><div class="htp-grid">${items.map(item=>`<button type="button" class="htp-card ${item.count?'':'is-zero'}" data-product-category="${safe(item.name)}" data-product-category-scope="today-seichibi" style="--htp-color:${item.color}" ${item.count?'':'disabled aria-disabled="true"'}><span class="htp-card-name">${safe(item.name)}</span><strong class="htp-card-count">${fmt(item.count)}件</strong><span class="htp-card-qty">${fmt(item.qty)}点</span><small class="htp-card-process">${safe(processSummary(item.list))}</small></button>`).join('')}</div><div class="htp-note">品種を押すと製造指示の詳細を表示します</div>`;
+  };
+  const previousRenderStats=renderStats;
+  renderStats=function(){previousRenderStats();renderHomeTodayProducts()};
+  renderHomeTodayProducts();
+})();</script>
 </body>
 </html>
