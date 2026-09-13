@@ -10735,8 +10735,8 @@ async function loadSharedCsv(showMessage=true){
 $('refresh').addEventListener('click',()=>loadSharedCsv(true));
 
 const validShipFilters=['today-ng','today','tomorrow','overdue','process','dipping'];
-const savedFilter=localStorage.getItem('shipFilter');
-shipFilter=validShipFilters.includes(savedFilter)?savedFilter:'today-ng';
+// Luôn mở welding ở ホーム; không khôi phục tab của lần xem trước.
+shipFilter='today-ng';
 localStorage.setItem('shipFilter',shipFilter);
 
 const savedSpecifiedDate=localStorage.getItem('specifiedShipDate');
