@@ -7325,6 +7325,16 @@ body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"ク�
 @keyframes homeStockDraw{to{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){.home-seven-line{animation:none;stroke-dashoffset:0}}
 </style>
+<style id="welding-home-business-chart-readable-v18">
+.ship-summary.game-stage-tabs .ship-card[data-ship="today-ng"]{min-height:300px!important;padding-bottom:22px!important}
+.ship-card[data-ship="today-ng"] .ship-value{margin-top:14px!important;overflow:visible!important}
+.home-seven-summary b{font-size:34px!important}.home-seven-summary strong{font-size:31px!important}
+.home-seven-stock-chart{height:112px!important;margin-top:12px!important;overflow:visible!important}
+.home-seven-stock-chart text{font-size:20px!important;paint-order:stroke;stroke:#052437;stroke-width:4px}
+.home-seven-stock-chart circle{r:7px}
+.home-seven-days{margin-top:8px!important;gap:5px!important}
+.home-seven-days b{font-size:15px!important;white-space:nowrap}.home-seven-days small{font-size:14px!important;font-weight:1000!important}
+</style>
 </head>
 <body>
 <div class="app">
@@ -12854,13 +12864,18 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   function renderHomeSevenDayChart(todayKey){
     const host=document.getElementById('shipNg');
     if(!host)return;
-    const base=new Date(todayKey+'T00:00:00');
-    const days=Array.from({length:7},(_,index)=>{
-      const date=new Date(base);date.setDate(base.getDate()+index);
-      const key=formatLocalDate(date);
-      const list=rows.filter(row=>row.shipDate===key&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
-      return{key,label:(date.getMonth()+1)+'/'+date.getDate(),count:list.length,qty:list.reduce((sum,row)=>sum+(Number(row.qty)||0),0)};
-    });
+    const cursor=new Date(todayKey+'T00:00:00');
+    const days=[];
+    const weekday=['日','月','火','水','木','金','土'];
+    while(days.length<7){
+      const key=formatLocalDate(cursor);
+      const holidays=new Set([...japaneseHolidayKeys(cursor.getFullYear()),...COMPANY_HOLIDAYS]);
+      if(cursor.getDay()!==0&&cursor.getDay()!==6&&!holidays.has(key)){
+        const list=rows.filter(row=>row.shipDate===key&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
+        days.push({key,label:(cursor.getMonth()+1)+'/'+cursor.getDate(),week:weekday[cursor.getDay()],count:list.length,qty:list.reduce((sum,row)=>sum+(Number(row.qty)||0),0)});
+      }
+      cursor.setDate(cursor.getDate()+1);
+    }
     const totalCount=days.reduce((sum,day)=>sum+day.count,0);
     const totalQty=days.reduce((sum,day)=>sum+day.qty,0);
     const max=Math.max(1,...days.map(day=>day.count));
@@ -12872,14 +12887,14 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     });
     const line=points.map(point=>point.x.toFixed(1)+','+point.y.toFixed(1)).join(' ');
     const area=padX+','+(height-padY)+' '+line+' '+(width-padX)+','+(height-padY);
-    host.innerHTML=`<div class="home-seven-summary"><b>7日間 ${fmt(totalCount)}件</b><strong>${fmt(totalQty)}点</strong></div>
+    host.innerHTML=`<div class="home-seven-summary"><b>7営業日 ${fmt(totalCount)}件</b><strong>${fmt(totalQty)}点</strong></div>
       <svg class="home-seven-stock-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="今後7日間の生地件数">
         <defs><linearGradient id="homeSevenArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#37f2bc" stop-opacity=".48"/><stop offset="1" stop-color="#37f2bc" stop-opacity=".03"/></linearGradient></defs>
         <g class="home-seven-grid"><line x1="20" y1="20" x2="580" y2="20"/><line x1="20" y1="48" x2="580" y2="48"/><line x1="20" y1="76" x2="580" y2="76"/></g>
         <polygon class="home-seven-area" points="${area}"/><polyline class="home-seven-line" points="${line}"/>
         ${points.map(point=>`<circle cx="${point.x}" cy="${point.y}" r="5"/><text x="${point.x}" y="${Math.max(11,point.y-9)}">${point.count}</text>`).join('')}
       </svg>
-      <div class="home-seven-days">${days.map(day=>`<span><b>${day.label}</b><small>${day.count}件</small></span>`).join('')}</div>`;
+      <div class="home-seven-days">${days.map(day=>`<span><b>${day.label}（${day.week}）</b><small>${day.count}件</small></span>`).join('')}</div>`;
   }
   function updateDpcClock(){
     const clock=document.getElementById('dpcLiveClock');
