@@ -7226,6 +7226,19 @@ body:not(:has(#ngGame.show)) .home-priority-actions{display:none!important}
 .standard-mission-slot .standard-banner-message br{display:none!important}
 @media(max-width:1000px){.standard-mission-slot .standard-banner-message{font-size:20px!important}}
 </style>
+
+<style id="welding-static-claim-rotation-v13">
+.standard-mission-slot .standard-banner-message,
+.ng-mission-ticker-slot .game-banner-main{
+  display:flex!important;width:100%!important;max-width:100%!important;
+  align-items:center!important;justify-content:center!important;
+  padding:6px 20px!important;white-space:nowrap!important;text-align:center!important;
+  overflow:hidden!important;animation:none!important;transform:none!important;will-change:auto!important;
+}
+.ng-mission-ticker-slot .game-banner-main strong{font-size:inherit!important}
+body.welding-show-compliance .ng-mission-ticker-slot::before{content:"生地日遵守"!important}
+body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"クレーム情報"!important}
+</style>
 </head>
 <body>
 <div class="app">
@@ -12879,5 +12892,30 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   renderStats=function(){previousRenderStats();renderHomeTodayProducts()};
   renderHomeTodayProducts();
 })();</script>
+
+<script id="welding-static-claim-rotation-script">
+(()=>{
+  const complianceText='出荷日が変更になった場合でも、生地日を必ず遵守してください。';
+  const claimText='⚠ クレーム 1回　｜　PB蓋のパッキンが4方のうち1辺ついていなかった。';
+  const startedAt=Date.now();
+  function updateWeldingNotice(){
+    const compliance=Math.floor((Date.now()-startedAt)/60000)%2===0;
+    const text=compliance?complianceText:claimText;
+    document.body.classList.toggle('welding-show-compliance',compliance);
+    const title=document.getElementById('standardBannerTitle');
+    if(title)title.textContent=compliance?'生地日遵守':'クレーム情報';
+    ['standardBannerMessage','gameBannerMessage'].forEach(id=>{
+      const element=document.getElementById(id);
+      if(!element)return;
+      if(element.textContent!==text)element.textContent=text;
+      element.dataset.missionText=text;
+      element.style.setProperty('animation','none','important');
+      element.style.setProperty('transform','none','important');
+    });
+  }
+  updateWeldingNotice();
+  setInterval(updateWeldingNotice,1000);
+})();
+</script>
 </body>
 </html>
