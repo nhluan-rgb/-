@@ -7175,6 +7175,19 @@ body:not(:has(#ngGame.show)) .home-priority-actions{display:none!important}
 .dpc-processes{gap:12px!important}.dpc-process{display:grid!important;grid-template-columns:minmax(0,1fr) 64px!important;grid-template-rows:auto 1fr auto!important;align-items:center!important;min-height:155px!important;padding:12px 14px!important;border-width:2px!important;background:linear-gradient(155deg,color-mix(in srgb,var(--pc) 31%,#113449),#061622 76%)!important;box-shadow:inset 0 0 22px color-mix(in srgb,var(--pc) 16%,transparent),0 4px 0 color-mix(in srgb,var(--pc) 40%,#020914)!important;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease!important}.dpc-process:hover{filter:brightness(1.16)!important}.dpc-process.active{outline:4px solid #fff36a!important;outline-offset:3px!important;box-shadow:0 0 0 2px #071725,0 0 26px rgba(255,243,106,.8),inset 0 0 24px color-mix(in srgb,var(--pc) 25%,transparent)!important;transform:translateY(-3px) scale(1.015)!important}.dpc-process-name{grid-column:1!important;grid-row:1!important;color:#fff!important;font-size:19px!important;font-weight:1000!important}.dpc-process-icon{grid-column:2!important;grid-row:1/4!important;display:grid!important;place-items:center!important;width:62px!important;height:62px!important;border:3px solid var(--pc)!important;border-radius:50%!important;background:#eef9fb!important;color:var(--pc)!important;box-shadow:0 0 15px color-mix(in srgb,var(--pc) 65%,transparent),inset 0 0 11px color-mix(in srgb,var(--pc) 18%,transparent)!important}.dpc-process-icon svg{width:43px!important;height:43px!important;display:block!important}.dpc-process strong{grid-column:1!important;grid-row:2!important;align-self:end!important;color:#fff36a!important;font-size:34px!important}.dpc-process small{grid-column:1!important;grid-row:3!important;color:#d8f5fa!important;font-size:14px!important;font-weight:900!important}.dpc-process.is-zero{opacity:.38!important;filter:saturate(.35)!important}.dpc-process.is-zero.active{opacity:.75!important}.dpc-kpi.active{outline:4px solid #fff36a!important;outline-offset:3px!important;box-shadow:0 0 0 2px #071725,0 0 28px rgba(255,243,106,.82)!important;transform:translateY(-2px)!important}
 @media(max-width:800px){.dpc-process{grid-template-columns:minmax(0,1fr) 50px!important;min-height:130px!important}.dpc-process-icon{width:48px!important;height:48px!important}.dpc-process-icon svg{width:34px!important;height:34px!important}}
 </style>
+
+<style id="welding-kpi-clock-layout-v8">
+.dpc-kpi-clock-row{display:grid;grid-template-columns:minmax(0,4fr) minmax(250px,2fr);gap:12px;align-items:stretch;padding:14px}
+.dpc-kpi-clock-row .dpc-kpis{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;padding:0!important}
+.dpc-kpi-clock-row .dpc-kpi{min-width:0!important;min-height:155px!important;padding:14px!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+.dpc-kpi-clock-row .dpc-kpi strong{font-size:34px!important;margin-top:10px!important}
+.dpc-live-clock{min-height:155px;border:2px solid #42d9ff;border-radius:12px;background:radial-gradient(circle at 50% 42%,rgba(40,177,225,.24),transparent 52%),linear-gradient(145deg,#0c3b55,#061724);box-shadow:inset 0 0 25px rgba(42,203,255,.14),0 4px 0 #03101c;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}
+.dpc-live-clock>span{color:#91eaff;font-size:13px;font-weight:1000;letter-spacing:.16em}
+.dpc-live-clock>strong{margin:4px 0 2px;color:#fff;font-size:clamp(34px,3.1vw,54px);line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 16px rgba(106,225,255,.72)}
+.dpc-live-clock>small{color:#c7edf5;font-size:15px;font-weight:900}
+@media(max-width:1200px){.dpc-kpi-clock-row{grid-template-columns:1fr}.dpc-live-clock{min-height:110px}.dpc-kpi-clock-row .dpc-kpi{min-height:135px!important}}
+@media(max-width:800px){.dpc-kpi-clock-row .dpc-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.dpc-kpi-clock-row .dpc-kpi{min-height:125px!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -12684,6 +12697,14 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     renderTable();
     window.scrollTo({top:0,behavior:'smooth'});
   };
+  function updateDpcClock(){
+    const clock=document.getElementById('dpcLiveClock');
+    const date=document.getElementById('dpcLiveDate');
+    if(!clock||!date)return;
+    const now=new Date();
+    clock.textContent=now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    date.textContent=now.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
+  }
   window.renderDailyProcessBoard=function(){
     const board=document.getElementById('dailyProcessBoard');
     if(!board||typeof rows==='undefined')return;
@@ -12715,10 +12736,11 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     board.innerHTML=`<div class="dpc-shell">
       <header class="dpc-head"><div><h2 class="dpc-title"><strong>${safe(shortDate(selectedDate))}</strong> 生地 工程管理</h2></div><div class="dpc-date-tools"><button type="button" class="dpc-home-button" data-dpc-home>← ホームへ戻る</button><button type="button" data-dpc-shift="-1">← 前日</button><button type="button" data-dpc-today>今日</button><input id="dpcDate" type="date" value="${safe(selectedDate)}" aria-label="管理する生地日"><button type="button" data-dpc-shift="1">翌日 →</button></div></header>
       <div class="dpc-alert ${workRows.length?'':'clear'}"><b>${workRows.length?`残 ${fmt(workRows.length)}件 ／ ${fmt(workQty)}点`:'完了'}</b>${unassigned?`<span>未割当 ${fmt(unassigned)}件</span>`:''}</div>
-      <div class="dpc-kpis"><button type="button" class="dpc-kpi ${selectedKpi==='target'?'active':''}" data-dpc-kpi="target"><span>対象</span><strong>${fmt(dateRows.length)}件</strong><small>${fmt(totalQty)}点 ／ キャンセル除外</small></button><button type="button" class="dpc-kpi ${notStarted.length?'warn':'good'} ${selectedKpi==='unstarted'?'active':''}" data-dpc-kpi="unstarted"><span>未着手（要確認）</span><strong>${fmt(notStarted.length)}件</strong><small>${fmt(notStarted.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点</small></button><button type="button" class="dpc-kpi ${overdue?'danger':'good'} ${selectedKpi==='overdue'?'active':''}" data-dpc-kpi="overdue"><span>生地日切れ</span><strong>${fmt(overdue)}件</strong><small>${fmt(overdueRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点 ／ 仕上前</small></button><button type="button" class="dpc-kpi ${rate===100?'good':rate<75?'danger':'warn'} ${selectedKpi==='passed'?'active':''}" data-dpc-kpi="passed"><span>完了率</span><strong>${rateLabel}%</strong><small>仕上通過 ${fmt(passedFinish.length)} / 対象 ${fmt(dateRows.length)}件</small></button></div>
+      <div class="dpc-kpi-clock-row"><div class="dpc-kpis"><button type="button" class="dpc-kpi ${selectedKpi==='target'?'active':''}" data-dpc-kpi="target"><span>対象</span><strong>${fmt(dateRows.length)}件</strong><small>${fmt(totalQty)}点 ／ キャンセル除外</small></button><button type="button" class="dpc-kpi ${notStarted.length?'warn':'good'} ${selectedKpi==='unstarted'?'active':''}" data-dpc-kpi="unstarted"><span>未着手（要確認）</span><strong>${fmt(notStarted.length)}件</strong><small>${fmt(notStarted.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点</small></button><button type="button" class="dpc-kpi ${overdue?'danger':'good'} ${selectedKpi==='overdue'?'active':''}" data-dpc-kpi="overdue"><span>生地日切れ</span><strong>${fmt(overdue)}件</strong><small>${fmt(overdueRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点 ／ 仕上前</small></button><button type="button" class="dpc-kpi ${rate===100?'good':rate<75?'danger':'warn'} ${selectedKpi==='passed'?'active':''}" data-dpc-kpi="passed"><span>完了率</span><strong>${rateLabel}%</strong><small>仕上通過 ${fmt(passedFinish.length)} / 対象 ${fmt(dateRows.length)}件</small></button></div><aside class="dpc-live-clock" aria-label="現在時刻"><span>現在時刻</span><strong id="dpcLiveClock">--:--:--</strong><small id="dpcLiveDate">----</small></aside></div>
       <section class="dpc-section"><div class="dpc-section-title"><span>工程</span></div><div class="dpc-processes">${PROCESS_ORDER.map(status=>processButton(status,processBreakdownRows)).join('')}</div></section>
       <section class="dpc-section"><div class="dpc-section-title"><span>${safe(listTitle)}</span><small>${fmt(visibleRows.length)}件</small></div><div class="dpc-tasks-wrap"><table class="dpc-task-table"><thead><tr><th>製造指示番号</th><th>品番・品名・規格</th><th>サイズ</th><th>数量</th><th>工程</th><th>生地日・製造期限・出荷日</th><th>担当者</th></tr></thead><tbody>${visibleRows.length?visibleRows.slice(0,200).map(row=>taskRow(row)).join(''):`<tr><td colspan="7"><div class="dpc-empty">対象なし</div></td></tr>`}</tbody></table></div></section>
     </div>`;
+    updateDpcClock();
   };
   document.addEventListener('click',event=>{
     if(event.target.closest('[data-dpc-home]')){shipFilter='today-ng';localStorage.setItem('shipFilter',shipFilter);document.querySelectorAll('[data-ship],[data-quick]').forEach(item=>item.classList.toggle('active',(item.dataset.ship||item.dataset.quick)===shipFilter));renderStats();renderTable();window.scrollTo({top:0,behavior:'smooth'});return}
@@ -12732,6 +12754,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   const originalRenderStats=renderStats;
   renderStats=function(){originalRenderStats();renderDailyProcessBoard()};
   renderDailyProcessBoard();
+  setInterval(updateDpcClock,1000);
 })();</script>
 <script id="home-priority-actions-script">(function injectedHomeActions(){
   const MANAGED=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
