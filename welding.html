@@ -13064,19 +13064,30 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   position:absolute!important;
   left:24px!important;
   right:24px!important;
-  top:430px!important;
+  top:390px!important;
   margin:0!important;
 }
 .ng-game #monthlyAchievementCalendar.home-dipping-merged-host{
   position:absolute!important;
-  top:575px!important;
-  height:600px!important;
+  top:520px!important;
+  height:455px!important;
   margin:0!important;
+  overflow:hidden!important;
 }
 .ng-game .evolution-visual:has(.home-dipping-merged-host),
 .ng-game .evolution-world:has(.home-dipping-merged-host){
-  min-height:1200px!important;
-  height:1200px!important;
+  min-height:1000px!important;
+  height:1000px!important;
+}
+.ng-game #monthlyAchievementCalendar.home-dipping-merged-host .home-dipping-process-board{
+  min-height:455px!important;
+  height:455px!important;
+}
+.ng-game #monthlyAchievementCalendar.home-dipping-merged-host .home-dipping-process-grid{
+  flex:0 0 auto!important;
+}
+.ng-game #monthlyAchievementCalendar.home-dipping-merged-host .home-dipping-empty{
+  min-height:245px!important;
 }
 @media(max-width:1300px){
   .ng-game .ng-mission-ticker-slot{
@@ -13092,6 +13103,10 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     height:auto!important;
     min-height:600px!important;
     margin:12px!important;
+  }
+  .ng-game #monthlyAchievementCalendar.home-dipping-merged-host .home-dipping-process-board{
+    height:auto!important;
+    min-height:0!important;
   }
   .ng-game .evolution-visual:has(.home-dipping-merged-host),
   .ng-game .evolution-world:has(.home-dipping-merged-host){
