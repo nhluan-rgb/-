@@ -7220,6 +7220,12 @@ body:not(:has(#ngGame.show)) .home-priority-actions{display:none!important}
 .today-completion-card .today-rate-value{display:block;color:#fff36e;font-size:clamp(45px,4vw,66px);font-weight:1000;line-height:1;text-shadow:0 0 17px rgba(255,235,78,.48)}
 .today-completion-card .ship-sub{display:block!important;margin-top:12px!important;color:#c9f5ff!important;font-size:16px!important;font-weight:900!important}
 </style>
+
+<style id="welding-seichibi-compliance-message-v12">
+.standard-mission-slot .standard-banner-message{white-space:nowrap!important;line-break:auto!important;overflow:hidden!important;text-overflow:clip!important;font-size:clamp(22px,2vw,34px)!important}
+.standard-mission-slot .standard-banner-message br{display:none!important}
+@media(max-width:1000px){.standard-mission-slot .standard-banner-message{font-size:20px!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -8446,6 +8452,9 @@ Object.entries(weldingMessageSets).forEach(([key,templates])=>{
     ['対象工程はすべて完了しました。塗装・組立への引き渡しを確認しましょう。']
   );
 });
+
+const seichibiComplianceMessage='出荷日が変更になった場合でも、生地日を必ず遵守してください。';
+Object.keys(standardMessageGroups).forEach(key=>{standardMessageGroups[key]=[seichibiComplianceMessage]});
 
 let standardMessageKey='';
 let standardMessageIndex=0;
