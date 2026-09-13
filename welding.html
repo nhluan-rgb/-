@@ -13058,5 +13058,47 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   setInterval(updateWeldingNotice,1000);
 })();
 </script>
+<style id="welding-home-chart-clearance-fix-v17">
+/* ホーム：通知とドブ漬け工程をグラフの下へ戻し、重なりを防止。 */
+.ng-game .ng-mission-ticker-slot{
+  position:absolute!important;
+  left:24px!important;
+  right:24px!important;
+  top:430px!important;
+  margin:0!important;
+}
+.ng-game #monthlyAchievementCalendar.home-dipping-merged-host{
+  position:absolute!important;
+  top:575px!important;
+  height:600px!important;
+  margin:0!important;
+}
+.ng-game .evolution-visual:has(.home-dipping-merged-host),
+.ng-game .evolution-world:has(.home-dipping-merged-host){
+  min-height:1200px!important;
+  height:1200px!important;
+}
+@media(max-width:1300px){
+  .ng-game .ng-mission-ticker-slot{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    margin:12px!important;
+  }
+  .ng-game #monthlyAchievementCalendar.home-dipping-merged-host{
+    position:relative!important;
+    inset:auto!important;
+    width:calc(100% - 24px)!important;
+    height:auto!important;
+    min-height:600px!important;
+    margin:12px!important;
+  }
+  .ng-game .evolution-visual:has(.home-dipping-merged-host),
+  .ng-game .evolution-world:has(.home-dipping-merged-host){
+    height:auto!important;
+    min-height:0!important;
+  }
+}
+</style>
 </body>
 </html>
