@@ -7308,6 +7308,23 @@ body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"ク�
   .ng-game .evolution-visual:has(.home-dipping-merged-host){height:auto!important;min-height:0!important}
 }
 </style>
+
+<style id="welding-home-seven-day-stock-v17">
+.grid.ng-layout>.panel:nth-child(2)>.panel-head::after{content:none!important;display:none!important}
+.ship-card[data-ship="today-ng"] .ship-value{margin-top:8px!important}
+.home-seven-summary{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.home-seven-summary b{color:#fff36d;font-size:26px;font-weight:1000}.home-seven-summary strong{color:#6fffd2;font-size:22px}
+.home-seven-stock-chart{display:block;width:100%;height:100px;margin-top:3px;overflow:visible}
+.home-seven-grid line{stroke:rgba(130,225,255,.18);stroke-width:1}
+.home-seven-area{fill:url(#homeSevenArea)}
+.home-seven-line{fill:none;stroke:#54ffd0;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px #16e6b0);stroke-dasharray:1200;stroke-dashoffset:1200;animation:homeStockDraw 2.2s ease forwards}
+.home-seven-stock-chart circle{fill:#fff36d;stroke:#06475a;stroke-width:3;filter:drop-shadow(0 0 4px #fff36d)}
+.home-seven-stock-chart text{fill:#fff;font-size:13px;font-weight:1000;text-anchor:middle}
+.home-seven-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:0}
+.home-seven-days span{text-align:center;color:#d8f8ff}.home-seven-days b{display:block;font-size:11px}.home-seven-days small{font-size:10px;color:#6fffd2}
+@keyframes homeStockDraw{to{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){.home-seven-line{animation:none;stroke-dashoffset:0}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -12834,6 +12851,36 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     renderTable();
     window.scrollTo({top:0,behavior:'smooth'});
   };
+  function renderHomeSevenDayChart(todayKey){
+    const host=document.getElementById('shipNg');
+    if(!host)return;
+    const base=new Date(todayKey+'T00:00:00');
+    const days=Array.from({length:7},(_,index)=>{
+      const date=new Date(base);date.setDate(base.getDate()+index);
+      const key=formatLocalDate(date);
+      const list=rows.filter(row=>row.shipDate===key&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
+      return{key,label:(date.getMonth()+1)+'/'+date.getDate(),count:list.length,qty:list.reduce((sum,row)=>sum+(Number(row.qty)||0),0)};
+    });
+    const totalCount=days.reduce((sum,day)=>sum+day.count,0);
+    const totalQty=days.reduce((sum,day)=>sum+day.qty,0);
+    const max=Math.max(1,...days.map(day=>day.count));
+    const width=600,height=96,padX=20,padY=12;
+    const points=days.map((day,index)=>{
+      const x=padX+index*(width-padX*2)/6;
+      const y=height-padY-day.count/max*(height-padY*2);
+      return{x,y,...day};
+    });
+    const line=points.map(point=>point.x.toFixed(1)+','+point.y.toFixed(1)).join(' ');
+    const area=padX+','+(height-padY)+' '+line+' '+(width-padX)+','+(height-padY);
+    host.innerHTML=`<div class="home-seven-summary"><b>7日間 ${fmt(totalCount)}件</b><strong>${fmt(totalQty)}点</strong></div>
+      <svg class="home-seven-stock-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="今後7日間の生地件数">
+        <defs><linearGradient id="homeSevenArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#37f2bc" stop-opacity=".48"/><stop offset="1" stop-color="#37f2bc" stop-opacity=".03"/></linearGradient></defs>
+        <g class="home-seven-grid"><line x1="20" y1="20" x2="580" y2="20"/><line x1="20" y1="48" x2="580" y2="48"/><line x1="20" y1="76" x2="580" y2="76"/></g>
+        <polygon class="home-seven-area" points="${area}"/><polyline class="home-seven-line" points="${line}"/>
+        ${points.map(point=>`<circle cx="${point.x}" cy="${point.y}" r="5"/><text x="${point.x}" y="${Math.max(11,point.y-9)}">${point.count}</text>`).join('')}
+      </svg>
+      <div class="home-seven-days">${days.map(day=>`<span><b>${day.label}</b><small>${day.count}件</small></span>`).join('')}</div>`;
+  }
   function updateDpcClock(){
     const clock=document.getElementById('dpcLiveClock');
     const date=document.getElementById('dpcLiveDate');
@@ -12855,6 +12902,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const processCardSub=document.getElementById('shipProcessSub');
     if(processCard)processCard.innerHTML=`<span class="today-rate-value">${todayRateLabel}%</span>`;
     if(processCardSub)processCardSub.textContent=`仕上通過 ${fmt(todayPassedRows.length)} / 対象 ${fmt(todayTargetRows.length)}件`;
+    renderHomeSevenDayChart(today);
     document.body.classList.toggle('daily-command-mode',shipFilter==='process');
     if(shipFilter!=='process')return;
     const dateRows=rows.filter(row=>row.shipDate===selectedDate&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
