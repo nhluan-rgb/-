@@ -10423,13 +10423,9 @@ const ngCards=document.querySelectorAll('[data-ship="today-ng"]');
 const completeMessage=document.getElementById('completeMessage');
 
 ngCards.forEach(ngCard=>{
-  if(ng.length===0){
-    ngCard.classList.remove('ng');
-    ngCard.classList.add('is-clear');
-  }else{
-    ngCard.classList.add('ng');
-    ngCard.classList.remove('is-clear');
-  }
+  // ホームタブは警告件数に関係なく通常色で固定する。
+  ngCard.classList.remove('ng','urgent-pending','urgent-cleared');
+  ngCard.classList.toggle('is-clear',ng.length===0);
   ngCard.style.removeProperty('background');
   ngCard.style.removeProperty('border-color');
   ngCard.style.setProperty('color','#fff','important');
