@@ -10256,8 +10256,7 @@ if(shipFilter==='today-ng'){
   $('shipNg').innerHTML=`<span class="ship-count-line">${fmt(todayUrgentRows.length)}件</span><span class="ship-points-line">${fmt(urgentActiveQty)}点</span>`;
   const homeShipCard=document.querySelector('.ship-card[data-ship="today-ng"]');
   if(homeShipCard){
-    homeShipCard.classList.toggle('urgent-pending',todayUrgentRows.length>0);
-    homeShipCard.classList.toggle('urgent-cleared',todayUrgentRows.length===0);
+    homeShipCard.classList.remove('urgent-pending','urgent-cleared');
   }
   if(!fullStats)recordTodaySeichibiCompletion(todaySeichibiRemaining.length);
   const homeRemainingPoints=todaySeichibiRemaining.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
