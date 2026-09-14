@@ -12879,7 +12879,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const totalCount=days.reduce((sum,day)=>sum+day.count,0);
     const totalQty=days.reduce((sum,day)=>sum+day.qty,0);
     const max=Math.max(1,...days.map(day=>day.count));
-    const width=600,height=96,padX=20,padY=12;
+    const width=600,height=138,padX=20,padY=46;
     const points=days.map((day,index)=>{
       const x=padX+index*(width-padX*2)/6;
       const y=height-padY-day.count/max*(height-padY*2);
@@ -12890,11 +12890,10 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     host.innerHTML=`<div class="home-seven-summary"><b>7営業生地日 ${fmt(totalCount)}件</b><strong>${fmt(totalQty)}点</strong></div>
       <svg class="home-seven-stock-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="今後7日間の生地件数">
         <defs><linearGradient id="homeSevenArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#37f2bc" stop-opacity=".48"/><stop offset="1" stop-color="#37f2bc" stop-opacity=".03"/></linearGradient></defs>
-        <g class="home-seven-grid"><line x1="20" y1="20" x2="580" y2="20"/><line x1="20" y1="48" x2="580" y2="48"/><line x1="20" y1="76" x2="580" y2="76"/></g>
+        <g class="home-seven-grid"><line x1="20" y1="26" x2="580" y2="26"/><line x1="20" y1="59" x2="580" y2="59"/><line x1="20" y1="92" x2="580" y2="92"/></g>
         <polygon class="home-seven-area" points="${area}"/><polyline class="home-seven-line" points="${line}"/>
-        ${points.map(point=>`<circle cx="${point.x}" cy="${point.y}" r="5"/><text x="${point.x}" y="${Math.max(11,point.y-9)}">${point.count}</text>`).join('')}
-      </svg>
-      <div class="home-seven-days">${days.map(day=>`<span><b>${day.label}（${day.week}）</b><small>${day.count}件</small></span>`).join('')}</div>`;
+        ${points.map(point=>`<circle cx="${point.x}" cy="${point.y}" r="5"/><text class="home-seven-count-label" x="${point.x}" y="${Math.max(16,point.y-10)}">${point.count}</text><text class="home-seven-date-label" x="${point.x}" y="${Math.min(height-23,point.y+24)}">${point.label}</text><text class="home-seven-week-label" x="${point.x}" y="${Math.min(height-5,point.y+43)}">（${point.week}）</text>`).join('')}
+      </svg>`;
   }
   function updateDpcClock(){
     const clock=document.getElementById('dpcLiveClock');
@@ -13200,6 +13199,37 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   color:#bdeeff!important;
   font-size:clamp(12px,.9vw,15px)!important;
 }
+</style>
+<style id="welding-home-date-under-value-v20">
+.home-seven-stock-chart{
+  height:165px!important;
+  margin-top:5px!important;
+}
+.home-seven-stock-chart .home-seven-count-label{
+  fill:#fff!important;
+  font-size:22px!important;
+  font-weight:1000!important;
+  paint-order:stroke!important;
+  stroke:#052437!important;
+  stroke-width:4px!important;
+}
+.home-seven-stock-chart .home-seven-date-label{
+  fill:#eafaff!important;
+  font-size:17px!important;
+  font-weight:1000!important;
+  paint-order:stroke!important;
+  stroke:#052437!important;
+  stroke-width:4px!important;
+}
+.home-seven-stock-chart .home-seven-week-label{
+  fill:#8feaff!important;
+  font-size:15px!important;
+  font-weight:1000!important;
+  paint-order:stroke!important;
+  stroke:#052437!important;
+  stroke-width:4px!important;
+}
+.home-seven-days{display:none!important}
 </style>
 </body>
 </html>
