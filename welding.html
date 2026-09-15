@@ -12912,7 +12912,15 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const todayWeldingRateLabel=Number.isInteger(todayWeldingRate)?String(todayWeldingRate):todayWeldingRate.toFixed(1);
     const processCard=document.getElementById('shipProcess');
     const processCardSub=document.getElementById('shipProcessSub');
-    if(processCard)processCard.innerHTML=`<div class="today-progress-split"><div class="completion"><span>完了率<em>仕上通過 ÷ 今日生地</em></span><strong>${todayRateLabel}%</strong></div><div class="welding"><span>溶接到達率<em>溶接以降 ÷ 今日生地</em></span><strong>${todayWeldingRateLabel}%</strong></div></div>`;
+    const todayDippingWeldingReachedRows=todayWeldingReachedRows.filter(row=>/^Z/i.test(String(row.part||'').trim()));
+    const todayNormalWeldingReachedRows=todayWeldingReachedRows.filter(row=>!/^Z/i.test(String(row.part||'').trim()));
+    const weldingContributionLabel=list=>{
+      const value=todayTargetRows.length?list.length/todayTargetRows.length*100:0;
+      return (Number.isInteger(value)?String(value):value.toFixed(1))+'%';
+    };
+    const normalWeldingContributionLabel=weldingContributionLabel(todayNormalWeldingReachedRows);
+    const dippingWeldingContributionLabel=weldingContributionLabel(todayDippingWeldingReachedRows);
+    if(processCard)processCard.innerHTML=`<div class="today-progress-split"><div class="completion"><span>完了率<em>仕上通過 ÷ 今日生地</em></span><strong>${todayRateLabel}%</strong></div><div class="welding"><span>溶接到達率<em>溶接以降 ÷ 今日生地</em></span><strong>${todayWeldingRateLabel}%</strong><div class="welding-rate-equation"><b>通常 ${normalWeldingContributionLabel}</b><i>＋</i><b class="dipping">ドブ ${dippingWeldingContributionLabel}</b></div></div></div>`;
     if(processCardSub)processCardSub.textContent=`基準：今日生地 ${fmt(todayTargetRows.length)}件（キャンセル除外）`;
     renderHomeSevenDayChart(today);
     document.body.classList.toggle('daily-command-mode',shipFilter==='process');
@@ -13254,6 +13262,41 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-count-line,
 body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
   color:#fff!important;
   text-shadow:none!important;
+}
+</style>
+<style id="welding-rate-dipping-breakdown-v21">
+.today-completion-card .today-progress-split .welding strong{
+  margin-top:5px!important;
+  font-size:clamp(45px,4.15vw,70px)!important;
+}
+.today-completion-card .welding-rate-equation{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:clamp(5px,.55vw,10px)!important;
+  width:100%!important;
+  margin-top:6px!important;
+  color:#d7f8ff!important;
+  font-size:clamp(11px,.9vw,16px)!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  white-space:nowrap!important;
+}
+.today-completion-card .welding-rate-equation b{
+  padding:4px 7px!important;
+  border:1px solid rgba(104,232,255,.45)!important;
+  border-radius:6px!important;
+  background:rgba(31,157,196,.16)!important;
+  color:#bcefff!important;
+}
+.today-completion-card .welding-rate-equation b.dipping{
+  border-color:rgba(255,197,84,.62)!important;
+  background:rgba(255,171,36,.14)!important;
+  color:#ffd477!important;
+}
+.today-completion-card .welding-rate-equation i{
+  color:#8beeff!important;
+  font-style:normal!important;
 }
 </style>
 </body>
