@@ -12574,7 +12574,7 @@ html.fullhd-dashboard-fit .app{
       }
       box.classList.remove('ship-marquee-ready');
       box.style.setProperty('display','grid','important');
-      box.style.setProperty('grid-template-columns','repeat(2,minmax(0,1fr))','important');
+      box.style.setProperty('grid-template-columns','minmax(0,35fr) minmax(0,65fr)','important');
       box.style.setProperty('width','100%','important');
       box.style.setProperty('max-width','100%','important');
       box.style.setProperty('min-width','0','important');
@@ -12851,6 +12851,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
       .map(value=>String(value||'').normalize('NFKC').toUpperCase())
       .join(' ');
     if(/焼付|焼き付|ヤキツケ/.test(text))return '焼付';
+    if(isDippingProduct(row))return 'ドブ';
     if(/SUS|ステンレス/.test(text))return 'SUS';
     if(/錆止|さび止|サビ止/.test(text))return '錆止め';
     if(/ダイマ|DAIMA/.test(text))return 'ダイマ';
@@ -12958,7 +12959,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const todayWeldingRateLabel=Number.isInteger(todayWeldingRate)?String(todayWeldingRate):todayWeldingRate.toFixed(1);
     const processCard=document.getElementById('shipProcess');
     const processCardSub=document.getElementById('shipProcessSub');
-    const weldingTypeConfig=[['焼付','#ffad42'],['SUS','#65c7ff'],['錆止め','#ff739f'],['ダイマ','#72e6a6'],['その他','#ad8cff']];
+    const weldingTypeConfig=[['焼付','#ffad42'],['ドブ','#ffd84f'],['SUS','#65c7ff'],['錆止め','#ff739f'],['ダイマ','#72e6a6'],['その他','#ad8cff']];
     const weldingTypeBars=weldingTypeConfig.map(([name,color])=>{
       const targets=todayTargetRows.filter(row=>classifyWeldingType(row)===name);
       const reached=todayWeldingReachedRows.filter(row=>classifyWeldingType(row)===name);
@@ -13702,7 +13703,7 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
   margin:0!important;
 }
 .today-completion-card .today-progress-split>.welding-type-chart{
-  width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:end!important;gap:9px!important;padding:7px 10px 4px!important;
+  width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;align-items:end!important;gap:7px!important;padding:7px 9px 4px!important;
   border:1px solid rgba(89,225,239,.28)!important;border-radius:12px!important;background:linear-gradient(180deg,rgba(3,39,57,.72),rgba(2,25,40,.45))!important;
 }
 .today-completion-card .welding-type-column{min-width:0;display:grid;grid-template-rows:104px auto auto auto;justify-items:center;align-items:end;gap:2px;color:#fff}
@@ -13794,9 +13795,9 @@ body:has(#ngGame.show) .home-today-products .htp-card-qty{margin-top:4px!importa
 body:has(#ngGame.show) .home-today-products .htp-card-process{margin-top:4px!important;max-width:100%!important;overflow:hidden!important;font-size:9px!important;line-height:1.15!important;white-space:nowrap!important;text-overflow:ellipsis!important}
 body:has(#ngGame.show) .home-today-products .htp-note{margin-top:7px!important;padding:5px!important;font-size:10px!important}
 /* 右側5本：数値を最優先で大きく、ラベルと到達件数も常時表示。 */
-body .today-completion-card .today-progress-split>.welding-type-chart{gap:12px!important;padding:8px 14px 7px!important}
+body .today-completion-card .today-progress-split>.welding-type-chart{gap:8px!important;padding:8px 10px 7px!important}
 body .today-completion-card .welding-type-column{grid-template-rows:116px auto auto auto!important;gap:4px!important}
-body .today-completion-card .welding-type-well{width:min(66px,82%)!important;height:116px!important;border-width:2px!important}
+body .today-completion-card .welding-type-well{width:min(60px,82%)!important;height:116px!important;border-width:2px!important}
 body .today-completion-card .welding-type-column>b{font-size:clamp(15px,1.05vw,19px)!important;overflow:visible!important;text-overflow:clip!important}
 body .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>strong{font-size:clamp(21px,1.5vw,28px)!important;letter-spacing:-.025em!important;overflow:visible!important}
 body .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>small{font-size:clamp(11px,.72vw,13px)!important;color:#e5f8ff!important}
