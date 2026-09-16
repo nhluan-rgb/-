@@ -9011,22 +9011,27 @@ function renderHomeProcessControl(){
   });
   const processColors={'未着手':'#90A4AE','CAD/CAM':'#F4C430','切断':'#F57C00','曲げ':'#EC6CB9','溶接':'#E53935','仕上':'#B0BEC5','塗装':'#43A047','組立':'#7E57C2','完成':'#00A67E'};
   const processOrder=['未着手','CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立','完成'];
-  const cards=[...processMap.entries()]
+  const cardList=[...processMap.entries()]
     .sort((a,b)=>{
       const ai=processOrder.indexOf(a[0]),bi=processOrder.indexOf(b[0]);
       return (ai<0?99:ai)-(bi<0?99:bi)||b[1].count-a[1].count;
     })
     .map(([name,item])=>`<button type="button" class="home-dipping-process-card" data-dipping-kind="process" data-dipping-value="${escapeHtml(name)}" style="--dip-color:${processColors[name]||'#55d9ff'}" aria-label="${escapeHtml(name)}の詳細と製品種類を表示">
       <span>${escapeHtml(name)}</span><b>${fmt(item.count)}件</b><strong>${fmt(item.qty)}点</strong><small>クリックして製品種類を表示</small>
-    </button>`).join('');
+    </button>`);
   const totalQty=activeRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   const readyQty=readyRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
-  const readyCard=`<button type="button" class="home-dipping-ready-card ${readyRows.length?'has-items':'is-zero'}" data-dipping-kind="process" data-dipping-value="外注" aria-label="ドブ出し準備完了の詳細を表示">
-    <span class="home-dipping-ready-seal">✓</span><span class="home-dipping-ready-copy"><small>工程：外注</small><b>ドブ出し準備完了</b><em>持ち込み待ち</em></span><span class="home-dipping-ready-total"><strong>${fmt(readyRows.length)}件</strong><i>${fmt(readyQty)}点</i></span>
+  const readyCard=`<button type="button" class="home-dipping-process-card home-dipping-ready-card ${readyRows.length?'has-items':'is-zero'}" data-dipping-kind="process" data-dipping-value="外注" aria-label="ドブ出し準備完了の詳細を表示">
+    <span class="home-dipping-ready-orbit" aria-hidden="true"><i></i></span><span class="home-dipping-ready-copy"><small>工程：外注</small><b>ドブ出し<br>準備完了</b></span><strong class="home-dipping-ready-count">${fmt(readyRows.length)}件</strong><em class="home-dipping-ready-points">${fmt(readyQty)}点</em><small class="home-dipping-ready-note">持ち込み待ち</small>
   </button>`;
+  const weldIndex=[...processMap.keys()].sort((a,b)=>{
+    const ai=processOrder.indexOf(a),bi=processOrder.indexOf(b);
+    return (ai<0?99:ai)-(bi<0?99:bi);
+  }).indexOf('溶接');
+  cardList.splice(weldIndex>=0?weldIndex+1:cardList.length,0,readyCard);
+  const cards=cardList.join('');
   return `<section class="home-dipping-process-board">
     <header class="home-dipping-process-head"><div><small>ドブ漬け管理</small><h2>工程</h2></div><div class="home-dipping-dates"><div><span>生地日</span><b>${formatJapaneseDateKey(dates.today)}</b></div><div><span>持ち込み日</span><b>${formatJapaneseDateKey(carry)}</b></div></div><div class="home-dipping-total"><span>対象</span><b>${fmt(activeRows.length)}件</b><strong>${fmt(totalQty)}点</strong></div></header>
-    ${readyCard}
     <div class="home-dipping-process-grid">${cards||'<div class="home-dipping-empty">工程データはありません</div>'}</div>
   </section>`;
 }
@@ -13638,19 +13643,22 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
 }
 </style>
 <style id="dipping-ready-fixed-card-v1">
-.home-dipping-ready-card{
-  position:relative;width:100%;display:grid;grid-template-columns:74px minmax(0,1fr) auto;align-items:center;gap:18px;
-  margin:18px 0 4px;padding:16px 22px;border:3px solid #ffd84e;border-radius:16px;cursor:pointer;text-align:left;color:#fff;
-  background:linear-gradient(110deg,#5b3103 0%,#a86508 27%,#123e4c 64%,#052333 100%);
-  box-shadow:0 0 25px rgba(255,190,43,.5),inset 0 0 28px rgba(255,226,119,.13);overflow:hidden;
+.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.home-dipping-process-card.home-dipping-ready-card{
+  --dip-color:#62efff;position:relative;min-height:190px;margin:0;padding:12px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  border:2px solid #ffe65b!important;border-radius:16px!important;color:#fff;text-align:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 32%,rgba(61,234,255,.25),transparent 25%),linear-gradient(155deg,#3c1759 0%,#102f55 48%,#061b2d 100%)!important;
+  box-shadow:0 0 20px rgba(83,229,255,.38),0 0 28px rgba(255,218,62,.24),inset 0 0 30px rgba(94,234,255,.12)!important;
 }
-.home-dipping-ready-card::before{content:"DOBU SHIPPING GATE";position:absolute;right:18px;top:8px;color:rgba(255,239,166,.34);font-size:11px;font-weight:1000;letter-spacing:.16em}
-.home-dipping-ready-card:hover,.home-dipping-ready-card:focus-visible{transform:translateY(-3px);filter:brightness(1.14);outline:none}
-.home-dipping-ready-card.is-zero{opacity:.72;filter:saturate(.7)}
-.home-dipping-ready-seal{width:62px;height:62px;display:grid;place-items:center;border:3px solid #fff1a6;border-radius:50%;color:#17343a;background:#ffe05d;font-size:34px;font-weight:1000;box-shadow:0 0 20px #ffc62e}
-.home-dipping-ready-copy{display:grid;gap:2px}.home-dipping-ready-copy small{color:#ffe69a;font-size:14px;font-weight:1000}.home-dipping-ready-copy b{font-size:clamp(25px,2.2vw,38px);line-height:1.15;font-weight:1000;text-shadow:0 0 15px rgba(255,225,94,.52)}.home-dipping-ready-copy em{color:#bff5ff;font-size:14px;font-style:normal;font-weight:900}
-.home-dipping-ready-total{display:grid;min-width:145px;text-align:right}.home-dipping-ready-total strong{color:#fff4a5;font-size:clamp(32px,2.8vw,48px);line-height:1;font-weight:1000}.home-dipping-ready-total i{margin-top:5px;color:#5eeaff;font-size:24px;font-style:normal;font-weight:1000}
-@media(max-width:720px){.home-dipping-ready-card{grid-template-columns:54px 1fr;padding:14px}.home-dipping-ready-seal{width:50px;height:50px;font-size:28px}.home-dipping-ready-total{grid-column:1/-1;display:flex;justify-content:flex-end;gap:18px;min-width:0}.home-dipping-ready-total i{margin:0}}
+.home-dipping-process-card.home-dipping-ready-card::before{content:"";position:absolute;inset:7px;border:1px solid rgba(106,239,255,.35);clip-path:polygon(0 15px,15px 0,calc(100% - 15px) 0,100% 15px,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 calc(100% - 15px));pointer-events:none}
+.home-dipping-process-card.home-dipping-ready-card::after{content:"DOBU GATE";position:absolute;right:11px;top:8px;color:rgba(144,245,255,.65);font-size:9px;font-weight:1000;letter-spacing:.17em}
+.home-dipping-ready-card:hover,.home-dipping-ready-card:focus-visible{transform:translateY(-4px);filter:brightness(1.18);outline:none}
+.home-dipping-ready-card.is-zero{opacity:.78;filter:saturate(.72)}
+.home-dipping-ready-orbit{position:relative;width:44px;height:30px;margin-bottom:1px;border:2px solid #62efff;border-radius:50%;transform:rotate(-10deg);box-shadow:0 0 13px #62efff,inset 0 0 10px rgba(98,239,255,.5)}
+.home-dipping-ready-orbit::before,.home-dipping-ready-orbit::after{content:"";position:absolute;border-radius:50%;background:#ffe95f;box-shadow:0 0 9px #ffe95f}.home-dipping-ready-orbit::before{width:10px;height:10px;left:15px;top:8px}.home-dipping-ready-orbit::after{width:5px;height:5px;right:-3px;top:9px}.home-dipping-ready-orbit i{position:absolute;width:5px;height:5px;left:-3px;top:13px;border-radius:50%;background:#ff75df;box-shadow:0 0 8px #ff75df}
+.home-dipping-ready-copy{display:grid;gap:1px}.home-dipping-ready-copy small{color:#9ff5ff!important;font-size:11px!important;font-weight:1000}.home-dipping-ready-copy b{color:#fff6a7;font-size:clamp(20px,1.55vw,28px);line-height:1.05;font-weight:1000;text-shadow:0 0 12px rgba(255,230,72,.62)}
+.home-dipping-ready-count{margin:5px 0 0!important;color:#fff!important;font-size:clamp(31px,2.5vw,46px)!important;line-height:1!important}.home-dipping-ready-points{color:#63f1ff;font-size:21px;font-style:normal;font-weight:1000;text-shadow:0 0 9px rgba(86,236,255,.68)}.home-dipping-ready-note{margin:2px 0 0!important;color:#c7f6ff!important;font-size:11px!important;font-weight:900}
+@media(max-width:900px){.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 .dpc-ready-section{
   position:relative;
   margin:16px 0 20px;
