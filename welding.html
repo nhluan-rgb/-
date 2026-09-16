@@ -12962,7 +12962,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const weldingTypeConfig=[['焼付','#ffad42'],['ドブ','#ffd84f'],['SUS','#65c7ff'],['錆止め','#ff739f'],['ダイマ','#72e6a6'],['その他','#ad8cff']];
     const weldingTypeBars=weldingTypeConfig.map(([name,color])=>{
       const targets=todayTargetRows.filter(row=>classifyWeldingType(row)===name);
-      const reached=todayWeldingReachedRows.filter(row=>classifyWeldingType(row)===name);
+      const reached=targets.filter(row=>todayWeldingReachedRows.includes(row)||(name==='ドブ'&&String(row.status||'').normalize('NFKC').trim()==='外注'));
       const rate=targets.length?reached.length/targets.length*100:0;
       const rateLabel=Number.isInteger(rate)?String(rate):rate.toFixed(1);
       return `<div class="welding-type-column" data-welding-type="${safe(name)}" role="button" tabindex="0" style="--type-color:${color};--type-rate:${Math.max(0,Math.min(100,rate))}%" aria-label="${safe(name)}の工程データを表示"><div class="welding-type-well"><i></i></div><b>${name}</b><strong>${rateLabel}%</strong><small>${fmt(reached.length)}/${fmt(targets.length)}件</small></div>`;
