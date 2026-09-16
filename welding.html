@@ -12898,7 +12898,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const cursor=new Date(todayKey+'T00:00:00');
     const days=[];
     const weekday=['日','月','火','水','木','金','土'];
-    while(days.length<5){
+    while(days.length<6){
       const key=formatLocalDate(cursor);
       const holidays=new Set([...japaneseHolidayKeys(cursor.getFullYear()),...COMPANY_HOLIDAYS]);
       if(cursor.getDay()!==0&&cursor.getDay()!==6&&!holidays.has(key)){
@@ -12918,8 +12918,8 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     });
     const line=points.map(point=>point.x.toFixed(1)+','+point.y.toFixed(1)).join(' ');
     const area=padX+','+(height-padY)+' '+line+' '+(width-padX)+','+(height-padY);
-    host.innerHTML=`<div class="home-seven-summary"><b>5営業生地日 ${fmt(totalCount)}件</b><strong>${fmt(totalQty)}点</strong></div>
-      <svg class="home-seven-stock-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="今後5営業日の生地件数">
+    host.innerHTML=`<div class="home-seven-summary"><b>6営業生地日 ${fmt(totalCount)}件</b><strong>${fmt(totalQty)}点</strong></div>
+      <svg class="home-seven-stock-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-label="今後6営業日の生地件数">
         <defs><linearGradient id="homeSevenArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#37f2bc" stop-opacity=".48"/><stop offset="1" stop-color="#37f2bc" stop-opacity=".03"/></linearGradient></defs>
         <g class="home-seven-grid"><line x1="20" y1="26" x2="580" y2="26"/><line x1="20" y1="59" x2="580" y2="59"/><line x1="20" y1="92" x2="580" y2="92"/></g>
         <polygon class="home-seven-area" points="${area}"/><polyline class="home-seven-line" points="${line}"/>
@@ -13708,6 +13708,51 @@ body .today-completion-card .today-progress-split>.welding-type-chart .welding-t
 .dpc-ready-copy{display:grid;gap:5px}.dpc-ready-copy small{color:#ffe6a0;font-size:15px;font-weight:900;letter-spacing:.08em}.dpc-ready-copy strong{font-size:34px;line-height:1.12;font-weight:1000;text-shadow:0 0 14px rgba(255,225,101,.5)}.dpc-ready-copy em{color:#c8f4ff;font-size:15px;font-style:normal;font-weight:800}
 .dpc-ready-numbers{display:grid;min-width:150px;text-align:right}.dpc-ready-numbers b{color:#fff6b5;font-size:38px;line-height:1;font-weight:1000}.dpc-ready-numbers i{margin-top:8px;color:#61f2ff;font-size:24px;font-style:normal;font-weight:1000}
 @media(max-width:720px){.dpc-ready-card{grid-template-columns:58px 1fr;padding:15px}.dpc-ready-icon{width:54px;height:54px;font-size:30px}.dpc-ready-copy strong{font-size:25px}.dpc-ready-numbers{grid-column:1/-1;display:flex;justify-content:flex-end;gap:18px;min-width:0}.dpc-ready-numbers b{font-size:28px}.dpc-ready-numbers i{margin:0;font-size:22px}}
+</style>
+<style id="home-product-panel-below-chart-v30">
+/* 上段グラフは全幅。品種ボードはクレーム情報と同じ高さから右側へ配置。 */
+body:has(#ngGame.show) .ng-game .evolution-world:has(.home-dipping-merged-host){
+  position:relative!important;display:block!important;width:100%!important;min-height:1000px!important;height:1000px!important;overflow:hidden!important;
+}
+body:has(#ngGame.show) .ng-game .evolution-visual:has(.home-dipping-merged-host){
+  position:absolute!important;inset:0!important;width:100%!important;max-width:none!important;min-height:1000px!important;height:1000px!important;
+}
+body:has(#ngGame.show) .ng-game #bossStatusCard{
+  position:absolute!important;z-index:8!important;top:390px!important;right:0!important;bottom:0!important;left:auto!important;
+  width:29%!important;height:auto!important;min-height:0!important;margin:0!important;border-radius:18px 0 0 18px!important;
+}
+body:has(#ngGame.show) .ng-game .ng-mission-ticker-slot{
+  left:24px!important;right:calc(29% + 18px)!important;width:auto!important;
+}
+body:has(#ngGame.show) .ng-game #monthlyAchievementCalendar.home-dipping-merged-host{
+  left:24px!important;right:calc(29% + 18px)!important;width:auto!important;
+}
+/* 品種：3列の小型カードで全分類をパネル内に収める。 */
+body:has(#ngGame.show) .achievement-calendar-panel:has(.home-today-products){padding:10px!important;overflow:hidden!important}
+body:has(#ngGame.show) .home-today-products .htp-head{padding:5px 5px 9px!important}
+body:has(#ngGame.show) .home-today-products .htp-title{font-size:clamp(23px,1.9vw,32px)!important}
+body:has(#ngGame.show) .home-today-products .htp-sub{margin-top:3px!important;font-size:12px!important}
+body:has(#ngGame.show) .home-today-products .htp-total{margin-top:5px!important;font-size:15px!important}
+body:has(#ngGame.show) .home-today-products .htp-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:9px!important}
+body:has(#ngGame.show) .home-today-products .htp-card{min-height:112px!important;padding:9px 5px!important;border-width:2px!important}
+body:has(#ngGame.show) .home-today-products .htp-card:last-child:nth-child(odd){grid-column:auto!important;min-height:112px!important}
+body:has(#ngGame.show) .home-today-products .htp-card-name{font-size:clamp(15px,1.15vw,20px)!important;white-space:nowrap!important}
+body:has(#ngGame.show) .home-today-products .htp-card-count{margin-top:7px!important;font-size:clamp(25px,2vw,34px)!important}
+body:has(#ngGame.show) .home-today-products .htp-card-qty{margin-top:4px!important;font-size:14px!important}
+body:has(#ngGame.show) .home-today-products .htp-card-process{margin-top:4px!important;max-width:100%!important;overflow:hidden!important;font-size:9px!important;line-height:1.15!important;white-space:nowrap!important;text-overflow:ellipsis!important}
+body:has(#ngGame.show) .home-today-products .htp-note{margin-top:7px!important;padding:5px!important;font-size:10px!important}
+/* 右側5本：数値を最優先で大きく、ラベルと到達件数も常時表示。 */
+body .today-completion-card .today-progress-split>.welding-type-chart{gap:12px!important;padding:8px 14px 7px!important}
+body .today-completion-card .welding-type-column{grid-template-rows:116px auto auto auto!important;gap:4px!important}
+body .today-completion-card .welding-type-well{width:min(66px,82%)!important;height:116px!important;border-width:2px!important}
+body .today-completion-card .welding-type-column>b{font-size:clamp(15px,1.05vw,19px)!important;overflow:visible!important;text-overflow:clip!important}
+body .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>strong{font-size:clamp(21px,1.5vw,28px)!important;letter-spacing:-.025em!important;overflow:visible!important}
+body .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>small{font-size:clamp(11px,.72vw,13px)!important;color:#e5f8ff!important}
+@media(max-width:1300px){
+  body:has(#ngGame.show) .ng-game .evolution-world:has(.home-dipping-merged-host){display:grid!important;height:auto!important;min-height:0!important;overflow:visible!important}
+  body:has(#ngGame.show) .ng-game .evolution-visual:has(.home-dipping-merged-host),body:has(#ngGame.show) .ng-game #bossStatusCard{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;border-radius:18px!important}
+  body:has(#ngGame.show) .ng-game .ng-mission-ticker-slot,body:has(#ngGame.show) .ng-game #monthlyAchievementCalendar.home-dipping-merged-host{left:auto!important;right:auto!important;width:calc(100% - 24px)!important}
+}
 </style>
 </body>
 </html>
