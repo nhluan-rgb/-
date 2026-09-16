@@ -7851,6 +7851,7 @@ function normalize(o){
     shipDate:excelDate(o['生地日']),
     dispatchDate:excelDate(o['出荷日']),
     status:String(o['進捗']||'').trim(),
+    productType:String(o['品種']||o['製品区分']||'').trim(),
     owner:String(o['担当者']||'').trim(),
     ship:String(o['配送便']||'').trim()
   };
@@ -12813,6 +12814,14 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   let selectedKpi='';
   let selectedProductMode='';
 
+  function isDippingProduct(row){
+    const part=String(row.part||'').normalize('NFKC').trim();
+    const productType=String(row.productType||'').normalize('NFKC').replace(/\s+/g,'');
+    const descriptiveText=[row.name,row.standard,row.productType].map(value=>String(value||'').normalize('NFKC')).join(' ');
+    if(/先メッキ/.test(descriptiveText))return false;
+    return /^Z/i.test(part)||/ドブ漬け|ドブ/.test(productType)||/ドブ漬け/.test(descriptiveText);
+  }
+
   function active(row){
     const status=String(row.status||'').trim();
     return PROCESS_ORDER.includes(status)&&!/ｷｬﾝｾﾙ|キャンセル/.test(status);
@@ -12832,7 +12841,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   function dailyProductLabel(row){
     const part=String(row.part||'').trim().toUpperCase();
     const text=[row.name,row.standard].map(value=>String(value||'')).join(' ');
-    if(part.startsWith('Z'))return 'ドブ';
+    if(isDippingProduct(row))return 'ドブ';
     if(/錆止|さび止|サビ止/i.test(text))return '錆止め';
     if(/焼付|焼き付/i.test(text))return '焼付';
     return '';
@@ -12914,10 +12923,10 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const todayWeldingRateLabel=Number.isInteger(todayWeldingRate)?String(todayWeldingRate):todayWeldingRate.toFixed(1);
     const processCard=document.getElementById('shipProcess');
     const processCardSub=document.getElementById('shipProcessSub');
-    const todayDippingTargetRows=todayTargetRows.filter(row=>/^Z/i.test(String(row.part||'').trim()));
-    const todayNormalTargetRows=todayTargetRows.filter(row=>!/^Z/i.test(String(row.part||'').trim()));
-    const todayDippingWeldingReachedRows=todayWeldingReachedRows.filter(row=>/^Z/i.test(String(row.part||'').trim()));
-    const todayNormalWeldingReachedRows=todayWeldingReachedRows.filter(row=>!/^Z/i.test(String(row.part||'').trim()));
+    const todayDippingTargetRows=todayTargetRows.filter(isDippingProduct);
+    const todayNormalTargetRows=todayTargetRows.filter(row=>!isDippingProduct(row));
+    const todayDippingWeldingReachedRows=todayWeldingReachedRows.filter(isDippingProduct);
+    const todayNormalWeldingReachedRows=todayWeldingReachedRows.filter(row=>!isDippingProduct(row));
     const independentRateLabel=(reached,total)=>{
       const value=total?reached/total*100:0;
       return (Number.isInteger(value)?String(value):value.toFixed(1))+'%';
@@ -12930,15 +12939,18 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     document.body.classList.toggle('daily-command-mode',shipFilter==='process');
     if(shipFilter!=='process')return;
     const allDateRows=rows.filter(row=>row.shipDate===selectedDate&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
-    const dateRows=selectedProductMode==='dipping'?allDateRows.filter(row=>/^Z/i.test(String(row.part||'').trim())):allDateRows;
-    const workRows=dateRows.filter(active);
+    const dateRows=selectedProductMode==='dipping'?allDateRows.filter(isDippingProduct):allDateRows;
+    const dippingReadyRows=selectedProductMode==='dipping'?dateRows.filter(row=>String(row.status||'').trim()==='外注'):[];
+    const dippingReadyQty=dippingReadyRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const workRows=dateRows.filter(row=>active(row)||(selectedProductMode==='dipping'&&String(row.status||'').trim()==='外注'));
     const notStarted=dateRows.filter(row=>String(row.status||'').trim()==='未着手');
     // 「仕上を通過」＝ 塗装・組立・完成。キャンセルは dateRows の時点で対象外。
     const passedFinish=dateRows.filter(row=>['塗装','組立','完成'].includes(String(row.status||'').trim()));
     const totalQty=dateRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
     const workQty=workRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
     const unassigned=workRows.filter(row=>!String(row.owner||'').trim()).length;
-    const overdueRows=allActive.filter(row=>row.shipDate&&row.shipDate<today&&(selectedProductMode!=='dipping'||/^Z/i.test(String(row.part||'').trim())));
+    const overdueSource=selectedProductMode==='dipping'?rows.filter(row=>active(row)||String(row.status||'').trim()==='外注'):allActive;
+    const overdueRows=overdueSource.filter(row=>row.shipDate&&row.shipDate<today&&(selectedProductMode!=='dipping'||isDippingProduct(row)));
     const overdue=overdueRows.length;
     const rate=dateRows.length?passedFinish.length/dateRows.length*100:100;
     const rateLabel=Number.isInteger(rate)?String(rate):rate.toFixed(1);
@@ -12949,9 +12961,10 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const kpiTitle=selectedKpi==='target'?'対象':selectedKpi==='unstarted'?'未着手（要確認）':selectedKpi==='overdue'?'生地日切れ':selectedKpi==='passed'?'仕上通過':'';
     const listTitle=[selectedProductMode==='dipping'?'ドブ品':null,kpiTitle,selectedProcess].filter(Boolean).join(' ／ ')||'製造指示一覧';
     board.innerHTML=`<div class="dpc-shell">
-      <header class="dpc-head"><div><h2 class="dpc-title"><strong>${safe(shortDate(selectedDate))}</strong> 生地 ${selectedProductMode==='dipping'?'<em>ドブ品</em> ':''}工程管理</h2><div class="dpc-product-tabs"><button type="button" data-dpc-product="" class="${selectedProductMode===''?'active':''}">全品</button><button type="button" data-dpc-product="dipping" class="dipping ${selectedProductMode==='dipping'?'active':''}">ドブ品（Z品番）</button></div></div><div class="dpc-date-tools"><button type="button" class="dpc-home-button" data-dpc-home>← ホームへ戻る</button><button type="button" data-dpc-shift="-1">← 前日</button><button type="button" data-dpc-today>今日</button><input id="dpcDate" type="date" value="${safe(selectedDate)}" aria-label="管理する生地日"><button type="button" data-dpc-shift="1">翌日 →</button></div></header>
+      <header class="dpc-head"><div><h2 class="dpc-title"><strong>${safe(shortDate(selectedDate))}</strong> 生地 ${selectedProductMode==='dipping'?'<em>ドブ品</em> ':''}工程管理</h2><div class="dpc-product-tabs"><button type="button" data-dpc-product="" class="${selectedProductMode===''?'active':''}">全品</button><button type="button" data-dpc-product="dipping" class="dipping ${selectedProductMode==='dipping'?'active':''}">ドブ（品種：ドブ漬け）</button></div></div><div class="dpc-date-tools"><button type="button" class="dpc-home-button" data-dpc-home>← ホームへ戻る</button><button type="button" data-dpc-shift="-1">← 前日</button><button type="button" data-dpc-today>今日</button><input id="dpcDate" type="date" value="${safe(selectedDate)}" aria-label="管理する生地日"><button type="button" data-dpc-shift="1">翌日 →</button></div></header>
       <div class="dpc-alert ${workRows.length?'':'clear'}"><b>${workRows.length?`残 ${fmt(workRows.length)}件 ／ ${fmt(workQty)}点`:'完了'}</b>${unassigned?`<span>未割当 ${fmt(unassigned)}件</span>`:''}</div>
       <div class="dpc-kpi-clock-row"><div class="dpc-kpis"><button type="button" class="dpc-kpi ${selectedKpi==='target'?'active':''}" data-dpc-kpi="target"><span>対象</span><strong>${fmt(dateRows.length)}件</strong><small>${fmt(totalQty)}点 ／ キャンセル除外</small></button><button type="button" class="dpc-kpi ${notStarted.length?'warn':'good'} ${selectedKpi==='unstarted'?'active':''}" data-dpc-kpi="unstarted"><span>未着手（要確認）</span><strong>${fmt(notStarted.length)}件</strong><small>${fmt(notStarted.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点</small></button><button type="button" class="dpc-kpi ${overdue?'danger':'good'} ${selectedKpi==='overdue'?'active':''}" data-dpc-kpi="overdue"><span>生地日切れ</span><strong>${fmt(overdue)}件</strong><small>${fmt(overdueRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点 ／ 仕上前</small></button><button type="button" class="dpc-kpi ${rate===100?'good':rate<75?'danger':'warn'} ${selectedKpi==='passed'?'active':''}" data-dpc-kpi="passed"><span>完了率</span><strong>${rateLabel}%</strong><small>仕上通過 ${fmt(passedFinish.length)} / 対象 ${fmt(dateRows.length)}件</small></button></div><aside class="dpc-live-clock" aria-label="現在時刻"><span>現在時刻</span><strong id="dpcLiveClock">--:--:--</strong><small id="dpcLiveDate">----</small></aside></div>
+      ${selectedProductMode==='dipping'?`<section class="dpc-ready-section"><div class="dpc-ready-kicker">DOBU SHIPPING GATE</div><button type="button" class="dpc-ready-card ${selectedProcess==='外注'?'active':''} ${dippingReadyRows.length?'':'is-zero'}" data-dpc-process="外注"><span class="dpc-ready-icon">✓</span><span class="dpc-ready-copy"><small>工程：外注</small><strong>ドブ出し準備完了</strong><em>持ち込み待ちの製造指示</em></span><span class="dpc-ready-numbers"><b>${fmt(dippingReadyRows.length)}件</b><i>${fmt(dippingReadyQty)}点</i></span></button></section>`:''}
       <section class="dpc-section"><div class="dpc-section-title"><span>工程</span></div><div class="dpc-processes">${PROCESS_ORDER.map(status=>processButton(status,processBreakdownRows)).join('')}</div></section>
       <section class="dpc-section"><div class="dpc-section-title"><span>${safe(listTitle)}</span><small>${fmt(visibleRows.length)}件</small></div><div class="dpc-tasks-wrap"><table class="dpc-task-table"><thead><tr><th>製造指示番号</th><th>品番・品名・規格</th><th>サイズ</th><th>数量</th><th>工程</th><th>生地日・製造期限・出荷日</th><th>担当者</th><th>ラベル</th></tr></thead><tbody>${visibleRows.length?visibleRows.slice(0,200).map(row=>taskRow(row)).join(''):`<tr><td colspan="8"><div class="dpc-empty">対象なし</div></td></tr>`}</tbody></table></div></section>
     </div>`;
@@ -12964,7 +12977,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const shift=event.target.closest('[data-dpc-shift]');if(shift){shiftDate(Number(shift.dataset.dpcShift)||0);return}
     if(event.target.closest('[data-dpc-today]')){selectedDate=formatLocalDate(new Date());localStorage.setItem('weldingDailyBoardDate',selectedDate);selectedProcess='';selectedKpi='';renderDailyProcessBoard();return}
     const kpi=event.target.closest('[data-dpc-kpi]');if(kpi){selectedKpi=selectedKpi===kpi.dataset.dpcKpi?'':kpi.dataset.dpcKpi;selectedProcess='';renderDailyProcessBoard();return}
-    const process=event.target.closest('[data-dpc-process]');if(process){selectedProcess=selectedProcess===process.dataset.dpcProcess?'':process.dataset.dpcProcess;renderDailyProcessBoard();return}
+    const process=event.target.closest('[data-dpc-process]');if(process){if(process.dataset.dpcProcess==='外注')selectedKpi='';selectedProcess=selectedProcess===process.dataset.dpcProcess?'':process.dataset.dpcProcess;renderDailyProcessBoard();return}
     const detail=event.target.closest('[data-dpc-id]');if(detail){const row=rows.find(item=>String(item.id)===String(detail.dataset.dpcId));if(row&&typeof openJNumberPopup==='function')openJNumberPopup(row)}
   });
   document.addEventListener('change',event=>{if(event.target.id==='dpcDate'&&event.target.value){selectedDate=event.target.value;localStorage.setItem('weldingDailyBoardDate',selectedDate);selectedProcess='';selectedKpi='';renderDailyProcessBoard()}});
@@ -13613,6 +13626,37 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
   grid-row:3!important;
   margin:0!important;
 }
+</style>
+<style id="dipping-ready-fixed-card-v1">
+.dpc-ready-section{
+  position:relative;
+  margin:16px 0 20px;
+  padding:18px;
+  overflow:hidden;
+  border:1px solid rgba(255,207,74,.62);
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(59,35,3,.96),rgba(8,45,57,.98) 56%,rgba(4,25,39,.98));
+  box-shadow:0 0 0 1px rgba(255,225,132,.12) inset,0 0 28px rgba(255,176,32,.18);
+}
+.dpc-ready-section::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(rgba(255,210,82,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,210,82,.07) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(90deg,#000,transparent 85%);
+}
+.dpc-ready-kicker{position:relative;margin:0 0 9px;color:#ffd76b;font-size:12px;font-weight:1000;letter-spacing:.22em}
+.dpc-ready-card{
+  position:relative;width:100%;min-height:132px;display:grid;grid-template-columns:78px minmax(0,1fr) auto;align-items:center;gap:20px;
+  padding:18px 24px;border:2px solid #ffd24f;border-radius:15px;cursor:pointer;text-align:left;color:#fff;
+  background:linear-gradient(115deg,#5b3305 0%,#9b5b08 25%,#153f4a 62%,#062837 100%);
+  box-shadow:0 0 22px rgba(255,190,50,.42),inset 0 0 30px rgba(255,216,102,.12);transition:.18s ease;
+}
+.dpc-ready-card:hover,.dpc-ready-card.active{transform:translateY(-2px);filter:brightness(1.12);box-shadow:0 0 34px rgba(255,200,62,.62),inset 0 0 36px rgba(255,225,133,.18)}
+.dpc-ready-card.is-zero{opacity:.62;filter:saturate(.55)}
+.dpc-ready-icon{width:70px;height:70px;display:grid;place-items:center;border:3px solid #fff1a8;border-radius:50%;color:#17313a;background:#ffe067;font-size:38px;font-weight:1000;box-shadow:0 0 22px #ffc83d}
+.dpc-ready-copy{display:grid;gap:5px}.dpc-ready-copy small{color:#ffe6a0;font-size:15px;font-weight:900;letter-spacing:.08em}.dpc-ready-copy strong{font-size:34px;line-height:1.12;font-weight:1000;text-shadow:0 0 14px rgba(255,225,101,.5)}.dpc-ready-copy em{color:#c8f4ff;font-size:15px;font-style:normal;font-weight:800}
+.dpc-ready-numbers{display:grid;min-width:150px;text-align:right}.dpc-ready-numbers b{color:#fff6b5;font-size:38px;line-height:1;font-weight:1000}.dpc-ready-numbers i{margin-top:8px;color:#61f2ff;font-size:24px;font-style:normal;font-weight:1000}
+@media(max-width:720px){.dpc-ready-card{grid-template-columns:58px 1fr;padding:15px}.dpc-ready-icon{width:54px;height:54px;font-size:30px}.dpc-ready-copy strong{font-size:25px}.dpc-ready-numbers{grid-column:1/-1;display:flex;justify-content:flex-end;gap:18px;min-width:0}.dpc-ready-numbers b{font-size:28px}.dpc-ready-numbers i{margin:0;font-size:22px}}
 </style>
 </body>
 </html>
