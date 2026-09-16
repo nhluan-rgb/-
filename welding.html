@@ -12993,33 +12993,37 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     </div>`;
     updateDpcClock();
   };
-  function showWeldingTypeDetail(type){
+  function showWeldingTypeDetail(type,selectedStatus=''){
     const modal=document.getElementById('processModal');
     const modalBody=document.getElementById('processModalBody');
     const modalCard=document.getElementById('processModalCard');
     if(!modal||!modalBody)return;
     const today=formatLocalDate(new Date());
-    const targetRows=rows
+    const allTargetRows=rows
       .filter(row=>row.shipDate===today&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''))&&classifyWeldingType(row)===type)
       .slice().sort(sortTasks);
-    const totalQty=targetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
-    const allStatuses=[...PROCESS_ORDER,...new Set(targetRows.map(row=>String(row.status||'未設定').trim()).filter(status=>!PROCESS_ORDER.includes(status)))];
+    const targetRows=selectedStatus?allTargetRows.filter(row=>String(row.status||'').trim()===selectedStatus):allTargetRows;
+    const totalQty=allTargetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const visibleQty=targetRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+    const allStatuses=[...PROCESS_ORDER,...new Set(allTargetRows.map(row=>String(row.status||'未設定').trim()).filter(status=>!PROCESS_ORDER.includes(status)))];
     const processSummary=allStatuses.map(status=>{
-      const list=targetRows.filter(row=>String(row.status||'').trim()===status);
+      const list=allTargetRows.filter(row=>String(row.status||'').trim()===status);
       if(!list.length)return '';
       const qty=list.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
-      return `<div class="wtd-process" style="--wtd-color:${PROCESS_COLORS[status]||'#61dff5'}"><span>${safe(status)}</span><b>${fmt(list.length)}件</b><small>${fmt(qty)}点</small></div>`;
+      return `<button type="button" class="wtd-process ${selectedStatus===status?'active':''}" data-wtd-type="${safe(type)}" data-wtd-process="${safe(status)}" style="--wtd-color:${PROCESS_COLORS[status]||'#61dff5'}"><span>${safe(status)}</span><b>${fmt(list.length)}件</b><small>${fmt(qty)}点</small></button>`;
     }).join('');
     modalBody.innerHTML=`<section class="welding-type-detail">
-      <header class="wtd-head"><div><small>今日生地・分類別工程データ</small><h2>${safe(type)}</h2><p>生地日 ${safe(today)} ／ ${fmt(targetRows.length)}件・${fmt(totalQty)}点</p></div><button type="button" class="process-backlog-close" data-process-close>× 閉じる</button></header>
+      <header class="wtd-head"><div><small>今日生地・分類別工程データ</small><h2>${safe(type)}${selectedStatus?` <em>／ ${safe(selectedStatus)}</em>`:''}</h2><p>全体 ${fmt(allTargetRows.length)}件・${fmt(totalQty)}点${selectedStatus?`　表示 ${fmt(targetRows.length)}件・${fmt(visibleQty)}点`:''}</p></div><div class="wtd-head-actions">${selectedStatus?`<button type="button" class="wtd-show-all" data-wtd-type="${safe(type)}" data-wtd-process="">全工程を表示</button>`:''}<button type="button" class="process-backlog-close" data-process-close>× 閉じる</button></div></header>
       <div class="wtd-process-grid">${processSummary||'<div class="dpc-empty">対象なし</div>'}</div>
       <div class="wtd-table-wrap"><table class="dpc-task-table"><thead><tr><th>製造指示番号</th><th>品番・品名・規格</th><th>サイズ</th><th>数量</th><th>工程</th><th>生地日・製造期限・出荷日</th><th>担当者</th><th>ラベル</th></tr></thead><tbody>${targetRows.length?targetRows.map(row=>taskRow(row)).join(''):'<tr><td colspan="8"><div class="dpc-empty">対象データなし</div></td></tr>'}</tbody></table></div>
     </section>`;
     modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+    activeDippingPopup={kind:'weldingType',value:type,status:selectedStatus};
     if(modalCard){modalCard.scrollTop=0;modalCard.style.transform='translate(0px,0px)'}
     document.body.style.overflow='hidden';
   }
   document.addEventListener('click',event=>{
+    const wtdProcess=event.target.closest('[data-wtd-process]');if(wtdProcess){event.preventDefault();event.stopPropagation();showWeldingTypeDetail(wtdProcess.dataset.wtdType||'その他',wtdProcess.dataset.wtdProcess||'');return}
     const weldingType=event.target.closest('[data-welding-type]');if(weldingType){event.preventDefault();event.stopPropagation();showWeldingTypeDetail(weldingType.dataset.weldingType||'その他');return}
     if(event.target.closest('[data-open-dipping-board]')){event.preventDefault();event.stopPropagation();openDailyProcessBoard(formatLocalDate(new Date()),'dipping');return}
     if(event.target.closest('[data-dpc-home]')){shipFilter='today-ng';localStorage.setItem('shipFilter',shipFilter);document.querySelectorAll('[data-ship],[data-quick]').forEach(item=>item.classList.toggle('active',(item.dataset.ship||item.dataset.quick)===shipFilter));renderStats();renderTable();window.scrollTo({top:0,behavior:'smooth'});return}
@@ -13787,7 +13791,7 @@ body:has(#ngGame.show) .today-completion-card .today-progress-split>.welding-typ
 body .today-completion-card .welding-type-column{appearance:none!important;margin:0!important;padding:0!important;border:0!important;background:none!important;font:inherit!important;cursor:pointer!important}
 body .today-completion-card .welding-type-column:hover .welding-type-well,body .today-completion-card .welding-type-column:focus-visible .welding-type-well{border-color:var(--type-color)!important;box-shadow:0 0 18px color-mix(in srgb,var(--type-color) 60%,transparent),inset 0 0 12px rgba(0,0,0,.62)!important}
 body .today-completion-card .welding-type-column:focus-visible{outline:2px solid var(--type-color)!important;outline-offset:3px!important;border-radius:8px!important}
-.welding-type-detail{min-width:0;color:#eefcff}.wtd-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 2px 15px;border-bottom:2px solid #43daf7}.wtd-head small{color:#8eeeff;font-size:13px;font-weight:1000;letter-spacing:.1em}.wtd-head h2{margin:4px 0 0;color:#fff47b;font-size:38px;line-height:1;font-weight:1000}.wtd-head p{margin:7px 0 0;color:#d1f4ff;font-size:16px;font-weight:900}.wtd-process-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}.wtd-process{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 10px;min-height:74px;padding:10px 13px;border:2px solid var(--wtd-color);border-radius:10px;background:linear-gradient(145deg,color-mix(in srgb,var(--wtd-color) 18%,#10354a),#061c2b);box-shadow:inset 0 0 17px color-mix(in srgb,var(--wtd-color) 13%,transparent)}.wtd-process span{color:var(--wtd-color);font-size:17px;font-weight:1000}.wtd-process b{color:#fff;font-size:25px}.wtd-process small{grid-column:1/-1;color:#fff47b;font-size:14px;font-weight:1000}.wtd-table-wrap{max-height:58vh;overflow:auto;border:1px solid #49cbe6;border-radius:10px;background:#fff}
+.welding-type-detail{min-width:0;color:#eefcff}#processModal.show{background:rgba(0,8,18,.86)!important;backdrop-filter:blur(5px)!important}#processModalCard:has(.welding-type-detail){border-color:#39d8f7!important;background:linear-gradient(160deg,#061b2b,#020d17 72%)!important;box-shadow:0 0 0 1px rgba(91,231,255,.24),0 0 45px rgba(0,0,0,.85)!important}.wtd-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:4px 2px 15px;border-bottom:2px solid #43daf7}.wtd-head small{color:#8eeeff;font-size:13px;font-weight:1000;letter-spacing:.1em}.wtd-head h2{margin:4px 0 0;color:#fff47b;font-size:38px;line-height:1;font-weight:1000}.wtd-head h2 em{color:#77eaff;font-size:24px;font-style:normal}.wtd-head p{margin:7px 0 0;color:#d1f4ff;font-size:16px;font-weight:900}.wtd-head-actions{display:flex;align-items:center;gap:9px}.wtd-show-all{padding:10px 14px;border:2px solid #4adcf7;border-radius:9px;background:#0b526c;color:#fff;font-size:14px;font-weight:1000;cursor:pointer}.wtd-show-all:hover{filter:brightness(1.2)}#processModalCard:has(.welding-type-detail) .process-backlog-close{border-color:#7beaff!important;background:#12384a!important;color:#fff!important}.wtd-process-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}.wtd-process{appearance:none;display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 10px;min-height:74px;padding:10px 13px;border:2px solid var(--wtd-color);border-radius:10px;background:linear-gradient(145deg,color-mix(in srgb,var(--wtd-color) 18%,#10354a),#061c2b);color:#fff;font:inherit;text-align:left;cursor:pointer;box-shadow:inset 0 0 17px color-mix(in srgb,var(--wtd-color) 13%,transparent)}.wtd-process:hover,.wtd-process.active{transform:translateY(-2px);filter:brightness(1.22);box-shadow:0 0 17px color-mix(in srgb,var(--wtd-color) 55%,transparent),inset 0 0 17px color-mix(in srgb,var(--wtd-color) 18%,transparent)}.wtd-process.active::after{content:"表示中";grid-column:1/-1;color:#fff;font-size:10px;font-weight:1000;text-align:right}.wtd-process span{color:var(--wtd-color);font-size:17px;font-weight:1000}.wtd-process b{color:#fff;font-size:25px}.wtd-process small{grid-column:1/-1;color:#fff47b;font-size:14px;font-weight:1000}.wtd-table-wrap{max-height:58vh;overflow:auto;border:1px solid #49cbe6;border-radius:10px;background:#fff}
 @media(max-width:1300px){
   body:has(#ngGame.show) .ng-game .evolution-world:has(.home-dipping-merged-host){display:grid!important;height:auto!important;min-height:0!important;overflow:visible!important}
   body:has(#ngGame.show) .ng-game .evolution-visual:has(.home-dipping-merged-host),body:has(#ngGame.show) .ng-game #bossStatusCard{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;border-radius:18px!important}
