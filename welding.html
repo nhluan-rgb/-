@@ -12836,6 +12836,16 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     if(/先メッキ/.test(descriptiveText))return false;
     return /^Z/i.test(part)||/ドブ漬け|ドブ/.test(productType)||/ドブ漬け/.test(descriptiveText);
   }
+  function classifyWeldingType(row){
+    const text=[row.part,row.name,row.standard,row.productType,row.color]
+      .map(value=>String(value||'').normalize('NFKC').toUpperCase())
+      .join(' ');
+    if(/焼付|焼き付|ヤキツケ/.test(text))return '焼付';
+    if(/SUS|ステンレス/.test(text))return 'SUS';
+    if(/錆止|さび止|サビ止/.test(text))return '錆止め';
+    if(/ダイマ|DAIMA/.test(text))return 'ダイマ';
+    return 'その他';
+  }
 
   function active(row){
     const status=String(row.status||'').trim();
@@ -12938,17 +12948,15 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const todayWeldingRateLabel=Number.isInteger(todayWeldingRate)?String(todayWeldingRate):todayWeldingRate.toFixed(1);
     const processCard=document.getElementById('shipProcess');
     const processCardSub=document.getElementById('shipProcessSub');
-    const todayDippingTargetRows=todayTargetRows.filter(isDippingProduct);
-    const todayNormalTargetRows=todayTargetRows.filter(row=>!isDippingProduct(row));
-    const todayDippingWeldingReachedRows=todayWeldingReachedRows.filter(isDippingProduct);
-    const todayNormalWeldingReachedRows=todayWeldingReachedRows.filter(row=>!isDippingProduct(row));
-    const independentRateLabel=(reached,total)=>{
-      const value=total?reached/total*100:0;
-      return (Number.isInteger(value)?String(value):value.toFixed(1))+'%';
-    };
-    const normalWeldingRateLabel=independentRateLabel(todayNormalWeldingReachedRows.length,todayNormalTargetRows.length);
-    const dippingWeldingRateLabel=independentRateLabel(todayDippingWeldingReachedRows.length,todayDippingTargetRows.length);
-    if(processCard)processCard.innerHTML=`<div class="today-progress-split"><div class="completion"><span>完了率</span><div class="completion-ring" style="--rate:${Math.max(0,Math.min(100,todayRate))}"><strong>${todayRateLabel}%</strong></div></div><div class="welding welding-kind-split"><div class="welding-kind general"><span>一般品</span><strong>${normalWeldingRateLabel}</strong><div class="welding-progress-track"><i style="width:${Math.max(0,Math.min(100,parseFloat(normalWeldingRateLabel)||0))}%"></i></div><small><b>到達 ${fmt(todayNormalWeldingReachedRows.length)}件</b><i>／</i><b>対象 ${fmt(todayNormalTargetRows.length)}件</b></small></div><div class="welding-kind dipping" data-open-dipping-board title="ドブ品だけを工程管理で表示"><span>ドブ品</span><strong>${dippingWeldingRateLabel}</strong><div class="welding-progress-track"><i style="width:${Math.max(0,Math.min(100,parseFloat(dippingWeldingRateLabel)||0))}%"></i></div><small><b>到達 ${fmt(todayDippingWeldingReachedRows.length)}件</b><i>／</i><b>対象 ${fmt(todayDippingTargetRows.length)}件</b></small></div></div></div>`;
+    const weldingTypeConfig=[['焼付','#ffad42'],['SUS','#65c7ff'],['錆止め','#ff739f'],['ダイマ','#72e6a6'],['その他','#ad8cff']];
+    const weldingTypeBars=weldingTypeConfig.map(([name,color])=>{
+      const targets=todayTargetRows.filter(row=>classifyWeldingType(row)===name);
+      const reached=todayWeldingReachedRows.filter(row=>classifyWeldingType(row)===name);
+      const rate=targets.length?reached.length/targets.length*100:0;
+      const rateLabel=Number.isInteger(rate)?String(rate):rate.toFixed(1);
+      return `<div class="welding-type-column" style="--type-color:${color};--type-rate:${Math.max(0,Math.min(100,rate))}%"><div class="welding-type-well"><i></i></div><b>${name}</b><strong>${rateLabel}%</strong><small>${fmt(reached.length)}/${fmt(targets.length)}件</small></div>`;
+    }).join('');
+    if(processCard)processCard.innerHTML=`<div class="today-progress-split"><div class="completion"><span>完了率</span><div class="completion-ring" style="--rate:${Math.max(0,Math.min(100,todayRate))}"><strong>${todayRateLabel}%</strong></div></div><div class="welding welding-type-chart" aria-label="製品分類別の溶接到達率">${weldingTypeBars}</div></div>`;
     if(processCardSub)processCardSub.textContent=`基準：今日生地 ${fmt(todayTargetRows.length)}件（キャンセル除外）`;
     renderHomeSevenDayChart(today);
     document.body.classList.toggle('daily-command-mode',shipFilter==='process');
@@ -13641,6 +13649,18 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
   grid-row:3!important;
   margin:0!important;
 }
+.today-completion-card .today-progress-split>.welding-type-chart{
+  width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:end!important;gap:9px!important;padding:7px 10px 4px!important;
+  border:1px solid rgba(89,225,239,.28)!important;border-radius:12px!important;background:linear-gradient(180deg,rgba(3,39,57,.72),rgba(2,25,40,.45))!important;
+}
+.today-completion-card .welding-type-column{min-width:0;display:grid;grid-template-rows:104px auto auto auto;justify-items:center;align-items:end;gap:2px;color:#fff}
+.today-completion-card .welding-type-well{position:relative;width:min(52px,78%);height:104px;overflow:hidden;border:1px solid rgba(110,224,244,.38);border-radius:11px 11px 7px 7px;background:#021827;box-shadow:inset 0 0 12px rgba(0,0,0,.62)}
+.today-completion-card .welding-type-well::before{content:"";position:absolute;inset:5px;border-radius:7px;background:repeating-linear-gradient(to top,transparent 0 19px,rgba(129,233,250,.09) 19px 20px)}
+.today-completion-card .welding-type-well>i{position:absolute;left:5px;right:5px;bottom:5px;height:calc((100% - 10px) * var(--type-rate) / 100);min-height:0;border-radius:7px 7px 4px 4px;background:linear-gradient(180deg,color-mix(in srgb,var(--type-color) 78%,#fff),var(--type-color));box-shadow:0 0 15px color-mix(in srgb,var(--type-color) 65%,transparent);transition:height .4s ease}
+.today-completion-card .welding-type-column>b{max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#eefcff;font-size:clamp(12px,.85vw,16px);line-height:1.15;font-weight:1000;white-space:nowrap}
+.today-completion-card .welding-type-column>strong{color:var(--type-color);font-size:clamp(16px,1.18vw,22px)!important;line-height:1!important;font-weight:1000!important;text-shadow:0 0 8px color-mix(in srgb,var(--type-color) 55%,transparent)}
+.today-completion-card .welding-type-column>small{color:#b8deea;font-size:clamp(9px,.62vw,12px);line-height:1;font-weight:900;white-space:nowrap}
+@media(max-width:1100px){.today-completion-card .today-progress-split>.welding-type-chart{gap:5px!important;padding-inline:6px!important}.today-completion-card .welding-type-column{grid-template-rows:88px auto auto auto}.today-completion-card .welding-type-well{height:88px}}
 </style>
 <style id="dipping-ready-fixed-card-v1">
 .home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
