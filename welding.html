@@ -12914,15 +12914,17 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const todayWeldingRateLabel=Number.isInteger(todayWeldingRate)?String(todayWeldingRate):todayWeldingRate.toFixed(1);
     const processCard=document.getElementById('shipProcess');
     const processCardSub=document.getElementById('shipProcessSub');
+    const todayDippingTargetRows=todayTargetRows.filter(row=>/^Z/i.test(String(row.part||'').trim()));
+    const todayNormalTargetRows=todayTargetRows.filter(row=>!/^Z/i.test(String(row.part||'').trim()));
     const todayDippingWeldingReachedRows=todayWeldingReachedRows.filter(row=>/^Z/i.test(String(row.part||'').trim()));
     const todayNormalWeldingReachedRows=todayWeldingReachedRows.filter(row=>!/^Z/i.test(String(row.part||'').trim()));
-    const weldingContributionLabel=list=>{
-      const value=todayTargetRows.length?list.length/todayTargetRows.length*100:0;
+    const independentRateLabel=(reached,total)=>{
+      const value=total?reached/total*100:0;
       return (Number.isInteger(value)?String(value):value.toFixed(1))+'%';
     };
-    const normalWeldingContributionLabel=weldingContributionLabel(todayNormalWeldingReachedRows);
-    const dippingWeldingContributionLabel=weldingContributionLabel(todayDippingWeldingReachedRows);
-    if(processCard)processCard.innerHTML=`<div class="today-progress-split"><div class="completion"><span>完了率<em>仕上通過 ÷ 今日生地</em></span><strong>${todayRateLabel}%</strong></div><div class="welding"><span>溶接到達率<em>溶接以降 ÷ 今日生地</em></span><strong>${todayWeldingRateLabel}%</strong><div class="welding-rate-equation"><b>一般品 ${normalWeldingContributionLabel}</b><i>＋</i><b class="dipping" data-open-dipping-board title="ドブ品だけを工程管理で表示">ドブ品 ${dippingWeldingContributionLabel}</b></div></div></div>`;
+    const normalWeldingRateLabel=independentRateLabel(todayNormalWeldingReachedRows.length,todayNormalTargetRows.length);
+    const dippingWeldingRateLabel=independentRateLabel(todayDippingWeldingReachedRows.length,todayDippingTargetRows.length);
+    if(processCard)processCard.innerHTML=`<div class="today-progress-split"><div class="completion"><span>完了率<em>仕上通過 ÷ 今日生地</em></span><strong>${todayRateLabel}%</strong></div><div class="welding welding-kind-split"><div class="welding-kind general"><span>一般品<em>溶接到達率</em></span><strong>${normalWeldingRateLabel}</strong><small>${fmt(todayNormalWeldingReachedRows.length)} / ${fmt(todayNormalTargetRows.length)}件</small></div><div class="welding-kind dipping" data-open-dipping-board title="ドブ品だけを工程管理で表示"><span>ドブ品<em>溶接到達率・クリックで一覧</em></span><strong>${dippingWeldingRateLabel}</strong><small>${fmt(todayDippingWeldingReachedRows.length)} / ${fmt(todayDippingTargetRows.length)}件</small></div></div></div>`;
     if(processCardSub)processCardSub.textContent=`基準：今日生地 ${fmt(todayTargetRows.length)}件（キャンセル除外）`;
     renderHomeSevenDayChart(today);
     document.body.classList.toggle('daily-command-mode',shipFilter==='process');
@@ -13321,6 +13323,66 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
 .dpc-product-tabs button.active{background:#08759a;color:#fff;box-shadow:0 0 12px rgba(45,211,255,.28)}
 .dpc-product-tabs button.dipping{border-color:#d59b28;color:#ffd477;background:#49300d}
 .dpc-product-tabs button.dipping.active{background:#a86505;color:#fff4c2;box-shadow:0 0 14px rgba(255,184,56,.38)}
+</style>
+<style id="independent-welding-rates-v23">
+.today-completion-card .today-progress-split>.welding-kind-split{
+  display:grid!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
+  padding:0!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
+}
+.today-completion-card .welding-kind{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  column-gap:10px!important;
+  padding:8px 13px!important;
+  background:linear-gradient(135deg,rgba(8,75,102,.72),rgba(3,36,57,.74))!important;
+}
+.today-completion-card .welding-kind+.welding-kind{
+  border-top:2px solid rgba(99,225,255,.55)!important;
+}
+.today-completion-card .welding-kind span{
+  grid-column:1!important;
+  grid-row:1!important;
+  text-align:left!important;
+  font-size:clamp(17px,1.35vw,24px)!important;
+  color:#e3faff!important;
+}
+.today-completion-card .welding-kind span em{
+  margin-top:3px!important;
+  font-size:clamp(10px,.72vw,13px)!important;
+}
+.today-completion-card .welding-kind strong{
+  grid-column:2!important;
+  grid-row:1/3!important;
+  margin:0!important;
+  font-size:clamp(34px,3.2vw,55px)!important;
+  color:#63ffd5!important;
+  letter-spacing:-.04em!important;
+}
+.today-completion-card .welding-kind small{
+  display:block!important;
+  grid-column:1!important;
+  grid-row:2!important;
+  margin-top:3px!important;
+  text-align:left!important;
+  color:#aeefff!important;
+  font-size:clamp(10px,.78vw,13px)!important;
+  font-weight:900!important;
+}
+.today-completion-card .welding-kind.dipping{
+  cursor:pointer!important;
+  background:linear-gradient(135deg,rgba(102,65,8,.68),rgba(49,37,12,.74))!important;
+}
+.today-completion-card .welding-kind.dipping span,
+.today-completion-card .welding-kind.dipping strong{color:#ffd477!important}
+.today-completion-card .welding-kind.dipping:hover{
+  background:linear-gradient(135deg,rgba(146,91,5,.82),rgba(70,49,9,.84))!important;
+  box-shadow:inset 0 0 20px rgba(255,190,56,.18)!important;
+}
 </style>
 </body>
 </html>
