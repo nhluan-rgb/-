@@ -8999,8 +8999,10 @@ function renderHomeProcessControl(){
   const carry=nextWorkingDateKey(dates.today);
   const dippingRows=getDippingRows(rows,dates.today);
   const activeRows=dippingRows.filter(row=>!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
+  const readyRows=activeRows.filter(row=>String(row.status||'').normalize('NFKC').trim()==='外注');
+  const regularRows=activeRows.filter(row=>String(row.status||'').normalize('NFKC').trim()!=='外注');
   const processMap=new Map();
-  activeRows.forEach(row=>{
+  regularRows.forEach(row=>{
     const process=String(row.status||'未着手').trim()||'未着手';
     const item=processMap.get(process)||{count:0,qty:0};
     item.count++;
@@ -9018,8 +9020,13 @@ function renderHomeProcessControl(){
       <span>${escapeHtml(name)}</span><b>${fmt(item.count)}件</b><strong>${fmt(item.qty)}点</strong><small>クリックして製品種類を表示</small>
     </button>`).join('');
   const totalQty=activeRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const readyQty=readyRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
+  const readyCard=`<button type="button" class="home-dipping-ready-card ${readyRows.length?'has-items':'is-zero'}" data-dipping-kind="process" data-dipping-value="外注" aria-label="ドブ出し準備完了の詳細を表示">
+    <span class="home-dipping-ready-seal">✓</span><span class="home-dipping-ready-copy"><small>工程：外注</small><b>ドブ出し準備完了</b><em>持ち込み待ち</em></span><span class="home-dipping-ready-total"><strong>${fmt(readyRows.length)}件</strong><i>${fmt(readyQty)}点</i></span>
+  </button>`;
   return `<section class="home-dipping-process-board">
     <header class="home-dipping-process-head"><div><small>ドブ漬け管理</small><h2>工程</h2></div><div class="home-dipping-dates"><div><span>生地日</span><b>${formatJapaneseDateKey(dates.today)}</b></div><div><span>持ち込み日</span><b>${formatJapaneseDateKey(carry)}</b></div></div><div class="home-dipping-total"><span>対象</span><b>${fmt(activeRows.length)}件</b><strong>${fmt(totalQty)}点</strong></div></header>
+    ${readyCard}
     <div class="home-dipping-process-grid">${cards||'<div class="home-dipping-empty">工程データはありません</div>'}</div>
   </section>`;
 }
@@ -10038,16 +10045,19 @@ function formatJapaneseDateKey(key){
 }
 function isDippingCandidate(row, todayKey){
   const productName=String(row.name||'').normalize('NFKC').trim();
-  const allText=[row.name,row.part,row.standard]
+  const part=String(row.part||'').normalize('NFKC').trim();
+  const productType=String(row.productType||'').normalize('NFKC').replace(/\s+/g,'');
+  const allText=[row.name,row.part,row.standard,row.productType]
     .map(v=>String(v||'').normalize('NFKC'))
     .join(' ')
     .replace(/\s+/g,' ')
     .trim();
-  return row.shipDate===todayKey && /^Z/i.test(productName) && !allText.includes('先メッキ');
+  const isDipping=/^Z/i.test(productName)||/^Z/i.test(part)||/ドブ漬け|ドブ/.test(productType)||allText.includes('ドブ漬け');
+  return row.shipDate===todayKey && isDipping && !allText.includes('先メッキ');
 }
 function isDippingTargetStatus(row){
   const status=String(row.status||'').normalize('NFKC').trim();
-  return ['未着手','CAD/CAM','切断','曲げ','溶接','仕上'].includes(status) || /キャンセル/.test(status);
+  return ['未着手','CAD/CAM','切断','曲げ','溶接','仕上','外注'].includes(status) || /キャンセル/.test(status);
 }
 function getDippingRows(sourceRows,todayKey=getShipDates().today){
   return (sourceRows||[]).filter(row=>
@@ -13628,6 +13638,19 @@ body .ship-summary .ship-card[data-ship="today-ng"] .ship-points-line{
 }
 </style>
 <style id="dipping-ready-fixed-card-v1">
+.home-dipping-ready-card{
+  position:relative;width:100%;display:grid;grid-template-columns:74px minmax(0,1fr) auto;align-items:center;gap:18px;
+  margin:18px 0 4px;padding:16px 22px;border:3px solid #ffd84e;border-radius:16px;cursor:pointer;text-align:left;color:#fff;
+  background:linear-gradient(110deg,#5b3103 0%,#a86508 27%,#123e4c 64%,#052333 100%);
+  box-shadow:0 0 25px rgba(255,190,43,.5),inset 0 0 28px rgba(255,226,119,.13);overflow:hidden;
+}
+.home-dipping-ready-card::before{content:"DOBU SHIPPING GATE";position:absolute;right:18px;top:8px;color:rgba(255,239,166,.34);font-size:11px;font-weight:1000;letter-spacing:.16em}
+.home-dipping-ready-card:hover,.home-dipping-ready-card:focus-visible{transform:translateY(-3px);filter:brightness(1.14);outline:none}
+.home-dipping-ready-card.is-zero{opacity:.72;filter:saturate(.7)}
+.home-dipping-ready-seal{width:62px;height:62px;display:grid;place-items:center;border:3px solid #fff1a6;border-radius:50%;color:#17343a;background:#ffe05d;font-size:34px;font-weight:1000;box-shadow:0 0 20px #ffc62e}
+.home-dipping-ready-copy{display:grid;gap:2px}.home-dipping-ready-copy small{color:#ffe69a;font-size:14px;font-weight:1000}.home-dipping-ready-copy b{font-size:clamp(25px,2.2vw,38px);line-height:1.15;font-weight:1000;text-shadow:0 0 15px rgba(255,225,94,.52)}.home-dipping-ready-copy em{color:#bff5ff;font-size:14px;font-style:normal;font-weight:900}
+.home-dipping-ready-total{display:grid;min-width:145px;text-align:right}.home-dipping-ready-total strong{color:#fff4a5;font-size:clamp(32px,2.8vw,48px);line-height:1;font-weight:1000}.home-dipping-ready-total i{margin-top:5px;color:#5eeaff;font-size:24px;font-style:normal;font-weight:1000}
+@media(max-width:720px){.home-dipping-ready-card{grid-template-columns:54px 1fr;padding:14px}.home-dipping-ready-seal{width:50px;height:50px;font-size:28px}.home-dipping-ready-total{grid-column:1/-1;display:flex;justify-content:flex-end;gap:18px;min-width:0}.home-dipping-ready-total i{margin:0}}
 .dpc-ready-section{
   position:relative;
   margin:16px 0 20px;
