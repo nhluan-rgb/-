@@ -13748,6 +13748,15 @@ body .today-completion-card .welding-type-well{width:min(66px,82%)!important;hei
 body .today-completion-card .welding-type-column>b{font-size:clamp(15px,1.05vw,19px)!important;overflow:visible!important;text-overflow:clip!important}
 body .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>strong{font-size:clamp(21px,1.5vw,28px)!important;letter-spacing:-.025em!important;overflow:visible!important}
 body .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>small{font-size:clamp(11px,.72vw,13px)!important;color:#e5f8ff!important}
+/* ホーム上部：旧ミッション見出しを撤去し、2つの見出しと件数を強調。 */
+body:has(#ngGame.show) .panel:has(#ngGame)>.panel-head{display:none!important}
+body:has(#ngGame.show) .panel:has(#ngGame)>.panel-body{padding-top:0!important}
+body:has(#ngGame.show) .ng-game #gameBanner{display:none!important}
+body:has(#ngGame.show) .ng-game .evolution-stage{padding-top:8px!important}
+body:has(#ngGame.show) .today-completion-card>.process-heading>span{min-height:72px!important;padding:8px 14px!important}
+body:has(#ngGame.show) .today-completion-card>.process-heading small{font-size:clamp(13px,.88vw,16px)!important}
+body:has(#ngGame.show) .today-completion-card>.process-heading b{font-size:clamp(29px,2.15vw,39px)!important;line-height:1!important;letter-spacing:.035em!important}
+body:has(#ngGame.show) .today-completion-card .today-progress-split>.welding-type-chart .welding-type-column>small{margin-top:3px!important;font-size:clamp(14px,.92vw,17px)!important;line-height:1.1!important;font-weight:1000!important;color:#f2fcff!important;text-shadow:0 0 7px rgba(111,226,255,.36)!important}
 @media(max-width:1300px){
   body:has(#ngGame.show) .ng-game .evolution-world:has(.home-dipping-merged-host){display:grid!important;height:auto!important;min-height:0!important;overflow:visible!important}
   body:has(#ngGame.show) .ng-game .evolution-visual:has(.home-dipping-merged-host),body:has(#ngGame.show) .ng-game #bossStatusCard{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;border-radius:18px!important}
