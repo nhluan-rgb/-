@@ -7334,6 +7334,12 @@ body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"ク�
 .home-seven-stock-chart circle{r:7px}
 .home-seven-days{margin-top:8px!important;gap:5px!important}
 .home-seven-days b{font-size:15px!important;white-space:nowrap}.home-seven-days small{font-size:14px!important;font-weight:1000!important}
+
+<style id="v_owner_visibility_fix">
+/* 担当者：明るい工程表でも必ず読める文字色に固定 */
+.dpc-task-table td.dpc-owner{color:#102e40!important;font-weight:900!important;text-shadow:none!important;opacity:1!important}
+.dpc-task-table td.dpc-owner.missing{color:#c62828!important}
+</style>
 </style>
 </head>
 <body>
@@ -7852,7 +7858,7 @@ function normalize(o){
     dispatchDate:excelDate(o['出荷日']),
     status:String(o['進捗']||'').trim(),
     productType:String(o['品種']||o['製品区分']||'').trim(),
-    owner:String(o['担当者']||'').trim(),
+    owner:String(o['担当者']||o['担当者名']||o['担当']||Object.entries(o).find(([k])=>String(k).replace(/[\s　]/g,'')==='担当者')?.[1]||'').trim(),
     ship:String(o['配送便']||'').trim()
   };
 }
