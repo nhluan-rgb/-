@@ -142,6 +142,16 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 @media(prefers-reduced-motion:reduce){.ship-card.overdue-critical{animation:none!important;filter:none!important}}
 </style>
 <style id="capacity-simple-mode">
+.sp-decision-card{width:min(1260px,96vw)!important;max-height:90vh!important;box-sizing:border-box!important;padding:26px 30px!important}
+.sp-decision-orders{width:100%!important;overflow-x:hidden!important}
+.sp-product-table{width:100%!important;table-layout:fixed!important}
+.sp-product-table .col-product{width:34%!important}
+.sp-product-table .col-size{width:22%!important}
+.sp-product-table .col-actual{width:9%!important}
+.sp-product-table .col-unit-point{width:12%!important}
+.sp-product-table .col-total-point{width:23%!important}
+.sp-product-table td,.sp-product-table th{box-sizing:border-box!important}
+.sp-product-table .sp-product-cell,.sp-product-table .sp-size-cell{white-space:normal!important;overflow-wrap:anywhere}
 .capacity-modal-card .sp-threshold-legend,
 .capacity-modal-card .sp-target-line,
 .capacity-modal-card .sp-overtime-line,
@@ -158,7 +168,7 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 .sp-product-table .col-total-point{width:19%!important;text-align:right!important}
 .sp-product-table .sp-actual-cell,.sp-product-table .sp-unit-point-cell,.sp-product-table .sp-total-point-cell{text-align:right!important;font-weight:900}
 .sp-product-table .sp-total-point-cell{color:#83ecff;font-size:17px!important;white-space:nowrap}
-@media(max-width:760px){.sp-product-table{min-width:820px}.sp-decision-orders{overflow-x:auto}}
+@media(max-width:760px){.sp-decision-card{width:96vw!important;padding:18px 14px!important}.sp-product-table{min-width:900px}.sp-decision-orders{overflow-x:auto!important}}
 </style>
 </head>
 <body>
@@ -3686,22 +3696,22 @@ function spDimensions(row){return String(row.sizeInfo||'').match(/\d+(?:\.\d+)?/
 function spSizeClass(row){return spDimensions(row).some(value=>value>=600)?'600mm以上':'600mm未満';}
 function spProductCategory(row){
   const name=spNormalizeText(row.name).toUpperCase();
-  const standard=spNormalizeText(row.standard).toUpperCase();
   const part=spNormalizeText(row.part).toUpperCase();
-  const all=`${name} ${standard} ${part}`;
+  // 品種は品名を最優先する。規格内の L4×50・C形鋼などは付属材の記載なので、
+  // 製品本体をアングル／チャンネルと誤判定させない。
   if(/ふた|蓋/.test(name))return 'ふた';
-  if(/防球/.test(all)||part.startsWith('IBG'))return '防球ガード';
-  if(/貫通枠/.test(all)||/^(ZKW|IKW)/.test(part))return '貫通枠';
-  if(/架台|スタンション/.test(all))return '架台';
-  if(/ダクト/.test(all)||/^(SD|ID|DD)/.test(part))return 'ダクト';
-  if(/縞鋼板/.test(all))return '縞鋼板';
-  if(/チャンネル|CHANNEL|\bC形鋼/.test(all))return 'チャンネル';
-  if(/アングル|ANGLE|\bL[- ]?\d/.test(all))return 'アングル';
-  if(/切板/.test(all))return '切板';
-  if(/カバー/.test(all))return 'カバー';
-  if(/プレート|PLATE/.test(all))return 'プレート';
-  if(/金物/.test(all))return '金物';
   if(/PBトク|\bPB\b/.test(name))return 'ボックス';
+  if(/防球/.test(name)||part.startsWith('IBG'))return '防球ガード';
+  if(/貫通枠/.test(name)||/^[ZID]KW/.test(part))return '貫通枠';
+  if(/架台|スタンション/.test(name))return '架台';
+  if(/ダクトカバー|カバー/.test(name)||/^(IDC|DDC|SDC|BDC|ZDC)/.test(part))return 'カバー';
+  if(/ダクト/.test(name))return 'ダクト';
+  if(/縞鋼板/.test(name)||/^[ISZ]CP/.test(part))return '縞鋼板';
+  if(/チャンネル|CHANNEL/.test(name)||/^[ISZ]CI/.test(part))return 'チャンネル';
+  if(/アングル|ANGLE/.test(name)||/^[ISZDA]AI/.test(part))return 'アングル';
+  if(/切板/.test(name))return '切板';
+  if(/プレート|PLATE/.test(name)||/^[ISZDBA]IP/.test(part))return 'プレート';
+  if(/金物/.test(name)||/^[ISZDBA](?:MK|KM)/.test(part))return '金物';
   return 'その他・要確認';
 }
 function spProcessClass(row){
