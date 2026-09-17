@@ -9057,7 +9057,7 @@ function renderHomeProcessControl(){
   const cards=cardList.join('');
   return `<section class="home-dipping-process-board">
     <header class="home-dipping-process-head"><div><small>ドブ漬け管理</small><h2>工程</h2></div><div class="home-dipping-dates"><div><span>生地日</span><b>${formatJapaneseDateKey(dates.today)}</b></div><div><span>持ち込み日</span><b>${formatJapaneseDateKey(carry)}</b></div></div><div class="home-dipping-total"><span>対象</span><b>${fmt(activeRows.length)}件</b><strong>${fmt(totalQty)}点</strong></div></header>
-    <div class="home-dipping-process-grid">${cards||'<div class="home-dipping-empty">工程データはありません</div>'}</div>
+    <div class="home-dipping-process-grid" style="--dipping-process-count:${Math.max(1,cardList.length)}">${cards||'<div class="home-dipping-empty">工程データはありません</div>'}</div>
   </section>`;
 }
 
@@ -13889,7 +13889,7 @@ body .today-completion-card .today-progress-split>.welding-type-chart .welding-t
 @media(max-width:1100px){.today-completion-card .today-progress-split>.welding-type-chart{gap:5px!important;padding-inline:6px!important}.today-completion-card .welding-type-column{grid-template-rows:88px auto auto auto}.today-completion-card .welding-type-well{height:88px}}
 </style>
 <style id="dipping-ready-fixed-card-v1">
-.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(var(--dipping-process-count,1),minmax(0,1fr))!important}
 .home-dipping-process-card.home-dipping-ready-card{
   --dip-color:#62efff;position:relative;min-height:190px;margin:0;padding:12px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;
   border:2px solid #ffe65b!important;border-radius:16px!important;color:#fff;text-align:center;overflow:hidden;
@@ -13904,7 +13904,7 @@ body .today-completion-card .today-progress-split>.welding-type-chart .welding-t
 .home-dipping-ready-orbit::before,.home-dipping-ready-orbit::after{content:"";position:absolute;border-radius:50%;background:#ffe95f;box-shadow:0 0 9px #ffe95f}.home-dipping-ready-orbit::before{width:10px;height:10px;left:15px;top:8px}.home-dipping-ready-orbit::after{width:5px;height:5px;right:-3px;top:9px}.home-dipping-ready-orbit i{position:absolute;width:5px;height:5px;left:-3px;top:13px;border-radius:50%;background:#ff75df;box-shadow:0 0 8px #ff75df}
 .home-dipping-ready-copy{display:grid;gap:1px}.home-dipping-ready-copy small{color:#9ff5ff!important;font-size:11px!important;font-weight:1000}.home-dipping-ready-copy b{color:#fff6a7;font-size:clamp(20px,1.55vw,28px);line-height:1.05;font-weight:1000;text-shadow:0 0 12px rgba(255,230,72,.62)}
 .home-dipping-ready-count{margin:5px 0 0!important;color:#fff!important;font-size:clamp(31px,2.5vw,46px)!important;line-height:1!important}.home-dipping-ready-points{color:#63f1ff;font-size:21px;font-style:normal;font-weight:1000;text-shadow:0 0 9px rgba(86,236,255,.68)}.home-dipping-ready-note{margin:2px 0 0!important;color:#c7f6ff!important;font-size:11px!important;font-weight:900}
-@media(max-width:900px){.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:900px){.home-dipping-merged-host .home-dipping-process-grid{grid-template-columns:repeat(var(--dipping-process-count,1),minmax(0,1fr))!important;gap:8px!important}.home-dipping-merged-host .home-dipping-process-card{min-width:0!important;padding-inline:6px!important}}
 .dpc-ready-section{
   position:relative;
   margin:16px 0 20px;
