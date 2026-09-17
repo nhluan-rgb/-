@@ -3439,6 +3439,7 @@ async function getCsvGithubUpdatedAt(csvResponse){
 }
 
 async function loadSharedCsv(showMessage=true){
+  await spLoadPointMaster();
   // Không cho nhiều lần tải CSV chạy chồng lên nhau.
   if(csvLoading) return;
   csvLoading=true;
@@ -3656,6 +3657,79 @@ document.addEventListener('visibilitychange',()=>{
 
 <script>
 const SP_DAILY_CAPACITY=450;
+const SP_POINT_MASTER_FILENAME='負荷ポイントマスター.xlsx';
+let SP_POINT_RULES=[{"category":"ボックス","size":"600mm未満","process":"焼付","point":1.0},{"category":"ボックス","size":"600mm未満","process":"ダイマー","point":1.3},{"category":"ボックス","size":"600mm未満","process":"錆止め","point":1.0},{"category":"ボックス","size":"600mm未満","process":"SUS","point":1.0},{"category":"ボックス","size":"600mm未満","process":"ドブ・ZN","point":1.3},{"category":"ボックス","size":"600mm未満","process":"その他","point":1.0},{"category":"ボックス","size":"600mm以上","process":"焼付","point":1.5},{"category":"ボックス","size":"600mm以上","process":"ダイマー","point":1.8},{"category":"ボックス","size":"600mm以上","process":"錆止め","point":1.5},{"category":"ボックス","size":"600mm以上","process":"SUS","point":1.8},{"category":"ボックス","size":"600mm以上","process":"ドブ・ZN","point":1.5},{"category":"ボックス","size":"600mm以上","process":"その他","point":1.0},{"category":"ふた","size":"600mm未満","process":"焼付","point":1.0},{"category":"ふた","size":"600mm未満","process":"錆止め","point":1.0},{"category":"ふた","size":"600mm未満","process":"SUS","point":1.0},{"category":"ふた","size":"600mm未満","process":"ドブ・ZN","point":1.0},{"category":"ふた","size":"600mm以上","process":"ダイマー","point":1.5},{"category":"ふた","size":"600mm以上","process":"錆止め","point":1.5},{"category":"ふた","size":"600mm以上","process":"SUS","point":1.5},{"category":"ダクト","size":"600mm未満","process":"ダイマー","point":1.8},{"category":"ダクト","size":"600mm未満","process":"SUS","point":1.0},{"category":"ダクト","size":"600mm以上","process":"ダイマー","point":1.8},{"category":"ダクト","size":"600mm以上","process":"錆止め","point":1.5},{"category":"ダクト","size":"600mm以上","process":"SUS","point":1.5},{"category":"ダクト","size":"600mm以上","process":"ドブ・ZN","point":1.0},{"category":"架台","size":"600mm未満","process":"焼付","point":3.0},{"category":"架台","size":"600mm未満","process":"錆止め","point":3.0},{"category":"架台","size":"600mm未満","process":"SUS","point":4.0},{"category":"架台","size":"600mm未満","process":"ドブ・ZN","point":3.0},{"category":"架台","size":"600mm以上","process":"焼付","point":4.0},{"category":"架台","size":"600mm以上","process":"錆止め","point":3.0},{"category":"架台","size":"600mm以上","process":"SUS","point":4.0},{"category":"架台","size":"600mm以上","process":"ドブ・ZN","point":4.0},{"category":"貫通枠","size":"600mm未満","process":"ダイマー","point":2.5},{"category":"貫通枠","size":"600mm未満","process":"錆止め","point":1.5},{"category":"貫通枠","size":"600mm未満","process":"ドブ・ZN","point":1.5},{"category":"貫通枠","size":"600mm未満","process":"その他","point":1.5},{"category":"貫通枠","size":"600mm以上","process":"ダイマー","point":3.0},{"category":"貫通枠","size":"600mm以上","process":"錆止め","point":2.0},{"category":"貫通枠","size":"600mm以上","process":"ドブ・ZN","point":2.0},{"category":"貫通枠","size":"600mm以上","process":"その他","point":2.0},{"category":"防球ガード","size":"600mm未満","process":"錆止め","point":5.0},{"category":"防球ガード","size":"600mm以上","process":"錆止め","point":6.0},{"category":"プレート","size":"600mm未満","process":"焼付","point":0.3},{"category":"プレート","size":"600mm未満","process":"ダイマー","point":0.3},{"category":"プレート","size":"600mm未満","process":"錆止め","point":0.5},{"category":"プレート","size":"600mm未満","process":"SUS","point":0.5},{"category":"プレート","size":"600mm未満","process":"ドブ・ZN","point":0.3},{"category":"プレート","size":"600mm未満","process":"その他","point":0.3},{"category":"プレート","size":"600mm以上","process":"焼付","point":0.3},{"category":"プレート","size":"600mm以上","process":"ダイマー","point":0.3},{"category":"プレート","size":"600mm以上","process":"錆止め","point":0.3},{"category":"プレート","size":"600mm以上","process":"SUS","point":0.5},{"category":"プレート","size":"600mm以上","process":"ドブ・ZN","point":0.5},{"category":"プレート","size":"600mm以上","process":"その他","point":0.1},{"category":"切板","size":"600mm未満","process":"焼付","point":0.1},{"category":"切板","size":"600mm未満","process":"ダイマー","point":0.1},{"category":"切板","size":"600mm未満","process":"錆止め","point":0.1},{"category":"切板","size":"600mm未満","process":"SUS","point":0.5},{"category":"切板","size":"600mm未満","process":"その他","point":0.0},{"category":"切板","size":"600mm以上","process":"焼付","point":0.1},{"category":"切板","size":"600mm以上","process":"ダイマー","point":0.2},{"category":"切板","size":"600mm以上","process":"錆止め","point":0.2},{"category":"切板","size":"600mm以上","process":"SUS","point":0.2},{"category":"切板","size":"600mm以上","process":"ドブ・ZN","point":0.2},{"category":"切板","size":"600mm以上","process":"その他","point":0.3},{"category":"カバー","size":"600mm未満","process":"焼付","point":0.3},{"category":"カバー","size":"600mm未満","process":"ダイマー","point":2.0},{"category":"カバー","size":"600mm未満","process":"錆止め","point":1.5},{"category":"カバー","size":"600mm未満","process":"SUS","point":2.0},{"category":"カバー","size":"600mm以上","process":"焼付","point":2.0},{"category":"カバー","size":"600mm以上","process":"ダイマー","point":2.0},{"category":"カバー","size":"600mm以上","process":"錆止め","point":3.0},{"category":"カバー","size":"600mm以上","process":"SUS","point":2.0},{"category":"カバー","size":"600mm以上","process":"ドブ・ZN","point":3.0},{"category":"カバー","size":"600mm以上","process":"その他","point":2.0},{"category":"アングル","size":"600mm未満","process":"焼付","point":3.5},{"category":"アングル","size":"600mm未満","process":"ダイマー","point":4.0},{"category":"アングル","size":"600mm未満","process":"錆止め","point":3.5},{"category":"アングル","size":"600mm未満","process":"SUS","point":2.0},{"category":"アングル","size":"600mm未満","process":"ドブ・ZN","point":3.5},{"category":"アングル","size":"600mm未満","process":"その他","point":3.0},{"category":"アングル","size":"600mm以上","process":"焼付","point":5.0},{"category":"アングル","size":"600mm以上","process":"ダイマー","point":5.0},{"category":"アングル","size":"600mm以上","process":"錆止め","point":4.0},{"category":"アングル","size":"600mm以上","process":"SUS","point":5.0},{"category":"アングル","size":"600mm以上","process":"ドブ・ZN","point":5.0},{"category":"アングル","size":"600mm以上","process":"その他","point":6.0},{"category":"チャンネル","size":"600mm未満","process":"ドブ・ZN","point":5.0},{"category":"チャンネル","size":"600mm以上","process":"焼付","point":5.0},{"category":"チャンネル","size":"600mm以上","process":"錆止め","point":5.0},{"category":"チャンネル","size":"600mm以上","process":"SUS","point":7.0},{"category":"チャンネル","size":"600mm以上","process":"ドブ・ZN","point":5.0},{"category":"縞鋼板","size":"600mm未満","process":"焼付","point":2.0},{"category":"縞鋼板","size":"600mm未満","process":"SUS","point":2.0},{"category":"縞鋼板","size":"600mm未満","process":"ドブ・ZN","point":3.0},{"category":"縞鋼板","size":"600mm以上","process":"焼付","point":2.0},{"category":"縞鋼板","size":"600mm以上","process":"錆止め","point":2.0},{"category":"縞鋼板","size":"600mm以上","process":"SUS","point":4.0},{"category":"縞鋼板","size":"600mm以上","process":"ドブ・ZN","point":3.0},{"category":"金物","size":"600mm未満","process":"焼付","point":2.0},{"category":"金物","size":"600mm未満","process":"ダイマー","point":2.0},{"category":"金物","size":"600mm未満","process":"錆止め","point":1.5},{"category":"金物","size":"600mm未満","process":"SUS","point":1.5},{"category":"金物","size":"600mm未満","process":"ドブ・ZN","point":2.0},{"category":"金物","size":"600mm未満","process":"その他","point":2.0},{"category":"金物","size":"600mm以上","process":"焼付","point":2.0},{"category":"金物","size":"600mm以上","process":"ダイマー","point":2.0},{"category":"金物","size":"600mm以上","process":"錆止め","point":1.5},{"category":"金物","size":"600mm以上","process":"SUS","point":2.0},{"category":"金物","size":"600mm以上","process":"ドブ・ZN","point":1.5},{"category":"金物","size":"600mm以上","process":"その他","point":1.5},{"category":"その他・要確認","size":"600mm未満","process":"焼付","point":3.0},{"category":"その他・要確認","size":"600mm未満","process":"SUS","point":3.0},{"category":"その他・要確認","size":"600mm未満","process":"ドブ・ZN","point":3.0},{"category":"その他・要確認","size":"600mm未満","process":"その他","point":3.0},{"category":"その他・要確認","size":"600mm以上","process":"焼付","point":3.0},{"category":"その他・要確認","size":"600mm以上","process":"ドブ・ZN","point":3.0},{"category":"その他・要確認","size":"600mm以上","process":"その他","point":3.0}];
+let SP_POINT_MASTER_SOURCE='内蔵マスター';
+let SP_POINT_MASTER_PROMISE=null;
+
+function spNormalizeText(value){return String(value??'').normalize('NFKC').replace(/\s+/g,' ').trim();}
+function spDimensions(row){return String(row.sizeInfo||'').match(/\d+(?:\.\d+)?/g)?.map(Number).filter(Number.isFinite)||[];}
+function spSizeClass(row){return spDimensions(row).some(value=>value>=600)?'600mm以上':'600mm未満';}
+function spProductCategory(row){
+  const name=spNormalizeText(row.name).toUpperCase();
+  const standard=spNormalizeText(row.standard).toUpperCase();
+  const part=spNormalizeText(row.part).toUpperCase();
+  const all=`${name} ${standard} ${part}`;
+  if(/ふた|蓋/.test(name))return 'ふた';
+  if(/防球/.test(all)||part.startsWith('IBG'))return '防球ガード';
+  if(/貫通枠/.test(all)||/^(ZKW|IKW)/.test(part))return '貫通枠';
+  if(/架台|スタンション/.test(all))return '架台';
+  if(/ダクト/.test(all)||/^(SD|ID|DD)/.test(part))return 'ダクト';
+  if(/縞鋼板/.test(all))return '縞鋼板';
+  if(/チャンネル|CHANNEL|\bC形鋼/.test(all))return 'チャンネル';
+  if(/アングル|ANGLE|\bL[- ]?\d/.test(all))return 'アングル';
+  if(/切板/.test(all))return '切板';
+  if(/カバー/.test(all))return 'カバー';
+  if(/プレート|PLATE/.test(all))return 'プレート';
+  if(/金物/.test(all))return '金物';
+  if(/PBトク|\bPB\b/.test(name))return 'ボックス';
+  return 'その他・要確認';
+}
+function spProcessClass(row){
+  const name=spNormalizeText(row.name).toUpperCase();
+  const standard=spNormalizeText(row.standard).toUpperCase();
+  const part=spNormalizeText(row.part).toUpperCase();
+  const all=`${name} ${standard}`;
+  if(/SUS|ステンレス/.test(all)||part.startsWith('S'))return 'SUS';
+  if(/ドブ|溶融亜鉛|HDZT|\bZN\b/.test(all)||part.startsWith('Z'))return 'ドブ・ZN';
+  if(/ダイマー/.test(all)||part.startsWith('D'))return 'ダイマー';
+  if(/錆止め|さび止め|サビ止め/.test(all)||/G[A-Z0-9]*$/.test(part))return '錆止め';
+  if(/焼付/.test(all)||/C[A-Z0-9]*$/.test(part))return '焼付';
+  return 'その他';
+}
+function spRulePoint(row){
+  const category=spProductCategory(row),size=spSizeClass(row),process=spProcessClass(row);
+  let rule=SP_POINT_RULES.find(item=>item.category===category&&item.size===size&&item.process===process);
+  let match='exact';
+  if(!rule){
+    const near=SP_POINT_RULES.filter(item=>item.category===category&&item.size===size);
+    if(near.length){rule={point:near.reduce((sum,item)=>sum+Number(item.point||0),0)/near.length};match='category';}
+  }
+  if(!rule){rule={point:3};match='unmatched';}
+  const unitPoint=Math.max(0,Number(rule.point)||0);
+  return {category,size,process,unitPoint,match,loadPoints:(Number(row.qty)||0)*unitPoint};
+}
+async function spLoadPointMaster(){
+  if(SP_POINT_MASTER_PROMISE)return SP_POINT_MASTER_PROMISE;
+  SP_POINT_MASTER_PROMISE=(async()=>{
+    try{
+      const response=await fetch(encodeURI(SP_POINT_MASTER_FILENAME)+'?ts='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw new Error('master not found');
+      const book=XLSX.read(await response.arrayBuffer(),{type:'array',raw:true});
+      const sheet=book.Sheets['評価入力'];
+      if(!sheet)throw new Error('評価入力 sheet not found');
+      const data=XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true});
+      const header=data.findIndex(row=>row[0]==='No.'&&row[1]==='品種');
+      if(header<0)throw new Error('master header not found');
+      const loaded=data.slice(header+1).map(row=>({category:String(row[1]||'').trim(),size:String(row[2]||'').trim(),process:String(row[3]||'').trim(),point:Number(row[11]!==''?row[11]:row[10])})).filter(item=>item.category&&item.size&&item.process&&Number.isFinite(item.point));
+      if(!loaded.length)throw new Error('master empty');
+      SP_POINT_RULES=loaded;SP_POINT_MASTER_SOURCE='Excelマスター';
+    }catch(error){SP_POINT_MASTER_SOURCE='内蔵マスター';}
+    return SP_POINT_RULES;
+  })();
+  return SP_POINT_MASTER_PROMISE;
+}
+
 const SP_CHART_CATEGORIES=[
   {name:'ボックス',color:'#338cff'},
   {name:'架台',color:'#ff9b3d'},
@@ -3916,17 +3990,21 @@ function renderSalesProductionBridge(){
   }
   const dayMap=new Map(days.map(day=>[day.key,day]));
   SP_BRIDGE_ROW_MAP=new Map();
+  let unmatchedCount=0;
   rows.filter(row=>!spIsCancel(row)).forEach(row=>{
     if(row.due&&row.due>=startKey&&row.due<=endKey){
+      const score=spRulePoint(row);
+      const weightedRow={...row,rawQty:Number(row.qty)||0,qty:score.loadPoints,unitPoint:score.unitPoint,pointMatch:score.match,pointCategory:score.category,pointSize:score.size,pointProcess:score.process};
+      if(score.match==='unmatched')unmatchedCount++;
       const day=dayMap.get(row.due);
       if(day){
-        const qty=Number(row.qty)||0;
+        const qty=score.loadPoints;
         const category=spChartCategory(row);
         day.count+=qty;
         day.categories[category]=(day.categories[category]||0)+qty;
       }
       if(!SP_BRIDGE_ROW_MAP.has(row.due))SP_BRIDGE_ROW_MAP.set(row.due,[]);
-      SP_BRIDGE_ROW_MAP.get(row.due).push(row);
+      SP_BRIDGE_ROW_MAP.get(row.due).push(weightedRow);
     }
   });
   SP_BRIDGE_DAYS=days;
@@ -3967,7 +4045,7 @@ function renderSalesProductionBridge(){
   $('spOvertime60Line').style.top=`${daysTop+(1-500/chartMax)*measuredBarHeight}px`;
   $('spOvertime80Line').style.top=`${daysTop+(1-550/chartMax)*measuredBarHeight}px`;
   const recommendations=best.map(day=>`<button onclick="spOpenDate('${day.key}')">${spShortDate(day.date)}</button>`).join('');
-  $('spAdvice').innerHTML=`<div class="sp-advice-card"><strong>投入可能日</strong><div class="sp-reco">${recommendations||'—'}</div></div>`;
+  $('spAdvice').innerHTML=`<div class="sp-advice-card"><strong>投入可能日</strong><div class="sp-reco">${recommendations||'—'}</div><small>負荷点：数量 × 製品別評価点｜${SP_POINT_MASTER_SOURCE}${unmatchedCount?`｜未判定 ${unmatchedCount}件（3点/個）`:''}</small></div>`;
 }
 document.addEventListener('keydown',event=>{
   if(event.key!=='Escape')return;
