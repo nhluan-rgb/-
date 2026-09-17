@@ -7341,6 +7341,25 @@ body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"ク�
 .dpc-task-table td.dpc-owner.missing{color:#c62828!important}
 </style>
 </style>
+
+<style id="owner-visibility-final-fix">
+/* 担当者：背景色に影響されず常に濃く表示 */
+.dpc-task-table tbody td.dpc-owner,
+.dpc-task-table tbody td.dpc-owner:not(.missing),
+.wtd-table-wrap .dpc-task-table tbody td.dpc-owner {
+  color:#102e40 !important;
+  -webkit-text-fill-color:#102e40 !important;
+  opacity:1 !important;
+  font-weight:1000 !important;
+  text-shadow:none !important;
+  filter:none !important;
+}
+.dpc-task-table tbody td.dpc-owner.missing,
+.wtd-table-wrap .dpc-task-table tbody td.dpc-owner.missing {
+  color:#c62828 !important;
+  -webkit-text-fill-color:#c62828 !important;
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -9028,7 +9047,7 @@ function renderHomeProcessControl(){
   const totalQty=activeRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   const readyQty=readyRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0);
   const readyCard=`<button type="button" class="home-dipping-process-card home-dipping-ready-card ${readyRows.length?'has-items':'is-zero'}" data-dipping-kind="process" data-dipping-value="外注" aria-label="ドブ出し準備完了の詳細を表示">
-    <span class="home-dipping-ready-orbit" aria-hidden="true"><i></i></span><span class="home-dipping-ready-copy"><small>工程：外注</small><b>ドブ出し<br>準備完了</b></span><strong class="home-dipping-ready-count">${fmt(readyRows.length)}件</strong><em class="home-dipping-ready-points">${fmt(readyQty)}点</em><small class="home-dipping-ready-note">持ち込み待ち</small>
+    <span class="home-dipping-ready-copy"><small>工程：外注</small><b>持ち込み待機中</b></span><strong class="home-dipping-ready-count">${fmt(readyRows.length)}件</strong><em class="home-dipping-ready-points">${fmt(readyQty)}点</em>
   </button>`;
   const weldIndex=[...processMap.keys()].sort((a,b)=>{
     const ai=processOrder.indexOf(a),bi=processOrder.indexOf(b);
@@ -13011,7 +13030,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
       <header class="dpc-head"><div><h2 class="dpc-title"><strong>${safe(shortDate(selectedDate))}</strong> 生地 工程管理</h2></div><div class="dpc-date-tools"><button type="button" class="dpc-home-button" data-dpc-home>← ホームへ戻る</button><button type="button" data-dpc-shift="-1">← 前日</button><button type="button" data-dpc-today>今日</button><input id="dpcDate" type="date" value="${safe(selectedDate)}" aria-label="管理する生地日"><button type="button" data-dpc-shift="1">翌日 →</button></div></header>
       <div class="dpc-alert ${workRows.length?'':'clear'}"><b>${workRows.length?`残 ${fmt(workRows.length)}件 ／ ${fmt(workQty)}点`:'完了'}</b>${unassigned?`<span>未割当 ${fmt(unassigned)}件</span>`:''}</div>
       <div class="dpc-kpi-clock-row"><div class="dpc-kpis"><button type="button" class="dpc-kpi ${selectedKpi==='target'?'active':''}" data-dpc-kpi="target"><span>対象</span><strong>${fmt(dateRows.length)}件</strong><small>${fmt(totalQty)}点 ／ キャンセル除外</small></button><button type="button" class="dpc-kpi ${notStarted.length?'warn':'good'} ${selectedKpi==='unstarted'?'active':''}" data-dpc-kpi="unstarted"><span>未着手（要確認）</span><strong>${fmt(notStarted.length)}件</strong><small>${fmt(notStarted.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点</small></button><button type="button" class="dpc-kpi ${overdue?'danger':'good'} ${selectedKpi==='overdue'?'active':''}" data-dpc-kpi="overdue"><span>生地日切れ</span><strong>${fmt(overdue)}件</strong><small>${fmt(overdueRows.reduce((sum,row)=>sum+(Number(row.qty)||0),0))}点 ／ 仕上前</small></button><button type="button" class="dpc-kpi ${rate===100?'good':rate<75?'danger':'warn'} ${selectedKpi==='passed'?'active':''}" data-dpc-kpi="passed"><span>完了率</span><strong>${rateLabel}%</strong><small>仕上通過 ${fmt(passedFinish.length)} / 対象 ${fmt(dateRows.length)}件</small></button></div><aside class="dpc-live-clock" aria-label="現在時刻"><span>現在時刻</span><strong id="dpcLiveClock">--:--:--</strong><small id="dpcLiveDate">----</small></aside></div>
-      ${selectedProductMode==='dipping'?`<section class="dpc-ready-section"><div class="dpc-ready-kicker">DOBU SHIPPING GATE</div><button type="button" class="dpc-ready-card ${selectedProcess==='外注'?'active':''} ${dippingReadyRows.length?'':'is-zero'}" data-dpc-process="外注"><span class="dpc-ready-icon">✓</span><span class="dpc-ready-copy"><small>工程：外注</small><strong>ドブ出し準備完了</strong><em>持ち込み待ちの製造指示</em></span><span class="dpc-ready-numbers"><b>${fmt(dippingReadyRows.length)}件</b><i>${fmt(dippingReadyQty)}点</i></span></button></section>`:''}
+      ${selectedProductMode==='dipping'?`<section class="dpc-ready-section"><button type="button" class="dpc-ready-card ${selectedProcess==='外注'?'active':''} ${dippingReadyRows.length?'':'is-zero'}" data-dpc-process="外注"><span class="dpc-ready-copy"><small>工程：外注</small><strong>持ち込み待機中</strong></span><span class="dpc-ready-numbers"><b>${fmt(dippingReadyRows.length)}件</b><i>${fmt(dippingReadyQty)}点</i></span></button></section>`:''}
       <section class="dpc-section"><div class="dpc-section-title"><span>工程</span></div><div class="dpc-processes">${PROCESS_ORDER.map(status=>processButton(status,processBreakdownRows)).join('')}</div></section>
       <section class="dpc-section"><div class="dpc-section-title"><span>${safe(listTitle)}</span><small>${fmt(visibleRows.length)}件</small></div><div class="dpc-tasks-wrap"><table class="dpc-task-table"><thead><tr><th>製造指示番号</th><th>品番・品名・規格</th><th>サイズ</th><th>数量</th><th>工程</th><th>生地日・製造期限・出荷日</th><th>担当者</th><th>ラベル</th></tr></thead><tbody>${visibleRows.length?visibleRows.slice(0,200).map(row=>taskRow(row)).join(''):`<tr><td colspan="8"><div class="dpc-empty">対象なし</div></td></tr>`}</tbody></table></div></section>
     </div>`;
@@ -13851,3 +13870,13 @@ body .today-completion-card .welding-type-column:focus-visible{outline:2px solid
 </style>
 </body>
 </html>
+
+<style id="dipping-ready-clean-v2">
+.home-dipping-process-card.home-dipping-ready-card::after{display:none!important;content:none!important}
+.home-dipping-ready-orbit{display:none!important}
+.dpc-ready-kicker,.dpc-ready-icon{display:none!important}
+.home-dipping-process-card.home-dipping-ready-card{gap:8px!important}
+.home-dipping-ready-copy b{white-space:nowrap!important;line-height:1.15!important}
+.dpc-ready-card{grid-template-columns:minmax(0,1fr) auto!important}
+.dpc-ready-copy strong{white-space:nowrap!important}
+</style>
