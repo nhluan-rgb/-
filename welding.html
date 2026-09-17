@@ -2087,7 +2087,7 @@
  text-shadow:0 2px 3px rgba(0,0,0,.9)!important;
 }
 
-</style>
+.pcb-launch-action{display:none!important}\n</style>
 
 <style id="senior_readable_backlog_columns">
 /* 製造指示一覧：高齢者にも読み取りやすい重要3列 */
@@ -13293,7 +13293,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const categoryItems=[...categoryMap].map(([name,points])=>({name,points,color:donutColors[name]||'#90c967'})).filter(item=>item.points>0).sort((a,b)=>b.points-a.points);
     let cursor=0;const segments=categoryItems.map(item=>{const start=cursor,end=todayItem.points?cursor+item.points/todayItem.points*100:cursor;cursor=end;return`${item.color} ${start}% ${end}%`});
     const donutBackground=segments.length?`conic-gradient(${segments.join(',')})`:'#173847';
-    host.innerHTML=`<button type="button" class="pcb-launch" data-process-capacity-open><span class="pcb-launch-title">工程キャパシティー</span><span class="pcb-launch-period">${shortDate(items[0].date)} → ${shortDate(items[items.length-1].date)}</span><span class="pcb-donut-wrap"><span class="pcb-donut" style="background:${donutBackground}"><span class="pcb-donut-center"><b>${number(todayItem.points)}</b><small>今日の負荷点</small></span></span><span class="pcb-legend">${categoryItems.length?categoryItems.slice(0,7).map(item=>`<span class="pcb-legend-item" style="--pcb-color:${item.color}"><i></i><span>${item.name}</span><b>${number(item.points)}</b></span>`).join(''):'<span class="pcb-legend-item" style="--pcb-color:#607d8b"><i></i><span>対象なし</span><b>0</b></span>'}</span></span><span class="pcb-launch-action">クリックして日別グラフを表示</span></button>`;
+    host.innerHTML=`<button type="button" class="pcb-launch" data-process-capacity-open><span class="pcb-launch-title">工程キャパシティー</span><span class="pcb-launch-period">${shortDate(items[0].date)} → ${shortDate(items[items.length-1].date)}</span><span class="pcb-donut-wrap"><span class="pcb-donut" style="background:${donutBackground}"><span class="pcb-donut-center"><b>${number(todayItem.points)}</b><small>今日の負荷点</small></span></span><span class="pcb-legend">${categoryItems.length?categoryItems.slice(0,7).map(item=>`<span class="pcb-legend-item" style="--pcb-color:${item.color}"><i></i><span>${item.name}</span><b>${number(item.points)}</b></span>`).join(''):'<span class="pcb-legend-item" style="--pcb-color:#607d8b"><i></i><span>対象なし</span><b>0</b></span>'}</span></span></button>`;
   };
   document.addEventListener('click',event=>{if(event.target.closest('[data-process-capacity-open]'))openModal();const detail=event.target.closest('[data-process-capacity-detail]');if(detail){closeModal();if(typeof openDailyProcessBoard==='function')openDailyProcessBoard(detail.dataset.processCapacityDetail)}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal()});
