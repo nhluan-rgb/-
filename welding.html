@@ -13124,7 +13124,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const bottleneck=processCounts[0];
     const earliestOverdue=overdue.map(row=>row.shipDate).filter(Boolean).sort()[0]||today;
     const item=(icon,label,note,list,color,date)=>`<button type="button" class="hpa-item ${list.length?'':'is-zero'}" data-hpa-date="${safe(date||today)}" style="--hpa-color:${color}"><span class="hpa-icon">${icon}</span><span class="hpa-copy"><b>${label}</b><small>${note}</small></span><span class="hpa-value"><strong>${fmt(list.length)}件</strong><small>${fmt(sumQty(list))}点</small></span></button>`;
-    host.innerHTML=`<header class="hpa-head"><div class="hpa-kicker">TODAY ACTION CENTER</div><h3 class="hpa-title">本日の優先アクション</h3><div class="hpa-date">${safe(shortDate(today))} ／ 生地日基準</div></header>
+    host.innerHTML=`<header class="hpa-head"><div class="hpa-kicker">TODAY ACTION CENTER</div><h3 class="hpa-title">本日の優先アクション</h3><div class="hpa-date">${safe(shortDate(today))} ／ 生地日</div></header>
       <div class="hpa-alert ${overdue.length||todayRows.length?'':'clear'}"><strong>${overdue.length?'⚠ 生地日超過を最優先':'▶ 今日生地を順番に完了へ'}</strong><span>${overdue.length?`${fmt(overdue.length)}件が今日より前の生地日です`:`今日の残作業 ${fmt(todayRows.length)}件・${fmt(sumQty(todayRows))}点`}</span></div>
       <div class="hpa-list">${item('🚨','生地日超過','最優先で工程を進める',overdue,'#ef4444',earliestOverdue)}${item('📌','本日生地・残作業','今日中に仕上完了へ',todayRows,'#f59e0b',today)}${item('👤','担当者未割当','作業前に担当を決定',unassigned,'#e879f9',today)}${item('⚡','本日新規・急ぎ','製造指示日も今日',urgent,'#38bdf8',today)}${item('❓','生地日未登録','日付確認が必要',unregistered,'#94a3b8',today)}</div>
       <div class="hpa-bottleneck"><span>今日のボトルネック工程</span><strong>${bottleneck&&bottleneck.rows.length?`${safe(bottleneck.status)}　<b>${fmt(bottleneck.rows.length)}件・${fmt(sumQty(bottleneck.rows))}点</b>`:'今日の残作業なし'}</strong></div>
@@ -13139,26 +13139,148 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   renderStats=function(){previousRenderStats();renderHomePriorityActions()};
   renderHomePriorityActions();
 })();</script>
-<script id="home-today-product-grid-script">(function injectedTodayProducts(){
-  const CONFIG=[
-    {name:'ボックス',color:'#338cff'},{name:'ダクト',color:'#35d6df'},
-    {name:'架台',color:'#ff9b3d'},{name:'貫通枠',color:'#9b72ff'},
-    {name:'防球ガード',color:'#3ee59a'},{name:'切板・金物',color:'#ffd43b'},
-    {name:'その他・要確認',color:'#ff6075'}
-  ];
+<style id="process-capacity-panel-v1">
+.achievement-calendar-panel:has(.process-capacity-board){display:block!important;overflow:hidden!important;padding:10px!important;background:linear-gradient(160deg,#061b2c,#03101c)!important;border-color:#42dcff!important}
+.process-capacity-board{display:flex;min-height:100%;height:100%;flex-direction:column;color:#eefcff;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif}
+.pcb-head{padding:5px 6px 10px;border-bottom:2px solid #35d8f5;text-align:center}
+.pcb-title{margin:0;color:#fff;font-size:clamp(24px,2vw,33px);font-weight:1000;letter-spacing:.05em}
+.pcb-sub{display:flex;justify-content:center;gap:12px;margin-top:5px;color:#aeeafb;font-size:12px;font-weight:900}
+.pcb-cap{color:#fff36e}
+.pcb-formula{margin-top:5px;color:#9bdbe8;font-size:10px;font-weight:800}
+.pcb-days{display:grid;gap:6px;margin-top:9px;overflow:auto;padding-right:3px}
+.pcb-day{appearance:none;display:grid;grid-template-columns:58px minmax(0,1fr) 70px;align-items:center;gap:8px;width:100%;min-height:46px;padding:6px 8px;border:1px solid #28728d;border-radius:8px;background:linear-gradient(145deg,#0b354c,#061c2b);color:#fff;font:inherit;text-align:left;cursor:pointer}
+.pcb-day:hover,.pcb-day:focus-visible{filter:brightness(1.18);transform:translateY(-1px);outline:none}
+.pcb-day.is-over{border-color:#ff526d;background:linear-gradient(145deg,#651529,#28101b);box-shadow:inset 0 0 13px rgba(255,54,91,.18)}
+.pcb-day.is-today{border-width:2px;border-color:#fff36e}
+.pcb-date{font-size:13px;font-weight:1000;line-height:1.15}.pcb-date small{display:block;margin-top:2px;color:#9fdbea;font-size:10px}
+.pcb-track{position:relative;height:15px;border:1px solid #3d7388;border-radius:99px;background:#03111c;overflow:hidden}
+.pcb-fill{height:100%;min-width:0;border-radius:99px;background:linear-gradient(90deg,#31c7ed,#62f0bf);box-shadow:0 0 9px rgba(62,222,255,.42)}
+.pcb-day.is-over .pcb-fill{background:linear-gradient(90deg,#ff9b43,#ff3f62)}
+.pcb-value{text-align:right}.pcb-value b{display:block;color:#fff36e;font-size:19px;line-height:1}.pcb-value small{display:block;margin-top:3px;color:#b7e4ee;font-size:9px;font-weight:900}
+.pcb-day.is-over .pcb-value b{color:#ff7890}
+.pcb-note{margin-top:auto;padding:7px 4px 2px;color:#99dce9;font-size:10px;font-weight:800;text-align:center}
+.pcb-launch{appearance:none;display:flex;min-height:100%;width:100%;flex-direction:column;align-items:center;justify-content:flex-start;padding:15px 14px 12px;border:2px solid #42dcff;border-radius:13px;background:radial-gradient(circle at 50% 18%,rgba(55,210,255,.22),transparent 48%),linear-gradient(155deg,#0b3d57,#061724);color:#fff;font:inherit;text-align:center;cursor:pointer;box-shadow:inset 0 0 27px rgba(56,210,255,.13),0 5px 0 #02101a}
+.pcb-launch:hover,.pcb-launch:focus-visible{filter:brightness(1.16);transform:translateY(-2px);outline:none}.pcb-launch-title{font-size:clamp(25px,2.15vw,36px);font-weight:1000;letter-spacing:.05em}.pcb-launch-period{margin-top:7px;color:#83eaff;font-size:14px;font-weight:900}.pcb-donut-wrap{display:grid;grid-template-columns:210px minmax(0,1fr);align-items:center;gap:10px;width:100%;margin-top:11px}.pcb-donut{position:relative;width:200px;height:200px;margin:auto;border-radius:50%;box-shadow:0 0 20px rgba(60,220,255,.2)}.pcb-donut::after{content:"";position:absolute;inset:48px;border:2px solid #23728c;border-radius:50%;background:#062131}.pcb-donut-center{position:absolute;z-index:2;inset:0;display:grid;place-content:center;text-align:center}.pcb-donut-center b{color:#fff36e;font-size:34px;line-height:1}.pcb-donut-center small{margin-top:6px;color:#9fe9f7;font-size:12px;font-weight:900}.pcb-legend{display:grid;gap:5px;text-align:left}.pcb-legend-item{display:grid;grid-template-columns:11px minmax(0,1fr) auto;align-items:center;gap:6px;padding:5px 7px;border:1px solid rgba(69,180,214,.35);border-radius:7px;background:rgba(2,25,39,.58)}.pcb-legend-item i{width:9px;height:9px;border-radius:50%;background:var(--pcb-color);box-shadow:0 0 7px var(--pcb-color)}.pcb-legend-item span{overflow:hidden;color:#e7faff;font-size:10px;font-weight:900;text-overflow:ellipsis;white-space:nowrap}.pcb-legend-item b{color:#83eaff;font-size:12px}.pcb-launch-action{margin-top:auto;padding:7px 16px;border:1px solid #75e9ff;border-radius:999px;background:#0b718f;color:#fff;font-size:11px;font-weight:1000}
+@media(max-width:520px){.pcb-donut-wrap{grid-template-columns:1fr}.pcb-donut{width:165px;height:165px}.pcb-donut::after{inset:39px}.pcb-legend{grid-template-columns:1fr 1fr;width:100%}}
+.pc-modal{position:fixed;inset:0;z-index:20000;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,8,18,.88);backdrop-filter:blur(5px)}.pc-modal.show{display:flex}.pc-modal-card{position:relative;width:min(1880px,98vw);height:min(930px,96vh);padding:27px 30px;border:2px solid #35d8f5;border-radius:18px;background:linear-gradient(160deg,#061b2b,#020d17 75%);color:#eefcff;box-shadow:0 0 45px rgba(0,0,0,.85);overflow:hidden}.pc-modal-close{position:absolute;right:22px;top:18px;width:48px;height:48px;border:2px solid #55dff8;border-radius:50%;background:#0a3247;color:#dffaff;font-size:30px;line-height:1;cursor:pointer}.pc-modal-head{display:flex;align-items:flex-start;justify-content:space-between;padding-right:65px}.pc-modal-title{margin:0;font-size:42px;font-weight:1000}.pc-modal-period{margin-top:6px;color:#55ddf7;font-size:20px;font-weight:900}.pc-modal-cap{padding:12px 18px;border:1px solid #536979;border-radius:999px;background:#122938;color:#eefcff;font-size:25px;font-weight:1000}.pc-modal-formula{margin-top:16px;padding:11px 16px;border:1px solid rgba(83,207,255,.4);border-radius:10px;background:rgba(5,42,62,.78);text-align:center;font-size:17px;font-weight:900}.pc-chart{display:flex;align-items:stretch;height:calc(100% - 165px);margin-top:12px;padding:24px 8px 10px;border:1px solid #164b63;border-radius:15px;background:repeating-linear-gradient(to top,rgba(52,115,139,.12) 0 1px,transparent 1px 25%),#02111d;overflow-x:auto}.pc-columns{display:flex;align-items:stretch;justify-content:space-around;gap:8px;min-width:100%;height:100%}.pc-column{appearance:none;display:grid;grid-template-rows:minmax(0,1fr) 82px;min-width:64px;flex:1;padding:0 4px;border:0;background:transparent;color:#fff;font:inherit;cursor:pointer}.pc-bar-zone{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:0}.pc-bar{position:relative;width:min(48px,75%);min-height:3px;border:1px solid #75e8ff;border-radius:9px 9px 2px 2px;background:linear-gradient(180deg,#62e0ff,#18ae7d);box-shadow:0 0 13px rgba(55,207,255,.34)}.pc-bar-value{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);padding:2px 7px;border:1px solid #346477;border-radius:8px;background:#071e2b;color:#effcff;font-size:clamp(16px,1.5vw,27px);font-weight:1000;white-space:nowrap;text-shadow:0 0 8px #7fe8ff}.pc-column.is-over .pc-bar{border-color:#ff6a83;background:linear-gradient(180deg,#ff6d87,#b8183c);box-shadow:0 0 16px rgba(255,55,91,.5)}.pc-date{display:flex;align-items:flex-start;justify-content:center;padding-top:10px;color:#d9f6ff;font-size:18px;font-weight:1000;line-height:1.05;text-align:center;white-space:pre-line}.pc-column.is-off{opacity:.16;cursor:default}.pc-column:hover:not(.is-off){filter:brightness(1.2);transform:translateY(-2px)}
+@media(max-width:700px){.pcb-day{grid-template-columns:52px 1fr 62px}.pcb-value b{font-size:17px}}
+</style>
+<script id="process-capacity-panel-script">(function injectedProcessCapacity(){
+  const CAPACITY=450;
+  const MASTER_FILENAME='負荷ポイントマスター.xlsx';
   const MANAGED=['未着手','CAD/CAM','切断','曲げ','溶接','仕上'];
-  function safe(value){return typeof escapeHtml==='function'?escapeHtml(String(value??'')):String(value??'')}
-  function qty(list){return list.reduce((sum,row)=>sum+(Number(row.qty)||0),0)}
-  window.renderHomeTodayProducts=function(){
+  const ADOPTED={"ボックス|600mm未満|焼付":{"point":1.0,"setupPoint":2.0},"ボックス|600mm未満|ダイマー":{"point":1.3,"setupPoint":1.5},"ボックス|600mm未満|錆止め":{"point":1.0,"setupPoint":1.2},"ボックス|600mm未満|SUS":{"point":1.0,"setupPoint":1.0},"ボックス|600mm未満|ドブ・ZN":{"point":1.3,"setupPoint":1.5},"ボックス|600mm未満|その他":{"point":1.0,"setupPoint":1.0},"ボックス|600mm以上|焼付":{"point":1.5,"setupPoint":2.0},"ボックス|600mm以上|ダイマー":{"point":1.8,"setupPoint":2.5},"ボックス|600mm以上|錆止め":{"point":1.5,"setupPoint":2.0},"ボックス|600mm以上|SUS":{"point":1.8,"setupPoint":2.0},"ボックス|600mm以上|ドブ・ZN":{"point":1.5,"setupPoint":2.0},"ボックス|600mm以上|その他":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|焼付":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|錆止め":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|SUS":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|ドブ・ZN":{"point":1.0,"setupPoint":2.5},"ふた|600mm以上|ダイマー":{"point":1.5,"setupPoint":2.5},"ふた|600mm以上|錆止め":{"point":1.5,"setupPoint":2.0},"ふた|600mm以上|SUS":{"point":1.5,"setupPoint":1.5},"ダクト|600mm未満|ダイマー":{"point":1.8,"setupPoint":2.0},"ダクト|600mm未満|SUS":{"point":1.0,"setupPoint":2.0},"ダクト|600mm以上|ダイマー":{"point":1.8,"setupPoint":4.0},"ダクト|600mm以上|錆止め":{"point":1.5,"setupPoint":3.0},"ダクト|600mm以上|SUS":{"point":1.5,"setupPoint":4.0},"ダクト|600mm以上|ドブ・ZN":{"point":1.0,"setupPoint":4.0},"架台|600mm未満|焼付":{"point":3.0,"setupPoint":4.0},"架台|600mm未満|錆止め":{"point":3.0,"setupPoint":4.0},"架台|600mm未満|SUS":{"point":4.0,"setupPoint":4.0},"架台|600mm未満|ドブ・ZN":{"point":3.0,"setupPoint":3.0},"架台|600mm以上|焼付":{"point":4.0,"setupPoint":4.0},"架台|600mm以上|錆止め":{"point":3.0,"setupPoint":5.0},"架台|600mm以上|SUS":{"point":4.0,"setupPoint":6.0},"架台|600mm以上|ドブ・ZN":{"point":4.0,"setupPoint":5.0},"貫通枠|600mm未満|ダイマー":{"point":2.5,"setupPoint":4.0},"貫通枠|600mm未満|錆止め":{"point":1.5,"setupPoint":4.0},"貫通枠|600mm未満|ドブ・ZN":{"point":1.5,"setupPoint":4.0},"貫通枠|600mm未満|その他":{"point":1.5,"setupPoint":4.0},"貫通枠|600mm以上|ダイマー":{"point":3.0,"setupPoint":6.0},"貫通枠|600mm以上|錆止め":{"point":2.0,"setupPoint":5.0},"貫通枠|600mm以上|ドブ・ZN":{"point":2.0,"setupPoint":4.0},"貫通枠|600mm以上|その他":{"point":2.0,"setupPoint":6.0},"防球ガード|600mm未満|錆止め":{"point":5.0,"setupPoint":7.0},"防球ガード|600mm以上|錆止め":{"point":6.0,"setupPoint":6.0},"プレート|600mm未満|焼付":{"point":0.3,"setupPoint":2.0},"プレート|600mm未満|ダイマー":{"point":0.3,"setupPoint":1.0},"プレート|600mm未満|錆止め":{"point":0.5,"setupPoint":2.0},"プレート|600mm未満|SUS":{"point":0.5,"setupPoint":1.0},"プレート|600mm未満|ドブ・ZN":{"point":0.3,"setupPoint":2.0},"プレート|600mm未満|その他":{"point":0.3,"setupPoint":1.0},"プレート|600mm以上|焼付":{"point":0.3,"setupPoint":2.0},"プレート|600mm以上|ダイマー":{"point":0.3,"setupPoint":3.0},"プレート|600mm以上|錆止め":{"point":0.3,"setupPoint":2.0},"プレート|600mm以上|SUS":{"point":0.5,"setupPoint":2.0},"プレート|600mm以上|ドブ・ZN":{"point":0.5,"setupPoint":2.0},"プレート|600mm以上|その他":{"point":0.1,"setupPoint":2.0},"切板|600mm未満|焼付":{"point":0.1,"setupPoint":2.0},"切板|600mm未満|ダイマー":{"point":0.1,"setupPoint":1.0},"切板|600mm未満|錆止め":{"point":0.1,"setupPoint":2.0},"切板|600mm未満|SUS":{"point":0.5,"setupPoint":3.0},"切板|600mm未満|その他":{"point":0.0,"setupPoint":1.0},"切板|600mm以上|焼付":{"point":0.1,"setupPoint":2.0},"切板|600mm以上|ダイマー":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|錆止め":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|SUS":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|ドブ・ZN":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|その他":{"point":0.3,"setupPoint":1.0},"カバー|600mm未満|焼付":{"point":0.3,"setupPoint":2.0},"カバー|600mm未満|ダイマー":{"point":2.0,"setupPoint":2.5},"カバー|600mm未満|錆止め":{"point":1.5,"setupPoint":2.5},"カバー|600mm未満|SUS":{"point":2.0,"setupPoint":2.0},"カバー|600mm以上|焼付":{"point":2.0,"setupPoint":4.0},"カバー|600mm以上|ダイマー":{"point":2.0,"setupPoint":3.5},"カバー|600mm以上|錆止め":{"point":3.0,"setupPoint":2.0},"カバー|600mm以上|SUS":{"point":2.0,"setupPoint":2.0},"カバー|600mm以上|ドブ・ZN":{"point":3.0,"setupPoint":2.0},"カバー|600mm以上|その他":{"point":2.0,"setupPoint":4.0},"アングル|600mm未満|焼付":{"point":3.5,"setupPoint":4.0},"アングル|600mm未満|ダイマー":{"point":4.0,"setupPoint":4.0},"アングル|600mm未満|錆止め":{"point":3.5,"setupPoint":4.0},"アングル|600mm未満|SUS":{"point":2.0,"setupPoint":5.0},"アングル|600mm未満|ドブ・ZN":{"point":3.5,"setupPoint":3.0},"アングル|600mm未満|その他":{"point":3.0,"setupPoint":4.0},"アングル|600mm以上|焼付":{"point":5.0,"setupPoint":3.5},"アングル|600mm以上|ダイマー":{"point":5.0,"setupPoint":5.0},"アングル|600mm以上|錆止め":{"point":4.0,"setupPoint":4.0},"アングル|600mm以上|SUS":{"point":5.0,"setupPoint":6.0},"アングル|600mm以上|ドブ・ZN":{"point":5.0,"setupPoint":5.0},"アングル|600mm以上|その他":{"point":6.0,"setupPoint":6.0},"チャンネル|600mm未満|ドブ・ZN":{"point":5.0,"setupPoint":3.0},"チャンネル|600mm以上|焼付":{"point":5.0,"setupPoint":3.0},"チャンネル|600mm以上|錆止め":{"point":5.0,"setupPoint":5.0},"チャンネル|600mm以上|SUS":{"point":7.0,"setupPoint":5.0},"チャンネル|600mm以上|ドブ・ZN":{"point":5.0,"setupPoint":5.0},"縞鋼板|600mm未満|焼付":{"point":2.0,"setupPoint":3.0},"縞鋼板|600mm未満|SUS":{"point":2.0,"setupPoint":3.0},"縞鋼板|600mm未満|ドブ・ZN":{"point":3.0,"setupPoint":3.0},"縞鋼板|600mm以上|焼付":{"point":2.0,"setupPoint":4.0},"縞鋼板|600mm以上|錆止め":{"point":2.0,"setupPoint":4.0},"縞鋼板|600mm以上|SUS":{"point":4.0,"setupPoint":5.0},"縞鋼板|600mm以上|ドブ・ZN":{"point":3.0,"setupPoint":4.0},"金物|600mm未満|焼付":{"point":2.0,"setupPoint":2.0},"金物|600mm未満|ダイマー":{"point":2.0,"setupPoint":1.0},"金物|600mm未満|錆止め":{"point":1.5,"setupPoint":2.0},"金物|600mm未満|SUS":{"point":1.5,"setupPoint":1.0},"金物|600mm未満|ドブ・ZN":{"point":2.0,"setupPoint":2.0},"金物|600mm未満|その他":{"point":2.0,"setupPoint":2.0},"金物|600mm以上|焼付":{"point":2.0,"setupPoint":3.0},"金物|600mm以上|ダイマー":{"point":2.0,"setupPoint":3.0},"金物|600mm以上|錆止め":{"point":1.5,"setupPoint":3.0},"金物|600mm以上|SUS":{"point":2.0,"setupPoint":3.0},"金物|600mm以上|ドブ・ZN":{"point":1.5,"setupPoint":3.0},"金物|600mm以上|その他":{"point":1.5,"setupPoint":3.0},"その他・要確認|600mm未満|焼付":{"point":3.0,"setupPoint":2.0},"その他・要確認|600mm未満|SUS":{"point":3.0,"setupPoint":3.0},"その他・要確認|600mm未満|ドブ・ZN":{"point":3.0,"setupPoint":3.0},"その他・要確認|600mm未満|その他":{"point":3.0,"setupPoint":3.0},"その他・要確認|600mm以上|焼付":{"point":3.0,"setupPoint":4.0},"その他・要確認|600mm以上|ドブ・ZN":{"point":3.0,"setupPoint":4.0},"その他・要確認|600mm以上|その他":{"point":3.0,"setupPoint":4.0}};
+  let pointRules=Object.entries(ADOPTED).map(([key,value])=>{const [category,size,process]=key.split('|');return{category,size,process,...value}});
+  let masterPromise=null;
+  const norm=value=>String(value??'').normalize('NFKC').replace(/\s+/g,' ').trim();
+  const dimensions=row=>(String(row.size||'').match(/\d+(?:\.\d+)?/g)||[]).map(Number).filter(Number.isFinite);
+  const sizeClass=row=>dimensions(row).some(value=>value>=600)?'600mm以上':'600mm未満';
+  function category(row){
+    const name=norm(row.name).toUpperCase(),part=norm(row.part).toUpperCase();
+    if(/ふた|蓋/.test(name))return 'ふた';
+    if(/PBトク|\bPB\b/.test(name))return 'ボックス';
+    if(/防球/.test(name)||part.startsWith('IBG'))return '防球ガード';
+    if(/貫通枠/.test(name)||/^[ZID]KW/.test(part))return '貫通枠';
+    if(/架台|スタンション/.test(name))return '架台';
+    if(/ダクトカバー|カバー/.test(name)||/^(IDC|DDC|SDC|BDC|ZDC)/.test(part))return 'カバー';
+    if(/ダクト/.test(name))return 'ダクト';
+    if(/縞鋼板/.test(name)||/^[ISZ]CP/.test(part))return '縞鋼板';
+    if(/チャンネル|CHANNEL/.test(name)||/^[ISZ]CI/.test(part))return 'チャンネル';
+    if(/アングル|ANGLE/.test(name)||/^[ISZDA]AI/.test(part))return 'アングル';
+    if(/切板/.test(name))return '切板';
+    if(/プレート|PLATE/.test(name)||/^[ISZDBA]IP/.test(part))return 'プレート';
+    if(/金物/.test(name)||/^[ISZDBA](?:MK|KM)/.test(part))return '金物';
+    return 'その他・要確認';
+  }
+  function processClass(row){
+    const name=norm(row.name).toUpperCase(),standard=norm(row.standard).toUpperCase(),part=norm(row.part).toUpperCase(),all=`${name} ${standard}`;
+    if(/SUS|ステンレス/.test(all)||part.startsWith('S'))return 'SUS';
+    if(/ドブ|溶融亜鉛|HDZT|\bZN\b/.test(all)||part.startsWith('Z'))return 'ドブ・ZN';
+    if(/ダイマー/.test(all)||part.startsWith('D'))return 'ダイマー';
+    if(/錆止め|さび止め|サビ止め/.test(all)||/G[A-Z0-9]*$/.test(part))return '錆止め';
+    if(/焼付/.test(all)||/C[A-Z0-9]*$/.test(part))return '焼付';
+    return 'その他';
+  }
+  function score(row){
+    const dims=dimensions(row);
+    if(dims.length>=4&&dims.every(value=>value===0))return 0;
+    const c=category(row),s=sizeClass(row),p=processClass(row);
+    let rule=pointRules.find(item=>item.category===c&&item.size===s&&item.process===p);
+    if(!rule){
+      const near=pointRules.filter(item=>item.category===c&&item.size===s);
+      if(near.length)rule={point:near.reduce((sum,item)=>sum+(Number(item.point)||0),0)/near.length,setupPoint:near.reduce((sum,item)=>sum+(Number(item.setupPoint)||0),0)/near.length};
+    }
+    rule=rule||{point:3,setupPoint:0};
+    return (Number(row.qty)||0)*(Number(rule.point)||0)+(Number(rule.setupPoint)||0);
+  }
+  async function loadMaster(){
+    if(masterPromise)return masterPromise;
+    masterPromise=(async()=>{
+      try{
+        const response=await fetch(encodeURI(MASTER_FILENAME)+'?ts='+Date.now(),{cache:'no-store'});
+        if(!response.ok||typeof XLSX==='undefined')return;
+        const book=XLSX.read(await response.arrayBuffer(),{type:'array',raw:true});
+        const sheet=book.Sheets['評価入力'];if(!sheet)return;
+        const data=XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true});
+        const header=data.findIndex(row=>row[0]==='No.'&&row[1]==='品種');if(header<0)return;
+        const numberOr=(...values)=>{for(const value of values){const number=Number(value);if(value!==''&&value!=null&&Number.isFinite(number))return number;}return 0};
+        const loaded=data.slice(header+1).map(row=>({category:String(row[1]||'').trim(),size:String(row[2]||'').trim(),process:String(row[3]||'').trim(),point:numberOr(row[14],row[11],row[10]),setupPoint:numberOr(row[15],row[13],row[12])})).filter(item=>item.category&&item.size&&item.process);
+        if(loaded.length)pointRules=loaded;
+      }catch(error){}
+    })();
+    return masterPromise;
+  }
+  const dayKey=date=>typeof formatLocalDate==='function'?formatLocalDate(date):date.toISOString().slice(0,10);
+  const isBusiness=date=>{
+    const key=dayKey(date),day=date.getDay();
+    const holidays=typeof japaneseHolidayKeys==='function'?japaneseHolidayKeys(date.getFullYear()):new Set();
+    const company=typeof COMPANY_HOLIDAYS!=='undefined'?new Set(COMPANY_HOLIDAYS):new Set();
+    return day!==0&&day!==6&&!holidays.has(key)&&!company.has(key);
+  };
+  function calendarRange(businessCount){
+    const result=[],cursor=new Date();cursor.setHours(0,0,0,0);let counted=0;
+    while(counted<businessCount){result.push(new Date(cursor));if(isBusiness(cursor))counted++;cursor.setDate(cursor.getDate()+1)}
+    return result;
+  }
+  const number=value=>{const n=Number(value)||0;return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')};
+  const shortDate=date=>`${date.getMonth()+1}/${date.getDate()}`;
+  const donutColors={'架台':'#42cff3','ボックス':'#ff9d42','ダクト':'#50dfa6','貫通枠':'#a97bf5','防球ガード':'#ff607d','カバー':'#ffd45d','プレート':'#58aaf7','切板':'#8ed36a','アングル':'#f177a9','チャンネル':'#51d7d8','縞鋼板':'#c58bff','金物':'#ffbb6d','ふた':'#78c9ff','その他・要確認':'#90c967'};
+  function ensureModal(){
+    let modal=document.getElementById('processCapacityModal');if(modal)return modal;
+    modal=document.createElement('div');modal.id='processCapacityModal';modal.className='pc-modal';modal.setAttribute('aria-hidden','true');
+    modal.innerHTML='<section class="pc-modal-card"><button type="button" class="pc-modal-close" aria-label="閉じる">×</button><div id="processCapacityModalBody"></div></section>';
+    document.body.appendChild(modal);modal.querySelector('.pc-modal-close').addEventListener('click',closeModal);modal.addEventListener('click',event=>{if(event.target===modal)closeModal()});return modal;
+  }
+  function closeModal(){const modal=document.getElementById('processCapacityModal');if(modal){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}document.body.style.overflow=''}
+  function openModal(){
+    const items=window.PROCESS_CAPACITY_ITEMS||[];if(!items.length)return;
+    const modal=ensureModal(),body=modal.querySelector('#processCapacityModalBody'),businessItems=items.filter(item=>item.business);
+    const max=Math.max(CAPACITY,...businessItems.map(item=>item.points),1),chartMax=Math.ceil(max*1.14/100)*100;
+    body.innerHTML=`<header class="pc-modal-head"><div><h2 class="pc-modal-title">工程キャパシティー</h2><div class="pc-modal-period">${shortDate(items[0].date)} → ${shortDate(items[items.length-1].date)}</div></div><div class="pc-modal-cap">${CAPACITY}点 / 日</div></header><div class="pc-modal-formula">負荷点 ＝ 数量 × 評価点 ＋ 段取り点</div><div class="pc-chart"><div class="pc-columns">${items.map(item=>{const height=item.business?Math.max(item.points?2:0,Math.min(100,item.points/chartMax*100)):1;return`<button type="button" class="pc-column${item.business?'':' is-off'}${item.points>CAPACITY?' is-over':''}" ${item.business?`data-process-capacity-detail="${item.key}"`:'disabled'}><span class="pc-bar-zone"><i class="pc-bar" style="height:${height}%">${item.business&&item.points?`<b class="pc-bar-value">${number(item.points)}</b>`:''}</i></span><span class="pc-date">${item.date.getMonth()+1}\n月\n${String(item.date.getDate()).padStart(2,'0')}\n日</span></button>`}).join('')}</div></div>`;
+    modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
+  }
+  window.renderHomeTodayProducts=async function(){
     const host=document.getElementById('homePriorityActions');
     if(!host||typeof rows==='undefined'||shipFilter!=='today-ng')return;
-    host.className='home-priority-actions home-today-products';
-    const today=formatLocalDate(new Date());
-    const target=rows.filter(row=>row.shipDate===today&&MANAGED.includes(String(row.status||'').trim()));
-    const items=CONFIG.map(item=>{const list=target.filter(row=>classifyProductCategory(row)===item.name);return{...item,list,count:list.length,qty:qty(list)}});
-    const processSummary=list=>MANAGED.map(status=>({status,count:list.filter(row=>row.status===status).length})).filter(item=>item.count).map(item=>`${item.status} ${item.count}`).join(' / ')||'残作業なし';
-    host.innerHTML=`<header class="htp-head"><h3 class="htp-title">今日生地（品種）</h3><div class="htp-sub">生地日 ${today} ／ 塗装前の残作業</div><div class="htp-total"><span>合計 ${fmt(target.length)}件</span><span>${fmt(qty(target))}点</span></div></header><div class="htp-grid">${items.map(item=>`<button type="button" class="htp-card ${item.count?'':'is-zero'}" data-product-category="${safe(item.name)}" data-product-category-scope="today-seichibi" style="--htp-color:${item.color}" ${item.count?'':'disabled aria-disabled="true"'}><span class="htp-card-name">${safe(item.name)}</span><strong class="htp-card-count">${fmt(item.count)}件</strong><span class="htp-card-qty">${fmt(item.qty)}点</span><small class="htp-card-process">${safe(processSummary(item.list))}</small></button>`).join('')}</div><div class="htp-note">品種を押すと製造指示の詳細を表示します</div>`;
+    await loadMaster();
+    if(shipFilter!=='today-ng')return;
+    host.className='home-priority-actions process-capacity-board';
+    const days=calendarRange(12),today=dayKey(new Date());
+    const items=days.map(date=>{
+      const key=dayKey(date);
+      const list=rows.filter(row=>row.shipDate===key&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
+      return{date,key,business:isBusiness(date),list,count:list.length,points:list.reduce((sum,row)=>sum+score(row),0)};
+    });
+    window.PROCESS_CAPACITY_ITEMS=items;
+    const todayItem=items.find(item=>item.key===today)||{points:0,count:0,list:[]};
+    const categoryMap=new Map();todayItem.list.forEach(row=>{const name=category(row),value=score(row);categoryMap.set(name,(categoryMap.get(name)||0)+value)});
+    const categoryItems=[...categoryMap].map(([name,points])=>({name,points,color:donutColors[name]||'#90c967'})).filter(item=>item.points>0).sort((a,b)=>b.points-a.points);
+    let cursor=0;const segments=categoryItems.map(item=>{const start=cursor,end=todayItem.points?cursor+item.points/todayItem.points*100:cursor;cursor=end;return`${item.color} ${start}% ${end}%`});
+    const donutBackground=segments.length?`conic-gradient(${segments.join(',')})`:'#173847';
+    host.innerHTML=`<button type="button" class="pcb-launch" data-process-capacity-open><span class="pcb-launch-title">工程キャパシティー</span><span class="pcb-launch-period">${shortDate(items[0].date)} → ${shortDate(items[items.length-1].date)}</span><span class="pcb-donut-wrap"><span class="pcb-donut" style="background:${donutBackground}"><span class="pcb-donut-center"><b>${number(todayItem.points)}</b><small>今日の負荷点</small></span></span><span class="pcb-legend">${categoryItems.length?categoryItems.slice(0,7).map(item=>`<span class="pcb-legend-item" style="--pcb-color:${item.color}"><i></i><span>${item.name}</span><b>${number(item.points)}</b></span>`).join(''):'<span class="pcb-legend-item" style="--pcb-color:#607d8b"><i></i><span>対象なし</span><b>0</b></span>'}</span></span><span class="pcb-launch-action">クリックして日別グラフを表示</span></button>`;
   };
+  document.addEventListener('click',event=>{if(event.target.closest('[data-process-capacity-open]'))openModal();const detail=event.target.closest('[data-process-capacity-detail]');if(detail){closeModal();if(typeof openDailyProcessBoard==='function')openDailyProcessBoard(detail.dataset.processCapacityDetail)}});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal()});
   const previousRenderStats=renderStats;
   renderStats=function(){previousRenderStats();renderHomeTodayProducts()};
   renderHomeTodayProducts();
