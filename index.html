@@ -141,6 +141,25 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 @keyframes deadlineTabOnlyUrgent{0%{filter:brightness(.72) saturate(1.25);transform:translateX(-2px) scale(.988)}35%{transform:translateX(2px) scale(1.006)}65%{transform:translateX(-1px) scale(1.012)}100%{filter:brightness(1.42) saturate(1.55);transform:translateX(2px) scale(1.018);box-shadow:0 0 0 4px rgba(255,0,42,.48),0 0 52px rgba(255,0,42,1),inset 0 0 38px rgba(255,171,180,.4)!important}}
 @media(prefers-reduced-motion:reduce){.ship-card.overdue-critical{animation:none!important;filter:none!important}}
 </style>
+<style id="capacity-simple-mode">
+.capacity-modal-card .sp-threshold-legend,
+.capacity-modal-card .sp-target-line,
+.capacity-modal-card .sp-overtime-line,
+.capacity-modal-card .sp-level-chip{display:none!important}
+.capacity-modal-card #spRiskCard{display:none!important}
+.capacity-modal-card .sp-kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.capacity-modal-card .sp-over-summary{border-color:rgba(83,207,255,.35)!important;background:rgba(5,42,62,.78)!important;color:#dff9ff!important;justify-content:center!important}
+.capacity-modal-card .sp-stacked-bar{background:linear-gradient(180deg,#55dbff,#168fc7)!important;border-color:#75e8ff!important;box-shadow:0 0 13px rgba(55,207,255,.35)!important}
+.capacity-modal-card .sp-decision-status{background:rgba(5,42,62,.78)!important;border:1px solid rgba(83,207,255,.35)!important;color:#dff9ff!important}
+.sp-score-formula{font-size:17px;font-weight:900;letter-spacing:.02em}
+.sp-score-formula b{color:#7eeaff}
+.sp-product-table .col-actual{width:10%!important;text-align:right!important}
+.sp-product-table .col-unit-point{width:12%!important;text-align:right!important}
+.sp-product-table .col-total-point{width:19%!important;text-align:right!important}
+.sp-product-table .sp-actual-cell,.sp-product-table .sp-unit-point-cell,.sp-product-table .sp-total-point-cell{text-align:right!important;font-weight:900}
+.sp-product-table .sp-total-point-cell{color:#83ecff;font-size:17px!important;white-space:nowrap}
+@media(max-width:760px){.sp-product-table{min-width:820px}.sp-decision-orders{overflow-x:auto}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3630,7 +3649,7 @@ document.addEventListener('visibilitychange',()=>{
       </div>
       <div class="sp-grid">
         <div class="sp-panel">
-          <div class="sp-panel-title">製造期限</div><div class="sp-threshold-legend"><span class="normal">450点　上限超過</span><span class="level60">500点　残業注意</span><span class="level80">550点超　強警報</span></div><div class="sp-over-summary" id="spOverSummary"></div>
+          <div class="sp-panel-title">製造期限</div><div class="sp-over-summary" id="spOverSummary"><span class="sp-score-formula">負荷点 ＝ 数量 × 1点あたり評価点</span></div>
           <div class="sp-chart-wrap"><div class="sp-target-line" id="spTargetLine"><span class="sp-target-label" id="spTargetLabel">450点　通常上限</span></div><div class="sp-overtime-line overtime-60" id="spOvertime60Line"><span>500点　残業60分予想</span></div><div class="sp-overtime-line overtime-80" id="spOvertime80Line"><span>550点　残業80分予想</span></div><div class="sp-days" id="spDays"></div></div>
         </div>
         <div class="sp-panel"><div class="sp-panel-title">おすすめ</div><div class="sp-advice" id="spAdvice"></div></div>
@@ -3846,8 +3865,8 @@ function spOpenDate(key){
   $('spDecisionRemainLabel').textContent=delta>=0?'余力':'OVER';
   $('spDecisionRemain').textContent=Math.abs(delta);
   const status=$('spDecisionStatus');
-  status.className='sp-decision-status '+(delta<0?'over':current>=SP_DAILY_CAPACITY*.9?'warn':'ok');
-  status.textContent=delta<0?`CAPACITY超過　${Math.abs(delta)}点`:current>=SP_DAILY_CAPACITY*.9?`残り ${delta}点　要注意`:`投入可能　残り ${delta}点`;
+  status.className='sp-decision-status ok';
+  status.innerHTML='<span class="sp-score-formula">合計負荷点 ＝ 各製品の「数量 × 評価点」の合計</span>';
   const list=(SP_BRIDGE_ROW_MAP.get(key)||[]).slice();
   const grouped=new Map();
   list.forEach(row=>{
@@ -3873,12 +3892,24 @@ function spOpenDate(key){
     return `${colors[index%colors.length]} ${start.toFixed(2)}% ${cursor.toFixed(2)}%`;
   });
   $('spDecisionOrders').innerHTML=categories.length?`<div class="sp-category-view">
-    <div class="sp-category-pie-wrap"><div class="sp-category-pie" style="background:conic-gradient(${slices.join(',')})"><div class="sp-category-pie-center"><strong>${Math.round(total)}</strong><small>数量</small></div></div></div>
+    <div class="sp-category-pie-wrap"><div class="sp-category-pie" style="background:conic-gradient(${slices.join(',')})"><div class="sp-category-pie-center"><strong>${spPointNumber(total)}</strong><small>負荷点</small></div></div></div>
     <div><div class="sp-category-legend">${categories.map((item,index)=>`<button type="button" class="sp-category-button" onclick="spOpenCategory(${index})"><span class="sp-category-dot" style="background:${colors[index%colors.length]};color:${colors[index%colors.length]}"></span><span class="sp-category-name" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</span><span class="sp-category-value">${Math.round(item.qty)}</span></button>`).join('')}</div><div class="sp-decision-hint">品種を選択すると詳細を表示します</div></div>
   </div>`:'<div class="sp-empty">対象データなし</div>';
   const modal=$('spDecisionModal');
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
+}
+function spPointNumber(value){
+  const number=Number(value)||0;
+  return Number.isInteger(number)?String(number):number.toFixed(1).replace(/\.0$/,'');
+}
+function spProductTableHtml(list){
+  return `<table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-actual">実数量</th><th class="col-unit-point">評価点/個</th><th class="col-total-point">合計負荷点</th></tr></thead><tbody>${list.map(row=>{
+    const actual=Number(row.rawQty)||0;
+    const unit=Number(row.unitPoint)||0;
+    const total=Number(row.qty)||0;
+    return `<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-actual-cell">${spPointNumber(actual)}</td><td class="sp-unit-point-cell">${spPointNumber(unit)}点</td><td class="sp-total-point-cell">${spPointNumber(actual)} × ${spPointNumber(unit)} ＝ ${spPointNumber(total)}点</td></tr>`;
+  }).join('')}</tbody></table>`;
 }
 function spOpenCategory(index){
   const category=SP_SELECTED_CATEGORIES[index];
@@ -3929,7 +3960,7 @@ function spOpenCategory(index){
     return;
   }
   const list=category.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
-  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-detail-type">${escapeHtml(category.label)}　合計 ${Math.round(category.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenDate('${SP_SELECTED_DAY_KEY}')">← 品種別グラフ</button><div class="sp-detail-type">${escapeHtml(category.label)}　合計 ${spPointNumber(category.qty)}点</div></div>${spProductTableHtml(list)}`;
 }
 function spOpenRackType(index){
   const type=SP_SELECTED_RACK_TYPES[index];
@@ -3937,7 +3968,7 @@ function spOpenRackType(index){
   if(!type||!day)return;
   $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
   const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
-  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_RACK_CATEGORY_INDEX})">← 架台分類</button><div class="sp-detail-type">架台 / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_RACK_CATEGORY_INDEX})">← 架台分類</button><div class="sp-detail-type">架台 / ${escapeHtml(type.label)}　合計 ${spPointNumber(type.qty)}点</div></div>${spProductTableHtml(list)}`;
 }
 function spOpenDuctType(index){
   const type=SP_SELECTED_DUCT_TYPES[index];
@@ -3945,7 +3976,7 @@ function spOpenDuctType(index){
   if(!type||!day)return;
   $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
   const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
-  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_DUCT_CATEGORY_INDEX})">← ダクト分類</button><div class="sp-detail-type">ダクト / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenCategory(${SP_SELECTED_DUCT_CATEGORY_INDEX})">← ダクト分類</button><div class="sp-detail-type">ダクト / ${escapeHtml(type.label)}　合計 ${spPointNumber(type.qty)}点</div></div>${spProductTableHtml(list)}`;
 }
 function spOpenBoxSize(index){
   const sizeBucket=SP_SELECTED_BOX_SIZE_BUCKETS[index];
@@ -3971,7 +4002,7 @@ function spOpenBoxType(index){
   $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
   const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
   const sizeBucket=SP_SELECTED_BOX_SIZE_BUCKETS[SP_SELECTED_BOX_SIZE_INDEX];
-  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenBoxSize(${SP_SELECTED_BOX_SIZE_INDEX})">← 処理区分</button><div class="sp-detail-type">ボックス / ${escapeHtml(sizeBucket?.label||'')} / ${escapeHtml(type.label)}　合計 ${Math.round(type.qty)}点</div></div><table class="sp-product-table"><thead><tr><th class="col-product">品番・品名 / 規格</th><th class="col-size">サイズ</th><th class="col-qty">数量</th></tr></thead><tbody>${list.map(row=>`<tr><td class="sp-product-cell"><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td class="sp-size-cell">${escapeHtml(row.sizeInfo||'—')}</td><td class="sp-qty-cell">${Math.round(Number(row.qty)||0)}点</td></tr>`).join('')}</tbody></table>`;
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head"><button type="button" class="sp-back-button" onclick="spOpenBoxSize(${SP_SELECTED_BOX_SIZE_INDEX})">← 処理区分</button><div class="sp-detail-type">ボックス / ${escapeHtml(sizeBucket?.label||'')} / ${escapeHtml(type.label)}　合計 ${spPointNumber(type.qty)}点</div></div>${spProductTableHtml(list)}`;
 }
 function spCloseDecision(){
   const modal=$('spDecisionModal');
@@ -4026,17 +4057,12 @@ function renderSalesProductionBridge(){
   const targetPct=SP_DAILY_CAPACITY/chartMax*100;
   const chartWrap=$('spDays')?.parentElement;
   const best=business.filter(day=>day.count<SP_DAILY_CAPACITY).sort((a,b)=>a.date-b.date).slice(0,5);
-  $('spOverSummary').innerHTML=overloaded.length
-    ? `<span class="sp-over-heading"><i></i>450点超過</span>${overloaded.map(day=>`<span class="sp-over-item">${day.date.getMonth()+1}月${String(day.date.getDate()).padStart(2,'0')}日 <b>+${Math.round(day.count-SP_DAILY_CAPACITY)}点</b></span>`).join('')}`
-    : '<span class="sp-over-clear">● 450点超過なし</span>';
+  $('spOverSummary').innerHTML='<span class="sp-score-formula">負荷点 ＝ <b>数量</b> × <b>1点あたり評価点</b>　（例：20台 × 4点 ＝ 80点）</span>';
   $('spDays').innerHTML=days.map(day=>{
     const height=day.business?Math.max(1.5,Math.min(100,day.count/chartMax*100)):1;
     if(!day.business)return `<button class="sp-day off" disabled><div class="sp-bar-zone"><div class="bar" style="height:${height}%"></div></div><div class="d">${spVerticalDate(day.date)}</div></button>`;
     const ratio=day.count/SP_DAILY_CAPACITY;
-    const state=day.count>550?'level-80':day.count>=500?'level-60':day.count>=450?'level-over':day.count>=400?'level-caution':'level-cool';
-    const over=day.count>SP_DAILY_CAPACITY?Math.round(day.count-SP_DAILY_CAPACITY):0;
-    const levelText=day.count>550?'強警報':day.count>=500?'残業60〜80分':day.count>=450?'上限超過':day.count>=400?'注意':'';
-    return `<button class="sp-day ${state}" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 数量 ${Math.round(day.count)}点${over?`（超過 +${over}点）`:''}"><div class="sp-bar-zone"><div class="bar sp-stacked-bar" style="height:${height}%"><div class="n">${Math.round(day.count)}</div>${levelText?`<div class="sp-level-chip">${levelText}</div>`:''}</div></div><div class="d">${spVerticalDate(day.date)}</div></button>`;
+    return `<button class="sp-day level-cool" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 合計負荷点 ${Math.round(day.count)}点"><div class="sp-bar-zone"><div class="bar sp-stacked-bar" style="height:${height}%"><div class="n">${Math.round(day.count)}</div></div></div><div class="d">${spVerticalDate(day.date)}</div></button>`;
   }).join('');
   const firstBarZone=$('spDays').querySelector('.sp-bar-zone');
   const daysTop=$('spDays').offsetTop;
