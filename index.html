@@ -178,7 +178,49 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 .sp-product-table .sp-total-point-cell{color:#83ecff;font-size:17px!important;white-space:nowrap}
 @media(max-width:760px){.sp-decision-card{width:96vw!important;padding:18px 14px!important}.sp-product-table{min-width:900px}.sp-decision-orders{overflow-x:auto!important}}
 </style>
-</head>
+<style id="manufacturing-and-split-target">
+.ng-game .daily-process-targets{display:grid!important;grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;gap:0!important;padding:0!important;overflow:hidden!important}
+.ng-game .process-target-upper{min-height:0;overflow:hidden;padding:12px 16px 10px;display:flex;flex-direction:column}
+.ng-game .process-target-head{margin-bottom:8px!important;flex:none}
+.ng-game .process-target-title{font-size:clamp(21px,1.6vw,27px)!important}
+.ng-game .process-target-list{display:grid!important;grid-template-rows:repeat(5,minmax(0,1fr));gap:5px!important;min-height:0;flex:1}
+.ng-game .process-target-row{min-height:0!important;padding:4px 9px!important;grid-template-columns:75px minmax(0,1fr) 95px!important;gap:7px!important;border-width:1px!important;border-radius:10px!important}
+.ng-game .process-target-time{font-size:clamp(20px,1.5vw,26px)!important}.ng-game .process-target-time small{font-size:9px!important;margin-top:2px!important}
+.ng-game .process-target-processes{flex-wrap:wrap!important;gap:3px!important}
+.ng-game .process-target-chip{font-size:clamp(15px,1.18vw,20px)!important;padding:4px 6px!important;border-width:1px!important;border-radius:6px!important}
+.ng-game .process-target-note{font-size:10px!important;margin-top:2px!important}
+.ng-game .process-target-state{padding:4px!important;font-size:12px!important;border-radius:7px!important}.ng-game .process-target-state b{font-size:18px!important;margin-bottom:1px!important}
+.ng-game .process-target-capacity{min-height:0;padding:14px;border-top:2px solid rgba(91,232,255,.7);display:flex;align-items:stretch;justify-content:center;background:linear-gradient(145deg,rgba(4,42,64,.95),rgba(2,23,42,.98))}
+.ng-game .process-target-capacity .capacity-launch-button{position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:12px!important;width:100%!important;height:100%!important;min-height:0!important;padding:18px!important;border:2px solid rgba(91,232,255,.8)!important;border-radius:18px!important;background:radial-gradient(circle at 50% 30%,rgba(54,181,226,.2),transparent 40%),linear-gradient(145deg,#103e5a,#10203a)!important;color:white!important;text-align:center!important;box-shadow:inset 0 2px 0 #ffffff33,0 0 20px #26c8ff33!important;cursor:pointer}
+.ng-game .process-target-capacity .capacity-launch-icon{font-size:48px!important;line-height:1!important}.ng-game .process-target-capacity .capacity-launch-button strong{display:block!important;font-size:clamp(25px,2vw,34px)!important}.ng-game .process-target-capacity .capacity-launch-button small{display:block!important;font-size:16px!important;color:#b8eaff!important}.ng-game .process-target-capacity .capacity-launch-arrow{position:absolute!important;right:20px!important;font-size:28px!important}
+.ng-game .boss-status-card .claim-summary-panel{display:flex!important;flex:1 1 auto!important;min-height:0!important;height:auto!important;width:100%!important;margin:0!important;padding:0!important}
+.manufacturing-card{width:100%;min-height:0;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;border:2px solid #78e8ff;border-radius:20px;background:radial-gradient(circle at 50% 24%,#165675,#0a2944 67%,#0a1c34);box-shadow:inset 0 2px 0 #ffffff33,0 0 23px #3dcfff33;color:#fff;text-align:center}
+.manufacturing-title{font-size:clamp(22px,1.7vw,30px);font-weight:1000;color:#fff2a1}.manufacturing-label{font-size:18px;font-weight:800;color:#b8eaff}.manufacturing-value{font-size:clamp(33px,2.7vw,52px);font-weight:1000;line-height:1.15;color:#8af3ff;text-shadow:0 0 15px #49dfff99}.manufacturing-progress{width:100%;height:20px;overflow:hidden;border:2px solid #8deaff;border-radius:999px;background:#061827}.manufacturing-progress span{display:block;height:100%;background:linear-gradient(90deg,#2bbcf3,#83f4c2);border-radius:999px}.manufacturing-foot{display:flex;justify-content:space-between;gap:10px;width:100%;font-size:14px;font-weight:800;color:#dbfaff}
+@media(max-width:1300px){.ng-game .daily-process-targets{height:625px!important;min-height:625px!important}.ng-game .process-target-upper{padding:9px}.ng-game .process-target-row{grid-template-columns:67px minmax(0,1fr) 77px!important}.ng-game .process-target-chip{font-size:15px!important}}
+</style>
+<style id="vertical-process-and-full-manufacturing">
+.ng-game .process-target-upper{padding:12px 14px 10px!important}
+.ng-game .process-target-list{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:minmax(0,1fr)!important;gap:7px!important;align-items:stretch!important}
+.ng-game .process-target-row,.ng-game .daily-process-targets .process-target-row{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:6px!important;min-width:0!important;min-height:0!important;height:100%!important;padding:10px 6px!important;text-align:center!important}
+.ng-game .process-target-time{font-size:clamp(20px,1.5vw,28px)!important;line-height:1.1!important;flex:none!important}
+.ng-game .process-target-time small{font-size:10px!important;margin-top:3px!important}
+.ng-game .process-target-main{display:flex!important;flex:1 1 auto!important;min-height:0!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;width:100%!important}
+.ng-game .process-target-processes{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;width:100%!important}
+.ng-game .process-target-chip{display:block!important;width:min(100%,125px)!important;box-sizing:border-box!important;white-space:normal!important;font-size:clamp(14px,1.05vw,18px)!important;line-height:1.05!important;padding:5px 3px!important}
+.ng-game .process-target-note{font-size:11px!important;margin-top:5px!important;line-height:1.15!important}
+.ng-game .process-target-state{flex:none!important;align-self:stretch!important;min-height:44px!important;display:grid!important;place-content:center!important;font-size:11px!important;padding:4px!important}
+.ng-game .process-target-state b{font-size:18px!important}
+@media(min-width:1301px){.ng-game .boss-status-card{position:relative!important}.ng-game .boss-status-card .claim-summary-panel{position:absolute!important;inset:185px 18px 18px!important;width:auto!important;height:auto!important;min-height:0!important;flex:none!important}.ng-game .boss-status-card .manufacturing-card{height:100%!important;min-height:0!important;justify-content:space-evenly!important;padding:22px!important}}
+@media(max-width:1300px){.ng-game .boss-status-card .claim-summary-panel{flex:1 1 auto!important;align-self:stretch!important;min-height:300px!important}.ng-game .boss-status-card .manufacturing-card{height:100%!important;min-height:300px!important}}
+@media(max-width:760px){.ng-game .daily-process-targets{height:auto!important;min-height:700px!important;grid-template-rows:auto auto!important}.ng-game .process-target-upper{min-height:380px!important}.ng-game .process-target-list{gap:3px!important}.ng-game .process-target-row{padding:6px 2px!important}.ng-game .process-target-chip{font-size:11px!important}.ng-game .process-target-time{font-size:17px!important}.ng-game .process-target-state b{font-size:14px!important}}
+</style><style id="manufacturing-below-bonus-fix">
+@media(min-width:1301px){
+.ng-game .boss-status-card .claim-summary-panel{top:215px!important;bottom:18px!important;left:18px!important;right:18px!important;inset:215px 18px 18px!important;z-index:1!important}
+.ng-game .boss-status-card .manufacturing-card{height:100%!important;min-height:0!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:space-evenly!important;overflow:hidden!important}
+}
+</style><style id="manufacturing-dynamic-position">
+@media(min-width:1301px){.ng-game .boss-status-card .claim-summary-panel{inset:var(--manufacturing-top,215px) 18px 18px!important;top:var(--manufacturing-top,215px)!important}}
+</style></head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
@@ -769,6 +811,7 @@ function closingDateForTodayCelebration(now=new Date()){
 
 let bonusRemoteProgress=null;
 let claimRemoteData=null;
+let manufacturingProgress=null;
 async function loadBonusProgress(){
   try{
     const response=await fetch(`bonus-progress.json?ts=${Date.now()}`,{cache:'no-store'});
@@ -784,6 +827,13 @@ async function loadBonusProgress(){
       east:Number(data.east)||0,
       west:Number(data.west)||0,
       national:Number(data.national)||0
+    };
+    const manufacturing=(data.manufacturing&&typeof data.manufacturing==='object')?data.manufacturing:{};
+    const manufacturingDate=String(manufacturing.date||'auto').trim();
+    const manufacturingAmount=Number(manufacturing.amount);
+    manufacturingProgress={
+      date:manufacturingDate.toLowerCase()==='auto'?localDateKey(new Date()):manufacturingDate,
+      amount:Number.isFinite(manufacturingAmount)&&manufacturingAmount>=0?Math.trunc(manufacturingAmount):null
     };
     const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
     const rawClaimClosingDate=String(claim.closingDate||'').trim();
@@ -810,14 +860,25 @@ function claimCycleInfo(now=new Date()){
   const end=new Date(start.getFullYear(),start.getMonth()+1,20);
   return {start,end};
 }
+function formatManufacturingYen(value){
+  const man=Math.floor(value/10000);
+  const sen=Math.floor(man/1000);
+  const rest=man%1000;
+  return (sen?sen+'千':'')+(rest?String(rest).replace(/[0-9]/g,d=>String.fromCharCode(d.charCodeAt(0)+0xFEE0)):'')+'万円';
+}
 function updateClaimSummaryPanel(){
   const box=$('claimSummaryPanel');
   if(!box)return;
-  box.innerHTML=`<button type="button" class="capacity-launch-button" onclick="openCapacityModal()">
-    <span class="capacity-launch-icon" aria-hidden="true">☢</span>
-    <span><strong>受注キャパシティー</strong><small>生産余力を確認</small></span>
-    <span class="capacity-launch-arrow" aria-hidden="true">›</span>
-  </button>`;
+  const amount=manufacturingProgress?.amount;
+  const current=manufacturingProgress?.date===localDateKey(new Date())&&amount!==null;
+  const rate=current?Math.min(100,amount/86000000*100):0;
+  box.innerHTML=`<div class="manufacturing-card" aria-label="製造高 8千600万円目標">
+    <div class="manufacturing-title">🏭 8千６００万円目標</div>
+    <div class="manufacturing-label">本日の製造高</div>
+    <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
+    <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="86000000" aria-valuenow="${current?amount:0}"><span style="width:${rate}%"></span></div>
+    <div class="manufacturing-foot"><span>達成率 ${rate.toFixed(1)}%</span><span>目標 8千６００万円</span></div>
+  </div>`;
   refreshClaimMissionText();
 }
 
@@ -1294,10 +1355,15 @@ function updateDailyProcessTargets(){
     </div>`;
   }).join('');
 
-  box.innerHTML=`<div class="process-target-head">
+  box.innerHTML=`<div class="process-target-upper"><div class="process-target-head">
     <div class="process-target-title">🎯 本日の工程目標</div>
     <div class="process-target-legend"><span class="legend-watch">1時間前 注意</span><span class="legend-alarm">超過 至急</span></div>
-  </div><div class="process-target-list">${rowsHtml}</div>`;
+  </div><div class="process-target-list">${rowsHtml}</div>
+  </div><div class="process-target-capacity"><button type="button" class="capacity-launch-button" onclick="openCapacityModal()">
+    <span class="capacity-launch-icon" aria-hidden="true">☢</span>
+    <span><strong>受注キャパシティー</strong><small>生産余力を確認</small></span>
+    <span class="capacity-launch-arrow" aria-hidden="true">›</span>
+  </button></div>`;
 }
 
 function updateGameClock(){
@@ -4118,5 +4184,33 @@ document.addEventListener('keydown',event=>{
 });
 updateClaimSummaryPanel();
 </script>
-</body>
+<script id="manufacturing-follow-bonus">
+(function(){
+  function alignManufacturing(){
+    const boss=document.getElementById('bossStatusCard');
+    const bonus=document.getElementById('bonusCampaignPanel');
+    if(!boss||!bonus||bonus.parentElement!==boss)return;
+    const gap=12;
+    const top=Math.ceil(bonus.getBoundingClientRect().bottom-boss.getBoundingClientRect().top+gap);
+    if(Number.isFinite(top))boss.style.setProperty('--manufacturing-top',Math.max(0,top)+'px');
+  }
+  function start(){
+    const boss=document.getElementById('bossStatusCard');
+    const bonus=document.getElementById('bonusCampaignPanel');
+    if(!boss||!bonus)return;
+    const observer=new ResizeObserver(alignManufacturing);
+    observer.observe(bonus);
+    observer.observe(boss);
+    window.addEventListener('resize',alignManufacturing);
+    requestAnimationFrame(alignManufacturing);
+    setTimeout(alignManufacturing,300);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script></body>
 </html>
+
+
+
+
