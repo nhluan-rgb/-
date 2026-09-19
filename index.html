@@ -829,10 +829,10 @@ async function loadBonusProgress(){
       national:Number(data.national)||0
     };
     const manufacturing=(data.manufacturing&&typeof data.manufacturing==='object')?data.manufacturing:{};
-    const manufacturingDate=String(manufacturing.date||'auto').trim();
+    const manufacturingClosingDate=String(manufacturing.closingDate||'').trim();
     const manufacturingAmount=Number(manufacturing.amount);
     manufacturingProgress={
-      date:manufacturingDate.toLowerCase()==='auto'?localDateKey(new Date()):manufacturingDate,
+      closingDate:manufacturingClosingDate,
       amount:Number.isFinite(manufacturingAmount)&&manufacturingAmount>=0?Math.trunc(manufacturingAmount):null
     };
     const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
@@ -870,11 +870,12 @@ function updateClaimSummaryPanel(){
   const box=$('claimSummaryPanel');
   if(!box)return;
   const amount=manufacturingProgress?.amount;
-  const current=manufacturingProgress?.date===localDateKey(new Date())&&amount!==null;
+  const current=manufacturingProgress?.closingDate===localDateKey(bonusCycleInfo(new Date()).end)
+    &&amount!==null;
   const rate=current?Math.min(100,amount/86000000*100):0;
   box.innerHTML=`<div class="manufacturing-card" aria-label="製造高 8千600万円目標">
     <div class="manufacturing-title">🏭 8千６００万円目標</div>
-    <div class="manufacturing-label">本日の製造高</div>
+    <div class="manufacturing-label">今期の製造高</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
     <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="86000000" aria-valuenow="${current?amount:0}"><span style="width:${rate}%"></span></div>
     <div class="manufacturing-foot"><span>達成率 ${rate.toFixed(1)}%</span><span>目標 8千６００万円</span></div>
