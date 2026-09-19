@@ -220,7 +220,11 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 }
 </style><style id="manufacturing-dynamic-position">
 @media(min-width:1301px){.ng-game .boss-status-card .claim-summary-panel{inset:var(--manufacturing-top,215px) 18px 18px!important;top:var(--manufacturing-top,215px)!important}}
-</style></head>
+</style><style id="manufacturing-rate-emphasis">
+.ng-game .boss-status-card .manufacturing-foot{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;width:100%!important;color:#e9fbff!important;font-size:clamp(24px,2vw,34px)!important;font-weight:1000!important;line-height:1.2!important;white-space:nowrap!important}
+.ng-game .boss-status-card .manufacturing-foot strong{display:inline-block;margin-left:10px;color:#81f5c1;font-size:clamp(40px,3.4vw,60px)!important;font-weight:1000!important;text-shadow:0 0 18px rgba(100,255,188,.48)}
+</style>
+</head>
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
@@ -878,7 +882,7 @@ function updateClaimSummaryPanel(){
     <div class="manufacturing-label">今期の製造高</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
     <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="86000000" aria-valuenow="${current?amount:0}"><span style="width:${rate}%"></span></div>
-    <div class="manufacturing-foot"><span>達成率 ${rate.toFixed(1)}%</span><span>目標 8千６００万円</span></div>
+    <div class="manufacturing-foot"><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
   </div>`;
   refreshClaimMissionText();
 }
