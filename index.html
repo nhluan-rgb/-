@@ -238,6 +238,31 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 @media(max-width:760px){.ng-game .boss-status-card{min-height:0!important}.ng-game .boss-status-card .bonus-campaign-panel{padding:16px!important}.ng-game .boss-status-card .claim-summary-panel{min-height:250px!important}}
 </style>
 <style id="bonus-result-window-and-one-line">
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-progress-list{
+  position:relative!important;isolation:isolate!important;filter:none!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-progress-row{
+  filter:grayscale(1)!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-progress-list .bonus-failure-stamp{
+  position:absolute!important;z-index:5!important;left:50%!important;top:50%!important;
+  display:block!important;width:max-content!important;max-width:90%!important;
+  margin:0!important;padding:10px 25px!important;
+  transform:translate(-50%,-50%) rotate(-12deg)!important;
+  font-size:clamp(32px,3.5vw,52px)!important;line-height:1!important;
+  border:5px double #e12834!important;border-radius:7px!important;
+  background:rgba(24,7,9,.94)!important;color:#ff424b!important;
+  box-shadow:0 0 0 2px rgba(226,46,54,.25),0 8px 20px #000a!important;
+  pointer-events:none!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-result.not-achieved{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  text-align:center!important;grid-template-columns:1fr!important;
+  min-height:105px!important;padding:12px 18px!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-failure-message{
+  max-width:100%!important;margin:0!important;font-size:clamp(16px,1.25vw,20px)!important;
+}
 .ng-game .boss-status-card .claim-summary-panel{
   display:flex!important;flex:1 1 300px!important;align-self:stretch!important;
   min-height:300px!important;height:auto!important;
@@ -1064,7 +1089,9 @@ function updateBonusCampaignPanel(){
   if(!box)return;
   const now=new Date();
   const cycle=bonusCycleInfo(now);
-  const progress=bonusProgressFor(cycle.end);
+  const resultClosingDate=closingDateForResultWindow(now);
+  const displayCycle=resultClosingDate?bonusCycleInfo(resultClosingDate):cycle;
+  const progress=bonusProgressFor(displayCycle.end);
   const rows=[
     {key:'east',label:'東半球',color:'#43b8ff'},
     {key:'west',label:'西半球',color:'#ff9f32'},
@@ -1102,7 +1129,6 @@ function updateBonusCampaignPanel(){
   const celebrationClosingDate=closingDateForTodayCelebration(now);
   const celebrationProgress=celebrationClosingDate?bonusProgressFor(celebrationClosingDate):null;
   const celebrationReward=celebrationProgress?bonusReward(celebrationProgress):0;
-  const resultClosingDate=closingDateForResultWindow(now);
   const resultKey=resultClosingDate?localDateKey(resultClosingDate):'';
   const hasResultData=Boolean(resultKey&&(
     (bonusRemoteProgress&&bonusRemoteProgress.closingDate===resultKey)||
@@ -1112,7 +1138,7 @@ function updateBonusCampaignPanel(){
   const resultProgress=resultClosingDate?bonusProgressFor(resultClosingDate):null;
   const isNotAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)<20000);
   const resultHtml=isNotAchievedDay
-    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-stamp">未達成</div><div class="bonus-failure-message">あと一歩、届かなかった悔しさを次の力に。力を合わせて、次こそ達成しよう。</div></div>`
+    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">惨敗。目標には遠く及ばなかった。この悔しさを忘れるな。次こそ、全員で必ず取り返そう。</div></div>`
     : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span> 日</strong></div>`;
 
   box.innerHTML=`
@@ -1120,9 +1146,9 @@ function updateBonusCampaignPanel(){
       <span class="bonus-title-kicker">🏆 大入り</span>
       <span class="bonus-title-goal">西100%=2万円 ／ 世界100%=3万円</span>
     </div>
-    <div class="bonus-period">${shortJapaneseDate(cycle.start)} ～ ${shortJapaneseDate(cycle.end)}</div>
+    <div class="bonus-period">${shortJapaneseDate(displayCycle.start)} ～ ${shortJapaneseDate(displayCycle.end)}</div>
     <div class="bonus-intro"><strong>目標進捗と現在値</strong></div>
-    <div class="bonus-progress-list">${progressHtml}</div>
+    <div class="bonus-progress-list">${progressHtml}${isNotAchievedDay?'<div class="bonus-failure-stamp" aria-label="未達成">未達成</div>':''}</div>
     ${resultHtml}`;
 
   box.classList.remove('bonus-2man','bonus-3man','bonus-miss');
