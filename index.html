@@ -289,8 +289,13 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 .ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-intro{
   color:#f4f4f4!important;text-shadow:none!important;
 }
-.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-progress-list{
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-title{
   filter:grayscale(1)!important;
+  background:linear-gradient(180deg,#222,#090909)!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-title-kicker,
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-title-goal{
+  color:#f4f4f4!important;text-shadow:none!important;
 }
 .ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-failure-stamp{
   color:#ff424b!important;border-color:#e12834!important;background:#1b0b0d!important;
@@ -1138,7 +1143,7 @@ function updateBonusCampaignPanel(){
   const resultProgress=resultClosingDate?bonusProgressFor(resultClosingDate):null;
   const isNotAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)<20000);
   const resultHtml=isNotAchievedDay
-    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">惨敗。目標には遠く及ばなかった。この悔しさを忘れるな。次こそ、全員で必ず取り返そう。</div></div>`
+    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">無念の惨敗。あと一歩で届いたはずの目標を、目の前で逃した。悔しい。言い訳はできない。この敗北を胸に刻み、次こそ全員で必ず取り返そう。</div></div>`
     : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span> 日</strong></div>`;
 
   box.innerHTML=`
