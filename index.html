@@ -3867,10 +3867,10 @@ document.addEventListener('visibilitychange',()=>{
     <button class="sp-decision-close" type="button" onclick="spCloseDecision()" aria-label="閉じる">×</button>
     <div class="sp-decision-kicker">SALES × PRODUCTION</div>
     <h3 id="spDecisionTitle">製造期限</h3>
-    <div class="sp-decision-main">
+    <div class="sp-decision-main" style="grid-template-columns:repeat(2,1fr)">
       <div><div class="sp-decision-label">現在</div><div id="spDecisionCurrent" class="sp-decision-value">0</div></div>
-      <div><div class="sp-decision-label">CAPACITY</div><div class="sp-decision-value">450</div></div>
-      <div><div id="spDecisionRemainLabel" class="sp-decision-label">余力</div><div id="spDecisionRemain" class="sp-decision-value">450</div></div>
+      <div><div class="sp-decision-label">CAPACITY</div><div class="sp-decision-value">集計中</div></div>
+      <div style="display:none"><div id="spDecisionRemainLabel" class="sp-decision-label">余力</div><div id="spDecisionRemain" class="sp-decision-value">450</div></div>
     </div>
     <div id="spDecisionStatus" class="sp-decision-status ok">投入可能</div>
     <div id="spDecisionOrders" class="sp-decision-orders"></div>
