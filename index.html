@@ -224,6 +224,61 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 .ng-game .boss-status-card .manufacturing-foot{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;width:100%!important;color:#e9fbff!important;font-size:clamp(24px,2vw,34px)!important;font-weight:1000!important;line-height:1.2!important;white-space:nowrap!important}
 .ng-game .boss-status-card .manufacturing-foot strong{display:inline-block;margin-left:10px;color:#81f5c1;font-size:clamp(40px,3.4vw,60px)!important;font-weight:1000!important;text-shadow:0 0 18px rgba(100,255,188,.48)}
 </style>
+<style id="bonus-fit-and-miss-fix">
+/* Keep the entire bonus card in normal flow, including its result. */
+.ng-game .boss-status-card{height:auto!important;min-height:1040px!important;overflow:visible!important}
+.ng-game .boss-status-card .bonus-campaign-panel{flex:0 0 auto!important;height:auto!important;min-height:0!important;overflow:visible!important}
+.ng-game .boss-status-card .claim-summary-panel{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;flex:0 0 auto!important;min-height:300px!important;height:auto!important}
+.ng-game .boss-status-card .manufacturing-card{min-height:300px!important}
+/* The general dashboard skin used a more specific !important background. */
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss{background:linear-gradient(155deg,#30343a 0%,#20242a 55%,#15181d 100%)!important;border:3px solid #656b73!important;color:#eef0f2!important;box-shadow:0 14px 32px rgba(0,0,0,.48),inset 0 0 30px rgba(255,255,255,.035)!important}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-result.not-achieved{background:rgba(9,11,14,.84)!important;border:1px solid #686e76!important;color:#f1f2f3!important;box-shadow:none!important}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-title{background:rgba(8,10,13,.7)!important;border-color:#646a72!important}
+@media(max-width:1300px){.ng-game .boss-status-card .bonus-campaign-panel{flex-basis:auto!important}.ng-game .boss-status-card .bonus-progress-track{height:clamp(90px,12vw,160px)!important;min-height:0!important}}
+@media(max-width:760px){.ng-game .boss-status-card{min-height:0!important}.ng-game .boss-status-card .bonus-campaign-panel{padding:16px!important}.ng-game .boss-status-card .claim-summary-panel{min-height:250px!important}}
+</style>
+<style id="bonus-result-window-and-one-line">
+.ng-game .boss-status-card .claim-summary-panel{
+  display:flex!important;flex:1 1 300px!important;align-self:stretch!important;
+  min-height:300px!important;height:auto!important;
+}
+.ng-game .boss-status-card .manufacturing-card{
+  flex:1 1 auto!important;align-self:stretch!important;
+  width:100%!important;height:100%!important;min-height:300px!important;
+}
+.ng-game .boss-status-card .bonus-result.remaining-days-only strong{
+  display:flex!important;align-items:baseline!important;justify-content:center!important;
+  gap:.15em!important;width:100%!important;margin:0!important;
+  font-size:clamp(23px,2.15vw,34px)!important;line-height:1.2!important;
+  letter-spacing:0!important;white-space:nowrap!important;
+}
+.ng-game .boss-status-card .bonus-result.remaining-days-only strong span{
+  display:inline!important;margin:0!important;font-size:1.25em!important;line-height:1!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss{
+  background:linear-gradient(150deg,#35383c,#17191c 70%,#08090a)!important;
+  border-color:#aeb2b7!important;color:#f4f4f4!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-title,
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-period,
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-intro{
+  color:#f4f4f4!important;text-shadow:none!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-progress-list{
+  filter:grayscale(1)!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-failure-stamp{
+  color:#ff424b!important;border-color:#e12834!important;background:#1b0b0d!important;
+  text-shadow:0 2px 0 #56070e,0 0 12px rgba(255,41,51,.5)!important;
+}
+.ng-game .boss-status-card .bonus-campaign-panel.bonus-miss .bonus-failure-message{
+  color:#fff!important;
+}
+@media(max-width:560px){
+  .ng-game .boss-status-card .bonus-result.remaining-days-only{padding:8px!important}
+  .ng-game .boss-status-card .bonus-result.remaining-days-only strong{font-size:clamp(18px,5vw,25px)!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -813,6 +868,16 @@ function closingDateForTodayCelebration(now=new Date()){
   return candidates.find(closing=>localDateKey(bonusCelebrationBusinessDay(closing))===todayKey)||null;
 }
 
+/* 結果表示は締日から、休み明け最初の営業日が終わるまで続ける。 */
+function closingDateForResultWindow(now=new Date()){
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const candidates=[
+    new Date(now.getFullYear(),now.getMonth(),20),
+    new Date(now.getFullYear(),now.getMonth()-1,20)
+  ];
+  return candidates.find(closing=>today>=closing&&today<=bonusCelebrationBusinessDay(closing))||null;
+}
+
 let bonusRemoteProgress=null;
 let claimRemoteData=null;
 let manufacturingProgress=null;
@@ -823,7 +888,7 @@ async function loadBonusProgress(){
     const data=await response.json();
     const rawClosingDate=String(data.closingDate||'auto').trim();
     const closingDate=!rawClosingDate||rawClosingDate.toLowerCase()==='auto'
-      ? localDateKey(bonusCycleInfo(new Date()).end)
+      ? localDateKey(closingDateForResultWindow(new Date())||bonusCycleInfo(new Date()).end)
       : rawClosingDate;
     if(!/^\d{4}-\d{2}-\d{2}$/.test(closingDate))throw new Error('closingDate');
     bonusRemoteProgress={
@@ -1037,10 +1102,18 @@ function updateBonusCampaignPanel(){
   const celebrationClosingDate=closingDateForTodayCelebration(now);
   const celebrationProgress=celebrationClosingDate?bonusProgressFor(celebrationClosingDate):null;
   const celebrationReward=celebrationProgress?bonusReward(celebrationProgress):0;
-  const isNotAchievedDay=Boolean(celebrationClosingDate&&celebrationReward<20000);
+  const resultClosingDate=closingDateForResultWindow(now);
+  const resultKey=resultClosingDate?localDateKey(resultClosingDate):'';
+  const hasResultData=Boolean(resultKey&&(
+    (bonusRemoteProgress&&bonusRemoteProgress.closingDate===resultKey)||
+    BONUS_PROGRESS_DEFAULTS[resultKey]||
+    localStorage.getItem(`bonusProgress:${resultKey}`)
+  ));
+  const resultProgress=resultClosingDate?bonusProgressFor(resultClosingDate):null;
+  const isNotAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)<20000);
   const resultHtml=isNotAchievedDay
-    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-stamp">未達成</div><div class="bonus-failure-message">あと一歩が、いちばん悔しい。次こそ、この悔しさを結果に変えよう。</div></div>`
-    : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span>日</strong></div>`;
+    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-stamp">未達成</div><div class="bonus-failure-message">あと一歩、届かなかった悔しさを次の力に。力を合わせて、次こそ達成しよう。</div></div>`
+    : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span> 日</strong></div>`;
 
   box.innerHTML=`
     <div class="bonus-title">
@@ -1066,10 +1139,14 @@ function updateBonusCampaignPanel(){
       box.classList.add('bonus-2man');
       document.body.classList.add('bonus-day-2man');
       showBonusCelebration('2man',closingKey);
-    }else{
+    }else if(isNotAchievedDay){
       box.classList.add('bonus-miss');
       document.body.classList.add('bonus-day-miss');
     }
+  }
+  if(isNotAchievedDay){
+    box.classList.add('bonus-miss');
+    document.body.classList.add('bonus-day-miss');
   }
 }
 // 16時75％達成カレンダー運用開始設定
