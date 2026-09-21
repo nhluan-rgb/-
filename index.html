@@ -1143,7 +1143,7 @@ function updateBonusCampaignPanel(){
   const resultProgress=resultClosingDate?bonusProgressFor(resultClosingDate):null;
   const isNotAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)<20000);
   const resultHtml=isNotAchievedDay
-    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">無念の惨敗。あと一歩で届いたはずの目標を、目の前で逃した。悔しい。言い訳はできない。この敗北を胸に刻み、次こそ全員で必ず取り返そう。</div></div>`
+    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">みんなでここまで頑張ってきたからこそ、あと一歩届かなかったことが悔しい。この悔しさを次の力に変えて、次こそ一緒に達成しよう。</div></div>`
     : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span> 日</strong></div>`;
 
   box.innerHTML=`
