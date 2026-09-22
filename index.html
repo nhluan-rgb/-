@@ -1476,6 +1476,10 @@ function updateDailyProcessTargets(){
     <span class="capacity-launch-icon" aria-hidden="true">☢</span>
     <span><strong>受注キャパシティー</strong><small>生産余力を確認</small></span>
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
+  </button><button type="button" class="capacity-launch-button overtime-launch-button" onclick="openOvertimeModal()">
+    <span class="capacity-launch-icon" aria-hidden="true">⏱</span>
+    <span><strong>残業状況</strong><small>工程別の月間残業を確認</small></span>
+    <span class="capacity-launch-arrow" aria-hidden="true">›</span>
   </button></div>`;
 }
 
@@ -4320,6 +4324,110 @@ updateClaimSummaryPanel();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
+})();
+</script>
+
+<style id="overtime-status-v1">
+.ng-game .process-target-capacity{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px!important}
+.ng-game .process-target-capacity .capacity-launch-button{min-width:0!important}
+.ng-game .process-target-capacity .overtime-launch-button{background:radial-gradient(circle at 50% 30%,rgba(255,183,77,.2),transparent 42%),linear-gradient(145deg,#4e3216,#281c27)!important;border-color:#ffc86a!important;box-shadow:inset 0 2px 0 #ffffff33,0 0 20px #ffb33d33!important}
+.overtime-modal{position:fixed;inset:0;z-index:10020;display:none;place-items:center;padding:24px;background:rgba(0,9,18,.8);backdrop-filter:blur(7px)}
+.overtime-modal.show{display:grid}.overtime-card{width:min(1220px,96vw);max-height:92vh;overflow:auto;border:2px solid #63dfff;border-radius:22px;background:linear-gradient(145deg,#092b42,#07192d 70%);color:#e9fbff;box-shadow:0 25px 80px #000b,0 0 28px #2bc9ff55;padding:24px}
+.overtime-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:17px}.overtime-head h2{margin:0;color:#fff;font-size:clamp(24px,3vw,36px)}.overtime-period{margin-top:6px;color:#91e9ff;font-weight:800}.overtime-close{border:1px solid #ffffff55;border-radius:10px;background:#ffffff12;color:#fff;width:42px;height:42px;font-size:25px;cursor:pointer}
+.overtime-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.overtime-kpi{padding:12px 15px;border:1px solid #4ac6eb66;border-radius:13px;background:#0c3955}.overtime-kpi span{display:block;color:#9bdcf0;font-size:12px}.overtime-kpi b{display:block;margin-top:3px;font-size:25px;color:#fff59c}
+.overtime-datebar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:11px;border:1px solid #4ac6eb55;border-radius:12px;background:#061f33}.overtime-datebar button{width:38px;height:38px;border:1px solid #6bdcf4;border-radius:8px;background:#0d5272;color:#fff;font-size:20px;cursor:pointer}.overtime-datebar input{padding:8px 12px;border:1px solid #6bdcf4;border-radius:8px;background:#041b2d;color:#fff;font-weight:900}.overtime-datebar strong{color:#fff59c}.overtime-datebar small{color:#9bdcf0}
+.overtime-chart-wrap{overflow:hidden;padding:15px;border:1px solid #4ac6eb55;border-radius:14px;background:#041725}.overtime-chart{display:block;width:100%;min-width:0;height:460px}.overtime-grid{stroke:#ffffff1f;stroke-width:1}.overtime-axis{fill:#b9dce6;font-size:11px}.overtime-label{fill:#e9fbff;font-size:11px;font-weight:800}.overtime-value{fill:#fff;font-size:10px;font-weight:900}.overtime-legend{display:flex;gap:13px;flex-wrap:wrap;margin:12px 0 17px;color:#d9f7ff;font-size:12px;font-weight:800}.overtime-legend i{display:inline-block;width:12px;height:12px;margin-right:6px;border-radius:3px;vertical-align:-1px}.overtime-line-key i{height:3px;border-radius:4px;vertical-align:3px}
+.overtime-table{width:100%;border-collapse:collapse;background:#08243a;border-radius:12px;overflow:hidden}.overtime-table th{position:static;background:#103d59;color:#d9f7ff}.overtime-table td{border-bottom:1px solid #ffffff12;color:#eafaff}.overtime-table tr:hover td{background:#ffffff08}.overtime-table input{width:100%;min-width:90px;padding:8px;border:1px solid #55cce955;border-radius:7px;background:#041b2d;color:#fff;text-align:right}.overtime-table input.process{text-align:left;min-width:130px}
+.overtime-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.overtime-actions button,.overtime-file-label{display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border:1px solid #6bdcf4;border-radius:8px;background:#0d5272;color:#fff;font-weight:800;cursor:pointer}.overtime-actions .save{background:#14875e;border-color:#43e0a3}.overtime-actions .danger{background:#722d3c;border-color:#e67891}.overtime-file-label input{display:none}.overtime-note{margin-top:12px;color:#a8cfda;font-size:12px;line-height:1.5}
+@media(max-width:760px){.ng-game .process-target-capacity{grid-template-columns:1fr!important}.overtime-modal{padding:8px}.overtime-card{padding:15px}.overtime-summary{grid-template-columns:1fr}.overtime-chart{height:390px}.overtime-head h2{font-size:24px}}
+</style>
+
+<div id="overtimeModal" class="overtime-modal" role="dialog" aria-modal="true" aria-labelledby="overtimeTitle">
+  <section class="overtime-card">
+    <header class="overtime-head"><div><h2 id="overtimeTitle">⏱ 残業状況</h2><div id="overtimePeriod" class="overtime-period"></div></div><button class="overtime-close" type="button" onclick="closeOvertimeModal()" aria-label="閉じる">×</button></header>
+    <div class="overtime-datebar"><button type="button" onclick="moveOvertimeDate(-1)" aria-label="前日">‹</button><label>入力日 <input id="overtimeDate" type="date" onchange="changeOvertimeDate(this.value)"></label><button type="button" onclick="moveOvertimeDate(1)" aria-label="翌日">›</button><strong id="overtimeDayStatus"></strong><small>日付ごとに自動保存</small></div>
+    <div class="overtime-summary"><div class="overtime-kpi"><span>受注キャパシティー</span><b id="otOrderTotal">0 pt</b></div><div class="overtime-kpi"><span>工程キャパシティー（同一ポイント）</span><b id="otCapacityTotal">0 pt</b></div><div class="overtime-kpi"><span>期間内の累計残業時間</span><b id="otHoursTotal">0 h</b></div></div>
+    <div class="overtime-chart-wrap"><svg id="overtimeChart" class="overtime-chart" viewBox="0 0 1400 460" preserveAspectRatio="none" aria-label="期間内のキャパシティーと工程別残業時間のグラフ"></svg></div>
+    <div id="overtimeLegend" class="overtime-legend"></div>
+    <table class="overtime-table"><thead><tr><th>工程</th><th>共通キャパシティー (pt)</th><th id="overtimeHoursHeading">当日の残業時間 (h)</th><th></th></tr></thead><tbody id="overtimeRows"></tbody></table>
+    <div class="overtime-actions"><button class="save" type="button" onclick="saveOvertimeData()">Google Sheetへ保存</button><button type="button" onclick="reloadOvertimeJson()">↻ 最新データを更新</button><button type="button" onclick="exportOvertimeJson()">バックアップJSON</button></div>
+    <div class="overtime-note">毎日、入力日を確認して各工程の残業時間を入力し、「Google Sheetへ保存」を押してください。履歴はGoogle Sheetに日付別で保存され、同じページを開くすべてのPCで共有されます。</div>
+  </section>
+</div>
+
+<script id="overtime-status-script-v1">
+(function(){
+const STORE='production-overtime-v1';
+const defaults=[
+ {process:'本溶接',orderCapacity:420,processCapacity:400,overtimeHours:28},
+ {process:'CAD/CAM',orderCapacity:330,processCapacity:360,overtimeHours:12},
+ {process:'切断',orderCapacity:390,processCapacity:380,overtimeHours:21},
+ {process:'曲げ',orderCapacity:450,processCapacity:410,overtimeHours:34},
+ {process:'仮溶接',orderCapacity:370,processCapacity:390,overtimeHours:18},
+ {process:'仕上げ',orderCapacity:310,processCapacity:340,overtimeHours:9}
+];
+let rows=[];
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));}
+function period(){const now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),20),end=new Date(now.getFullYear(),now.getMonth()+1,20),fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;return {start:fmt(start),end:fmt(end)};}
+function normalize(data){const list=Array.isArray(data)?data:data?.processes;return (Array.isArray(list)?list:defaults).map(x=>({process:String(x.process||'工程'),orderCapacity:Math.max(0,Number(x.orderCapacity)||0),processCapacity:Math.max(0,Number(x.processCapacity)||0),overtimeHours:Math.max(0,Number(x.overtimeHours)||0)}));}
+function load(){try{rows=normalize(JSON.parse(localStorage.getItem(STORE)||'null'));}catch(_){rows=normalize(defaults);}render();fetch('overtime-data.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(data=>{if(!localStorage.getItem(STORE)){rows=normalize(data);render();}}).catch(()=>{});}
+function renderTable(){const body=$('overtimeRows');if(!body)return;body.innerHTML=rows.map((r,i)=>`<tr><td><input class="process" data-i="${i}" data-k="process" value="${esc(r.process)}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="orderCapacity" value="${r.orderCapacity}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="processCapacity" value="${r.processCapacity}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="overtimeHours" value="${r.overtimeHours}"></td><td><button type="button" class="overtime-close" style="width:32px;height:32px;font-size:18px" onclick="removeOvertimeRow(${i})">×</button></td></tr>`).join('');}
+function svgEl(name,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,v));if(text!=null)e.textContent=text;return e;}
+function renderChart(){const svg=$('overtimeChart');if(!svg)return;svg.innerHTML='';const W=1100,H=360,L=58,R=55,T=25,B=64,pw=W-L-R,ph=H-T-B;const maxPt=Math.max(100,...rows.flatMap(r=>[r.orderCapacity,r.processCapacity]))*1.12,maxH=Math.max(10,...rows.map(r=>r.overtimeHours))*1.15;
+ for(let i=0;i<=5;i++){const y=T+ph*i/5;svg.append(svgEl('line',{x1:L,y1:y,x2:W-R,y2:y,class:'overtime-grid'}));svg.append(svgEl('text',{x:L-8,y:y+4,'text-anchor':'end',class:'overtime-axis'},Math.round(maxPt*(1-i/5))));svg.append(svgEl('text',{x:W-R+8,y:y+4,class:'overtime-axis'},(maxH*(1-i/5)).toFixed(0)));}
+ svg.append(svgEl('text',{x:10,y:15,class:'overtime-axis'},'pt'));svg.append(svgEl('text',{x:W-18,y:15,class:'overtime-axis'},'h'));
+ const group=pw/Math.max(rows.length,1),bar=Math.min(28,group*.2);rows.forEach((r,i)=>{const cx=L+group*(i+.5);[['orderCapacity','#54d8ff',-bar*1.1,maxPt],['processCapacity','#56e39f',0,maxPt],['overtimeHours','#ffb347',bar*1.1,maxH]].forEach(([k,color,off,max])=>{const val=r[k],h=ph*val/max,x=cx+off-bar/2,y=T+ph-h;svg.append(svgEl('rect',{x,y,width:bar,height:h,rx:4,fill:color}));svg.append(svgEl('text',{x:x+bar/2,y:Math.max(T+10,y-5),'text-anchor':'middle',class:'overtime-value'},Number(val).toLocaleString()));});svg.append(svgEl('text',{x:cx,y:H-34,'text-anchor':'middle',class:'overtime-label'},r.process));});}
+function render(){const p=period();$('overtimePeriod').textContent=`対象期間：${p.start.replaceAll('-','/')} ～ ${p.end.replaceAll('-','/')}`;renderTable();renderChart();$('otOrderTotal').textContent=rows.reduce((s,r)=>s+r.orderCapacity,0).toLocaleString()+' pt';$('otCapacityTotal').textContent=rows.reduce((s,r)=>s+r.processCapacity,0).toLocaleString()+' pt';$('otHoursTotal').textContent=rows.reduce((s,r)=>s+r.overtimeHours,0).toLocaleString()+' h';}
+function collect(){document.querySelectorAll('#overtimeRows input').forEach(input=>{const i=Number(input.dataset.i),k=input.dataset.k;if(rows[i])rows[i][k]=k==='process'?input.value:Math.max(0,Number(input.value)||0);});}
+window.openOvertimeModal=function(){$('overtimeModal').classList.add('show');render();};window.closeOvertimeModal=function(){$('overtimeModal').classList.remove('show');};window.addOvertimeRow=function(){collect();rows.push({process:'新工程',orderCapacity:0,processCapacity:0,overtimeHours:0});render();};window.removeOvertimeRow=function(i){collect();rows.splice(i,1);render();};window.saveOvertimeData=function(){collect();localStorage.setItem(STORE,JSON.stringify({period:period(),processes:rows}));render();};window.resetOvertimeData=function(){if(confirm('残業状況を初期値に戻しますか？')){localStorage.removeItem(STORE);rows=normalize(defaults);render();}};
+window.exportOvertimeJson=function(){collect();const blob=new Blob([JSON.stringify({period:period(),updatedAt:new Date().toISOString(),processes:rows},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='overtime-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);};window.importOvertimeJson=function(ev){const f=ev.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{rows=normalize(JSON.parse(reader.result));localStorage.setItem(STORE,JSON.stringify({period:period(),processes:rows}));render();}catch(_){alert('JSON形式を確認してください。');}ev.target.value='';};reader.readAsText(f,'utf-8');};
+$('overtimeModal').addEventListener('click',e=>{if(e.target===$('overtimeModal'))closeOvertimeModal();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('overtimeModal').classList.contains('show'))closeOvertimeModal();});load();
+})();
+</script>
+<script id="overtime-daily-history-v2">
+(function(){
+const STORE='production-overtime-daily-v2';
+const SHEETS_API_URL='https://script.google.com/macros/s/AKfycbwrqLmvtkqj-ydfqwm3lJrgE0-MMAfPE0B7XhSFEi1bXqGxgZj21rLCiSfMR0ro36OZ/exec';
+const initial=[['CAD/CAM',360],['切断',380],['曲げ',410],['溶接',400],['特化',360],['塗装',350],['組立',370]];
+const $=id=>document.getElementById(id), pad=n=>String(n).padStart(2,'0'), localDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+let selectedDate=localDate(new Date()), model={capacity:initial.map(([process,capacity])=>({process,capacity})),overtimeByDate:{}};
+function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));}
+function cycle(){const now=new Date(),s=new Date(now.getFullYear(),now.getMonth(),20),e=new Date(now.getFullYear(),now.getMonth()+1,20);return {start:localDate(s),end:localDate(e)};}
+function dayMap(date=selectedDate){return model.overtimeByDate[date]||(model.overtimeByDate[date]={});}
+function normalize(raw){
+ if(raw?.capacity&&raw?.overtimeByDate)return {capacity:raw.capacity.map(x=>({process:String(x.process||'工程'),capacity:Math.max(0,Number(x.capacity)||0)})),holidays:Array.isArray(raw.holidays)?raw.holidays:[],overtimeByDate:raw.overtimeByDate||{}};
+ const legacy=Array.isArray(raw)?raw:raw?.processes;if(Array.isArray(legacy)){const cap=legacy.map(x=>({process:String(x.process||'工程'),capacity:Math.max(0,Number(x.processCapacity??x.orderCapacity)||0)})),daily={};daily[selectedDate]={};legacy.forEach(x=>daily[selectedDate][String(x.process||'工程')]=Math.max(0,Number(x.overtimeHours)||0));return {capacity:cap,overtimeByDate:daily};}
+ return {capacity:initial.map(([process,capacity])=>({process,capacity})),holidays:[],overtimeByDate:{}};
+}
+function persist(){localStorage.setItem(STORE,JSON.stringify(model));}
+function loadDaily(){try{const saved=localStorage.getItem(STORE);if(saved)model=normalize(JSON.parse(saved));else{const legacy=localStorage.getItem('production-overtime-v1');if(legacy)model=normalize(JSON.parse(legacy));}}catch(_){model=normalize(null);}persist();if(!localStorage.getItem('production-overtime-v1'))localStorage.setItem('production-overtime-v1','{"processes":[]}');renderAll();}
+async function fetchSharedJson(showMessage){try{const response=await fetch('overtime-data.json?ts='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);model=normalize(await response.json());persist();renderAll();$('overtimeDayStatus').textContent='最新JSON読込済み';return true;}catch(error){if(showMessage)alert('overtime-data.json を自動取得できませんでした。ローカルで開いている場合は「JSONを読み込む」を使用してください。');return false;}}
+function loadGoogleSheet(showMessage=true){return new Promise(resolve=>{const callback='__overtimeGoogleCallback'+Date.now()+Math.floor(Math.random()*10000),script=document.createElement('script'),cleanup=()=>{delete window[callback];script.remove();};window[callback]=data=>{model=normalize(data);persist();renderAll();$('overtimeDayStatus').textContent='共有データ更新済み';cleanup();resolve(true);};script.onerror=()=>{cleanup();if(showMessage)alert('Google Sheetからデータを取得できませんでした。インターネット接続を確認してください。');resolve(false);};script.src=SHEETS_API_URL+'?callback='+callback+'&ts='+Date.now();document.head.appendChild(script);});}
+async function saveGoogleSheet(){collect();$('overtimeDayStatus').textContent='Google Sheetへ保存中…';const daily=dayMap(),payload={date:selectedDate,entries:model.capacity.map(r=>({process:r.process,hours:Number(daily[r.process])||0}))};try{await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify(payload)})});$('overtimeDayStatus').textContent='Google Sheet保存済み';setTimeout(()=>loadGoogleSheet(false),700);}catch(error){$('overtimeDayStatus').textContent='保存失敗';alert('Google Sheetへ保存できませんでした。インターネット接続を確認してください。');}}
+function renderTable(){const daily=dayMap(),body=$('overtimeRows');body.innerHTML=model.capacity.map((r,i)=>`<tr><td><input class="process" data-i="${i}" data-k="process" value="${esc(r.process)}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="capacity" value="${r.capacity}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="hours" value="${Number(daily[r.process])||0}"></td><td><button type="button" class="overtime-close" style="width:32px;height:32px;font-size:18px" onclick="removeOvertimeRow(${i})">×</button></td></tr>`).join('');$('overtimeHoursHeading').textContent=`${selectedDate.replaceAll('-','/')} の残業時間 (h)`;}
+function svg(name,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,v));if(text!=null)e.textContent=text;return e;}
+function renderChart(){
+ const out=$('overtimeChart');out.innerHTML='';const W=1400,H=460,L=62,R=62,T=30,B=68,pw=W-L-R,ph=H-T-B,p=cycle(),days=[],holidays=new Set(model.holidays||[]),cursor=new Date(p.start+'T12:00:00'),last=new Date(p.end+'T12:00:00');
+ while(cursor<=last){const dow=cursor.getDay(),key=localDate(cursor);if(dow!==0&&dow!==6&&!holidays.has(key))days.push(key);cursor.setDate(cursor.getDate()+1);}
+ const totalCapacity=model.capacity.reduce((s,r)=>s+r.capacity,0),maxPt=Math.max(100,totalCapacity)*1.12,maxH=Math.max(4,...days.flatMap(d=>model.capacity.map(r=>Number(model.overtimeByDate[d]?.[r.process])||0)))*1.18,colors=['#ffb347','#ff6685','#b78cff','#4dd9c5','#ffd95a','#6da8ff','#ff8f5a','#94e36f','#e879f9','#ffffff'];
+ for(let i=0;i<=5;i++){const y=T+ph*i/5;out.append(svg('line',{x1:L,y1:y,x2:W-R,y2:y,class:'overtime-grid'}));out.append(svg('text',{x:L-8,y:y+4,'text-anchor':'end',class:'overtime-axis'},Math.round(maxPt*(1-i/5))));out.append(svg('text',{x:W-R+8,y:y+4,class:'overtime-axis'},(maxH*(1-i/5)).toFixed(1)));}out.append(svg('text',{x:10,y:17,class:'overtime-axis'},'pt'));out.append(svg('text',{x:W-22,y:17,class:'overtime-axis'},'h'));
+ const group=pw/Math.max(days.length,1),bar=Math.max(5,Math.min(17,group*.28));days.forEach((date,i)=>{const cx=L+group*(i+.5),height=ph*totalCapacity/maxPt,y=T+ph-height;out.append(svg('rect',{x:cx-bar-1,y,width:bar,height,rx:2,fill:'#54d8ff',opacity:.78}));out.append(svg('rect',{x:cx+1,y,width:bar,height,rx:2,fill:'#56e39f',opacity:.78}));out.append(svg('text',{x:cx,y:H-38,'text-anchor':'middle',class:'overtime-label'},date.slice(5).replace('-','/')));});
+ model.capacity.forEach((r,pi)=>{const color=colors[pi%colors.length],points=days.map((d,i)=>{const v=Number(model.overtimeByDate[d]?.[r.process])||0,x=L+group*(i+.5),y=T+ph-ph*v/maxH;return {x,y,v};});if(points.length)out.append(svg('polyline',{points:points.map(q=>`${q.x},${q.y}`).join(' '),fill:'none',stroke:color,'stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'}));points.forEach(q=>{out.append(svg('circle',{cx:q.x,cy:q.y,r:q.v?4:2,fill:color,stroke:'#07192d','stroke-width':1}));if(q.v)out.append(svg('text',{x:q.x,y:q.y-7,'text-anchor':'middle',class:'overtime-value',fill:color},q.v));});});
+ const legend=$('overtimeLegend');legend.innerHTML=`<span><i style="background:#54d8ff"></i>受注キャパシティー（pt）</span><span><i style="background:#56e39f"></i>工程キャパシティー（pt）</span>`+model.capacity.map((r,i)=>`<span class="overtime-line-key"><i style="background:${colors[i%colors.length]}"></i>${esc(r.process)} 残業（h）</span>`).join('');
+}
+function periodHours(){const p=cycle();return Object.entries(model.overtimeByDate).filter(([d])=>d>=p.start&&d<=p.end).reduce((sum,[,vals])=>sum+Object.values(vals).reduce((a,v)=>a+(Number(v)||0),0),0);}
+function renderSummary(){const p=cycle(),total=model.capacity.reduce((s,r)=>s+r.capacity,0);$('overtimePeriod').textContent=`対象期間：${p.start.replaceAll('-','/')} ～ ${p.end.replaceAll('-','/')}`;$('overtimeDate').value=selectedDate;$('overtimeDayStatus').textContent=selectedDate===localDate(new Date())?'本日':'履歴';$('otOrderTotal').textContent=total.toLocaleString()+' pt';$('otCapacityTotal').textContent=total.toLocaleString()+' pt';$('otHoursTotal').textContent=periodHours().toLocaleString()+' h';}
+function renderAll(){renderSummary();renderTable();renderChart();}
+function collect(){const oldNames=model.capacity.map(x=>x.process),newRows=model.capacity.map(x=>({...x})),newHours={};document.querySelectorAll('#overtimeRows input').forEach(input=>{const i=Number(input.dataset.i),k=input.dataset.k;if(!newRows[i])return;if(k==='process')newRows[i].process=input.value.trim()||'工程';else if(k==='capacity')newRows[i].capacity=Math.max(0,Number(input.value)||0);else newHours[i]=Math.max(0,Number(input.value)||0);});const oldDaily=dayMap();newRows.forEach((r,i)=>{oldNames.forEach((old,j)=>{if(j===i&&old!==r.process)Object.values(model.overtimeByDate).forEach(day=>{if(Object.prototype.hasOwnProperty.call(day,old)){day[r.process]=day[old];delete day[old];}});});oldDaily[r.process]=newHours[i]??oldDaily[r.process]??0;});model.capacity=newRows;persist();}
+window.openOvertimeModal=function(){$('overtimeModal').classList.add('show');renderAll();loadGoogleSheet(false);};
+window.reloadOvertimeJson=function(){loadGoogleSheet(true);};
+window.changeOvertimeDate=function(value){collect();if(value)selectedDate=value;renderAll();};window.moveOvertimeDate=function(step){collect();const d=new Date(selectedDate+'T12:00:00');d.setDate(d.getDate()+step);selectedDate=localDate(d);renderAll();};
+window.saveOvertimeData=function(){saveGoogleSheet();};window.addOvertimeRow=function(){alert('工程の追加・キャパシティー変更はGoogle Sheetの「設定」タブで行ってください。');};window.removeOvertimeRow=function(){alert('工程の削除はGoogle Sheetの「設定」タブで行ってください。');};
+window.resetOvertimeData=function(){if(confirm('全日付の残業履歴を初期化しますか？')){model=normalize(null);persist();renderAll();}};
+window.exportOvertimeJson=function(){collect();const data={version:2,periodRule:'毎月20日～翌月20日',updatedAt:new Date().toISOString(),capacity:model.capacity,holidays:model.holidays||[],overtimeByDate:model.overtimeByDate},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='overtime-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);};
+window.importOvertimeJson=function(ev){const f=ev.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{model=normalize(JSON.parse(reader.result));persist();renderAll();}catch(_){alert('JSON形式を確認してください。');}ev.target.value='';};reader.readAsText(f,'utf-8');};
+$('overtimeRows').addEventListener('change',()=>{collect();renderSummary();renderChart();$('overtimeDayStatus').textContent='未保存';});loadDaily();loadGoogleSheet(false);
 })();
 </script></body>
 </html>
