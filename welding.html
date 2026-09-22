@@ -13267,8 +13267,8 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   const safe=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const shortDate=date=>`${date.getMonth()+1}/${date.getDate()}`;
   function syncTodayProcessCapacity(items){
-    const today=dayKey(new Date()),item=items.find(entry=>entry.key===today);if(!item)return;
-    const payload={date:today,processCapacity:Number(item.points)||0};
+    const dailyCapacities=items.filter(item=>item.business).map(item=>({date:item.key,processCapacity:Number(item.points)||0}));if(!dailyCapacities.length)return;
+    const payload={dailyCapacities};
     fetch(SHARED_CAPACITY_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify(payload)})}).catch(()=>{});
   }
   const donutColors={'架台':'#42cff3','ボックス':'#ff9d42','ダクト':'#50dfa6','貫通枠':'#a97bf5','防球ガード':'#ff607d','カバー':'#ffd45d','プレート':'#58aaf7','切板':'#8ed36a','アングル':'#f177a9','チャンネル':'#51d7d8','縞鋼板':'#c58bff','金物':'#ffbb6d','ふた':'#78c9ff','その他・要確認':'#90c967'};
