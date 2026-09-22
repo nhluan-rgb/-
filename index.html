@@ -1478,7 +1478,7 @@ function updateDailyProcessTargets(){
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
   </button><button type="button" class="capacity-launch-button overtime-launch-button" onclick="openOvertimeModal()">
     <span class="capacity-launch-icon" aria-hidden="true">⏱</span>
-    <span><strong>残業状況</strong><small>工程別の月間残業を確認</small></span>
+    <span><strong>残業入力</strong><small>工程別の月間残業を確認</small></span>
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
   </button></div>`;
 }
@@ -4344,13 +4344,13 @@ updateClaimSummaryPanel();
 
 <div id="overtimeModal" class="overtime-modal" role="dialog" aria-modal="true" aria-labelledby="overtimeTitle">
   <section class="overtime-card">
-    <header class="overtime-head"><div><h2 id="overtimeTitle">⏱ 残業状況</h2><div id="overtimePeriod" class="overtime-period"></div></div><button class="overtime-close" type="button" onclick="closeOvertimeModal()" aria-label="閉じる">×</button></header>
+    <header class="overtime-head"><div><h2 id="overtimeTitle">⏱ 残業入力</h2><div id="overtimePeriod" class="overtime-period"></div></div><button class="overtime-close" type="button" onclick="closeOvertimeModal()" aria-label="閉じる">×</button></header>
     <div class="overtime-datebar"><button type="button" onclick="moveOvertimeDate(-1)" aria-label="前日">‹</button><label>入力日 <input id="overtimeDate" type="date" onchange="changeOvertimeDate(this.value)"></label><button type="button" onclick="moveOvertimeDate(1)" aria-label="翌日">›</button><strong id="overtimeDayStatus"></strong><small>日付ごとに自動保存</small></div>
-    <div class="overtime-summary"><div class="overtime-kpi"><span>受注キャパシティー</span><b id="otOrderTotal">0 pt</b></div><div class="overtime-kpi"><span>工程キャパシティー（同一ポイント）</span><b id="otCapacityTotal">0 pt</b></div><div class="overtime-kpi"><span>期間内の累計残業時間</span><b id="otHoursTotal">0 h</b></div></div>
+    <div class="overtime-summary"><div class="overtime-kpi"><span>受注キャパシティー</span><b id="otOrderTotal">0 pt</b></div><div class="overtime-kpi"><span>工程キャパシティー</span><b id="otCapacityTotal">0 pt</b></div><div class="overtime-kpi"><span>期間内の累計残業時間</span><b id="otHoursTotal">0 h</b></div></div>
     <div class="overtime-chart-wrap"><svg id="overtimeChart" class="overtime-chart" viewBox="0 0 1400 460" preserveAspectRatio="none" aria-label="期間内のキャパシティーと工程別残業時間のグラフ"></svg></div>
     <div id="overtimeLegend" class="overtime-legend"></div>
-    <table class="overtime-table"><thead><tr><th>工程</th><th>共通キャパシティー (pt)</th><th id="overtimeHoursHeading">当日の残業時間 (h)</th><th></th></tr></thead><tbody id="overtimeRows"></tbody></table>
-    <div class="overtime-actions"><button class="save" type="button" onclick="saveOvertimeData()">Google Sheetへ保存</button><button type="button" onclick="reloadOvertimeJson()">↻ 最新データを更新</button><button type="button" onclick="exportOvertimeJson()">バックアップJSON</button></div>
+    <table class="overtime-table"><thead><tr><th>工程</th><th id="overtimeHoursHeading">選択日の残業時間 (h)</th></tr></thead><tbody id="overtimeRows"></tbody></table>
+    <div class="overtime-actions"><button class="save" type="button" onclick="saveOvertimeData()">Google Sheetへ保存</button></div>
     <div class="overtime-note">毎日、入力日を確認して各工程の残業時間を入力し、「Google Sheetへ保存」を押してください。履歴はGoogle Sheetに日付別で保存され、同じページを開くすべてのPCで共有されます。</div>
   </section>
 </div>
@@ -4406,7 +4406,7 @@ async function fetchSharedJson(showMessage){try{const response=await fetch('over
 function loadGoogleSheet(showMessage=true){return new Promise(resolve=>{const callback='__overtimeGoogleCallback'+Date.now()+Math.floor(Math.random()*10000),script=document.createElement('script'),cleanup=()=>{delete window[callback];script.remove();};window[callback]=data=>{model=normalize(data);persist();renderAll();$('overtimeDayStatus').textContent='共有データ更新済み';cleanup();resolve(true);};script.onerror=()=>{cleanup();if(showMessage)alert('Google Sheetからデータを取得できませんでした。インターネット接続を確認してください。');resolve(false);};script.src=SHEETS_API_URL+'?callback='+callback+'&ts='+Date.now();document.head.appendChild(script);});}
 async function syncOrderCapacitySeries(){renderSalesProductionBridge();const dailyCapacities=SP_BRIDGE_DAYS.filter(day=>day.business).map(day=>({date:day.key,orderCapacity:Number(day.count)||0}));if(!dailyCapacities.length)return;try{await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify({dailyCapacities})})});setTimeout(()=>loadGoogleSheet(false),900)}catch(_){}}
 async function saveGoogleSheet(){collect();$('overtimeDayStatus').textContent='Google Sheetへ保存中…';renderSalesProductionBridge();const daily=dayMap(),orderDay=SP_BRIDGE_DAYS.find(item=>item.key===selectedDate),saved=model.dailyCapacityByDate?.[selectedDate]||{},payload={date:selectedDate,orderCapacity:Number(orderDay?.count??saved.orderCapacity)||0,processCapacity:Number(saved.processCapacity)||0,entries:model.capacity.map(r=>({process:r.process,hours:Number(daily[r.process])||0}))};try{await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify(payload)})});$('overtimeDayStatus').textContent='Google Sheet保存済み';setTimeout(()=>loadGoogleSheet(false),700);}catch(error){$('overtimeDayStatus').textContent='保存失敗';alert('Google Sheetへ保存できませんでした。インターネット接続を確認してください。');}}
-function renderTable(){const daily=dayMap(),body=$('overtimeRows');body.innerHTML=model.capacity.map((r,i)=>`<tr><td><input class="process" data-i="${i}" data-k="process" value="${esc(r.process)}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="capacity" value="${r.capacity}"></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="hours" value="${Number(daily[r.process])||0}"></td><td><button type="button" class="overtime-close" style="width:32px;height:32px;font-size:18px" onclick="removeOvertimeRow(${i})">×</button></td></tr>`).join('');$('overtimeHoursHeading').textContent=`${selectedDate.replaceAll('-','/')} の残業時間 (h)`;}
+function renderTable(){const daily=dayMap(),body=$('overtimeRows');body.innerHTML=model.capacity.map((r,i)=>`<tr><td><input class="process" data-i="${i}" data-k="process" value="${esc(r.process)}" readonly></td><td><input type="number" min="0" step="0.1" data-i="${i}" data-k="hours" value="${Number(daily[r.process])||0}"></td></tr>`).join('');$('overtimeHoursHeading').textContent=`${selectedDate.replaceAll('-','/')} の残業時間 (h)`;}
 function svg(name,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,v));if(text!=null)e.textContent=text;return e;}
 function renderChart(){
  const out=$('overtimeChart');out.innerHTML='';const W=1400,H=460,L=62,R=62,T=30,B=68,pw=W-L-R,ph=H-T-B,p=cycle(),days=[],holidays=new Set(model.holidays||[]),cursor=new Date(p.start+'T12:00:00'),last=new Date(p.end+'T12:00:00');
