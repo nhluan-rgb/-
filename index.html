@@ -1468,11 +1468,7 @@ function updateDailyProcessTargets(){
     </div>`;
   }).join('');
 
-  box.innerHTML=`<div class="process-target-upper"><div class="process-target-head">
-    <div class="process-target-title">🎯 本日の工程目標</div>
-    <div class="process-target-legend"><span class="legend-watch">1時間前 注意</span><span class="legend-alarm">超過 至急</span></div>
-  </div><div class="process-target-list">${rowsHtml}</div>
-  </div><div class="process-target-capacity"><button type="button" class="capacity-launch-button" onclick="openCapacityModal()">
+  box.innerHTML=`<div class="process-target-capacity"><button type="button" class="capacity-launch-button" onclick="openCapacityModal()">
     <span class="capacity-launch-icon" aria-hidden="true">☢</span>
     <span><strong>受注キャパシティー</strong><small>生産余力を確認</small></span>
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
@@ -1480,7 +1476,11 @@ function updateDailyProcessTargets(){
     <span class="capacity-launch-icon" aria-hidden="true">⏱</span>
     <span><strong>残業入力</strong><small>工程別の月間残業を確認</small></span>
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
-  </button></div>`;
+  </button></div><div class="process-target-upper"><div class="process-target-head">
+    <div class="process-target-title">🎯 本日の工程目標</div>
+    <div class="process-target-legend"><span class="legend-watch">1時間前 注意</span><span class="legend-alarm">超過 至急</span></div>
+  </div><div class="process-target-list">${rowsHtml}</div>
+  </div>`;
 }
 
 function updateGameClock(){
@@ -4329,6 +4329,7 @@ updateClaimSummaryPanel();
 
 <style id="overtime-status-v1">
 .ng-game .process-target-capacity{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px!important}
+.ng-game .daily-process-targets>.process-target-capacity{border-top:0!important;border-bottom:2px solid rgba(91,232,255,.7)!important}
 .ng-game .process-target-capacity .capacity-launch-button{min-width:0!important}
 .ng-game .process-target-capacity .overtime-launch-button{background:radial-gradient(circle at 50% 30%,rgba(255,183,77,.2),transparent 42%),linear-gradient(145deg,#4e3216,#281c27)!important;border-color:#ffc86a!important;box-shadow:inset 0 2px 0 #ffffff33,0 0 20px #ffb33d33!important}
 .overtime-modal{position:fixed;inset:0;z-index:10020;display:none;place-items:center;padding:24px;background:rgba(0,9,18,.8);backdrop-filter:blur(7px)}
