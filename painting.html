@@ -1502,6 +1502,16 @@ function normalizedDate(value){
 }
 function orderDateOf(row){return normalizedDate(row['受注日']||'')}
 const COMPANY_HOLIDAYS=new Set(['2025-11-24','2025-12-26','2025-12-27','2025-12-28','2025-12-29','2025-12-30','2025-12-31','2026-01-01','2026-01-02','2026-01-03','2026-01-04','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-02','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23']);
+function nextBusinessDate(step=1){
+  const d=new Date();d.setHours(12,0,0,0);
+  let count=0;
+  while(count<step){
+    d.setDate(d.getDate()+1);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if(d.getDay()!==0&&d.getDay()!==6&&!COMPANY_HOLIDAYS.has(key))count++;
+  }
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 function previousBusinessDate(){
   const d=new Date();d.setHours(12,0,0,0);
   do{d.setDate(d.getDate()-1)}while(d.getDay()===0||d.getDay()===6||COMPANY_HOLIDAYS.has(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`));
@@ -1524,8 +1534,8 @@ function updateDeadlineDateLabels(){
     return parts.length>=3?`${parts[1]}/${parts[2]}`:String(value||'').replaceAll('-','/');
   };
   const range=businessDayRange(10);
-  $('tomorrowDate').textContent=show(localDate(1));
-  $('day2Date').textContent=show(localDate(2));
+  $('tomorrowDate').textContent=show(nextBusinessDate(1));
+  $('day2Date').textContent=show(nextBusinessDate(2));
   $('yesterdayOrdersDate').textContent=show(previousBusinessDate());
   $('rust10DaysDate').textContent=`${show(range.start)} ～ ${show(range.end)}`;
   $('criticalDate').textContent=`～ ${show(localDate(0))}`;
@@ -1535,7 +1545,7 @@ function isRackRust(row){
   return /架台|耐震架台/.test(name)&&(code.endsWith('G')||/さび止め|錆止め/.test(spec));
 }
 function rowsForDeadline(rows,key){
-  const today=localDate(0),dates={tomorrow:localDate(1),day2:localDate(2),specified:specifiedDate};
+  const today=localDate(0),dates={tomorrow:nextBusinessDate(1),day2:nextBusinessDate(2),specified:specifiedDate};
   const dueOf=r=>String(r['製造期限']||'').trim().replaceAll('/','-');
   if(key==='yesterdayOrders'){const target=previousBusinessDate();return rows.filter(r=>typeOf(r)==='bake'&&orderDateOf(r)===target)}
   if(key==='rust10Days'){const range=businessDayRange(10);return rows.filter(r=>isRackRust(r)&&normalizedDate(r['製造期限'])>=range.start&&normalizedDate(r['製造期限'])<=range.end)}
