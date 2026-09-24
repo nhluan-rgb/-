@@ -7360,6 +7360,11 @@ body:not(.welding-show-compliance) .ng-mission-ticker-slot::before{content:"ク�
   -webkit-text-fill-color:#c62828 !important;
 }
 </style>
+<style id="capacity-count-point-labels">
+.pc-bar-value{display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1}
+.pc-bar-orders{color:#80ffd0;font-size:.62em;font-weight:1000;white-space:nowrap;text-shadow:0 1px 2px #000}
+.pc-bar-points{display:block;color:#fff;font-size:1em;font-weight:1000;white-space:nowrap}
+</style>
 </head>
 <body>
 <div class="app">
@@ -13284,7 +13289,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     const items=window.PROCESS_CAPACITY_ITEMS||[];if(!items.length)return;
     const modal=ensureModal(),body=modal.querySelector('#processCapacityModalBody'),businessItems=items.filter(item=>item.business);
     const max=Math.max(CAPACITY,...businessItems.map(item=>item.points),1),chartMax=Math.ceil(max*1.14/100)*100;
-    body.innerHTML=`<header class="pc-modal-head"><div><h2 class="pc-modal-title">工程キャパシティー</h2><div class="pc-modal-period">${shortDate(items[0].date)} → ${shortDate(items[items.length-1].date)}</div></div><div class="pc-modal-cap">${CAPACITY}点 / 日</div></header><div class="pc-modal-formula">負荷点 ＝ 数量 × 評価点 ＋ 段取り点</div><div class="pc-chart"><div class="pc-columns">${items.map(item=>{const height=item.business?Math.max(item.points?2:0,Math.min(100,item.points/chartMax*100)):1;return`<button type="button" class="pc-column${item.business?'':' is-off'}${item.points>CAPACITY?' is-over':''}" ${item.business?`data-process-capacity-detail="${item.key}"`:'disabled'}><span class="pc-bar-zone"><i class="pc-bar" style="height:${height}%">${item.business&&item.points?`<b class="pc-bar-value">${number(item.points)}</b>`:''}</i></span><span class="pc-date">${item.date.getMonth()+1}\n月\n${String(item.date.getDate()).padStart(2,'0')}\n日</span></button>`}).join('')}</div></div>`;
+    body.innerHTML=`<header class="pc-modal-head"><div><h2 class="pc-modal-title">工程キャパシティー</h2><div class="pc-modal-period">${shortDate(items[0].date)} → ${shortDate(items[items.length-1].date)}</div></div><div class="pc-modal-cap">${CAPACITY}点 / 日</div></header><div class="pc-modal-formula">負荷点 ＝ 数量 × 評価点 ＋ 段取り点</div><div class="pc-chart"><div class="pc-columns">${items.map(item=>{const height=item.business?Math.max(item.points?2:0,Math.min(100,item.points/chartMax*100)):1,count=Array.isArray(item.list)?item.list.length:0;return`<button type="button" class="pc-column${item.business?'':' is-off'}${item.points>CAPACITY?' is-over':''}" ${item.business?`data-process-capacity-detail="${item.key}"`:'disabled'}><span class="pc-bar-zone"><i class="pc-bar" style="height:${height}%">${item.business&&item.points?`<b class="pc-bar-value"><span class="pc-bar-orders">${number(count)}件</span><span class="pc-bar-points">${number(item.points)}点</span></b>`:''}</i></span><span class="pc-date">${item.date.getMonth()+1}\n月\n${String(item.date.getDate()).padStart(2,'0')}\n日</span></button>`}).join('')}</div></div>`;
     modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
   }
   function openDetail(key){

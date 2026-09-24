@@ -309,6 +309,11 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
   .ng-game .boss-status-card .bonus-result.remaining-days-only strong{font-size:clamp(18px,5vw,25px)!important}
 }
 </style>
+<style id="capacity-count-point-labels">
+.capacity-modal-card .sp-day .n{display:flex!important;flex-direction:column!important;align-items:center!important;gap:3px!important;line-height:1!important}
+.capacity-modal-card .sp-bar-orders{color:#8fffd3;font-size:.62em;font-weight:1000;white-space:nowrap;text-shadow:0 1px 2px #000}
+.capacity-modal-card .sp-bar-points{display:block;color:#fff;font-size:1em;font-weight:1000;white-space:nowrap}
+</style>
 </head>
 <body>
 <div class="app">
@@ -4283,7 +4288,8 @@ function renderSalesProductionBridge(){
     const height=day.business?Math.max(1.5,Math.min(100,day.count/chartMax*100)):1;
     if(!day.business)return `<button class="sp-day off" disabled><div class="sp-bar-zone"><div class="bar" style="height:${height}%"></div></div><div class="d">${spVerticalDate(day.date)}</div></button>`;
     const ratio=day.count/SP_DAILY_CAPACITY;
-    return `<button class="sp-day level-cool" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 合計負荷点 ${Math.round(day.count)}点"><div class="sp-bar-zone"><div class="bar sp-stacked-bar" style="height:${height}%"><div class="n">${Math.round(day.count)}</div></div></div><div class="d">${spVerticalDate(day.date)}</div></button>`;
+    const orderCount=(SP_BRIDGE_ROW_MAP.get(day.key)||[]).length;
+    return `<button class="sp-day level-cool" onclick="spOpenDate('${day.key}')" title="${spShortDate(day.date)} 製造期限 ${orderCount}件・合計負荷点 ${Math.round(day.count)}点"><div class="sp-bar-zone"><div class="bar sp-stacked-bar" style="height:${height}%"><div class="n"><span class="sp-bar-orders">${orderCount}件</span><span class="sp-bar-points">${Math.round(day.count)}点</span></div></div></div><div class="d">${spVerticalDate(day.date)}</div></button>`;
   }).join('');
   const firstBarZone=$('spDays').querySelector('.sp-bar-zone');
   const daysTop=$('spDays').offsetTop;
