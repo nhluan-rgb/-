@@ -10202,18 +10202,17 @@ function showDippingDetailPopup(kind,value){
     <section class="process-popup-section">
       <div class="process-popup-section-head">製造指示一覧</div>
       <div class="process-backlog-table-wrap"><table class="process-backlog-table">
-        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th class="dipping-product-type-head">製品種類</th><th>生地日</th><th>製造期限</th><th>出荷日</th><th>担当者</th></tr></thead>
+        <thead><tr><th>製造指示番号</th><th>品番・品名 / 規格</th><th>数量</th><th>工程</th><th class="dipping-product-type-head">製品種類</th><th>サイズ</th><th>出荷日</th><th>担当者</th></tr></thead>
         <tbody>${detailRows.map(row=>`<tr>
           <td class="backlog-code">${escapeHtml(row.id||'—')}</td>
           <td class="backlog-product"><b>${escapeHtml(row.part||'—')} ／ ${escapeHtml(row.name||'—')}</b><small>${escapeHtml(row.standard||'規格なし')}</small></td>
            <td class="backlog-qty"><strong>${fmt(row.qty)}点</strong></td>
            <td>${escapeHtml(row.status||'未着手')}</td>
            <td class="dipping-product-type-cell"><b>${escapeHtml(classifyProductCategory(row))}</b></td>
-           <td class="backlog-date">${escapeHtml(row.shipDate||'未登録')}</td>
-          <td class="backlog-date">${escapeHtml(row.due||'未登録')}</td>
+           <td class="backlog-size">${escapeHtml(row.size||'—')}</td>
           <td class="backlog-date">${escapeHtml(row.dispatchDate||'未登録')}</td>
           <td>${escapeHtml(row.owner||'未設定')}</td>
-        </tr>`).join('')||'<tr><td colspan="9" class="process-backlog-empty">対象データはありません</td></tr>'}</tbody>
+        </tr>`).join('')||'<tr><td colspan="8" class="process-backlog-empty">対象データはありません</td></tr>'}</tbody>
       </table></div>
     </section>`;
   modal.classList.add('show');
