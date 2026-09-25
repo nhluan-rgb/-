@@ -7737,8 +7737,19 @@ function formatLocalDate(d){
   return `${y}-${m}-${day}`;
 }
 function getShipDates(){
-  const today=new Date();
-  today.setHours(0,0,0,0);
+  // 休業日に開いた場合は、ホーム全体の「今日」を次の営業日に自動で繰り越す。
+  // これにより工程進捗・溶接到達率・ドブ漬け管理なども同じ営業日を参照する。
+  const actualToday=new Date();
+  actualToday.setHours(0,0,0,0);
+  const isBusinessDay=date=>{
+    const key=formatLocalDate(date);
+    const holidays=new Set([...japaneseHolidayKeys(date.getFullYear()),...COMPANY_HOLIDAYS]);
+    return date.getDay()!==0&&date.getDay()!==6&&!holidays.has(key);
+  };
+  const today=new Date(actualToday);
+  if(!isBusinessDay(today)){
+    do{today.setDate(today.getDate()+1)}while(!isBusinessDay(today));
+  }
   const tomorrow=new Date(today);
   tomorrow.setDate(today.getDate()+1);
   const after=new Date(today);
@@ -7746,7 +7757,9 @@ function getShipDates(){
   return {
     today:formatLocalDate(today),
     tomorrow:formatLocalDate(tomorrow),
-    after:formatLocalDate(after)
+    after:formatLocalDate(after),
+    actualToday:formatLocalDate(actualToday),
+    shifted:formatLocalDate(today)!==formatLocalDate(actualToday)
   };
 }
 function isOverdueItem(r){
@@ -12985,7 +12998,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
   window.renderDailyProcessBoard=function(){
     const board=document.getElementById('dailyProcessBoard');
     if(!board||typeof rows==='undefined')return;
-    const today=formatLocalDate(new Date());
+    const today=getShipDates().today;
     const allActive=rows.filter(active);
     const todayTargetRows=rows.filter(row=>row.shipDate===today&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
     const todayPassedRows=todayTargetRows.filter(row=>['塗装','組立','完成'].includes(String(row.status||'').trim()));
@@ -13264,7 +13277,8 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     return day!==0&&day!==6&&!holidays.has(key)&&!company.has(key);
   };
   function calendarRange(businessCount){
-    const result=[],cursor=new Date();cursor.setHours(0,0,0,0);let counted=0;
+    const effectiveKey=(typeof getShipDates==='function'?getShipDates().today:dayKey(new Date()));
+    const result=[],cursor=new Date(effectiveKey+'T00:00:00');cursor.setHours(0,0,0,0);let counted=0;
     while(counted<businessCount){result.push(new Date(cursor));if(isBusiness(cursor))counted++;cursor.setDate(cursor.getDate()+1)}
     return result;
   }
@@ -13316,7 +13330,7 @@ body .standard-game .combined-analysis-board.capacity-filter-mode .ranking-list{
     await loadMaster();
     if(shipFilter!=='today-ng')return;
     host.className='home-priority-actions process-capacity-board';
-    const days=calendarRange(12),today=dayKey(new Date());
+    const days=calendarRange(12),today=(typeof getShipDates==='function'?getShipDates().today:dayKey(new Date()));
     const items=days.map(date=>{
       const key=dayKey(date);
       const list=rows.filter(row=>row.shipDate===key&&!/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||'')));
