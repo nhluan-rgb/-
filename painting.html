@@ -1772,6 +1772,7 @@ $('specifiedDate').value=localDate(4);specifiedDate=$('specifiedDate').value;
 document.querySelectorAll('.deadline-tab').forEach(tab=>tab.addEventListener('click',event=>{
   if(event.target.closest('input'))return;
   deadlineFilter=tab.dataset.deadline;
+  processFilter='';
   colorFilter='';
   render();
 }));
@@ -1787,6 +1788,7 @@ $('specifiedDate').addEventListener('click',event=>event.stopPropagation());
 $('specifiedDate').addEventListener('change',event=>{
   specifiedDate=event.target.value;
   deadlineFilter='specified';
+  processFilter='';
   colorFilter='';
   render();
 });
