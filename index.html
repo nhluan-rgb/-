@@ -4448,7 +4448,7 @@ window.exportOvertimeJson=function(){collect();const data={version:4,periodRule:
 window.importOvertimeJson=function(ev){const f=ev.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{model=normalize(JSON.parse(reader.result));persist();renderAll();}catch(_){alert('JSON形式を確認してください。');}ev.target.value='';};reader.readAsText(f,'utf-8');};
 $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();renderChart();$('overtimeDayStatus').textContent='未保存';});loadDaily();loadGoogleSheet(false);
 })();
-</script></body>
+</script><script src="date-overrides.js"></script></body>
 </html>
 
 
