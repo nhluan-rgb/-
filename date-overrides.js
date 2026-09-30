@@ -103,18 +103,39 @@
   function enhanceRows(){
     document.querySelectorAll('tbody tr').forEach(tr=>{
       tr.classList.remove('date-override-row');
+      tr.querySelectorAll('.date-override-cell').forEach(node=>{
+        node.classList.remove('date-override-cell');
+        node.removeAttribute('data-date-edit');
+        node.removeAttribute('title');
+      });
       tr.querySelectorAll('.date-override-mark').forEach(node=>node.remove());
       const text=idKey(tr.textContent);
       const item=[...new Map([...state.items.values()].map(x=>[x.id,x])).values()].find(x=>aliases(x.id).some(key=>text.includes(key)));
       if(!item)return;
-      tr.classList.add('date-override-row');
-      const cell=tr.querySelector('td.code,td.id,td.job-id-cell,td.print-job,td');
-      if(cell){
-        const mark=document.createElement('button');
-        mark.type='button';mark.className='date-override-mark';mark.dataset.dateEdit=item.id;
-        mark.title=`手動修正 ${item.updatedAt||''}${item.updatedBy?' / '+item.updatedBy:''}`;
-        mark.textContent='✎ 手動修正';cell.appendChild(mark);
-      }
+      const source=rowForId(item.id), original=source?.__dateOverrideOriginal||{};
+      const fields=[
+        {key:'materialDate',label:'生地日'},
+        {key:'dueDate',label:'製造期限'},
+        {key:'dispatchDate',label:'出荷日'}
+      ];
+      const mark=node=>{
+        if(!node)return;
+        node.classList.add('date-override-cell');
+        node.dataset.dateEdit=item.id;
+        node.title=`手動修正 ${item.updatedAt||''}${item.updatedBy?' / '+item.updatedBy:''}`;
+      };
+      fields.forEach(field=>{
+        const value=date(item[field.key]), oldValue=date(original[field.key]);
+        if(!value||value===oldValue)return;
+        const variants=[value,value.replaceAll('-','/')];
+        const table=tr.closest('table'), headers=table?[...table.querySelectorAll('thead th')]:[];
+        const column=headers.findIndex(th=>String(th.textContent||'').includes(field.label));
+        if(column>=0)mark(tr.children[column]);
+        [...tr.querySelectorAll('.size-date-item,.dpc-dates>span,.j-detail-cell')].forEach(node=>{
+          const nodeText=String(node.textContent||'');
+          if(nodeText.includes(field.label)&&variants.some(v=>nodeText.includes(v)))mark(node);
+        });
+      });
     });
     const count=new Set([...state.items.values()].map(item=>item.id)).size;
     const counter=document.getElementById('dateOverrideCount');
@@ -156,7 +177,7 @@
     const style=document.createElement('style');
     style.textContent=`
       .date-override-launch{position:fixed;right:18px;bottom:18px;z-index:9000;border:2px solid #f59e0b;border-radius:999px;padding:11px 17px;background:#fff7d6;color:#713f12;font-weight:1000;box-shadow:0 8px 24px #0004;cursor:pointer}.date-override-launch:hover{transform:translateY(-1px)}
-      .date-override-count{margin-left:8px;padding:2px 8px;border-radius:999px;background:#f59e0b;color:#241400;font-size:12px}.date-override-row>td{background:#fff7cc!important}.date-override-row{outline:2px solid #f59e0b;outline-offset:-2px}.date-override-mark{display:inline-flex;margin:3px 0 0 6px;padding:3px 7px;border:1px solid #d97706;border-radius:999px;background:#fef3c7;color:#92400e;font-size:11px;font-weight:1000;cursor:pointer;vertical-align:middle}
+      .date-override-count{margin-left:8px;padding:2px 8px;border-radius:999px;background:#f59e0b;color:#241400;font-size:12px}.date-override-cell{background:#ffe2e2!important;color:#b00020!important;box-shadow:inset 0 0 0 2px #e00025!important;border-color:#e00025!important;font-weight:1000!important;cursor:pointer}.date-override-cell b,.date-override-cell small{color:#b00020!important}
       .date-override-backdrop{display:none;position:fixed;inset:0;z-index:10000;background:#07131dcc;align-items:center;justify-content:center;padding:18px}.date-override-backdrop.show{display:flex}.date-override-dialog{width:min(620px,100%);max-height:94vh;overflow:auto;border:2px solid #4dd8ff;border-radius:16px;background:#fff;color:#162735;box-shadow:0 22px 80px #0009}.date-override-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:#073b55;color:#fff}.date-override-head h2{margin:0;font-size:21px}.date-override-close{border:0;background:transparent;color:#fff;font-size:28px;cursor:pointer}.date-override-body{padding:20px}.date-override-note{margin:0 0 16px;padding:10px 12px;border-radius:8px;background:#fff7d6;color:#713f12;font-weight:800}.date-override-field{display:grid;gap:6px;margin:12px 0}.date-override-field label{font-weight:900}.date-override-field input{width:100%;box-sizing:border-box;border:1px solid #91a8b6;border-radius:8px;padding:10px 12px;font-size:16px}.date-override-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}.date-override-actions button{border:0;border-radius:8px;padding:11px 16px;font-weight:1000;cursor:pointer}.date-override-save{background:#078a63;color:#fff}.date-override-reset{background:#fee2e2;color:#991b1b}.date-override-cancel{background:#e5e7eb;color:#24313a}#dateOverrideStatus{display:block;margin-top:12px;color:#26734d;font-weight:800}#dateOverrideStatus.error{color:#b91c1c}@media(max-width:700px){.date-override-launch{right:10px;bottom:10px}.date-override-actions{display:grid}.date-override-actions button{width:100%}}
     `;
     document.head.appendChild(style);
@@ -164,12 +185,12 @@
       <button type="button" class="date-override-launch" id="dateOverrideLaunch">✎ 日付修正 <span class="date-override-count" id="dateOverrideCount">修正なし</span></button>
       <div class="date-override-backdrop" id="dateOverrideModal" aria-hidden="true"><section class="date-override-dialog" role="dialog" aria-modal="true" aria-labelledby="dateOverrideTitle">
         <header class="date-override-head"><h2 id="dateOverrideTitle">日付を手動修正</h2><button type="button" class="date-override-close" data-date-close>×</button></header>
-        <form class="date-override-body" id="dateOverrideForm"><p class="date-override-note">保存後は全端末で共有され、集計・期限判定も修正後の日付で再計算されます。修正済み行は黄色と「✎ 手動修正」で表示します。</p>
+        <form class="date-override-body" id="dateOverrideForm"><p class="date-override-note">保存後は全端末で共有され、集計・期限判定も修正後の日付で再計算されます。修正した日付の欄だけ赤色で表示します。</p>
           <div class="date-override-field"><label for="dateOverrideId">製造指示番号</label><input id="dateOverrideId" list="dateOverrideIds" required autocomplete="off" placeholder="J番号を入力"><datalist id="dateOverrideIds"></datalist></div>
           <div class="date-override-field"><label for="dateOverrideMaterial">生地日</label><input id="dateOverrideMaterial" type="date"></div>
           <div class="date-override-field"><label for="dateOverrideDue">製造期限</label><input id="dateOverrideDue" type="date"></div>
           <div class="date-override-field"><label for="dateOverrideDispatch">出荷日</label><input id="dateOverrideDispatch" type="date"></div>
-          <div class="date-override-actions"><button type="button" class="date-override-reset" id="dateOverrideReset">修正を解除</button><button type="button" class="date-override-cancel" data-date-close>キャンセル</button><button type="submit" class="date-override-save" id="dateOverrideSave">Google Sheetへ保存</button></div><small id="dateOverrideStatus"></small>
+          <div class="date-override-actions"><button type="button" class="date-override-reset" id="dateOverrideReset">修正を解除</button><button type="button" class="date-override-cancel" data-date-close>キャンセル</button><button type="submit" class="date-override-save" id="dateOverrideSave">保存</button></div><small id="dateOverrideStatus"></small>
         </form></section></div>`);
     document.getElementById('dateOverrideLaunch').addEventListener('click',()=>openEditor(''));
     document.querySelectorAll('[data-date-close]').forEach(node=>node.addEventListener('click',closeEditor));
@@ -184,7 +205,7 @@
     host.innerHTML=currentRows().map(row=>`<option value="${esc(rowId(row))}"></option>`).join('');
   }
   function openEditor(id){
-    refreshDatalist();document.getElementById('dateOverrideModal').classList.add('show');document.getElementById('dateOverrideModal').setAttribute('aria-hidden','false');
+    refreshDatalist();const saveButton=document.getElementById('dateOverrideSave');saveButton.textContent='保存';saveButton.disabled=false;document.getElementById('dateOverrideModal').classList.add('show');document.getElementById('dateOverrideModal').setAttribute('aria-hidden','false');
     fillEditor(id);setTimeout(()=>document.getElementById(id?'dateOverrideMaterial':'dateOverrideId').focus(),0);
   }
   function closeEditor(){document.getElementById('dateOverrideModal').classList.remove('show');document.getElementById('dateOverrideModal').setAttribute('aria-hidden','true')}
@@ -204,12 +225,12 @@
     const id=idKey(document.getElementById('dateOverrideId').value);
     if(!id||!rowForId(id)){alert('SCV.csv に存在する製造指示番号を入力してください。');return}
     const item={id,materialDate:document.getElementById('dateOverrideMaterial').value,dueDate:document.getElementById('dateOverrideDue').value,dispatchDate:document.getElementById('dateOverrideDispatch').value,updatedAt:new Date().toISOString(),updatedBy:localStorage.getItem('dashboardEditorName')||''};
-    state.saving=true;document.getElementById('dateOverrideSave').disabled=true;setStatus('Google Sheetへ保存中…');
+    const saveButton=document.getElementById('dateOverrideSave');state.saving=true;saveButton.disabled=true;saveButton.textContent='保存中…';setStatus('Google Sheetへ保存中…');
     try{
       const unique=[...new Map([...state.items.values()].map(x=>[x.id,x])).values()].filter(x=>x.id!==id);unique.push(item);setRecords(unique);rerender();
-      await post({action:'saveDateOverride',dateOverride:item});setStatus('✓ 保存しました。共有データを確認中…');
-      await new Promise(resolve=>setTimeout(resolve,1100));await loadRemote(false);closeEditor();
-    }catch(_){setStatus('保存できませんでした。接続を確認してください。',true)}finally{state.saving=false;document.getElementById('dateOverrideSave').disabled=false}
+      await post({action:'saveDateOverride',dateOverride:item});saveButton.textContent='保存済';setStatus('✓ 保存済');
+      await new Promise(resolve=>setTimeout(resolve,900));await loadRemote(false);await new Promise(resolve=>setTimeout(resolve,700));closeEditor();
+    }catch(_){saveButton.textContent='保存';setStatus('保存できませんでした。接続を確認してください。',true)}finally{state.saving=false;if(saveButton.textContent!=='保存済')saveButton.disabled=false}
   }
   async function resetEditor(){
     const id=idKey(document.getElementById('dateOverrideId').value);if(!id||!lookup(id))return;
