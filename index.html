@@ -4407,7 +4407,12 @@ const initial=[['CAD/CAM',360],['切断',380],['曲げ',410],['溶接',400],['�
 const $=id=>document.getElementById(id), pad=n=>String(n).padStart(2,'0'), localDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 let selectedDate=localDate(new Date()), model={capacity:initial.map(([process,capacity])=>({process,capacity})),overtimeByDate:{},dailyCapacityByDate:{}};
 function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));}
-function cycle(){const now=new Date(),s=new Date(now.getFullYear(),now.getMonth(),20),e=new Date(now.getFullYear(),now.getMonth()+1,20);return {start:localDate(s),end:localDate(e)};}
+function cycle(){
+ const date=new Date(selectedDate+'T12:00:00');
+ const month=date.getMonth()-(date.getDate()<20?1:0);
+ const s=new Date(date.getFullYear(),month,20),e=new Date(date.getFullYear(),month+1,20);
+ return {start:localDate(s),end:localDate(e)};
+}
 function dayMap(date=selectedDate){return model.overtimeByDate[date]||(model.overtimeByDate[date]={});}
 function normalize(raw){
  if(raw?.capacity&&raw?.overtimeByDate)return {capacity:raw.capacity.map(x=>({process:String(x.process||'工程'),capacity:Math.max(0,Number(x.capacity)||0)})),holidays:Array.isArray(raw.holidays)?raw.holidays:[],overtimeByDate:raw.overtimeByDate||{},dailyCapacityByDate:raw.dailyCapacityByDate||{}};
