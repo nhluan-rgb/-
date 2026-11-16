@@ -1,0 +1,3032 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>シン・通天閣</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+/* ===== トークン（ダーク＝既定：工場ディスプレイ向け） ===== */
+:root{
+  color-scheme:dark;
+  --bg:#0e1217;
+  --surface:#161b22;
+  --surface-2:#1d242d;
+  --surface-3:#252e39;
+  --line:#2a333e;
+  --line-strong:#3a4552;
+  --text:#eef2f6;
+  --text-2:#b4bec9;
+  --muted:#7d8996;
+  --accent:#3987e5;
+  --accent-soft:rgba(57,135,229,.16);
+  --good:#2fb84a;
+  --good-soft:rgba(12,163,12,.16);
+  --warning:#fab219;
+  --warning-soft:rgba(250,178,25,.15);
+  --serious:#ec835a;
+  --critical:#e5484d;
+  --critical-soft:rgba(208,59,59,.18);
+  --neutral:#8a94a0;
+  --bar:#3987e5;
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px rgba(0,0,0,.25);
+  /* 工程の識別色（小さなマーカーのみ。文字色には使わない） */
+  --p-cad:#3987e5;--p-cut:#d95926;--p-bend:#199e70;--p-weld:#c98500;
+  --p-fin:#d55181;--p-paint:#0ca30c;--p-asm:#9085e9;--p-new:#8a94a0;
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#eef1f4;
+  --surface:#ffffff;
+  --surface-2:#f5f7f9;
+  --surface-3:#e9edf1;
+  --line:#dde2e8;
+  --line-strong:#c6cdd5;
+  --text:#111820;
+  --text-2:#47515c;
+  --muted:#6b7580;
+  --accent:#2a78d6;
+  --accent-soft:rgba(42,120,214,.1);
+  --good:#0a8a0a;
+  --good-soft:rgba(12,163,12,.1);
+  --warning:#b97c00;
+  --warning-soft:rgba(250,178,25,.16);
+  --serious:#c65a2e;
+  --critical:#c62f2f;
+  --critical-soft:rgba(208,59,59,.1);
+  --neutral:#7a848f;
+  --bar:#2a78d6;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.05);
+  --p-cad:#2a78d6;--p-cut:#eb6834;--p-bend:#1baf7a;--p-weld:#eda100;
+  --p-fin:#e87ba4;--p-paint:#008300;--p-asm:#6250d6;--p-new:#7a848f;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:"BIZ UDPGothic","BIZ UDGothic","Noto Sans JP","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+b,strong{font-weight:700}
+.muted{color:var(--muted);font-size:13px}
+
+/* ===== 全体レイアウト ===== */
+.app{
+  display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;
+  gap:12px;min-height:100vh;padding:12px 16px;
+}
+/* 大画面（キオスク 1920×1080 等）は1画面に収める。小さい画面は縦スクロール */
+@media (min-width:1600px) and (min-height:980px){.app{height:100vh}}
+@media (max-width:1599px),(max-height:979px){
+  .main .process-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .action b{white-space:normal}
+  .target-state{flex-wrap:wrap;gap:2px 6px}
+  .delivery-grid{overflow:visible}
+  .hero-value b{font-size:72px}
+}
+
+/* ===== ヘッダー ===== */
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{
+  width:44px;height:44px;border-radius:10px;display:grid;place-items:center;
+  background:var(--accent);color:#fff;font-size:24px;font-weight:700;
+}
+.brand-text b{display:block;font-size:24px;letter-spacing:.04em;line-height:1.1}
+.brand-text small{color:var(--muted);font-size:13px}
+.clock{text-align:center;padding:4px 22px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.clock-date{font-size:13px;color:var(--text-2)}
+.clock-time{font-size:34px;font-weight:700;letter-spacing:.04em;line-height:1.1}
+.clock.after16{border-color:var(--warning)}
+.clock.alarm{border-color:var(--critical);background:var(--critical-soft)}
+.clock.alarm .clock-time{color:var(--critical)}
+.top-right{display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap}
+.data-status{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:13px;color:var(--text-2)}
+.data-status b{color:var(--text);font-size:15px}
+.data-status .dot{width:9px;height:9px;border-radius:50%;background:var(--good)}
+.data-status.loading .dot{background:var(--warning)}
+.data-status.error{border-color:var(--critical)}
+.data-status.error .dot{background:var(--critical)}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:40px;padding:8px 14px;border-radius:9px;border:1px solid var(--line-strong);
+  background:var(--surface-2);color:var(--text);text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap;
+}
+.btn:hover{background:var(--surface-3)}
+.btn:focus-visible,.tab:focus-visible,.action:focus-visible,.pcard:focus-visible,.dcard:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.08);background:var(--accent)}
+.btn-icon{width:40px;padding:0;font-size:18px}
+.btn-save{width:100%;min-height:52px;font-size:18px;background:var(--good);border-color:var(--good);color:#fff}
+.btn-save:disabled{opacity:.7;cursor:wait}
+
+/* ===== タブ（KPI） ===== */
+.tabs-wrap{display:grid;gap:8px}
+.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.tab{
+  position:relative;display:grid;grid-template-rows:auto auto auto;align-content:start;gap:2px;
+  text-align:left;padding:12px 16px 12px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);box-shadow:var(--shadow);cursor:pointer;min-width:0;
+}
+.tab::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;border-radius:12px 12px 0 0;background:transparent}
+.tab:hover{border-color:var(--line-strong)}
+.tab.active{border-color:var(--accent);background:linear-gradient(var(--accent-soft),var(--accent-soft)),var(--surface)}
+.tab.active::before{background:var(--accent)}
+.tab-label{font-size:14px;font-weight:700;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab-value{display:flex;align-items:baseline;gap:4px}
+.tab-value b{font-size:36px;line-height:1.1}
+.tab-value i{font-style:normal;color:var(--text-2);font-size:15px}
+.tab-sub{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text-2);font-size:14px}
+.tab-specified input{max-width:150px;padding:3px 6px;border-radius:7px;border:1px solid var(--line-strong);background:var(--surface-2);font-size:13px}
+.tab.is-clear .tab-label::after{content:"  ✓ 完了";color:var(--good)}
+.tab.has-ng .tab-value b{color:var(--warning)}
+.tab-overdue.has-overdue{border-color:var(--critical);background:linear-gradient(var(--critical-soft),var(--critical-soft)),var(--surface)}
+.tab-overdue.has-overdue .tab-value b{color:var(--critical)}
+.tab-overdue.has-overdue .tab-label::before{content:"⚠ ";color:var(--critical)}
+.tab-overdue.is-zero .tab-label::after{content:"  ✓ ゼロ";color:var(--good)}
+.tab-overdue.active{border-color:var(--critical)}
+.tab-overdue.active::before{background:var(--critical)}
+
+.alert-strip{
+  display:flex;align-items:center;gap:12px;width:100%;padding:9px 16px;border-radius:10px;
+  border:1px solid var(--critical);background:var(--critical-soft);text-align:left;color:var(--text);
+}
+.alert-strip[hidden]{display:none}
+.alert-icon{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--critical);color:#fff;font-weight:700;flex:none}
+.alert-text{flex:1;font-size:15px}
+.alert-text b{color:var(--critical)}
+.alert-cta{font-weight:700;color:var(--critical);white-space:nowrap}
+
+/* ===== メイン 3列 ===== */
+.main{position:relative;display:grid;grid-template-columns:minmax(360px,.95fr) minmax(0,2.15fr) minmax(340px,.9fr);gap:12px;min-height:0}
+.col{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
+.col>.mode-ng,.col>.mode-std{display:flex;flex-direction:column;gap:12px;min-height:0;flex:1}
+.col-center>.mode-ng,.col-center>.mode-std{flex:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);min-height:0;min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.card-head h2{margin:0;font-size:16px;font-weight:700;color:var(--text)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;border:1px solid var(--line-strong);color:var(--text-2);background:var(--surface-2);white-space:nowrap}
+.pill.good{border-color:var(--good);color:var(--good);background:var(--good-soft)}
+.pill.warn{border-color:var(--warning);color:var(--warning);background:var(--warning-soft)}
+.pill.bad{border-color:var(--critical);color:var(--critical);background:var(--critical-soft)}
+
+/* モード切替 */
+body.is-ng .mode-std,body.is-std .mode-ng,body.is-std .mode-ng-only{display:none!important}
+
+/* 読込状態 */
+.load-state{position:absolute;inset:0;z-index:5;display:none;place-items:center;background:color-mix(in srgb,var(--bg) 88%,transparent);border-radius:12px}
+.load-state.show{display:grid}
+.load-box{display:grid;justify-items:center;gap:8px;padding:28px 36px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-align:center;max-width:560px}
+.load-box b{font-size:20px}
+.load-box small{color:var(--text-2);font-size:14px}
+.load-state.error .load-box{border-color:var(--critical)}
+.load-state.error .spinner{display:none}
+.spinner{width:34px;height:34px;border-radius:50%;border:4px solid var(--line-strong);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== 左：ヒーロー ===== */
+.hero{flex:1.25;display:flex;flex-direction:column}
+.hero-value{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.hero-value b{font-size:96px;line-height:1;letter-spacing:-.02em}
+.hero-value span{font-size:24px;color:var(--text-2)}
+.hero-points{font-size:20px;color:var(--text-2);margin:2px 0 14px}
+.progress{height:14px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.progress span{display:block;height:100%;width:0;border-radius:999px;background:var(--accent);transition:width .6s ease}
+.hero-progress-row{display:flex;justify-content:space-between;margin-top:8px;font-size:15px;color:var(--text-2)}
+.hero-progress-row b{color:var(--text);font-size:18px}
+.hero-start{font-size:13px;color:var(--muted)}
+.hero-msg{margin:auto 0 0;padding:12px 14px;border-radius:10px;background:var(--surface-2);font-size:17px;font-weight:700;line-height:1.5}
+.hero.done .hero-value b{color:var(--good)}
+.hero.done .progress span{background:var(--good)}
+.hero.late .progress span{background:var(--warning)}
+.hero.open .hero-value b{color:var(--warning)}
+
+.judge{flex:1;display:flex;flex-direction:column}
+.judge-body{position:relative;width:min(190px,100%);aspect-ratio:1;margin:2px auto 8px}
+.ring{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--surface-3);stroke-width:12}
+.ring-fill{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round;stroke-dasharray:0 400;transition:stroke-dasharray .6s ease}
+.ring-mark{stroke:var(--text);stroke-width:3}
+.judge.ok .ring-fill{stroke:var(--good)}
+.judge.ng .ring-fill{stroke:var(--critical)}
+.judge-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.judge-center b{font-size:38px;line-height:1}
+.judge-center small{color:var(--text-2);font-size:13px}
+.judge-meta{text-align:center;font-size:15px;color:var(--text-2)}
+.judge-rule{text-align:center;font-size:13px;color:var(--muted);margin-top:2px}
+
+/* ===== 左：標準表示 ===== */
+.overview{flex:1.25;display:flex;flex-direction:column}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0}
+.ov-head{display:flex;align-items:baseline;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.ov-head span{font-size:14px;color:var(--text-2);font-weight:700;margin-right:auto}
+.ov-head b{font-size:40px;line-height:1}
+.ov-head i{font-style:normal;color:var(--text-2)}
+.ov-head.warn b{color:var(--warning)}
+.bucket-list{display:grid;gap:5px}
+.bucket{display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);font-size:13px;text-align:left}
+.bucket span{color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bucket b{font-size:16px}
+.bucket:hover{border-color:var(--line-strong)}
+.bucket.active{border-color:var(--accent);background:var(--accent-soft)}
+.bucket.zero b{color:var(--muted)}
+
+.progress-card{flex:1;display:flex;flex-direction:column}
+.donut-row{position:relative;display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
+.donut{width:170px;height:170px;transform:rotate(-90deg)}
+.donut-center{position:absolute;left:0;top:0;width:170px;height:170px;display:grid;place-content:center;text-align:center}
+.donut-center b{font-size:30px;line-height:1}
+.donut-center small{color:var(--text-2);font-size:12px}
+.legend{display:grid;gap:8px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:15px}
+.legend i{width:12px;height:12px;border-radius:3px;flex:none}
+.legend span{color:var(--text-2);margin-right:auto}
+.legend b{font-size:18px}
+
+/* ===== 中央：工程目標 ===== */
+.targets{flex:none}
+.legend-inline{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-2)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:6px}
+.sw-watch{background:var(--warning)}.sw-alarm{background:var(--critical)}
+.target-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.target{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);border-top:4px solid var(--line-strong)}
+.target-time{font-size:24px;font-weight:700;line-height:1}
+.target-time small{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+.target-chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:var(--surface-3);font-size:12px;font-weight:700;color:var(--text)}
+.chip i{width:8px;height:8px;border-radius:50%;flex:none}
+.target-state{display:flex;justify-content:space-between;align-items:baseline;margin-top:auto}
+.target-state b{font-size:17px}
+.target-state span{font-size:14px;color:var(--text-2)}
+.target-note{font-size:12px;color:var(--muted)}
+.target.is-done{border-top-color:var(--good)}
+.target.is-done .target-state b{color:var(--good)}
+.target.is-watch{border-top-color:var(--warning);background:linear-gradient(var(--warning-soft),var(--warning-soft)),var(--surface-2)}
+.target.is-watch .target-state b{color:var(--warning)}
+.target.is-alarm{border-top-color:var(--critical);background:linear-gradient(var(--critical-soft),var(--critical-soft)),var(--surface-2)}
+.target.is-alarm .target-state b,.target.is-alarm .target-note{color:var(--critical)}
+
+/* 工程カード */
+.process-card{flex:none}
+.process-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.pcard{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-align:left;min-width:0;position:relative;overflow:hidden}
+.pcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--pc,var(--neutral))}
+.pcard-name{font-size:14px;font-weight:700;color:var(--text-2);white-space:nowrap}
+.pcard-count{font-size:30px;font-weight:700;line-height:1}
+.pcard-count small{font-size:13px;color:var(--text-2);font-weight:400;margin-left:2px}
+.pcard-pts{font-size:12px;color:var(--muted)}
+.pcard:hover:not(:disabled){border-color:var(--line-strong);background:var(--surface-3)}
+.pcard:disabled{cursor:default;opacity:.75}
+.pcard:disabled .pcard-count{color:var(--good);font-size:20px;padding:5px 0}
+
+/* 配送便 */
+.delivery-card{flex:1;display:flex;flex-direction:column}
+.delivery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px;overflow:auto;min-height:0;align-content:start;padding-right:2px}
+.dcard{display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 8px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-align:left;min-width:0}
+.dcard:hover{border-color:var(--line-strong);background:var(--surface-3)}
+.dcard-name{grid-column:1/-1;font-size:14px;font-weight:700;line-height:1.3;min-height:2.6em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dcard-count{font-size:26px;font-weight:700;line-height:1}
+.dcard-count small{font-size:13px;color:var(--text-2);font-weight:400}
+.dcard-time{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--surface-3);color:var(--text-2);justify-self:end}
+.dcard-time.pickup{background:var(--accent-soft);color:var(--text)}
+.dcard-pts{font-size:12px;color:var(--muted)}
+.empty{display:grid;place-items:center;min-height:90px;color:var(--muted);border:1px dashed var(--line-strong);border-radius:10px;font-size:15px}
+.empty.good{color:var(--good);border-color:var(--good)}
+
+/* 標準：工程バー＋材質 */
+.std-process{flex:none}
+.std-process-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+.bars{display:grid;gap:4px}
+.bar-row{display:grid;grid-template-columns:84px 1fr 118px;align-items:center;gap:10px;padding:5px 8px;border-radius:8px;border:1px solid transparent;background:none;text-align:left;width:100%}
+.bar-row:hover:not(:disabled){background:var(--surface-2);border-color:var(--line)}
+.bar-row:disabled{cursor:default}
+.bar-name{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;white-space:nowrap}
+.bar-name i{width:8px;height:8px;border-radius:50%;flex:none}
+.bar-track{height:14px;border-radius:0 4px 4px 0;background:var(--surface-3);overflow:hidden}
+.bar-fill{height:100%;border-radius:0 4px 4px 0;background:var(--bar);min-width:2px;transition:width .5s ease}
+.bar-val{text-align:right;font-size:13px;color:var(--text-2);white-space:nowrap}
+.bar-val b{color:var(--text);font-size:16px}
+.materials{display:flex;flex-direction:column;gap:8px}
+.materials-head{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;color:var(--text-2)}
+.materials-meta{font-weight:400;color:var(--muted)}
+.material-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mcard{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-align:left;min-width:0}
+.mcard:hover:not(:disabled){border-color:var(--line-strong);background:var(--surface-3)}
+.mcard:disabled{cursor:default;opacity:.75}
+.mcard-name{font-size:14px;font-weight:700;color:var(--text-2)}
+.mcard-count{font-size:26px;font-weight:700;line-height:1.1}
+.mcard-count small{font-size:13px;font-weight:400;color:var(--text-2)}
+.mcard-pts{font-size:12px;color:var(--muted)}
+.mcard:disabled .mcard-count{color:var(--good);font-size:18px}
+
+/* ===== 右列 ===== */
+.col-right{gap:12px}
+.bonus{flex:none}
+.bonus-goal{font-size:12px;color:var(--text-2)}
+.bonus-period{font-size:13px;color:var(--muted);margin:-6px 0 10px}
+.bonus-rows{position:relative;display:grid;gap:10px}
+.bonus-row-head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+.bonus-row-head span{color:var(--text-2);font-weight:700}
+.bonus-row-head b{font-size:17px}
+.bonus-track{position:relative;height:12px;border-radius:999px;background:var(--surface-3);overflow:visible}
+.bonus-fill{height:100%;border-radius:999px;background:var(--accent);max-width:100%}
+.bonus-row.west .bonus-fill{background:var(--warning)}
+.bonus-row.national .bonus-fill{background:var(--good)}
+.bonus-target{position:absolute;top:-4px;bottom:-4px;width:3px;border-radius:2px;background:var(--text);transform:translateX(-1px)}
+.bonus-daily{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:13px;color:var(--text-2)}
+.bonus-daily b{font-size:18px;color:var(--text)}
+.bonus-daily .ahead{color:var(--good);font-weight:700}
+.bonus-daily .behind{color:var(--warning);font-weight:700}
+.bonus-remain{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:14px;color:var(--text-2)}
+.bonus-remain b{font-size:28px;color:var(--text)}
+.bonus-fail{margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--critical);background:var(--critical-soft);font-size:13px;line-height:1.55}
+.bonus-fail b{color:var(--critical)}
+.bonus.win-2{border-color:var(--warning)}
+.bonus.win-3{border-color:var(--good)}
+
+.manufacturing{flex:none}
+.mf-value{font-size:30px;font-weight:700;line-height:1.1;margin:2px 0 10px}
+.mf-value.empty-val{color:var(--muted);font-size:22px}
+.mf-foot{display:flex;justify-content:space-between;font-size:14px;color:var(--text-2);margin-top:8px}
+.mf-foot b{font-size:18px;color:var(--text)}
+
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;align-content:end}
+.action{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);min-width:0}
+.action:hover{border-color:var(--accent)}
+.action-icon{grid-row:1/3;width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:18px;font-weight:700}
+.action b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.action small{font-size:12px;color:var(--muted)}
+
+/* ===== フッター ===== */
+.ticker{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);min-height:52px}
+.claim{padding:5px 12px;border-radius:8px;font-weight:700;background:var(--good-soft);color:var(--good);border:1px solid var(--good);white-space:nowrap}
+.claim.has-claim{background:var(--critical-soft);color:var(--critical);border-color:var(--critical)}
+.claim-info{font-size:15px;color:var(--text-2);max-width:38vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:12px;border-right:1px solid var(--line)}
+.ticker-msg{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .4s ease}
+.ticker-msg.fade{opacity:0}
+
+/* ===== モーダル ===== */
+.modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:24px}
+.modal.show{display:grid}
+.modal.stacked{z-index:110}
+.modal-backdrop{position:absolute;inset:0;background:rgba(5,8,12,.62);backdrop-filter:blur(3px)}
+.modal-card{position:relative;display:flex;flex-direction:column;width:min(1280px,96vw);max-height:92vh;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface);box-shadow:0 24px 70px rgba(0,0,0,.45);overflow:hidden}
+.modal-card.wide{width:min(1500px,97vw)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.modal-kicker{font-size:13px;color:var(--muted)}
+.modal-head h3{margin:2px 0 0;font-size:24px}
+.modal-head-right{display:flex;align-items:center;gap:12px}
+.modal-count{font-size:16px;color:var(--text-2)}
+.modal-count b{color:var(--text);font-size:20px}
+.modal-body{padding:16px 20px 20px;overflow:auto;min-height:0}
+.info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.info-cell{padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);min-width:0}
+.info-cell small{display:block;font-size:12px;color:var(--muted)}
+.info-cell b{font-size:18px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:58vh}
+table.list{width:100%;border-collapse:collapse;font-size:14px}
+table.list th{position:sticky;top:0;z-index:1;background:var(--surface-3);color:var(--text-2);font-size:13px;text-align:left;padding:9px 10px;white-space:nowrap}
+table.list td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+table.list tr:hover td{background:var(--surface-2)}
+table.list td.num{text-align:right;white-space:nowrap}
+table.list td.code{font-family:ui-monospace,Consolas,monospace;font-size:13px;white-space:nowrap}
+table.list td.date{white-space:nowrap}
+table.list td small{display:block;color:var(--muted);font-size:12px}
+table.list tr.row-ng td{background:var(--warning-soft)}
+table.list tr.row-late td:first-child{box-shadow:inset 4px 0 0 var(--critical)}
+.status-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:var(--surface-3);font-size:12px;font-weight:700;white-space:nowrap}
+.status-chip i{width:8px;height:8px;border-radius:50%}
+.status-chip.done{color:var(--good)}
+.status-chip.cancel{color:var(--muted)}
+.foot-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;margin-top:14px}
+.foot-box{padding:12px 14px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:14px;color:var(--text-2)}
+.foot-box .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.foot-box .totals b{display:block;font-size:20px;color:var(--text)}
+.list-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.list-filters input,.list-filters select{min-height:40px;padding:6px 10px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface-2)}
+.list-filters input{flex:1;min-width:240px}
+.list-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:12px}
+
+/* J番号検索 */
+.jsearch{display:grid;grid-template-columns:340px 1fr;gap:18px}
+.j-display{padding:14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface-2);font-size:28px;font-weight:700;text-align:center;letter-spacing:.06em;margin-bottom:10px;min-height:64px}
+.j-display.placeholder{color:var(--muted);font-size:18px;letter-spacing:0;display:grid;place-items:center}
+.j-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.j-key{min-height:64px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface-2);font-size:26px;font-weight:700}
+.j-key:hover{background:var(--surface-3)}
+.j-key.cmd{font-size:16px;color:var(--text-2)}
+.j-results{display:grid;gap:8px;align-content:start}
+.j-result{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-align:left}
+.j-result:hover{border-color:var(--accent)}
+.j-result b{font-size:18px;font-family:ui-monospace,Consolas,monospace}
+.j-result span{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.j-msg{color:var(--text-2);font-size:15px;padding:6px 2px}
+
+/* 達成カレンダー */
+.cal-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
+.cal-head b{font-size:18px}
+.cal-head span{color:var(--text-2);font-size:14px;text-align:right}
+.cal-week,.cal-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal-week div{text-align:center;font-size:13px;font-weight:700;color:var(--text-2);padding:4px}
+.cal-day{min-height:86px;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);display:flex;flex-direction:column;gap:4px}
+.cal-day.empty{background:none;border-color:transparent}
+.cal-day.today{border:2px solid var(--accent)}
+.cal-day.holiday{background:var(--surface);opacity:.75}
+.cal-num{font-size:13px;color:var(--text-2);font-weight:700}
+.stamp{align-self:flex-start;padding:2px 10px;border-radius:999px;font-size:14px;font-weight:700;background:var(--surface-3);color:var(--text-2)}
+.stamp.done{background:var(--good-soft);color:var(--good);border:1px solid var(--good)}
+.stamp.miss{background:var(--critical-soft);color:var(--critical);border:1px solid var(--critical)}
+.stamp.pending{background:var(--accent-soft);color:var(--text)}
+.stamp-note{font-size:11px;color:var(--muted)}
+
+/* 受注キャパシティー */
+.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi-row.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpi{padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2)}
+.kpi>span{display:block;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em}
+.kpi b{display:block;font-size:30px;line-height:1.15}
+.kpi b em{font-style:normal;font-size:15px;color:var(--text-2);font-weight:400}
+.kpi>small{font-size:12px;color:var(--text-2)}
+.kpi.danger{border-color:var(--critical);background:var(--critical-soft)}
+.kpi.danger b{color:var(--critical)}
+.kpi.good{border-color:var(--good)}
+.kpi.good b{color:var(--good)}
+.cap-layout{display:grid;grid-template-columns:1fr 300px;gap:14px}
+.cap-chart-card{padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);min-width:0}
+.cap-chart-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.formula,.formula-note{font-size:13px;color:var(--text-2)}
+.formula-note{margin-bottom:12px;padding:8px 12px;border-radius:8px;background:var(--surface-2)}
+.cap-chart{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;height:360px;padding-top:6px}
+.cap-day{position:relative;display:grid;grid-template-rows:1fr auto;gap:6px;padding:0;border:0;background:none;min-width:0}
+.cap-zone{position:relative;border-bottom:1px solid var(--line-strong)}
+.cap-bar{position:absolute;left:18%;right:18%;bottom:0;border-radius:4px 4px 0 0;background:var(--bar);min-height:2px;transition:height .5s ease}
+.cap-bar.over{background:var(--critical)}
+.cap-day.off .cap-bar{background:var(--surface-3)}
+.cap-day:not(.off):hover .cap-bar{filter:brightness(1.15)}
+.cap-val{position:absolute;left:0;right:0;text-align:center;font-size:12px;line-height:1.2;color:var(--text);transform:translateY(-100%);padding-bottom:3px;white-space:nowrap}
+.cap-val small{display:block;color:var(--muted);font-size:11px}
+.cap-date{text-align:center;font-size:12px;color:var(--text-2);line-height:1.2}
+.cap-date b{display:block;font-size:14px;color:var(--text)}
+.cap-day.off .cap-date{color:var(--muted)}
+.cap-day.off .cap-date b{color:var(--muted)}
+.cap-line{position:absolute;left:0;right:0;height:0;border-top:2px dashed var(--text-2);pointer-events:none;z-index:2}
+.cap-line.l60{border-top-color:var(--warning)}
+.cap-line.l80{border-top-color:var(--critical)}
+.cap-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--text-2)}
+.ln{display:inline-block;width:22px;height:0;border-top:2px dashed var(--text-2);vertical-align:middle;margin-right:6px}
+.ln-60{border-top-color:var(--warning)}.ln-80{border-top-color:var(--critical)}
+.cap-advice{padding:14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2)}
+.cap-advice h4{margin:0 0 10px;font-size:16px}
+.reco{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.reco button{min-width:64px;min-height:44px;border-radius:9px;border:1px solid var(--good);background:var(--good-soft);color:var(--text);font-weight:700;font-size:16px}
+.cap-advice small{display:block;color:var(--text-2);font-size:12px;line-height:1.6}
+.sp-view{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:center}
+.sp-pie{position:relative;width:220px;height:220px;border-radius:50%}
+.sp-pie-center{position:absolute;inset:34px;border-radius:50%;background:var(--surface);display:grid;place-content:center;text-align:center}
+.sp-pie-center b{font-size:28px}
+.sp-pie-center small{color:var(--text-2)}
+.sp-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sp-cat{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);text-align:left;min-width:0}
+.sp-cat:hover{border-color:var(--accent)}
+.sp-cat i{width:12px;height:12px;border-radius:3px}
+.sp-cat span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-cat b{font-size:18px}
+.sp-hint{margin-top:10px;color:var(--muted);font-size:13px}
+.sp-detail-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.sp-detail-head b{font-size:17px}
+.sp-type-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sp-type{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);text-align:left}
+.sp-type:hover{border-color:var(--accent)}
+.sp-type span b{display:block;font-size:17px}
+.sp-type span small{color:var(--muted);font-size:12px}
+.sp-type strong{font-size:24px}
+.sp-guide{color:var(--text-2);margin:0 0 10px;font-size:14px}
+
+/* 残業 */
+.ot-datebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.ot-datebar input{min-height:40px;padding:6px 10px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface-2);font-weight:700}
+.ot-layout{display:grid;grid-template-columns:420px 1fr;gap:16px}
+.ot-inputs-head{font-weight:700;margin-bottom:8px}
+.ot-rows{display:grid;gap:8px;margin-bottom:12px}
+.ot-row{display:grid;grid-template-columns:1fr 150px;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2)}
+.ot-row label{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700}
+.ot-row label i{width:10px;height:10px;border-radius:50%}
+.ot-row select{min-height:48px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);font-size:20px;font-weight:700;text-align:center}
+.ot-row:focus-within{border-color:var(--accent)}
+.note{font-size:13px;color:var(--text-2);line-height:1.6}
+.ot-charts{position:relative;display:grid;gap:12px;min-width:0}
+.chart-box{padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2)}
+.chart-title{font-weight:700;margin-bottom:4px}
+.chart-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--text-2);margin-bottom:6px}
+.chart-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ot-chart{width:100%;height:auto;aspect-ratio:900/220;display:block}
+.ot-chart .grid{stroke:var(--line);stroke-width:1}
+.ot-chart .axis{fill:var(--muted);font-size:11px}
+.ot-chart .lbl{fill:var(--text-2);font-size:11px}
+.ot-chart .val{fill:var(--text);font-size:11px;font-weight:700}
+.tooltip{position:absolute;z-index:5;display:none;pointer-events:none;padding:8px 12px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);box-shadow:0 8px 24px rgba(0,0,0,.3);font-size:14px;font-weight:700;white-space:nowrap}
+
+/* トースト・祝賀 */
+.toast{position:fixed;left:50%;bottom:28px;z-index:200;transform:translateX(-50%);display:none;padding:14px 26px;border-radius:12px;border:1px solid var(--good);background:var(--surface);font-size:18px;font-weight:700;box-shadow:0 12px 34px rgba(0,0,0,.35)}
+.toast.show{display:block}
+.toast.error{border-color:var(--critical);color:var(--critical)}
+.celebrate{position:fixed;inset:0;z-index:300;display:grid;place-items:center;background:rgba(5,8,12,.72);cursor:pointer}
+.celebrate-card{padding:44px 64px;border-radius:20px;border:2px solid var(--good);background:var(--surface);text-align:center;box-shadow:0 30px 90px rgba(0,0,0,.5)}
+.celebrate-card.two{border-color:var(--warning)}
+.celebrate-card .big{font-size:64px;font-weight:700;line-height:1.2}
+.celebrate-card .sub{font-size:24px;color:var(--text-2);margin-top:8px}
+.celebrate-card small{display:block;margin-top:18px;color:var(--muted)}
+
+/* ===== レスポンシブ ===== */
+@media (max-height:900px) and (min-width:1201px){
+  .hero-value b{font-size:72px}
+  .judge-body{width:150px}
+  .tab-value b{font-size:30px}
+  .clock-time{font-size:28px}
+}
+@media (max-width:1200px){
+  .app{height:auto;min-height:100vh}
+  .top{grid-template-columns:1fr auto}
+  .top-right{grid-column:1/-1;justify-content:flex-start}
+  .tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .main{grid-template-columns:1fr 1fr}
+  .col-center{grid-column:1/-1;order:-1}
+  .process-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .delivery-grid{max-height:none}
+  .cap-layout,.ot-layout,.jsearch{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .app{padding:10px 16px}
+  .tabs{grid-template-columns:1fr 1fr}
+  .main{grid-template-columns:1fr}
+  .target-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .std-process-grid,.overview-grid{grid-template-columns:1fr}
+  .info-grid,.list-kpis,.kpi-row{grid-template-columns:1fr 1fr}
+  .ticker{grid-template-columns:1fr}
+  .claim-info{border-right:0;max-width:none}
+  .ticker-msg{white-space:normal}
+  .modal{padding:8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">通</div>
+      <div class="brand-text"><b>シン・通天閣</b><small>〜工場の進捗、見えすぎやろ。〜</small></div>
+    </div>
+    <div class="clock" id="clock" aria-live="off">
+      <div class="clock-date" id="clockDate">----/--/--</div>
+      <div class="clock-time" id="clockTime">--:--:--</div>
+    </div>
+    <div class="top-right">
+      <div class="data-status" id="csvStatus" title="SCV.csv のGitHub最終更新時刻">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="data-status-label">CSV 最終更新</span>
+        <b id="csvUpdated">--/-- --:--:--</b>
+      </div>
+      <nav class="top-actions">
+        <button type="button" class="btn" id="openList">☰ 製造指示一覧</button>
+        <a class="btn" href="painting.html">塗装工程へ</a>
+        <a class="btn" href="welding.html">工程管理</a>
+        <button type="button" class="btn btn-primary" id="refresh">↻ 更新</button>
+        <button type="button" class="btn btn-icon" id="themeToggle" aria-label="表示テーマ切替" title="表示テーマ切替">◐</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== 対象タブ（KPI） ===== -->
+  <section class="tabs-wrap">
+    <div class="tabs" role="tablist" aria-label="表示対象">
+      <button type="button" class="tab" data-ship="today-ng" role="tab">
+        <span class="tab-label">本日出荷・未完成</span>
+        <span class="tab-value"><b id="tabNg">0</b><i>件</i></span>
+        <span class="tab-sub" id="tabNgPts">0点</span>
+      </button>
+      <button type="button" class="tab" data-ship="today" role="tab">
+        <span class="tab-label" id="tabTodayLabel">本日 製造期限</span>
+        <span class="tab-value"><b id="tabToday">0</b><i>件</i></span>
+        <span class="tab-sub" id="tabTodayPts">0点</span>
+      </button>
+      <button type="button" class="tab" data-ship="tomorrow" role="tab">
+        <span class="tab-label" id="tabTomorrowLabel">明日 出荷</span>
+        <span class="tab-value"><b id="tabTomorrow">0</b><i>件</i></span>
+        <span class="tab-sub" id="tabTomorrowPts">0点</span>
+      </button>
+      <button type="button" class="tab tab-overdue" data-ship="overdue" role="tab">
+        <span class="tab-label" id="tabOverdueLabel">製造期限切れ</span>
+        <span class="tab-value"><b id="tabOverdue">0</b><i>件</i></span>
+        <span class="tab-sub" id="tabOverduePts">0点</span>
+      </button>
+      <div class="tab tab-specified" data-ship="specified" role="tab" tabindex="0">
+        <span class="tab-label">指定日 製造期限</span>
+        <span class="tab-value"><b id="tabSpecified">0</b><i>件</i></span>
+        <span class="tab-sub"><span id="tabSpecifiedPts">0点</span><input type="date" id="specifiedDate" aria-label="指定日"></span>
+      </div>
+    </div>
+    <button type="button" class="alert-strip" id="overdueAlert" hidden>
+      <span class="alert-icon" aria-hidden="true">!</span>
+      <span class="alert-text" id="overdueAlertText"></span>
+      <span class="alert-cta">対象を確認 ›</span>
+    </button>
+  </section>
+
+  <!-- ===== メイン ===== -->
+  <main class="main" id="main">
+    <div class="load-state" id="loadState">
+      <div class="load-box">
+        <div class="spinner" aria-hidden="true"></div>
+        <b id="loadTitle">SCV.csv を読み込んでいます…</b>
+        <small id="loadSub">データが表示されるまでお待ちください。</small>
+      </div>
+    </div>
+
+    <!-- 左列 -->
+    <section class="col col-left">
+      <!-- ミッション表示（本日出荷・未完成） -->
+      <div class="mode-ng">
+        <article class="card hero" id="heroCard">
+          <header class="card-head"><h2>本日出荷・未完成</h2><span class="pill" id="heroPill">—</span></header>
+          <div class="hero-value"><b id="heroCount">0</b><span>件</span></div>
+          <div class="hero-points" id="heroPoints">0点</div>
+          <div class="progress" aria-hidden="true"><span id="heroBar"></span></div>
+          <div class="hero-progress-row"><span>完了までの進捗</span><b id="heroRate">0%</b></div>
+          <div class="hero-start" id="heroStart">本日開始時 0件</div>
+          <p class="hero-msg" id="heroMsg">—</p>
+        </article>
+        <article class="card judge" id="judgeCard">
+          <header class="card-head"><h2>本日製造期限 完成率</h2><span class="pill" id="judgePill">16:00判定</span></header>
+          <div class="judge-body">
+            <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-track" cx="60" cy="60" r="50"/>
+              <circle class="ring-fill" id="judgeRing" cx="60" cy="60" r="50"/>
+            </svg>
+            <div class="judge-center"><b id="judgeRate">0%</b><small>完成率</small></div>
+          </div>
+          <div class="judge-meta" id="judgeMeta">完成 0 ／ 対象 0件</div>
+          <div class="judge-rule">16時時点で75％以上：達成</div>
+        </article>
+      </div>
+
+      <!-- 標準表示（その他のタブ） -->
+      <div class="mode-std">
+        <article class="card overview">
+          <header class="card-head"><h2 id="stdTitle">本日製造期限</h2><span class="muted" id="stdPoints">0点</span></header>
+          <div class="overview-grid">
+            <div class="ov-col">
+              <div class="ov-head"><span>全体</span><b id="stdTotal">0</b><i>件</i></div>
+              <div class="bucket-list" id="bucketsTotal"></div>
+            </div>
+            <div class="ov-col">
+              <div class="ov-head warn"><span>未完成</span><b id="stdRemaining">0</b><i>件</i></div>
+              <div class="bucket-list" id="bucketsRemaining"></div>
+            </div>
+          </div>
+        </article>
+        <article class="card progress-card">
+          <header class="card-head"><h2>全体進捗</h2><span class="muted" id="stdProgressMsg">—</span></header>
+          <div class="donut-row">
+            <svg class="donut" id="stdDonut" viewBox="0 0 120 120" aria-hidden="true"></svg>
+            <div class="donut-center"><b id="stdRate">0.0%</b><small>完成率</small></div>
+            <div class="legend" id="stdLegend"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 中央列 -->
+    <section class="col col-center">
+      <div class="mode-ng">
+        <article class="card targets">
+          <header class="card-head"><h2>本日の工程目標</h2><span class="legend-inline"><i class="sw sw-watch"></i>1時間前 注意 <i class="sw sw-alarm"></i>超過 至急</span></header>
+          <div class="target-grid" id="targets"></div>
+        </article>
+      </div>
+      <div class="mode-std">
+        <article class="card std-process">
+          <header class="card-head"><h2>工程別 進捗状況</h2><span class="muted">件数・タップで詳細</span></header>
+          <div class="std-process-grid">
+            <div class="bars" id="processBars"></div>
+            <div class="materials">
+              <div class="materials-head">
+                <span>材質・表面処理（未完成）</span>
+                <span class="materials-meta" id="materialMeta"></span>
+              </div>
+              <div class="material-grid" id="materialCards"></div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <article class="card process-card mode-ng-only">
+        <header class="card-head"><h2>工程別 未完成</h2><span class="muted">タップで対象一覧</span></header>
+        <div class="process-grid" id="processCards"></div>
+      </article>
+      <article class="card delivery-card">
+        <header class="card-head"><h2>配送便別</h2><span class="muted" id="deliveryMeta">—</span></header>
+        <div class="delivery-grid" id="deliveryCards"></div>
+      </article>
+    </section>
+
+    <!-- 右列（共通） -->
+    <section class="col col-right">
+      <article class="card bonus" id="bonusPanel"></article>
+      <article class="card manufacturing" id="manufacturingPanel"></article>
+      <div class="action-grid">
+        <button type="button" class="action" id="openCapacity"><span class="action-icon" aria-hidden="true">▤</span><b>受注キャパシティー</b><small>生産余力を確認</small></button>
+        <button type="button" class="action" id="openOvertime"><span class="action-icon" aria-hidden="true">⏱</span><b>残業入力</b><small>工程別の残業を入力</small></button>
+        <button type="button" class="action" id="openJSearch"><span class="action-icon" aria-hidden="true">#</span><b>J番号検索</b><small>製造指示を探す</small></button>
+        <button type="button" class="action" id="openCalendar"><span class="action-icon" aria-hidden="true">▦</span><b>達成カレンダー</b><small>16時75％判定</small></button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== フッター（クレーム・メッセージ） ===== -->
+  <footer class="ticker">
+    <div class="claim" id="claimChip">クレーム 0回</div>
+    <div class="claim-info" id="claimInfo">クレーム情報なし</div>
+    <div class="ticker-msg" id="tickerMsg" aria-live="polite"></div>
+  </footer>
+</div>
+
+<!-- ===== 汎用モーダル ===== -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="modal"></div>
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <header class="modal-head">
+      <div><div class="modal-kicker" id="modalKicker"></div><h3 id="modalTitle"></h3></div>
+      <div class="modal-head-right"><span class="modal-count" id="modalCount"></span><button type="button" class="btn" data-close="modal">× 閉じる</button></div>
+    </header>
+    <div class="modal-body" id="modalBody"></div>
+  </section>
+</div>
+
+<!-- ===== 受注キャパシティー ===== -->
+<div class="modal" id="capModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="capModal"></div>
+  <section class="modal-card wide" role="dialog" aria-modal="true" aria-labelledby="capTitle">
+    <header class="modal-head">
+      <div><div class="modal-kicker">SALES × PRODUCTION</div><h3 id="capTitle">受注キャパシティー</h3></div>
+      <div class="modal-head-right"><span class="modal-count" id="spPeriod">—</span><button type="button" class="btn" data-close="capModal">× 閉じる</button></div>
+    </header>
+    <div class="modal-body">
+      <div class="kpi-row">
+        <div class="kpi"><span>CAPACITY</span><b>450</b><small>点 / 日（通常上限）</small></div>
+        <div class="kpi" id="spBookedCard"><span>MAX</span><b><span id="spBooked">0</span><em> / 450</em></b><small id="spBookedSub">製造期限</small></div>
+        <div class="kpi" id="spRemainCard"><span>余力</span><b id="spRemain">450</b><small>点（最大負荷日基準）</small></div>
+        <div class="kpi" id="spRiskCard"><span>OVER</span><b><span id="spRisk">0</span><em>日</em></b><small>450点超の営業日</small></div>
+      </div>
+      <div class="cap-layout">
+        <div class="cap-chart-card">
+          <div class="cap-chart-head"><b>製造期限別 負荷点</b><span class="formula" id="spFormula"></span></div>
+          <div class="cap-chart" id="spChart"></div>
+          <div class="cap-legend"><span><i class="ln ln-cap"></i>450点 通常上限</span><span><i class="ln ln-60"></i>500点 残業60分予想</span><span><i class="ln ln-80"></i>550点 残業80分予想</span></div>
+        </div>
+        <div class="cap-advice" id="spAdvice"></div>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="modal stacked" id="spModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="spModal"></div>
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="spDecisionTitle">
+    <header class="modal-head">
+      <div><div class="modal-kicker">負荷点の内訳</div><h3 id="spDecisionTitle">製造期限</h3></div>
+      <div class="modal-head-right"><span class="modal-count">合計 <b id="spDecisionCurrent">0</b> 点</span><button type="button" class="btn" data-close="spModal">× 閉じる</button></div>
+    </header>
+    <div class="modal-body">
+      <div class="formula-note">合計負荷点 ＝ 各製品の「数量 × 評価点 ＋ 段取り点」の合計</div>
+      <div id="spDecisionOrders"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 残業入力 ===== -->
+<div class="modal" id="otModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="otModal"></div>
+  <section class="modal-card wide" role="dialog" aria-modal="true" aria-labelledby="otTitle">
+    <header class="modal-head">
+      <div><div class="modal-kicker" id="otPeriod">対象期間</div><h3 id="otTitle">残業入力</h3></div>
+      <div class="modal-head-right"><button type="button" class="btn" data-close="otModal">× 閉じる</button></div>
+    </header>
+    <div class="modal-body">
+      <div class="ot-datebar">
+        <button type="button" class="btn btn-icon" id="otPrev" aria-label="前日">‹</button>
+        <label>入力日 <input type="date" id="otDate"></label>
+        <button type="button" class="btn btn-icon" id="otNext" aria-label="翌日">›</button>
+        <span class="pill" id="otDayStatus"></span>
+      </div>
+      <div class="kpi-row three">
+        <div class="kpi"><span>受注キャパシティー（選択日）</span><b id="otOrderTotal">0 pt</b></div>
+        <div class="kpi"><span>工程キャパシティー（選択日）</span><b id="otCapacityTotal">0 pt</b></div>
+        <div class="kpi"><span>期間内の累計残業時間</span><b id="otHoursTotal">0 h</b></div>
+      </div>
+      <div class="ot-layout">
+        <div class="ot-inputs">
+          <div class="ot-inputs-head" id="otHoursHeading">残業時間 (h)</div>
+          <div class="ot-rows" id="otRows"></div>
+          <button type="button" class="btn btn-save" id="otSave">保存</button>
+          <p class="note">入力日を確認して各工程の残業時間を選び、「保存」を押してください。履歴はGoogle Sheetに日付別で保存され、すべての端末で共有されます。</p>
+        </div>
+        <div class="ot-charts">
+          <div class="chart-box"><div class="chart-title">キャパシティー（pt）</div><div class="chart-legend" id="otCapLegend"></div><svg id="otCapChart" class="ot-chart" viewBox="0 0 900 220"></svg></div>
+          <div class="chart-box"><div class="chart-title">工程別 残業時間（h）</div><div class="chart-legend" id="otLegend"></div><svg id="otChart" class="ot-chart" viewBox="0 0 900 220"></svg></div>
+          <div class="tooltip" id="otTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   シン・通天閣 〜工場の進捗、見えすぎやろ。〜（新世界 v2）
+   ロジックは旧版 index.html（V9系）をそのまま移植。表示部分のみ再設計。
+   ===================================================================== */
+
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n||0).toLocaleString('ja-JP');
+const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isCancelStatus=s=>String(s||'').includes('ｷｬﾝｾﾙ')||String(s||'').includes('キャンセル');
+const isUnfinished=r=>r.status!=='完成'&&!isCancelStatus(r.status);
+const sumQty=list=>list.reduce((a,r)=>a+(Number(r.qty)||0),0);
+const safeStore={
+  get(k){try{return localStorage.getItem(k)}catch(_){return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(_){}},
+  remove(k){try{localStorage.removeItem(k)}catch(_){}}
+};
+
+/* ---------- 状態 ---------- */
+let rows=[];
+let dataReady=false;
+let shipFilter='today-ng';
+let specifiedShipDate='';
+let standardBreakdownFilter=null;
+let currentChartRows=[];
+let currentChartLabel='生産進捗';
+let csvLoading=false;
+let lastRender={};
+
+/* =====================================================================
+   日付・営業日（旧版と同一）
+   ===================================================================== */
+let TODAY_RESULT_SETTING='auto';
+let COMPANY_HOLIDAYS=new Set();
+let COMPANY_HOLIDAY_VERSION=0;
+const NATIONAL_HOLIDAY_CACHE=new Map();
+let SHIP_DATE_CACHE={key:'',value:null};
+
+function formatLocalDate(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+const localDateKey=formatLocalDate;
+const getLocalDateKey=(date=new Date())=>formatLocalDate(date);
+function nthMonday(year,month,nth){
+  const first=new Date(year,month-1,1);
+  return 1+((8-first.getDay())%7)+(nth-1)*7;
+}
+function japaneseHolidayKeys(year){
+  const holidays=new Set();
+  const add=(month,day)=>holidays.add(`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
+  add(1,1); add(1,nthMonday(year,1,2));
+  add(2,11); if(year>=2020)add(2,23);
+  add(3,Math.floor(20.8431+0.242194*(year-1980)-Math.floor((year-1980)/4)));
+  add(4,29); add(5,3); add(5,4); add(5,5);
+  add(7,nthMonday(year,7,3)); add(8,11);
+  add(9,nthMonday(year,9,3));
+  add(9,Math.floor(23.2488+0.242194*(year-1980)-Math.floor((year-1980)/4)));
+  add(10,nthMonday(year,10,2)); add(11,3); add(11,23);
+  for(let day=2;day<=365;day++){
+    const key=localDateKey(new Date(year,0,day));
+    const before=localDateKey(new Date(year,0,day-1));
+    const after=localDateKey(new Date(year,0,day+1));
+    if(!holidays.has(key)&&holidays.has(before)&&holidays.has(after))holidays.add(key);
+  }
+  [...holidays].forEach(key=>{
+    const holiday=new Date(`${key}T00:00:00`);
+    if(holiday.getDay()!==0)return;
+    const substitute=new Date(holiday);
+    do{substitute.setDate(substitute.getDate()+1)}while(holidays.has(localDateKey(substitute)));
+    holidays.add(localDateKey(substitute));
+  });
+  return holidays;
+}
+function getNationalHolidayKeysCached(year){
+  if(!NATIONAL_HOLIDAY_CACHE.has(year))NATIONAL_HOLIDAY_CACHE.set(year,japaneseHolidayKeys(year));
+  return NATIONAL_HOLIDAY_CACHE.get(year);
+}
+function clearBusinessDayCache(){COMPANY_HOLIDAY_VERSION++;SHIP_DATE_CACHE={key:'',value:null}}
+function normalizeCompanyHolidays(value){
+  if(!Array.isArray(value))return [];
+  return [...new Set(value.map(item=>String(item||'').trim()).filter(item=>/^\d{4}-\d{2}-\d{2}$/.test(item)))].sort();
+}
+function isCompanyHoliday(dateOrKey){
+  const key=dateOrKey instanceof Date?getLocalDateKey(dateOrKey):String(dateOrKey||'');
+  return COMPANY_HOLIDAYS.has(key);
+}
+function isSystemBusinessDay(date){
+  const key=formatLocalDate(date);
+  return date.getDay()!==0&&date.getDay()!==6&&!getNationalHolidayKeysCached(date.getFullYear()).has(key)&&!COMPANY_HOLIDAYS.has(key);
+}
+/* 旧版 isBonusBusinessDay と同じ判定（祝日計算のみキャッシュ利用） */
+const isBonusBusinessDay=isSystemBusinessDay;
+function nextSystemBusinessDay(baseDate){
+  const next=new Date(baseDate);
+  do{next.setDate(next.getDate()+1)}while(!isSystemBusinessDay(next));
+  return next;
+}
+function getShipDates(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const todayKey=formatLocalDate(today);
+  const cacheKey=`${todayKey}|${COMPANY_HOLIDAY_VERSION}`;
+  if(SHIP_DATE_CACHE.key===cacheKey&&SHIP_DATE_CACHE.value)return SHIP_DATE_CACHE.value;
+  const tomorrow=nextSystemBusinessDay(today);
+  const after=nextSystemBusinessDay(tomorrow);
+  const value=Object.freeze({today:todayKey,tomorrow:formatLocalDate(tomorrow),after:formatLocalDate(after)});
+  SHIP_DATE_CACHE={key:cacheKey,value};
+  return value;
+}
+function isOverdueItem(r){
+  const today=getShipDates().today;
+  const status=String(r.status||'');
+  return Boolean(r.due)&&r.due<today&&status!=='完成'&&!isCancelStatus(status);
+}
+const shortMD=key=>{const p=String(key||'').split('-');return p.length===3?`${Number(p[1])}/${Number(p[2])}`:key};
+
+/* ---------- setting.json（本日の達成判定・会社休日） ---------- */
+async function loadTodayResultSetting(){
+  const previousSetting=TODAY_RESULT_SETTING;
+  const previousHolidays=JSON.stringify([...COMPANY_HOLIDAYS].sort());
+  try{
+    const response=await fetch('setting.json?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const config=await response.json();
+    const configuredDate=String(config?.date||'').trim();
+    const today=getLocalDateKey();
+    const value=String(config?.todayResult||'auto').trim();
+    const nextCompanyHolidays=new Set(normalizeCompanyHolidays(config?.companyHolidays));
+    if(previousHolidays!==JSON.stringify([...nextCompanyHolidays].sort())){
+      COMPANY_HOLIDAYS=nextCompanyHolidays;
+      clearBusinessDayCache();
+    }
+    TODAY_RESULT_SETTING=(configuredDate===today&&['達成','未達成'].includes(value))?value:'auto';
+  }catch(error){
+    console.warn('setting.json を読み込めないため auto／会社休日なしで動作します。',error);
+    TODAY_RESULT_SETTING='auto';
+    if(COMPANY_HOLIDAYS.size){COMPANY_HOLIDAYS=new Set();clearBusinessDayCache()}
+  }
+  return previousSetting!==TODAY_RESULT_SETTING||previousHolidays!==JSON.stringify([...COMPANY_HOLIDAYS].sort());
+}
+async function refreshTodayResultSetting(){
+  if(await loadTodayResultSetting())renderAll();
+}
+function forcedTodayAchievement(){
+  if(TODAY_RESULT_SETTING==='達成')return 'done';
+  if(TODAY_RESULT_SETTING==='未達成')return 'miss';
+  return null;
+}
+
+/* =====================================================================
+   CSV 読込（旧版と同一の列名・正規化）
+   ===================================================================== */
+const excelDate=v=>{
+  if(!v)return'';
+  if(v instanceof Date)return formatLocalDate(v);
+  if(typeof v==='number')return formatLocalDate(new Date(Math.round((v-25569)*86400000)));
+  const s=String(v).trim().replaceAll('/','-');
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(m)return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  m=s.match(/^(\d{1,2})-(\d{1,2})-(\d{2}|\d{4})$/);
+  if(m){const y=m[3].length===2?`20${m[3]}`:m[3];return `${y}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`}
+  return s.slice(0,10);
+};
+function buildSizeInfo(o){
+  const pick=(...keys)=>{
+    for(const key of keys){
+      const value=o[key];
+      if(value!==undefined&&value!==null&&String(value).trim()!=='')return String(value).trim();
+    }
+    return '';
+  };
+  const t=pick('サイズ（厚さ）','ｻｲｽﾞ（厚さ）','サイズ(厚さ)','ｻｲｽﾞ(厚さ)');
+  const v=pick('サイズ（縦）','ｻｲｽﾞ（縦）','サイズ(縦)','ｻｲｽﾞ(縦)');
+  const h=pick('サイズ（横）','ｻｲｽﾞ（横）','サイズ(横)','ｻｲｽﾞ(横)');
+  const height=pick('サイズ（高さ）','ｻｲｽﾞ（高さ）','サイズ(高さ)','ｻｲｽﾞ(高さ)');
+  const clean=value=>{
+    const raw=String(value??'').trim();
+    if(!raw)return '';
+    if(/^-?\d+(?:\.\d+)?$/.test(raw)){const n=Number(raw);return Number.isFinite(n)?String(n):raw}
+    return raw;
+  };
+  const values=[t,v,h,height].map(clean);
+  return values.some(Boolean)?values.map(value=>value||'—').join(' × '):'';
+}
+function normalizeRow(o){
+  const qty=Number(String(o['数量']||0).replaceAll(',','').trim())||0;
+  return{
+    id:String(o['製造指示番号']||'').trim(),
+    part:String(o['品番']||'').trim(),
+    name:String(o['品名']||'').trim(),
+    standard:String(o['規格']||'').trim(),
+    color:String(o['色']||'').trim(),
+    sizeInfo:buildSizeInfo(o),
+    qty,
+    due:excelDate(o['製造期限']),
+    shipDate:excelDate(o['出荷日']),
+    status:String(o['進捗']||'').trim(),
+    owner:String(o['担当者']||'').trim(),
+    ship:String(o['配送便']||'').trim()
+  };
+}
+async function getCsvGithubUpdatedAt(csvResponse){
+  try{
+    const host=location.hostname.toLowerCase();
+    if(host.endsWith('.github.io')){
+      const owner=host.split('.')[0];
+      const parts=location.pathname.split('/').filter(Boolean);
+      let repo,csvPath;
+      if(parts.length){repo=parts[0];csvPath=[...parts.slice(1,-1),'SCV.csv'].join('/')}
+      else{repo=owner+'.github.io';csvPath='SCV.csv'}
+      const api=`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?path=${encodeURIComponent(csvPath)}&per_page=1`;
+      const r=await fetch(api,{cache:'no-store',headers:{'Accept':'application/vnd.github+json'}});
+      if(r.ok){
+        const commits=await r.json();
+        const iso=commits?.[0]?.commit?.committer?.date||commits?.[0]?.commit?.author?.date;
+        if(iso){const d=new Date(iso);if(!Number.isNaN(d.getTime()))return d}
+      }
+    }
+  }catch(err){console.warn('GitHub commit time取得失敗:',err)}
+  try{
+    const lastModified=csvResponse?.headers?.get('last-modified');
+    if(lastModified){const d=new Date(lastModified);if(!Number.isNaN(d.getTime()))return d}
+  }catch(_){}
+  return null;
+}
+function setLoadState(mode,title,sub){
+  const box=$('loadState');
+  box.classList.toggle('show',mode!=='hidden');
+  box.classList.toggle('error',mode==='error');
+  if(title)$('loadTitle').textContent=title;
+  if(sub!==undefined)$('loadSub').textContent=sub;
+}
+async function loadSharedCsv(){
+  await spLoadPointMaster();
+  if(csvLoading)return;
+  csvLoading=true;
+  const status=$('csvStatus');
+  status.classList.add('loading');status.classList.remove('error');
+  try{
+    const response=await fetch('SCV.csv?ts='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const buffer=await response.arrayBuffer();
+    let csvText='';
+    try{csvText=new TextDecoder('shift-jis').decode(buffer)}catch(_){csvText=new TextDecoder('utf-8').decode(buffer)}
+    if(!csvText.includes('製造指示番号'))csvText=new TextDecoder('utf-8').decode(buffer);
+    csvText=csvText.replace(/^﻿/,'');
+    const book=XLSX.read(csvText,{type:'string',cellDates:false,raw:true});
+    const sheet=book.Sheets[book.SheetNames[0]];
+    const raw=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:true});
+    const loaded=raw.map(normalizeRow).filter(r=>r.id||r.name);
+    if(!loaded.length)throw new Error('SCV.csv に有効なデータがありません');
+    rows=loaded;
+    dataReady=true;
+    const updatedAt=await getCsvGithubUpdatedAt(response);
+    $('csvUpdated').textContent=updatedAt
+      ?updatedAt.toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})
+      :'取得不可';
+    setLoadState('hidden');
+    renderAll();
+    if($('modal').classList.contains('show')&&lastModal.refresh)lastModal.refresh();
+  }catch(err){
+    console.error(err);
+    status.classList.add('error');
+    if(!dataReady){
+      // 旧版のようなサンプル値は表示しない。読込失敗をはっきり示す。
+      setLoadState('error','⚠ SCV.csv を読み込めません','GitHub上のファイル名が正確に「SCV.csv」か確認してください。30秒ごとに再試行します。');
+      renderEmptyKpis();
+    }else{
+      showToast('SCV.csv の更新に失敗しました。前回のデータを表示中です。',true);
+    }
+  }finally{
+    csvLoading=false;
+    status.classList.remove('loading');
+  }
+}
+function renderEmptyKpis(){
+  ['tabNg','tabToday','tabTomorrow','tabOverdue','tabSpecified'].forEach(id=>$(id).textContent='—');
+  ['tabNgPts','tabTodayPts','tabTomorrowPts','tabOverduePts','tabSpecifiedPts'].forEach(id=>$(id).textContent='—');
+}
+
+/* =====================================================================
+   トースト
+   ===================================================================== */
+function showToast(message,error=false){
+  const toast=$('toast');
+  toast.textContent=message;
+  toast.className='toast show'+(error?' error':'');
+  clearTimeout(showToast.timer);
+  showToast.timer=setTimeout(()=>{toast.className='toast'},3200);
+}
+
+/* =====================================================================
+   大入り・製造高・クレーム（bonus-progress.json）旧版ロジックを移植
+   ===================================================================== */
+const BONUS_PROGRESS_DEFAULTS={'2026-08-20':{east:49.0,west:55.5,national:50.3}};
+let bonusRemoteProgress=null;
+let claimRemoteData=null;
+let manufacturingProgress=null;
+
+function bonusCelebrationBusinessDay(closingDate){
+  const day=new Date(closingDate.getFullYear(),closingDate.getMonth(),closingDate.getDate());
+  while(!isBonusBusinessDay(day))day.setDate(day.getDate()+1);
+  return day;
+}
+function closingDateForTodayCelebration(now=new Date()){
+  const todayKey=localDateKey(now);
+  const candidates=[new Date(now.getFullYear(),now.getMonth(),20),new Date(now.getFullYear(),now.getMonth()-1,20)];
+  return candidates.find(closing=>localDateKey(bonusCelebrationBusinessDay(closing))===todayKey)||null;
+}
+function closingDateForResultWindow(now=new Date()){
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const candidates=[new Date(now.getFullYear(),now.getMonth(),20),new Date(now.getFullYear(),now.getMonth()-1,20)];
+  return candidates.find(closing=>today>=closing&&today<=bonusCelebrationBusinessDay(closing))||null;
+}
+function bonusCycleInfo(now=new Date()){
+  const start=new Date(now.getFullYear(),now.getMonth()-(now.getDate()<=20?1:0),21);
+  const end=new Date(start.getFullYear(),start.getMonth()+1,20);
+  return {start,end};
+}
+function claimCycleInfo(now=new Date()){
+  const start=now.getDate()>=20?new Date(now.getFullYear(),now.getMonth(),20):new Date(now.getFullYear(),now.getMonth()-1,20);
+  return {start,end:new Date(start.getFullYear(),start.getMonth()+1,20)};
+}
+async function loadBonusProgress(){
+  try{
+    const response=await fetch(`bonus-progress.json?ts=${Date.now()}`,{cache:'no-store'});
+    if(!response.ok)throw new Error(`bonus-progress.json ${response.status}`);
+    const data=await response.json();
+    const rawClosingDate=String(data.closingDate||'auto').trim();
+    const closingDate=!rawClosingDate||rawClosingDate.toLowerCase()==='auto'
+      ?localDateKey(closingDateForResultWindow(new Date())||bonusCycleInfo(new Date()).end)
+      :rawClosingDate;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(closingDate))throw new Error('closingDate');
+    bonusRemoteProgress={closingDate,east:Number(data.east)||0,west:Number(data.west)||0,national:Number(data.national)||0};
+    const manufacturing=(data.manufacturing&&typeof data.manufacturing==='object')?data.manufacturing:{};
+    const amount=Number(manufacturing.amount);
+    manufacturingProgress={
+      closingDate:String(manufacturing.closingDate||'').trim(),
+      amount:Number.isFinite(amount)&&amount>=0?Math.trunc(amount):null
+    };
+    const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
+    const rawClaimClosingDate=String(claim.closingDate||'').trim();
+    claimRemoteData={
+      closingDate:/^\d{4}-\d{2}-\d{2}$/.test(rawClaimClosingDate)?rawClaimClosingDate:'',
+      count:Math.max(0,Math.trunc(Number(claim.count)||0)),
+      info:String(claim.info||'').trim()
+    };
+    safeStore.set(`bonusProgress:${closingDate}`,JSON.stringify({east:bonusRemoteProgress.east,west:bonusRemoteProgress.west,national:bonusRemoteProgress.national}));
+  }catch(error){
+    console.warn('大入り進捗データを読み込めません。内蔵値を使用します。',error);
+  }
+  updateBonusCampaignPanel();
+  updateManufacturingPanel();
+  updateClaim();
+}
+function bonusProgressFor(end){
+  const key=localDateKey(end);
+  if(bonusRemoteProgress&&bonusRemoteProgress.closingDate===key)return bonusRemoteProgress;
+  try{const saved=JSON.parse(safeStore.get(`bonusProgress:${key}`)||'null');if(saved)return saved}catch(_){}
+  return BONUS_PROGRESS_DEFAULTS[key]||{east:0,west:0,national:0};
+}
+function bonusReward(progress){
+  return (Number(progress.west)>=100?20000:0)+(Number(progress.national)>=100?10000:0);
+}
+const shortJapaneseDate=date=>`${date.getMonth()+1}月${date.getDate()}日`;
+function countBusinessDays(start,end){
+  const cursor=new Date(start.getFullYear(),start.getMonth(),start.getDate());
+  const last=new Date(end.getFullYear(),end.getMonth(),end.getDate());
+  let count=0;
+  while(cursor<=last){if(isSystemBusinessDay(cursor))count++;cursor.setDate(cursor.getDate()+1)}
+  return count;
+}
+const remainingBonusBusinessDays=(now,end)=>countBusinessDays(now,end);
+function bonusDailyWestTarget(now,cycle){
+  const total=Math.max(1,countBusinessDays(cycle.start,cycle.end));
+  const targetEnd=now<cycle.start
+    ?new Date(cycle.start.getFullYear(),cycle.start.getMonth(),cycle.start.getDate()-1)
+    :(now>cycle.end?cycle.end:now);
+  const elapsed=targetEnd<cycle.start?0:countBusinessDays(cycle.start,targetEnd);
+  return Math.min(100,elapsed/total*100);
+}
+const shownBonusCelebrations=new Set();
+function showBonusCelebration(level,closingKey){
+  const celebrationKey=`${closingKey}:${level}`;
+  const dismissedKey=`bonusCelebrationDismissed:${celebrationKey}`;
+  if(safeStore.get(dismissedKey)==='1'||shownBonusCelebrations.has(celebrationKey))return;
+  shownBonusCelebrations.add(celebrationKey);
+  const isThree=level==='3man';
+  const overlay=document.createElement('div');
+  overlay.className='celebrate';
+  overlay.setAttribute('role','button');
+  overlay.setAttribute('tabindex','0');
+  overlay.setAttribute('aria-label','達成演出を閉じる');
+  overlay.innerHTML=`<div class="celebrate-card ${isThree?'':'two'}">
+    <div class="big">${isThree?'大入り3万円':'大入り2万円'} 達成！</div>
+    <div class="sub">${isThree?'全世界100％ COMPLETE！':'西半球100％ CLEAR！'}</div>
+    <small>画面をタップすると閉じます</small></div>`;
+  document.body.appendChild(overlay);
+  const close=()=>{safeStore.set(dismissedKey,'1');document.removeEventListener('keydown',onKey);overlay.remove()};
+  const onKey=e=>{if(['Escape','Enter',' '].includes(e.key)){e.preventDefault();close()}};
+  overlay.addEventListener('click',close);
+  document.addEventListener('keydown',onKey);
+}
+function updateBonusCampaignPanel(){
+  const box=$('bonusPanel');
+  const now=new Date();
+  const cycle=bonusCycleInfo(now);
+  const resultClosingDate=closingDateForResultWindow(now);
+  const displayCycle=resultClosingDate?bonusCycleInfo(resultClosingDate):cycle;
+  const progress=bonusProgressFor(displayCycle.end);
+  const westTarget=bonusDailyWestTarget(now,cycle);
+  const items=[
+    {key:'east',label:'東半球'},
+    {key:'west',label:'西半球'},
+    {key:'national',label:'全世界'}
+  ];
+  const rowsHtml=items.map(item=>{
+    const rate=Math.max(0,Number(progress[item.key])||0);
+    const target=item.key==='west'?`<span class="bonus-target" style="left:${westTarget.toFixed(1)}%" title="本日の目標 ${westTarget.toFixed(1)}%"></span>`:'';
+    return `<div class="bonus-row ${item.key}">
+      <div class="bonus-row-head"><span>${item.label}</span><b>${rate.toFixed(1)}%</b></div>
+      <div class="bonus-track"><div class="bonus-fill" style="width:${Math.min(rate,100)}%"></div>${target}</div>
+    </div>`;
+  }).join('');
+  const westActual=Math.max(0,Number(progress.west)||0);
+  const westGap=westActual-westTarget;
+  const compare=westGap>=0
+    ?`<span class="ahead">目標より ${westGap.toFixed(1)}pt 先行</span>`
+    :`<span class="behind">目標まで あと ${Math.abs(westGap).toFixed(1)}pt</span>`;
+  const resultKey=resultClosingDate?localDateKey(resultClosingDate):'';
+  const hasResultData=Boolean(resultKey&&(
+    (bonusRemoteProgress&&bonusRemoteProgress.closingDate===resultKey)||
+    BONUS_PROGRESS_DEFAULTS[resultKey]||safeStore.get(`bonusProgress:${resultKey}`)
+  ));
+  const resultProgress=resultClosingDate?bonusProgressFor(resultClosingDate):null;
+  const isNotAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)<20000);
+  const footer=isNotAchievedDay
+    ?`<div class="bonus-fail"><b>未達成</b>　みんなでここまで頑張ってきたからこそ、あと一歩届かなかったことが悔しい。この悔しさを次の力に変えて、次こそ一緒に達成しよう。</div>`
+    :`<div class="bonus-remain"><span>締日まで 残り実働</span><span><b>${remainingBonusBusinessDays(now,cycle.end)}</b> 日</span></div>`;
+  box.innerHTML=`
+    <header class="card-head"><h2>大入り</h2><span class="bonus-goal">西100%＝2万円 ／ 全世界100%＝3万円</span></header>
+    <div class="bonus-period">${shortJapaneseDate(displayCycle.start)} ～ ${shortJapaneseDate(displayCycle.end)}</div>
+    <div class="bonus-rows">${rowsHtml}</div>
+    <div class="bonus-daily">本日の目標（西半球）<b>${westTarget.toFixed(1)}%</b>${compare}</div>
+    ${footer}`;
+  box.classList.remove('win-2','win-3');
+  const celebrationClosingDate=closingDateForTodayCelebration(now);
+  if(celebrationClosingDate){
+    const reward=bonusReward(bonusProgressFor(celebrationClosingDate));
+    const closingKey=localDateKey(celebrationClosingDate);
+    if(reward>=30000){box.classList.add('win-3');showBonusCelebration('3man',closingKey)}
+    else if(reward>=20000){box.classList.add('win-2');showBonusCelebration('2man',closingKey)}
+  }
+}
+function formatManufacturingYen(value){
+  const man=Math.floor(value/10000);
+  const sen=Math.floor(man/1000);
+  const rest=man%1000;
+  return (sen?sen+'千':'')+(rest?String(rest):'')+'万円';
+}
+function updateManufacturingPanel(){
+  const box=$('manufacturingPanel');
+  const amount=manufacturingProgress?.amount;
+  const current=manufacturingProgress?.closingDate===localDateKey(bonusCycleInfo(new Date()).end)&&amount!==null&&amount!==undefined;
+  const rate=current?Math.min(100,amount/86000000*100):0;
+  box.innerHTML=`
+    <header class="card-head"><h2>製造高　目標 8千600万円</h2></header>
+    <div class="muted">今期の製造高</div>
+    <div class="mf-value ${current?'':'empty-val'}">${current?formatManufacturingYen(amount):'未入力'}</div>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="86000000" aria-valuenow="${current?amount:0}"><span style="width:${rate}%;background:var(--good)"></span></div>
+    <div class="mf-foot"><span>達成率</span><b>${rate.toFixed(1)}%</b></div>`;
+}
+function currentClaim(){
+  const cycle=claimCycleInfo(new Date());
+  const applies=claimRemoteData&&claimRemoteData.closingDate===localDateKey(cycle.end);
+  return {count:applies?claimRemoteData.count:0,info:applies?claimRemoteData.info:''};
+}
+function updateClaim(){
+  const claim=currentClaim();
+  const chip=$('claimChip');
+  chip.textContent=`クレーム ${fmt(claim.count)}回`;
+  chip.classList.toggle('has-claim',claim.count>0);
+  $('claimInfo').textContent=claim.info||'クレーム情報なし';
+  $('claimInfo').title=claim.info||'';
+}
+
+/* =====================================================================
+   16時 75％達成カレンダー（旧版ロジック）
+   ===================================================================== */
+const ACHIEVEMENT_LOGIC_START_DATE='2026-08-06';
+const ACHIEVEMENT_MANUAL_DONE_DATE='2026-08-05';
+const ACHIEVEMENT_MIGRATION_KEY='achievementCalendarMigrationVersion';
+const ACHIEVEMENT_MIGRATION_VERSION='2026-08-05-v2';
+const achievementMonthKey=month=>`todayNgAchievement:${month}`;
+function readAchievementMonth(month){try{return JSON.parse(safeStore.get(achievementMonthKey(month))||'{}')}catch(_){return{}}}
+function writeAchievementMonth(month,data){safeStore.set(achievementMonthKey(month),JSON.stringify(data))}
+function migrateAchievementCalendarOnce(){
+  try{
+    if(safeStore.get(ACHIEVEMENT_MIGRATION_KEY)===ACHIEVEMENT_MIGRATION_VERSION)return;
+    const july=readAchievementMonth('2026-07');
+    Object.keys(july).forEach(k=>{if(k>='2026-07-20'&&k<='2026-07-31')delete july[k]});
+    writeAchievementMonth('2026-07',july);
+    const aug=readAchievementMonth('2026-08');
+    Object.keys(aug).forEach(k=>{if(k>='2026-08-01'&&k<='2026-08-04')delete aug[k]});
+    aug['2026-08-05']={status:'done',rate:75,time:'16:00',capturedAt:new Date().toISOString(),source:'calendar-migration',threshold:75,locked:true};
+    writeAchievementMonth('2026-08',aug);
+    safeStore.set(ACHIEVEMENT_MIGRATION_KEY,ACHIEVEMENT_MIGRATION_VERSION);
+  }catch(error){console.warn('達成カレンダー初期更新失敗:',error)}
+}
+function todayDeadlineStats(){
+  const today=getShipDates().today;
+  const effective=rows.filter(r=>r.due===today&&!isCancelStatus(r.status));
+  const done=effective.filter(r=>r.status==='完成').length;
+  const rate=effective.length?Math.round(done/effective.length*1000)/10:0;
+  return {done,total:effective.length,rate,status:rate>=75?'done':'miss'};
+}
+/* 16時以降に一度だけ判定を保存（旧版と同条件） */
+function recordAchievement(){
+  if(!dataReady)return;
+  migrateAchievementCalendarOnce();
+  const now=new Date();
+  const today=getShipDates().today;
+  const month=today.slice(0,7);
+  const data=readAchievementMonth(month);
+  const todayDate=new Date(`${today}T00:00:00`);
+  const closed=!isSystemBusinessDay(todayDate);
+  if(today===ACHIEVEMENT_MANUAL_DONE_DATE){
+    if(!data[today]||data[today].status!=='done'){
+      data[today]={status:'done',rate:75,time:'16:00',capturedAt:now.toISOString(),source:'manual-start-setting',threshold:75,locked:true};
+      writeAchievementMonth(month,data);
+    }
+    return;
+  }
+  if(closed||today<ACHIEVEMENT_LOGIC_START_DATE||now.getHours()<16)return;
+  const existing=data[today];
+  if(existing&&(existing.status==='done'||existing.status==='miss'))return;
+  const s=todayDeadlineStats();
+  data[today]={status:s.status,rate:s.rate,done:s.done,total:s.total,time:'16:00',capturedAt:now.toISOString(),source:'today-deadline',threshold:75,locked:true};
+  writeAchievementMonth(month,data);
+}
+function savedAchievementStatus(result){
+  if(!result)return null;
+  if(result.status==='done'||result.status==='miss')return result.status;
+  if(Number.isFinite(Number(result.rate)))return Number(result.rate)>=75?'done':'miss';
+  return null;
+}
+function calendarHtml(){
+  migrateAchievementCalendarOnce();
+  const now=new Date();
+  const today=getShipDates().today;
+  const [year,monthNumber]=today.slice(0,7).split('-').map(Number);
+  const todayDate=new Date(`${today}T00:00:00`);
+  const cycleStart=todayDate.getDate()>=20?new Date(year,monthNumber-1,20):new Date(year,monthNumber-2,20);
+  const cycleEnd=new Date(cycleStart.getFullYear(),cycleStart.getMonth()+1,20);
+  const national=new Set([...getNationalHolidayKeysCached(cycleStart.getFullYear()),...getNationalHolidayKeysCached(cycleEnd.getFullYear())]);
+  const s=todayDeadlineStats();
+  const cache=new Map();
+  const stamp=st=>st==='done'
+    ?'<span class="stamp done">達成</span><span class="stamp-note">16:00判定</span>'
+    :st==='miss'?'<span class="stamp miss">未達成</span><span class="stamp-note">16:00判定</span>':'';
+  const cells=[];
+  for(let i=0;i<cycleStart.getDay();i++)cells.push('<div class="cal-day empty"></div>');
+  for(let d=new Date(cycleStart);d<=cycleEnd;d.setDate(d.getDate()+1)){
+    const key=formatLocalDate(d);
+    const m=key.slice(0,7);
+    if(!cache.has(m))cache.set(m,readAchievementMonth(m));
+    const saved=savedAchievementStatus(cache.get(m)[key]);
+    const wd=d.getDay();
+    const isNat=national.has(key);
+    const isComp=isCompanyHoliday(key);
+    const isClosed=wd===0||wd===6||isNat||isComp;
+    const isToday=key===today;
+    const isFuture=key>today;
+    let content='';
+    if(isClosed){
+      content=`<span class="stamp">休日</span><span class="stamp-note">${isComp?'会社休日':isNat?'祝日':wd===6?'土曜日':'日曜日'}</span>`;
+    }else if(isToday&&now.getHours()<16){
+      content=`<span class="stamp pending">判定前</span><span class="stamp-note">現在 ${s.rate}%</span>`;
+    }else if(key<ACHIEVEMENT_MANUAL_DONE_DATE){
+      content='<span class="stamp">記録なし</span><span class="stamp-note">運用開始前</span>';
+    }else if(key===ACHIEVEMENT_MANUAL_DONE_DATE){
+      content=stamp('done');
+    }else if(saved!==null){
+      content=stamp(saved);
+    }else if(isToday&&today>=ACHIEVEMENT_LOGIC_START_DATE&&now.getHours()>=16){
+      content=stamp(s.status);
+    }else if(!isFuture&&!isToday){
+      content='<span class="stamp">記録なし</span><span class="stamp-note">未保存</span>';
+    }
+    cells.push(`<div class="cal-day ${isToday?'today':''} ${isClosed?'holiday':''}"><span class="cal-num">${d.getMonth()+1}/${d.getDate()}</span>${content}</div>`);
+  }
+  return `<div class="cal-head">
+      <b>${cycleStart.getFullYear()}年${cycleStart.getMonth()+1}月20日 ～ ${cycleEnd.getMonth()+1}月20日</b>
+      <span>16時時点の「本日製造期限」完成率で判定　75％以上：達成 ／ 75％未満：未達成<br>※判定結果はこの端末に保存されます</span>
+    </div>
+    <div class="cal-week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="cal-days">${cells.join('')}</div>`;
+}
+
+/* =====================================================================
+   本日の工程目標（旧版ロジック）
+   ===================================================================== */
+const PROCESS_COLOR={
+  '未着手':'var(--p-new)','CAD/CAM':'var(--p-cad)','切断':'var(--p-cut)','曲げ':'var(--p-bend)',
+  '溶接':'var(--p-weld)','仕上':'var(--p-fin)','塗装':'var(--p-paint)','組立':'var(--p-asm)'
+};
+function processColor(name){
+  const n=String(name||'').trim();
+  if(PROCESS_COLOR[n])return PROCESS_COLOR[n];
+  if(n.includes('CAD')||n.includes('CAM'))return PROCESS_COLOR['CAD/CAM'];
+  for(const key of Object.keys(PROCESS_COLOR))if(n.includes(key))return PROCESS_COLOR[key];
+  return 'var(--neutral)';
+}
+function updateDailyProcessTargets(){
+  const box=$('targets');
+  if(!box||!dataReady)return;
+  const now=new Date();
+  const today=getShipDates().today;
+  const activeRows=rows.filter(row=>row.shipDate===today&&isUnfinished(row));
+  const goals=[
+    {time:'11:00',processes:['未着手','CAD/CAM','切断']},
+    {time:'12:00',processes:['曲げ']},
+    {time:'14:00',processes:['溶接','仕上']},
+    {time:'15:00',processes:['塗装']},
+    {time:'16:00',processes:['全工程'],all:true}
+  ];
+  box.innerHTML=goals.map(goal=>{
+    const [hour,minute]=goal.time.split(':').map(Number);
+    const deadline=new Date(now);deadline.setHours(hour,minute,0,0);
+    const remaining=goal.all?activeRows:activeRows.filter(row=>goal.processes.includes(String(row.status||'').trim()));
+    const minutesLeft=Math.ceil((deadline-now)/60000);
+    let cls='is-upcoming',label='順調',sub=`残り ${remaining.length}件`,note=`期限まで ${Math.max(0,minutesLeft)}分`;
+    if(remaining.length===0){cls='is-done';label='完了';sub='0件';note='目標クリア'}
+    else if(minutesLeft<=0){cls='is-alarm';label='至急確認';sub=`${remaining.length}件`;note=`${Math.abs(minutesLeft)}分超過・すぐ確認`}
+    else if(minutesLeft<=60){cls='is-watch';label='注意';sub=`${remaining.length}件`;note=`あと ${minutesLeft}分`}
+    const chips=goal.processes.map(n=>`<span class="chip">${n==='全工程'?'':`<i style="background:${processColor(n)}"></i>`}${escapeHtml(n)}</span>`).join('');
+    return `<div class="target ${cls}">
+      <div class="target-time">${goal.time}<small>までに完了</small></div>
+      <div class="target-chips">${chips}</div>
+      <div class="target-state"><b>${label}</b><span>${sub}</span></div>
+      <div class="target-note">${note}</div>
+    </div>`;
+  }).join('');
+}
+
+/* =====================================================================
+   応援メッセージ（旧版の文言をそのまま使用）
+   ===================================================================== */
+const fmtMsg=fmt;
+const STANDARD_MESSAGE_INTERVAL=12000;
+const messageValue=(context,type)=>{
+  if(type==='total')return fmt(context.total);
+  if(type==='remaining')return fmt(context.remaining);
+  return Number(context.rate||0).toFixed(1);
+};
+const dynamicMessage=(template,emptyMessage,completeMessage)=>(context)=>{
+  if(context.total===0&&emptyMessage)return emptyMessage;
+  if(context.total>0&&context.rate>=100&&completeMessage)return completeMessage;
+  return template
+    .replaceAll('{total}',messageValue(context,'total'))
+    .replaceAll('{remaining}',messageValue(context,'remaining'))
+    .replaceAll('{rate}',messageValue(context,'rate'));
+};
+const buildMessageGroup=(templates,emptyMessages,completeMessages)=>templates.map((template,index)=>
+  dynamicMessage(
+    template,
+    emptyMessages[index%emptyMessages.length],
+    completeMessages[index%completeMessages.length]
+  )
+);
+const ngLateCompletionMessages=[
+  '本日は16時以降の完了となりました。明日は少し早めの段取りを意識しましょう。',
+  '最後まで完了できたことは大切です。次回は16時前の達成を目指しましょう。',
+  '今日の遅れを責める必要はありません。原因を一つ確認し、明日の改善につなげましょう。',
+  'あと少し早く動ければ達成につながります。明日は優先順位を早めにそろえましょう。',
+  '困った工程は早めに共有しましょう。小さな相談が大きな遅れを防ぎます。',
+  '作業は完了しましたが、本日の判定は未達成です。明日は余裕を持った進行を心掛けましょう。',
+  '今日の経験を次に生かしましょう。朝の段取りと途中確認を少し早めることが大切です。',
+  '安全と品質を守りながら、明日は時間内の完了を目指して一歩ずつ改善しましょう。',
+  '遅れた理由を一つだけ振り返りましょう。小さな改善の積み重ねが達成につながります。',
+  'お疲れさまでした。明日は16時前に終えられるよう、早めの声掛けを意識しましょう。'
+];
+
+const standardMessageGroups={
+  'today-ng':buildMessageGroup([
+    '⚔️ 本日出荷の未完成は全{total}件、討伐完了まであと{remaining}件です。全員でゴールを目指しましょう！',
+    '🔥 本日ミッションの進捗は{rate}%！ 次の一件に集中し、勢いをつなげましょう！',
+    '🚀 残り{remaining}件！ 声を掛け合い、16時までの全件達成へ加速しましょう！',
+    '💪 本日出荷は全{total}件。困っている工程を見つけたら、すぐに力を合わせましょう！',
+    '⭐ 完成率{rate}%！ 一件ずつ確実に終わらせれば、ゴールは必ず近づきます！',
+    '⚡ あと{remaining}件！ 安全・品質・スピードをそろえて、最後まで走り切りましょう！',
+    '🏭 九州工場の底力を見せる時です。全{total}件を最高の流れで完成へ進めましょう！',
+    '🎯 残り{remaining}件！ 優先順位をそろえ、今やるべき一件を確実に仕上げましょう！',
+    '🤝 完成率{rate}%です。工程を越えた応援が、今日の達成を引き寄せます！',
+    '🔥 ラストまで集中！ 残り{remaining}件を、確認を省かず丁寧に完成させましょう！',
+    '🛠️ 全{total}件の一つひとつに、九州工場の技術と誇りを込めましょう！',
+    '📣 迷ったら共有、止まったら応援！ 残り{remaining}件をチームの力で動かしましょう！',
+    '🌟 完成率{rate}%まで到達！ 進んだ実績を自信に変えて、次へ挑戦しましょう！',
+    '🏁 ゴールまであと{remaining}件！ 最後の一件まで同じ品質で仕上げましょう！',
+    '🔥 今日の一件は、明日の信頼につながります。全{total}件を確実に送り出しましょう！',
+    '⚔️ 残り{remaining}件！ 焦りではなく段取りで勝ち、全件達成をつかみましょう！',
+    '💥 完成率{rate}%！ 一人の集中と仲間の連携を、大きな成果へ変えましょう！',
+    '🚩 あと{remaining}件です。次工程が動きやすい状態で、気持ちよく引き渡しましょう！',
+    '🏆 全{total}件の達成に向けて前進中！ 今日のベストをチームの標準にしましょう！',
+    '🔥 残り{remaining}件！ できる理由を見つけ、助け合える場所を見つけ、前へ進みましょう！'
+  ],[
+    '🌈 本日出荷の未完成はゼロ件です。最高のスタートを次の準備へつなげましょう！',
+    '✨ 未完成ゼロ！ 設備点検と先行準備で、さらに強い流れをつくりましょう！',
+    '🏆 本日出荷の遅れはありません。この良い状態を全員で守りましょう！',
+    '🚀 対象ゼロ件です。次の仕事を先回りし、未来の達成を準備しましょう！'
+  ],[
+    '🏆 本日出荷は全件達成！ 九州工場のチームワーク、お見事です！',
+    '🎉 100%達成！ 最後まで安全にやり切った全員に感謝します！',
+    '🌟 全件完成しました！ 今日の成功を次の挑戦へつなげましょう！',
+    '👏 ミッション完了！ 素晴らしい連携と確実な仕事をありがとうございました！'
+  ]),
+  today:buildMessageGroup([
+    '本日製造期限は全{total}件、完成まであと{remaining}件です。安全を守り、確実に進めましょう。',
+    '本日分の完成率は{rate}%です。次の一件も品質を確認して進めましょう。',
+    '残り{remaining}件です。工程間で声を掛け合い、お客様を待たせない流れをつくりましょう。',
+    '本日製造期限{total}件のうち、ゴールまであと{remaining}件です。焦らず丁寧に進めましょう。',
+    '完成率{rate}%まで進みました。今の良い流れを次工程へつなげましょう。',
+    '今日届ける{total}件に、九州工場の技術と誠意を込めましょう。',
+    'あと{remaining}件です。最後まで確認を省略せず、安全第一で取り組みましょう。',
+    '本日製造期限の進捗は{rate}%です。困り事は早めに共有して解決しましょう。',
+    '全{total}件を気持ちよく送り出せるよう、持ち場を越えて協力しましょう。',
+    '残り{remaining}件。一人ひとりの丁寧な仕事が、今日の納期を守ります。',
+    '完成率{rate}%です。品質とスピードの両方を意識して進めましょう。',
+    '本日の対象は{total}件です。優先順位をそろえ、確実に完成へ近づけましょう。',
+    'ゴールまであと{remaining}件。次の工程が動きやすい状態で引き渡しましょう。',
+    '現在{rate}%完成です。小さな確認の積み重ねが大きな安心につながります。',
+    '本日製造期限{total}件を、全員の連携で安全に完成へ進めましょう。',
+    '残り{remaining}件です。疲れた時ほど基本動作を大切にしましょう。',
+    '完成率は{rate}%です。できたことを認め合い、次の一件へ進みましょう。',
+    '今日の仕事は全{total}件。報告・連絡・相談で滞りを減らしましょう。',
+    'あと{remaining}件の完成が、お客様の安心につながります。',
+    '本日分は{rate}%まで到達しました。最後の一件まで同じ品質で仕上げましょう。'
+  ],[
+    '本日製造期限の対象はありません。先の仕事を落ち着いて準備しましょう。',
+    '今日の出荷に余裕があります。設備と作業環境を整えましょう。',
+    '本日分はゼロ件です。次の予定と材料を先回りして確認しましょう。',
+    '出荷対象がない今こそ、安全点検と改善に時間を使いましょう。'
+  ],[
+    '本日製造期限は全件完成です。素早く丁寧な仕事をありがとうございました。',
+    '本日分100%達成です。最後まで安全に仕上げてくれてありがとうございます。',
+    '全件完成しました。チームの連携と確実な仕事に感謝します。',
+    '今日の出荷準備は完了です。次の仕事も安全第一で進めましょう。'
+  ]),
+  tomorrow:buildMessageGroup([
+    '明日出荷は全{total}件、完成まであと{remaining}件です。今日の準備が明日の安心につながります。',
+    '明日分の完成率は{rate}%です。遅れの芽を今日のうちに摘み取りましょう。',
+    '残り{remaining}件です。明日の出荷を余裕を持って迎えられるよう進めましょう。',
+    '明日出荷{total}件の段取りと担当を、今のうちに確認しましょう。',
+    '完成率{rate}%です。前日の丁寧な仕事が出荷当日の安全を支えます。',
+    'あと{remaining}件。必要な材料、設備、情報を早めにそろえましょう。',
+    '明日分は全{total}件です。次工程が迷わない情報共有を心掛けましょう。',
+    '現在{rate}%完成です。余裕のある計画で品質を守りましょう。',
+    '残り{remaining}件を、今日できるところまで確実に進めましょう。',
+    '明日の対象{total}件を見える化し、負荷の偏りを整えましょう。',
+    '完成率は{rate}%です。問題が小さいうちに相談し、解決につなげましょう。',
+    'あと{remaining}件です。早めの一歩が明日の落ち着いた出荷をつくります。',
+    '明日出荷{total}件の優先順位を全員で共有しましょう。',
+    '進捗{rate}%です。準備・確認・引き継ぎを丁寧に行いましょう。',
+    '残り{remaining}件。手戻りを防ぐため、最初の確認を大切にしましょう。',
+    '明日分は{total}件です。工程のつながりを意識して前へ進めましょう。',
+    '完成率{rate}%まで来ました。今の進捗を保ち、無理なく進めましょう。',
+    'あと{remaining}件の準備が、明日のチーム全体の余裕になります。',
+    '明日の全{total}件を安全に届けるため、今日の連携を強めましょう。',
+    '明日分は{rate}%完成です。最後まで計画的に積み上げましょう。'
+  ],[
+    '明日出荷の対象はありません。次の予定を先回りして確認しましょう。',
+    '明日分はゼロ件です。品質確認と改善に時間を使いましょう。',
+    '明日の出荷に余裕があります。後日の負荷を確認しておきましょう。',
+    '対象がない今こそ、設備と作業環境を整える良い時間です。'
+  ],[
+    '明日出荷はすべて準備完了です。早めの対応に心から感謝します。',
+    '明日分100%達成です。計画的で丁寧な仕事をありがとうございました。',
+    '全件完成しました。明日の出荷を安心して迎えられます。',
+    '明日分の準備は完了です。次の予定も落ち着いて確認しましょう。'
+  ]),
+  overdue:buildMessageGroup([
+    '期限切れは全{total}件、解消まであと{remaining}件です。優先順位を合わせて取り組みましょう。',
+    '期限切れ対象の対応率は{rate}%です。原因と次の行動を明確にしましょう。',
+    '残り{remaining}件です。困り事を抱え込まず、すぐに共有しましょう。',
+    '現在の期限切れ対象は{total}件です。安全と品質を守りながら挽回しましょう。',
+    '解消率{rate}%です。責めるのではなく、助け合って前へ進めましょう。',
+    'あと{remaining}件。担当と完了予定を一件ずつ確認しましょう。',
+    '期限切れ全{total}件を見える化し、支援が必要な工程を明確にしましょう。',
+    '現在{rate}%まで対応しました。改善の流れを止めずに進めましょう。',
+    '残り{remaining}件です。慌てず、手戻りのない確実な対応を選びましょう。',
+    '対象{total}件の中から、影響の大きい仕事を優先しましょう。',
+    '解消率は{rate}%です。早めの相談が次の遅れを防ぎます。',
+    'あと{remaining}件。工程を越えて知恵と力を持ち寄りましょう。',
+    '期限切れ{total}件の原因を整理し、同じ問題の再発を防ぎましょう。',
+    '対応は{rate}%まで進みました。できたことと次の課題を共有しましょう。',
+    '残り{remaining}件です。納期だけでなく、品質確認も忘れずに進めましょう。',
+    '対象は全{total}件。現状を正しく伝えることが解決の第一歩です。',
+    '解消率{rate}%です。小さな滞りも早めに声を掛けて動かしましょう。',
+    'あと{remaining}件の解消を、チーム全員で支えましょう。',
+    '期限切れ{total}件に対し、今日できる具体的な行動を決めましょう。',
+    '現在{rate}%対応済みです。最後まで冷静に、確実に完了させましょう。'
+  ],[
+    '製造期限切れはありません。この良い状態を全員で守り続けましょう。',
+    '期限切れゼロです。先を見た段取りと早めの相談に感謝します。',
+    '遅延対象はありません。毎日の確実な仕事が信頼を支えています。',
+    '期限切れはゼロ件です。次の予定も早めに確認しましょう。'
+  ],[
+    '期限切れ対象はすべて解消しました。協力ありがとうございました。',
+    '対応率100%です。原因を振り返り、次の遅れを防ぎましょう。',
+    '全件解消しました。助け合いと確実な対応に感謝します。',
+    '期限切れ対応は完了です。この経験を次の改善につなげましょう。'
+  ]),
+  specified:buildMessageGroup([
+    '指定日の対象は全{total}件、完成まであと{remaining}件です。必要な支援を早めに確認しましょう。',
+    '指定日分の完成率は{rate}%です。工程のつながりを意識して進めましょう。',
+    '残り{remaining}件です。期日に間に合うよう担当と順序を確認しましょう。',
+    '選択日の仕事は全{total}件です。負荷と材料を早めに確認しましょう。',
+    '完成率{rate}%です。計画との差を見て、今できる調整を行いましょう。',
+    'あと{remaining}件。必要な応援を具体的に共有しましょう。',
+    '指定日の全{total}件を安全に完成へつなげましょう。',
+    '現在{rate}%完成です。先を読んだ段取りで余裕をつくりましょう。',
+    '残り{remaining}件です。次工程への引き継ぎを分かりやすくしましょう。',
+    '対象{total}件の優先順位と完了予定をそろえましょう。',
+    '進捗は{rate}%です。小さな遅れも早めに見つけて対応しましょう。',
+    'あと{remaining}件。計画を見える化し、助け合って進めましょう。',
+    '指定日分は全{total}件です。品質確認の時間も計画に入れましょう。',
+    '完成率{rate}%まで進みました。次のボトルネックを確認しましょう。',
+    '残り{remaining}件です。無理のない順序で確実に仕上げましょう。',
+    '選択日の対象{total}件を、全工程の協力で前へ進めましょう。',
+    '現在{rate}%です。予定どおりの部分と支援が必要な部分を共有しましょう。',
+    'あと{remaining}件の完了に向け、今日の具体的な目標を決めましょう。',
+    '指定日の全{total}件に対し、担当と次の行動を明確にしましょう。',
+    '完成率は{rate}%です。最後まで安全・品質・納期を大切にしましょう。'
+  ],[
+    '指定日の対象はありません。別の日を選んで予定を確認できます。',
+    '選択日の対象はゼロ件です。前後の日の負荷を確認しましょう。',
+    'この指定日に製造対象はありません。次の計画を確認できます。',
+    '対象がない日も、設備点検や改善に時間を活用しましょう。'
+  ],[
+    '指定日の製造分は全件完成です。計画的な取り組みをありがとうございました。',
+    '指定日分100%達成です。全工程の協力に感謝します。',
+    '選択日の対象はすべて完成しました。確実な仕事をありがとうございました。',
+    '指定日分は完了です。次の予定も早めに確認しましょう。'
+  ])
+};
+const fireMotivationTemplates=[
+  '🔥 ゴールは見えています！ 残り{remaining}件、一件終えるたびにチーム全体が前進します！',
+  '🔥 完成率{rate}%！ 「次の一件」に集中し、確実な成功を積み重ねましょう！',
+  '🔥 全{total}件の仕事は、九州工場への信頼そのものです。誇りを持って仕上げましょう！',
+  '🔥 残り{remaining}件！ 迷ったらすぐ共有、困ったらすぐ応援。連携が最強の力です！',
+  '🔥 今日の行動が明日の余裕をつくります。今できる一歩を、全員で前へ進めましょう！',
+  '🔥 完成率{rate}%まで到達！ 進んだ実績を力に変えて、次の目標へ挑戦しましょう！',
+  '🔥 一人の集中、仲間の声掛け、全工程の連携。小さな力を大きな成果へ変えましょう！',
+  '🔥 残り{remaining}件！ 焦りではなく段取りで勝つ。安全・品質・スピードをそろえましょう！',
+  '🔥 できる理由を見つけ、助け合える場所を見つけ、全{total}件を最高の流れで完成へ！',
+  '🔥 一件の完了は一つの勝利！ 達成を確認し、勢いを次の工程へつなげましょう！',
+  '🔥 完成率{rate}%！ 見える進歩は自信になる。自信は集中を生み、集中は品質を高めます！',
+  '🔥 今日のベストをチームの標準へ。声を掛け合い、最後までやり切りましょう！'
+];
+const tabMessagePrefix={
+  'today-ng':'【本日出荷・未完成】',
+  today:'【本日製造期限】',
+  tomorrow:'【明日出荷】',
+  overdue:'【製造期限切れ】',
+  specified:'【指定日製造期限】'
+};
+Object.keys(standardMessageGroups).forEach(key=>{
+  const prefix=tabMessagePrefix[key]||'【生産ミッション】';
+  standardMessageGroups[key].push(...fireMotivationTemplates.map(template=>
+    dynamicMessage(
+      `${prefix} ${template}`,
+      `${prefix} 🔥 対象ゼロ件！ 今こそ点検・改善・次の準備で、未来の成果を先取りしましょう！`,
+      `${prefix} 🔥 100%達成！ この成功を全員で称え、次の挑戦へ最高の流れをつなげましょう！`
+    )
+  ));
+});
+
+/* V9.0: 5タブ × 100文 = 合計500文。
+   既存32文/タブに、タブ専用の68文を追加する。
+   同一タブでは全100文を一巡するまで同じ文を繰り返さない。 */
+const v90MessageParts={
+  'today-ng':{
+    openings:[
+      '⚔️ 本日出荷の勝負はここからです。','🔥 九州工場の集中力を一つにしましょう。','🚀 16時のゴールへ向けて加速しましょう。','🎯 今日の最優先を全員でそろえましょう。','💪 一件ずつ確実に完成へ運びましょう。','🏭 現場の底力を成果に変える時間です。','⚡ 今の一歩が今日の達成を決めます。','🛠️ 技術と連携で流れをつくりましょう。','🏁 ゴールを見据えて最後まで進みましょう。','🤝 工程を越えて力を合わせましょう。','🌟 今日の仕事を最高の実績に変えましょう。','📣 困り事はすぐ共有し、すぐ動かしましょう。','🔥 安全と品質を守りながら前進しましょう。','🎮 BOSS攻略の鍵は全員の連携です。','🏆 今日のベストを更新しましょう。','🚩 次工程へ良い流れを渡しましょう。','💥 一人の集中をチームの力へ変えましょう。'
+    ],
+    endings:[
+      '全{total}件のうち残り{remaining}件、完成率{rate}%です。',
+      '残り{remaining}件を段取りよく仕上げ、全件達成をつかみましょう。',
+      '完成率{rate}%、確認を省かず最後の一件まで進めましょう。',
+      '全{total}件を安全・品質・スピードの三本柱で完成へ導きましょう。'
+    ],
+    empty:'🌈 本日出荷の未完成はゼロ件です。点検と先行準備で良い流れを守りましょう！',
+    complete:'🏆 本日出荷は100%達成です。最高の連携と確実な仕事をありがとうございました！'
+  },
+  today:{
+    openings:[
+      '本日製造期限を確実に守りましょう。','今日の積み重ねが信頼をつくります。','安全第一で落ち着いて進めましょう。','品質を守り、納期へつなげましょう。','工程間の連携をさらに強めましょう。','一つひとつの確認を大切にしましょう。','今日できる最善を積み重ねましょう。','報告・連絡・相談を早めに行いましょう。','次工程が動きやすい仕事をしましょう。','基本動作を守って確実に進めましょう。','全員の力で今日の計画を形にしましょう。','小さな改善を今日の成果へ変えましょう。','持ち場を越えて助け合いましょう。','焦らず、止まらず、丁寧に進めましょう。','目の前の一件に集中しましょう。','今日の品質を明日の標準にしましょう。','良い流れを最後まで維持しましょう。'
+    ],
+    endings:[
+      '対象は全{total}件、残り{remaining}件、完成率{rate}%です。',
+      '残り{remaining}件を確実に仕上げ、本日分の完了を目指しましょう。',
+      '完成率{rate}%です。最後の一件まで同じ品質を守りましょう。',
+      '全{total}件の進捗を共有し、必要な支援をすぐにつなげましょう。'
+    ],
+    empty:'本日製造期限の対象はゼロ件です。設備点検と次の準備を進めましょう。',
+    complete:'本日製造期限は100%達成です。安全で確実な仕事をありがとうございました。'
+  },
+  tomorrow:{
+    openings:[
+      '明日の安心を今日から準備しましょう。','先回りの一歩が余裕を生みます。','明日出荷の段取りを今そろえましょう。','早めの確認で手戻りを防ぎましょう。','材料・設備・情報を先に整えましょう。','明日の流れを今日つくりましょう。','計画的な仕事で品質を守りましょう。','余裕のある引き継ぎを目指しましょう。','負荷の偏りを早めに見つけましょう。','問題が小さいうちに相談しましょう。','前日の準備を確かな安心へ変えましょう。','次工程が迷わない情報を残しましょう。','今日できる仕事を確実に進めましょう。','明日の出荷を笑顔で迎えましょう。','先を読む力をチームの強みにしましょう。','予定との差を早めに調整しましょう。','良い準備で明日の成功を先取りしましょう。'
+    ],
+    endings:[
+      '明日出荷は全{total}件、残り{remaining}件、完成率{rate}%です。',
+      '残り{remaining}件を今日のうちに進め、明日の余裕につなげましょう。',
+      '完成率{rate}%です。段取りと引き継ぎを丁寧に整えましょう。',
+      '全{total}件の優先順位を共有し、計画どおり完成へ進めましょう。'
+    ],
+    empty:'明日出荷の対象はゼロ件です。後日の予定と作業環境を確認しましょう。',
+    complete:'明日出荷は100%準備完了です。早めで丁寧な対応をありがとうございました。'
+  },
+  overdue:{
+    openings:[
+      '期限切れを一件ずつ確実に解消しましょう。','現状を正しく共有し、解決へ動きましょう。','責めるより助け合う行動を選びましょう。','原因と次の一歩を明確にしましょう。','優先順位をそろえて冷静に進めましょう。','困り事を抱え込まず早めに相談しましょう。','安全と品質を守りながら挽回しましょう。','再発防止まで考えて対応しましょう。','影響の大きい案件から着手しましょう。','担当と完了予定を明確にしましょう。','工程を越えて知恵を持ち寄りましょう。','小さな滞りも見逃さず動かしましょう。','できたことと残る課題を共有しましょう。','手戻りのない確実な対応を選びましょう。','一件の解消を次の改善につなげましょう。','正しい報告が解決の第一歩です。','最後まで落ち着いて完了させましょう。'
+    ],
+    endings:[
+      '対象は全{total}件、残り{remaining}件、解消率{rate}%です。',
+      '残り{remaining}件の原因と担当を確認し、確実に解消しましょう。',
+      '対応率{rate}%です。納期だけでなく品質確認も守りましょう。',
+      '全{total}件を見える化し、支援が必要な工程へすぐ力を届けましょう。'
+    ],
+    empty:'製造期限切れはゼロ件です。先を見た段取りでこの状態を守りましょう。',
+    complete:'期限切れ対象は100%解消しました。協力と確実な対応に感謝します。'
+  },
+  specified:{
+    openings:[
+      '指定日の計画を確実に形にしましょう。','選択日の負荷を全員で共有しましょう。','担当と順序を早めにそろえましょう。','先を読んだ段取りで余裕をつくりましょう。','必要な支援を具体的に共有しましょう。','工程のつながりを意識して進めましょう。','計画との差を早めに確認しましょう。','材料と設備の準備を先行させましょう。','次のボトルネックを見つけましょう。','無理のない順序で確実に仕上げましょう。','品質確認の時間も計画に入れましょう。','見える化した計画を行動へ変えましょう。','全工程の協力で前へ進めましょう。','今日の具体的な目標を決めましょう。','予定どおりの部分と課題を分けましょう。','引き継ぎを分かりやすく整えましょう。','安全・品質・納期を最後まで守りましょう。'
+    ],
+    endings:[
+      '指定日の対象は全{total}件、残り{remaining}件、完成率{rate}%です。',
+      '残り{remaining}件の担当と完了予定をそろえ、計画どおり進めましょう。',
+      '完成率{rate}%です。必要な調整を早めに行いましょう。',
+      '全{total}件の優先順位を共有し、支援が必要な場所を明確にしましょう。'
+    ],
+    empty:'指定日の対象はゼロ件です。前後の日程と設備の状態を確認しましょう。',
+    complete:'指定日の製造分は100%完成です。計画的な連携をありがとうございました。'
+  }
+};
+Object.entries(v90MessageParts).forEach(([key,parts])=>{
+  const generated=[];
+  parts.openings.forEach(opening=>parts.endings.forEach(ending=>{
+    generated.push(dynamicMessage(`${opening} ${ending}`,parts.empty,parts.complete));
+  }));
+  // 17 × 4 = 68文を追加。既存32文と合わせて各タブ100文。
+  standardMessageGroups[key].push(...generated.slice(0,68));
+});
+
+/* =====================================================================
+   描画
+   ===================================================================== */
+const CHART_LABELS={'today-ng':'本日出荷・未完成','today':'本日製造期限','tomorrow':'明日出荷','overdue':'製造期限切れ','specified':'指定日製造期限'};
+const PROCESS_ORDER=['未着手','CAD/CAM','切断','曲げ','溶接','仕上','塗装','組立'];
+
+function chartRowsFor(filter,dates){
+  if(filter==='today-ng')return rows.filter(r=>r.shipDate===dates.today&&isUnfinished(r));
+  if(filter==='overdue')return rows.filter(isOverdueItem);
+  if(filter==='specified')return rows.filter(r=>r.due===specifiedShipDate);
+  if(filter==='today')return rows.filter(r=>r.due===dates.today);
+  return rows.filter(r=>r.shipDate===dates[filter]);
+}
+function setTab(id,list){
+  $(id).textContent=fmt(list.length);
+  $(id+'Pts').textContent=`${fmt(sumQty(list))}点`;
+}
+
+function renderAll(){
+  if(!dataReady)return;
+  const dates=getShipDates();
+  document.body.classList.toggle('is-ng',shipFilter==='today-ng');
+  document.body.classList.toggle('is-std',shipFilter!=='today-ng');
+
+  /* --- タブ --- */
+  const ng=rows.filter(r=>r.shipDate===dates.today&&isUnfinished(r));
+  const todayDue=rows.filter(r=>r.due===dates.today);
+  const tomorrowShip=rows.filter(r=>r.shipDate===dates.tomorrow);
+  const overdue=rows.filter(isOverdueItem);
+  const specified=rows.filter(r=>r.due===specifiedShipDate);
+  setTab('tabNg',ng);setTab('tabToday',todayDue);setTab('tabTomorrow',tomorrowShip);setTab('tabOverdue',overdue);setTab('tabSpecified',specified);
+  $('tabTodayLabel').textContent=`本日 製造期限（${shortMD(dates.today)}）`;
+  $('tabTomorrowLabel').textContent=`明日 出荷（${shortMD(dates.tomorrow)}）`;
+  const ngTab=document.querySelector('[data-ship="today-ng"]');
+  ngTab.classList.toggle('is-clear',ng.length===0);
+  ngTab.classList.toggle('has-ng',ng.length>0);
+  const odTab=document.querySelector('[data-ship="overdue"]');
+  odTab.classList.toggle('has-overdue',overdue.length>0);
+  odTab.classList.toggle('is-zero',overdue.length===0);
+  document.querySelectorAll('[data-ship]').forEach(t=>{
+    const on=t.dataset.ship===shipFilter;
+    t.classList.toggle('active',on);
+    t.setAttribute('aria-selected',String(on));
+  });
+  const alert=$('overdueAlert');
+  alert.hidden=overdue.length===0;
+  if(overdue.length){
+    $('overdueAlertText').innerHTML=`<b>緊急：製造期限切れ ${fmt(overdue.length)}件・${fmt(sumQty(overdue))}点</b>　放置できません。対象を確認し、最優先で「0件」に戻しましょう。`;
+  }
+
+  /* --- 対象データ --- */
+  const chartRows=chartRowsFor(shipFilter,dates);
+  const counts=chartRows.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});
+  const total=chartRows.length;
+  const done=counts['完成']||0;
+  const newc=counts['未着手']||0;
+  const cancel=(counts['ｷｬﾝｾﾙ']||0)+(counts['キャンセル']||0);
+  const active=Math.max(0,total-done-newc-cancel);
+  const effective=Math.max(0,total-cancel);
+  const rate=effective?done/effective*100:0;
+  currentChartRows=chartRows;
+  currentChartLabel=CHART_LABELS[shipFilter]||'全出荷日';
+
+  if(shipFilter==='today-ng')renderMission(ng,dates);
+  else renderStandard({chartRows,dates,total,done,active,newc,cancel,effective,rate});
+
+  $('deliveryCards').innerHTML=renderDeliveryCards(shipFilter==='today-ng'?ng:chartRows);
+  const deliveries=getDeliveryItems(shipFilter==='today-ng'?ng:chartRows);
+  $('deliveryMeta').textContent=deliveries.length?`${deliveries.length}便・タップで対象一覧`:'—';
+
+  recordAchievement();
+  updateClockAlert();
+  updateBonusCampaignPanel();
+  updateManufacturingPanel();
+  updateClaim();
+}
+
+/* ---------- 本日出荷・未完成（ミッション表示） ---------- */
+function getTodayCompletionKey(){return `todayNgCompletedAt:${getShipDates().today}`}
+function isCompletionAtOrAfter16(date){return date instanceof Date&&!Number.isNaN(date.getTime())&&date.getHours()>=16}
+function getOrRecordTodayCompletion(ngCount){
+  const key=getTodayCompletionKey();
+  if(ngCount>0){safeStore.remove(key);return null}
+  let saved=safeStore.get(key);
+  if(!saved){saved=new Date().toISOString();safeStore.set(key,saved)}
+  const d=new Date(saved);
+  return Number.isNaN(d.getTime())?new Date():d;
+}
+function renderMission(ng,dates){
+  const startKey=`todayNgStart:${dates.today}`;
+  const savedStart=Number(safeStore.get(startKey)||0);
+  if(!savedStart||ng.length>savedStart)safeStore.set(startKey,String(Math.max(ng.length,1)));
+  const startBoss=Math.max(Number(safeStore.get(startKey)||ng.length),ng.length,1);
+  const completion=ng.length===0?100:Math.max(0,Math.min(100,(startBoss-ng.length)/startBoss*100));
+
+  const forced=forcedTodayAchievement();
+  let completedAfter16=false;
+  if(ng.length===0){
+    const completedAt=getOrRecordTodayCompletion(0);
+    completedAfter16=forced==='miss'||(forced!=='done'&&isCompletionAtOrAfter16(completedAt));
+  }else{
+    getOrRecordTodayCompletion(ng.length);
+  }
+  const lateMsg='本日は16時以降の完了となりました。明日は少し早めの段取りを意識しましょう。';
+
+  const hero=$('heroCard');
+  hero.classList.toggle('done',ng.length===0&&!completedAfter16);
+  hero.classList.toggle('late',ng.length===0&&completedAfter16);
+  hero.classList.toggle('open',ng.length>0);
+  $('heroCount').textContent=fmt(ng.length);
+  $('heroPoints').textContent=`${fmt(sumQty(ng))}点`;
+  $('heroBar').style.width=`${completion}%`;
+  $('heroRate').textContent=`${completion.toFixed(0)}%`;
+  $('heroStart').textContent=`本日の最大 ${fmt(startBoss)}件 を基準に算出`;
+  const pill=$('heroPill');
+  if(ng.length>0){pill.className='pill warn';pill.textContent='本日出荷 未完成'}
+  else if(completedAfter16){pill.className='pill warn';pill.textContent='16時以降に完了'}
+  else{pill.className='pill good';pill.textContent='✓ 本日出荷 完了'}
+  $('heroMsg').textContent=ng.length===0?(completedAfter16?lateMsg:'本日の作業が完了しました！ お疲れ様でした。'):`完了まで あと ${fmt(ng.length)}件！ 16時までに全件達成を目指しましょう。`;
+
+  /* 本日製造期限 完成率（16時75%判定） */
+  const s=todayDeadlineStats();
+  const judge=$('judgeCard');
+  const after16=new Date().getHours()>=16;
+  const circumference=2*Math.PI*50;
+  $('judgeRing').style.strokeDasharray=`${(Math.min(100,s.rate)/100*circumference).toFixed(1)} ${circumference.toFixed(1)}`;
+  $('judgeRate').textContent=`${Number.isInteger(s.rate)?s.rate:s.rate.toFixed(1)}%`;
+  $('judgeMeta').textContent=`完成 ${fmt(s.done)} ／ 対象 ${fmt(s.total)}件`;
+  judge.classList.toggle('ok',s.rate>=75);
+  judge.classList.toggle('ng',after16&&s.rate<75&&s.total>0);
+  const jp=$('judgePill');
+  if(!after16){jp.className=s.rate>=75?'pill good':'pill';jp.textContent=s.rate>=75?'達成ライン到達':'16:00判定前'}
+  else{jp.className=s.rate>=75?'pill good':'pill bad';jp.textContent=s.rate>=75?'達成':'未達成'}
+
+  updateDailyProcessTargets();
+  $('processCards').innerHTML=renderProcessCards(ng);
+  ngMessageContext={total:startBoss,remaining:ng.length,rate:completedAfter16?99.9:completion,lateCompletion:completedAfter16};
+}
+
+/* ---------- 標準表示（その他のタブ） ---------- */
+function renderStandard(c){
+  const {chartRows,dates,total,done,active,newc,cancel,effective,rate}=c;
+  $('stdTitle').textContent=CHART_LABELS[shipFilter]||'生産進捗';
+  $('stdPoints').textContent=`${fmt(sumQty(chartRows))}点`;
+  $('stdTotal').textContent=fmt(total);
+  const remaining=Math.max(0,active+newc);
+  $('stdRemaining').textContent=fmt(remaining);
+
+  /* 出荷日内訳（旧版の営業日ルール） */
+  const isSpecified=shipFilter==='specified';
+  const baseKey=isSpecified&&specifiedShipDate?specifiedShipDate:dates.today;
+  const base=new Date(`${baseKey}T00:00:00`);
+  const tomorrowDate=isSpecified?nextSystemBusinessDay(base):new Date(`${dates.tomorrow}T00:00:00`);
+  const dayAfterDate=isSpecified?nextSystemBusinessDay(tomorrowDate):new Date(`${dates.after}T00:00:00`);
+  const laterDate=nextSystemBusinessDay(dayAfterDate);
+  const byDue=shipFilter==='tomorrow';
+  const suffix=byDue?'製造期限':'出荷';
+  const md=d=>`${d.getMonth()+1}月${d.getDate()}日`;
+  const labels={
+    past:byDue?'製造期限切れ':'本日以前出荷',
+    today:isSpecified?'当日出荷（指定日）':byDue?'本日製造期限':`本日（${md(base)}）出荷`,
+    tomorrow:isSpecified?`次営業日（${md(tomorrowDate)}）出荷`:byDue?`明日期限（${md(tomorrowDate)}）`:`${md(tomorrowDate)}${suffix}`,
+    dayAfter:isSpecified?`翌営業日（${md(dayAfterDate)}）出荷`:`${md(dayAfterDate)}${suffix}`,
+    later:`${md(laterDate)}以降${suffix}`,
+    unset:byDue?'製造期限未設定':'出荷日未設定'
+  };
+  const hidden=bucket=>
+    (shipFilter==='tomorrow'&&!['past','today','tomorrow'].includes(bucket))||
+    (shipFilter==='specified'&&!['today','tomorrow','dayAfter','unset'].includes(bucket))||
+    (shipFilter==='overdue'&&bucket==='past')||
+    (shipFilter==='today'&&bucket==='past');
+  const ctx=bucketContext();
+  const countBuckets=list=>{
+    const out={past:0,today:0,tomorrow:0,dayAfter:0,later:0,unset:0};
+    list.forEach(r=>{const b=bucketOf(r,ctx);if(b)out[b]++});
+    return out;
+  };
+  const totalB=countBuckets(chartRows);
+  const remainB=countBuckets(chartRows.filter(isUnfinished));
+  const order=['past','today','tomorrow','dayAfter','later','unset'];
+  const bucketHtml=(counts,unfinished)=>order.filter(b=>!hidden(b)).map(b=>{
+    const on=standardBreakdownFilter&&standardBreakdownFilter.bucket===b&&standardBreakdownFilter.unfinished===unfinished;
+    return `<button type="button" class="bucket ${on?'active':''} ${counts[b]?'':'zero'}" data-bucket="${b}" data-unfinished="${unfinished}"><span>${escapeHtml(labels[b])}</span><b>${fmt(counts[b])}件</b></button>`;
+  }).join('');
+  $('bucketsTotal').innerHTML=bucketHtml(totalB,false);
+  $('bucketsRemaining').innerHTML=bucketHtml(remainB,true);
+  lastRender.bucketLabels=labels;
+
+  /* ドーナツ（完成・進行中・未着手。キャンセルは母数から除外） */
+  const segs=[
+    {label:'完成',value:done,color:'var(--good)'},
+    {label:'進行中',value:active,color:'var(--accent)'},
+    {label:'未着手',value:newc,color:'var(--neutral)'}
+  ];
+  $('stdDonut').innerHTML=donutSvg(segs,effective);
+  $('stdRate').textContent=`${rate.toFixed(1)}%`;
+  $('stdLegend').innerHTML=[...segs,{label:'キャンセル',value:cancel,color:'transparent',outline:true}].map(s=>
+    `<div><i style="background:${s.color};${s.outline?'border:1px solid var(--muted)':''}"></i><span>${s.label}</span><b>${fmt(s.value)}</b></div>`).join('');
+  $('stdProgressMsg').textContent=total===0?'対象データなし':rate>=100?'全件完成！ お疲れ様でした！':`完成まで あと ${fmt(remaining)}件`;
+
+  /* 工程別バー */
+  const max=Math.max(...PROCESS_ORDER.map(p=>counts(chartRows,p)),1);
+  const unfinishedTotal=PROCESS_ORDER.reduce((s,p)=>s+counts(chartRows,p),0);
+  $('processBars').innerHTML=PROCESS_ORDER.map(p=>{
+    const n=counts(chartRows,p);
+    const pct=unfinishedTotal?n/unfinishedTotal*100:0;
+    return `<button type="button" class="bar-row" data-process="${escapeHtml(p)}" ${n?'':'disabled'} aria-label="${escapeHtml(p)} ${n}件">
+      <span class="bar-name"><i style="background:${processColor(p)}"></i>${escapeHtml(p)}</span>
+      <span class="bar-track"><span class="bar-fill" style="display:block;width:${n/max*100}%"></span></span>
+      <span class="bar-val"><b>${fmt(n)}</b>件 ${pct?`・${pct.toFixed(1)}%`:''}</span>
+    </button>`;
+  }).join('');
+
+  /* 材質カード */
+  $('materialCards').innerHTML=renderMaterialCards(chartRows);
+  const completed=chartRows.filter(r=>!isCancelStatus(r.status)&&isCompletedStatus(r.status)).length;
+  $('materialMeta').textContent=`完成済 ${fmt(completed)}件 ／ キャンセル ${fmt(cancel)}件`;
+
+  standardMessageContext={key:shipFilter,total,remaining,rate};
+}
+function counts(list,status){return list.filter(r=>r.status===status).length}
+function donutSvg(segs,total){
+  const r=50,c=2*Math.PI*r,gap=total?1.2:0;
+  let offset=0;
+  const parts=segs.filter(s=>s.value>0).map(s=>{
+    const len=total?s.value/total*c:0;
+    const dash=Math.max(0,len-gap);
+    const el=`<circle cx="60" cy="60" r="${r}" fill="none" stroke="${s.color}" stroke-width="14" stroke-dasharray="${dash.toFixed(2)} ${(c-dash).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}"/>`;
+    offset+=len;
+    return el;
+  }).join('');
+  return `<circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--surface-3)" stroke-width="14"/>${parts}`;
+}
+
+/* 内訳バケット判定（旧版 renderStandardGame / renderTable と同一） */
+function bucketContext(){
+  const dates=getShipDates();
+  const isSpecified=shipFilter==='specified';
+  const baseKey=isSpecified&&specifiedShipDate?specifiedShipDate:dates.today;
+  const base=new Date(`${baseKey}T00:00:00`);
+  const tomorrowDate=isSpecified?nextSystemBusinessDay(base):new Date(`${dates.tomorrow}T00:00:00`);
+  const dayAfterDate=isSpecified?nextSystemBusinessDay(tomorrowDate):new Date(`${dates.after}T00:00:00`);
+  return {baseKey,tomorrowKey:formatLocalDate(tomorrowDate),dayAfterKey:formatLocalDate(dayAfterDate),byDue:shipFilter==='tomorrow'};
+}
+function bucketOf(r,ctx){
+  const d=String((ctx.byDue?r.due:r.shipDate)||'');
+  if(!d)return 'unset';
+  if(d<ctx.baseKey)return 'past';
+  if(d===ctx.baseKey)return 'today';
+  if(d===ctx.tomorrowKey)return 'tomorrow';
+  if(d===ctx.dayAfterKey)return 'dayAfter';
+  if(d>ctx.dayAfterKey)return 'later';
+  return null;
+}
+
+/* ---------- 工程カード ---------- */
+function renderProcessCards(list){
+  return PROCESS_ORDER.map(p=>{
+    const items=list.filter(r=>r.status===p);
+    const n=items.length;
+    return `<button type="button" class="pcard" data-process="${escapeHtml(p)}" style="--pc:${processColor(p)}" ${n?'':'disabled aria-disabled="true"'} aria-label="${escapeHtml(p)} ${n}件">
+      <span class="pcard-name">${escapeHtml(p)}</span>
+      <span class="pcard-count">${n?`${fmt(n)}<small>件</small>`:'✓ 完了'}</span>
+      <span class="pcard-pts">${n?`${fmt(sumQty(items))}点`:'&nbsp;'}</span>
+    </button>`;
+  }).join('');
+}
+
+/* ---------- 配送便（旧版のスケジュール表） ---------- */
+function getDeliveryScheduleInfo(name){
+  const normalized=String(name||'').replace(/\s+/g,'').trim();
+  const schedule=[
+    {key:'九州航空',time:'13:00',order:10},{key:'JP',time:'16:00',order:20},
+    {key:'ヤマックス福岡',time:'16:00',order:30},{key:'イトカツ',time:'13:00',order:11},
+    {key:'沖縄直送',time:'16:00',order:50},{key:'福山通運',time:'16:00',order:60},
+    {key:'福岡通運',time:'16:00',order:60},{key:'佐川急便',time:'16:00',order:70}
+  ];
+  return schedule.find(item=>normalized.includes(item.key))||{time:'',order:999};
+}
+function getDeliveryItems(list){
+  const map=new Map();
+  list.forEach(row=>{
+    const name=String(row.ship||'未設定').trim()||'未設定';
+    if(!map.has(name))map.set(name,{count:0,qty:0});
+    const item=map.get(name);item.count++;item.qty+=Number(row.qty)||0;
+  });
+  return [...map.entries()].map(([name,v])=>({name,...v,...getDeliveryScheduleInfo(name)}))
+    .sort((a,b)=>a.order-b.order||b.count-a.count||b.qty-a.qty||a.name.localeCompare(b.name,'ja'));
+}
+function renderDeliveryCards(list){
+  const items=getDeliveryItems(list);
+  if(!items.length){
+    return shipFilter==='today-ng'
+      ?'<div class="empty good">✓ 本日出荷の未完成はありません</div>'
+      :'<div class="empty">配送便データはありません</div>';
+  }
+  return items.map(item=>`<button type="button" class="dcard" data-delivery="${escapeHtml(item.name)}" title="${escapeHtml(item.name)}">
+      <span class="dcard-name">${escapeHtml(item.name)}</span>
+      <span class="dcard-count">${fmt(item.count)}<small> 件</small></span>
+      <span class="dcard-time ${item.time?'pickup':''}">${item.time?`集荷 ${item.time}`:'集荷時刻 —'}</span>
+      <span class="dcard-pts">${fmt(item.qty)}点</span>
+    </button>`).join('');
+}
+
+/* ---------- 材質・表面処理（旧版の分類ルール） ---------- */
+const standardMaterialGroups=[
+  {name:'焼付',pattern:/焼付|焼き付/i},
+  {name:'SUS',pattern:/SUS/i},
+  {name:'錆止め',pattern:/錆止|さび止|サビ止/i},
+  {name:'ダイマ',pattern:/S\s*ダイマ|スーパー\s*ダイマ|ダイマ|ダイマー/i},
+  {name:'ドブ',pattern:/ドブ|溶融亜鉛|HDZ|(?:^|\s)ZN(?:\s|$)/i}
+];
+function standardMaterialText(row){
+  return [row.name,row.standard,row.color].filter(Boolean).join(' ').normalize('NFKC').replace(/\s+/g,' ').trim();
+}
+function classifyStandardMaterial(row){
+  const text=standardMaterialText(row);
+  const group=standardMaterialGroups.find(item=>item.pattern.test(text));
+  return group?group.name:'その他';
+}
+function isCompletedStatus(s){const t=String(s||'').trim();return t==='完成'||t==='完成済'||t.includes('完成済')}
+function renderMaterialCards(list){
+  const unfinished=list.filter(r=>!isCancelStatus(r.status)&&!isCompletedStatus(r.status));
+  return [...standardMaterialGroups.map(g=>g.name),'その他'].map(name=>{
+    const matched=unfinished.filter(r=>classifyStandardMaterial(r)===name);
+    const n=matched.length;
+    return `<button type="button" class="mcard" data-material="${escapeHtml(name)}" ${n?'':'disabled aria-disabled="true"'}>
+      <span class="mcard-name">${escapeHtml(name)}</span>
+      <span class="mcard-count">${n?`${fmt(n)}<small> 件</small>`:'✓ 完了'}</span>
+      <span class="mcard-pts">${n?`${fmt(sumQty(matched))}点`:'&nbsp;'}</span>
+    </button>`;
+  }).join('');
+}
+
+/* =====================================================================
+   モーダル（工程・配送便・材質・内訳・一覧・J番号・カレンダー）
+   ===================================================================== */
+let lastModal={};
+function openModal({kicker='',title='',count='',body='',refresh=null}){
+  $('modalKicker').textContent=kicker;
+  $('modalTitle').textContent=title;
+  $('modalCount').innerHTML=count;
+  $('modalBody').innerHTML=body;
+  lastModal={refresh};
+  showModal('modal');
+}
+function showModal(id){
+  const m=$(id);
+  m.classList.add('show');
+  m.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  m.querySelector('.modal-body')?.scrollTo?.(0,0);
+}
+function closeModal(id){
+  const m=$(id);
+  if(!m)return;
+  m.classList.remove('show');
+  m.setAttribute('aria-hidden','true');
+  if(id==='modal')lastModal={};
+  if(![...document.querySelectorAll('.modal')].some(x=>x.classList.contains('show')))document.body.style.overflow='';
+}
+function anyModalOpen(){return [...document.querySelectorAll('.modal')].some(x=>x.classList.contains('show'))}
+
+const sortByShip=(a,b)=>
+  String(a.shipDate||'9999-99-99').localeCompare(String(b.shipDate||'9999-99-99'))||
+  String(a.due||'9999-99-99').localeCompare(String(b.due||'9999-99-99'))||
+  String(a.id||'').localeCompare(String(b.id||''));
+
+function statusChip(s){
+  const cls=s==='完成'?'done':isCancelStatus(s)?'cancel':'';
+  return `<span class="status-chip ${cls}"><i style="background:${s==='完成'?'var(--good)':isCancelStatus(s)?'var(--muted)':processColor(s)}"></i>${escapeHtml(s||'—')}</span>`;
+}
+const COLS={
+  id:{h:'製造指示番号',td:r=>`<td class="code">${escapeHtml(r.id||'—')}</td>`},
+  product:{h:'品番・品名 / 規格',td:r=>`<td><b>${escapeHtml(r.part||'—')}　${escapeHtml(r.name||'')}</b><small>規格：${escapeHtml(r.standard||'—')}</small></td>`},
+  size:{h:'サイズ',td:r=>`<td>${escapeHtml(r.sizeInfo||'—')}</td>`},
+  color:{h:'色',td:r=>`<td>${escapeHtml(r.color||'—')}</td>`},
+  status:{h:'工程',td:r=>`<td>${statusChip(r.status)}</td>`},
+  qty:{h:'数量',td:r=>`<td class="num"><b>${fmt(r.qty)}</b>点</td>`},
+  ship:{h:'出荷日',td:r=>`<td class="date">${escapeHtml(r.shipDate||'—')}</td>`},
+  due:{h:'製造期限',td:r=>`<td class="date">${escapeHtml(r.due||'—')}</td>`},
+  owner:{h:'担当者',td:r=>`<td>${escapeHtml(r.owner||'未設定')}</td>`},
+  delivery:{h:'配送便',td:r=>`<td>${escapeHtml(r.ship||'—')}</td>`}
+};
+function tableHtml(list,cols,emptyText='対象データはありません',highlightNg=false){
+  if(!list.length)return `<div class="empty">${emptyText}</div>`;
+  const today=getShipDates().today;
+  const body=list.map(r=>{
+    const cls=[highlightNg&&r.shipDate===today&&isUnfinished(r)?'row-ng':'',isOverdueItem(r)?'row-late':''].join(' ');
+    return `<tr class="${cls}">${cols.map(c=>COLS[c].td(r)).join('')}</tr>`;
+  }).join('');
+  return `<div class="table-wrap"><table class="list"><thead><tr>${cols.map(c=>`<th>${COLS[c].h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function backlogFooter(list){
+  const points=sumQty(list);
+  const completed=sumQty(list.filter(r=>String(r.status||'').includes('完成')));
+  const nearestShip=list.map(r=>r.shipDate).filter(Boolean).sort()[0]||'—';
+  const nearestDue=list.map(r=>r.due).filter(Boolean).sort()[0]||'—';
+  return `<div class="foot-grid">
+    <div class="foot-box"><b>備考</b><br>最短出荷日：${escapeHtml(nearestShip)} ／ 最短製造期限：${escapeHtml(nearestDue)}</div>
+    <div class="foot-box"><div class="totals"><div><b>${fmt(points)} 点</b>合計数量</div><div><b>${fmt(completed)} 点</b>完了数量</div><div><b>${fmt(Math.max(0,points-completed))} 点</b>残り数量</div></div></div>
+  </div>`;
+}
+function openProcessPopup(name){
+  const build=()=>{
+    const list=currentChartRows.filter(r=>r.status===name).sort(sortByShip);
+    const owners=[...new Set(list.map(r=>r.owner||'未設定'))];
+    return {list,owners};
+  };
+  const render=()=>{
+    const {list,owners}=build();
+    return {
+      kicker:`${currentChartLabel}・工程別滞留品`,title:name,
+      count:`<b>${fmt(list.length)}</b> 件（${fmt(sumQty(list))}点）`,
+      body:`<div class="info-grid">
+          <div class="info-cell"><small>工程</small><b>${statusChip(name)}</b></div>
+          <div class="info-cell"><small>滞留件数</small><b>${fmt(list.length)} 件</b></div>
+          <div class="info-cell"><small>合計数量</small><b>${fmt(sumQty(list))} 点</b></div>
+          <div class="info-cell"><small>担当者</small><b>${escapeHtml(owners.join('・')||'—')}</b></div>
+        </div>
+        ${tableHtml(list,['id','product','size','qty','ship','due','owner'],'✓ この工程の滞留品はありません')}
+        ${backlogFooter(list)}`
+    };
+  };
+  openModal({...render(),refresh:()=>{const r=render();$('modalCount').innerHTML=r.count;$('modalBody').innerHTML=r.body}});
+}
+function openDeliveryPopup(name){
+  const render=()=>{
+    const list=currentChartRows.filter(r=>(String(r.ship||'').trim()||'未設定')===name).sort(sortByShip);
+    const owners=[...new Set(list.map(r=>r.owner||'未設定'))];
+    const info=getDeliveryScheduleInfo(name);
+    return {
+      kicker:`${currentChartLabel}・配送便別製造指示`,title:name,
+      count:`<b>${fmt(list.length)}</b> 件（${fmt(sumQty(list))}点）`,
+      body:`<div class="info-grid">
+          <div class="info-cell"><small>集荷時刻</small><b>${info.time||'—'}</b></div>
+          <div class="info-cell"><small>対象件数</small><b>${fmt(list.length)} 件</b></div>
+          <div class="info-cell"><small>合計数量</small><b>${fmt(sumQty(list))} 点</b></div>
+          <div class="info-cell"><small>担当者</small><b>${escapeHtml(owners.join('・')||'—')}</b></div>
+        </div>
+        ${tableHtml(list,['id','product','size','status','qty','ship','due','owner'],'✓ この配送便の対象はありません')}
+        ${backlogFooter(list)}`
+    };
+  };
+  openModal({...render(),refresh:()=>{const r=render();$('modalCount').innerHTML=r.count;$('modalBody').innerHTML=r.body}});
+}
+function openMaterialPopup(name){
+  const render=()=>{
+    const list=currentChartRows.filter(r=>!isCompletedStatus(r.status)&&!isCancelStatus(r.status)&&classifyStandardMaterial(r)===name).sort(sortByShip);
+    return {
+      kicker:`${currentChartLabel}・材質／表面処理`,title:name,
+      count:`<b>${fmt(list.length)}</b> 件（${fmt(sumQty(list))}点）`,
+      body:tableHtml(list,['id','product','size','color','qty','status','ship','due'])
+    };
+  };
+  openModal({...render(),refresh:()=>{const r=render();$('modalCount').innerHTML=r.count;$('modalBody').innerHTML=r.body}});
+}
+function openBucketPopup(bucket,unfinished){
+  const same=standardBreakdownFilter&&standardBreakdownFilter.bucket===bucket&&standardBreakdownFilter.unfinished===unfinished;
+  standardBreakdownFilter=same?null:{bucket,unfinished};
+  renderAll();
+  if(!standardBreakdownFilter)return;
+  const render=()=>{
+    const ctx=bucketContext();
+    const list=currentChartRows.filter(r=>bucketOf(r,ctx)===standardBreakdownFilter?.bucket&&(!standardBreakdownFilter?.unfinished||isUnfinished(r))).sort(sortByShip);
+    return {
+      kicker:`${currentChartLabel}・${unfinished?'未完成のみ':'全体'}`,
+      title:lastRender.bucketLabels?.[bucket]||'内訳',
+      count:`<b>${fmt(list.length)}</b> 件（${fmt(sumQty(list))}点）`,
+      body:tableHtml(list,['id','product','qty','ship','due','status','owner','delivery'],'対象データはありません',true)
+    };
+  };
+  openModal({...render(),refresh:()=>{if(!standardBreakdownFilter)return;const r=render();$('modalCount').innerHTML=r.count;$('modalBody').innerHTML=r.body}});
+}
+
+/* ---------- 製造指示一覧（旧版の隠れていた一覧・フィルター） ---------- */
+const listState={q:'',status:'',owner:'',deadline:'',scope:'current'};
+function openListView(){
+  const render=()=>{
+    const all=rows;
+    const c=all.reduce((a,r)=>(a[r.status]=(a[r.status]||0)+1,a),{});
+    const total=all.length,done=c['完成']||0,newc=c['未着手']||0;
+    const cancel=(c['ｷｬﾝｾﾙ']||0)+(c['キャンセル']||0);
+    const active=Math.max(0,total-done-newc-cancel);
+    const empty=all.filter(r=>!r.owner).length;
+    const eff=Math.max(0,total-cancel);
+    const statuses=[...new Set(all.map(r=>r.status).filter(Boolean))];
+    const owners=[...new Set(all.map(r=>r.owner).filter(Boolean))];
+    const opt=(list,sel,label)=>`<option value="">${label}</option>`+list.map(x=>`<option ${x===sel?'selected':''}>${escapeHtml(x)}</option>`).join('');
+    return {
+      kicker:'九州工場',title:'製造指示一覧',count:'',
+      body:`<div class="list-kpis">
+          <div class="kpi"><span>製造指示件数</span><b>${fmt(total)}</b></div>
+          <div class="kpi"><span>完成</span><b>${fmt(done)}</b><small>完了率 ${(eff?done/eff*100:0).toFixed(1)}%</small></div>
+          <div class="kpi"><span>進行中</span><b>${fmt(active)}</b></div>
+          <div class="kpi"><span>未着手</span><b>${fmt(newc)}</b></div>
+          <div class="kpi"><span>キャンセル</span><b>${fmt(cancel)}</b></div>
+          <div class="kpi ${empty?'danger':''}"><span>担当者未設定</span><b>${fmt(empty)}</b></div>
+        </div>
+        <div class="list-filters">
+          <input id="lq" type="search" placeholder="指示番号・品番・品名・規格を検索" value="${escapeHtml(listState.q)}">
+          <select id="lscope"><option value="current" ${listState.scope==='current'?'selected':''}>表示中のタブ：${escapeHtml(currentChartLabel)}</option><option value="all" ${listState.scope==='all'?'selected':''}>全データ</option></select>
+          <select id="lstatus">${opt(statuses,listState.status,'すべての進捗')}</select>
+          <select id="lowner">${opt(owners,listState.owner,'すべての担当者')}</select>
+          <select id="ldeadline"><option value="">すべての納期</option><option value="late" ${listState.deadline==='late'?'selected':''}>期限超過</option><option value="soon" ${listState.deadline==='soon'?'selected':''}>7日以内</option></select>
+        </div>
+        <div id="listResult"></div>`
+    };
+  };
+  openModal({...render(),refresh:()=>renderListResult()});
+  ['lq','lscope','lstatus','lowner','ldeadline'].forEach(id=>{
+    $(id).addEventListener(id==='lq'?'input':'change',()=>{
+      listState.q=$('lq').value;listState.scope=$('lscope').value;listState.status=$('lstatus').value;listState.owner=$('lowner').value;listState.deadline=$('ldeadline').value;
+      renderListResult();
+    });
+  });
+  renderListResult();
+}
+function renderListResult(){
+  const box=$('listResult');
+  if(!box)return;
+  const q=listState.q.toLowerCase();
+  const today=new Date();today.setHours(0,0,0,0);
+  const soon=new Date(today);soon.setDate(today.getDate()+7);soon.setHours(23,59,59,999);
+  const base=listState.scope==='all'?rows:currentChartRows;
+  const list=base.filter(r=>{
+    const due=Date.parse(String(r.due||'')+'T00:00:00');
+    const late=due<today.getTime()&&r.status!=='完成'&&!String(r.status||'').includes('ｷｬﾝｾﾙ');
+    const search=[r.id,r.part,r.name,r.standard].join(' ').toLowerCase();
+    return (!q||search.includes(q))&&(!listState.status||r.status===listState.status)&&(!listState.owner||r.owner===listState.owner)
+      &&(!listState.deadline||(listState.deadline==='late'?late:due>=today&&due<=soon));
+  });
+  $('modalCount').innerHTML=`表示 <b>${fmt(list.length)}</b> 件`;
+  const shown=list.slice(0,800);
+  box.innerHTML=tableHtml(shown,['id','product','qty','ship','due','status','owner','delivery'],'対象データはありません',true)+(list.length>shown.length?`<p class="note">先頭 ${fmt(shown.length)}件を表示しています。検索で絞り込んでください。</p>`:'');
+}
+
+/* ---------- J番号検索 ---------- */
+let jDigits='';
+const shortJ=v=>{const m=String(v||'').trim().match(/^\d{2}-(J.+)-\d{3}$/);return m?m[1]:String(v||'').trim()};
+function openJSearch(){
+  const keys=['1','2','3','4','5','6','7','8','9','back','0','clear'];
+  openModal({kicker:'製造指示を探す',title:'J番号検索',body:`<div class="jsearch">
+      <div><div class="j-display" id="jDisplay"></div>
+      <div class="j-keys">${keys.map(k=>`<button type="button" class="j-key ${k.length>1?'cmd':''}" data-jkey="${k}">${k==='back'?'⌫ 1文字消す':k==='clear'?'全消去':k}</button>`).join('')}</div></div>
+      <div class="j-results" id="jResults"></div>
+    </div>`,refresh:renderJResults});
+  renderJResults();
+}
+function renderJResults(){
+  const disp=$('jDisplay');if(!disp)return;
+  disp.textContent=jDigits?`J ${jDigits}`:'数字ボタンでJ番号を入力';
+  disp.classList.toggle('placeholder',!jDigits);
+  const box=$('jResults');
+  if(!jDigits){box.innerHTML='<div class="j-msg">J番号の数字の一部を入力すると候補を表示します。</div>';return}
+  const matches=rows.filter(r=>String(r.id||'').replace(/\D/g,'').includes(jDigits));
+  if(!matches.length){box.innerHTML='<div class="j-msg">該当するJ番号はありません。</div>';return}
+  box.innerHTML=`<div class="j-msg">該当 ${fmt(matches.length)}件${matches.length>8?'（先頭8件を表示）':''}</div>`+
+    matches.slice(0,8).map(r=>`<button type="button" class="j-result" data-jresult="${escapeHtml(r.id)}"><b>${escapeHtml(shortJ(r.id))}</b><span>${escapeHtml(r.part||'—')} ／ ${escapeHtml(r.name||'—')}</span>${statusChip(r.status||'未設定')}</button>`).join('');
+}
+function openJDetail(target){
+  const cell=(k,v)=>`<div class="info-cell"><small>${k}</small><b>${v}</b></div>`;
+  openModal({kicker:'J番号 詳細情報',title:shortJ(target.id),body:`<div class="info-grid">
+    ${cell('製造指示番号',escapeHtml(target.id||'—'))}${cell('品番',escapeHtml(target.part||'—'))}${cell('品名',escapeHtml(target.name||'—'))}${cell('規格',escapeHtml(target.standard||'—'))}
+    ${cell('現在工程',statusChip(target.status||'未設定'))}${cell('数量',`${fmt(target.qty)}点`)}${cell('製造期限',escapeHtml(target.due||'—'))}${cell('出荷日',escapeHtml(target.shipDate||'—'))}
+    ${cell('担当者',escapeHtml(target.owner||'未設定'))}${cell('配送便',escapeHtml(target.ship||'—'))}${cell('サイズ',escapeHtml(target.sizeInfo||'—'))}${cell('色',escapeHtml(target.color||'—'))}
+  </div><button type="button" class="btn" id="jBack">‹ 検索に戻る</button>`});
+}
+
+/* =====================================================================
+   時計・メッセージ
+   ===================================================================== */
+function updateClock(){
+  const now=new Date();
+  $('clockTime').textContent=now.toLocaleTimeString('ja-JP',{hour12:false});
+  $('clockDate').textContent=now.toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
+}
+function updateClockAlert(){
+  const clock=$('clock');
+  const dates=getShipDates();
+  let remaining=0;
+  if(shipFilter==='today-ng')remaining=rows.filter(r=>r.shipDate===dates.today&&isUnfinished(r)).length;
+  else if(shipFilter==='today')remaining=rows.filter(r=>r.due===dates.today&&isUnfinished(r)).length;
+  const after16=new Date().getHours()>=16;
+  const alarm=after16&&(shipFilter==='today-ng'||shipFilter==='today')&&remaining>0;
+  clock.classList.toggle('after16',after16&&!alarm);
+  clock.classList.toggle('alarm',alarm);
+}
+let ngMessageContext={total:0,remaining:0,rate:0,lateCompletion:false};
+let standardMessageContext={key:'today',total:0,remaining:0,rate:0};
+const messageIndex={};
+function nextTickerMessage(){
+  if(!dataReady)return;
+  let lines,context,key;
+  if(shipFilter==='today-ng'){
+    key=ngMessageContext.lateCompletion?'late':'today-ng';
+    context=ngMessageContext;
+    lines=ngMessageContext.lateCompletion?ngLateCompletionMessages.map(t=>()=>t):standardMessageGroups['today-ng'];
+  }else{
+    key=standardMessageGroups[shipFilter]?shipFilter:'today';
+    context=standardMessageContext;
+    lines=standardMessageGroups[key];
+  }
+  if(!lines||!lines.length)return;
+  messageIndex[key]=((messageIndex[key]??-1)+1)%lines.length;
+  const text=lines[messageIndex[key]](context);
+  const el=$('tickerMsg');
+  el.classList.add('fade');
+  setTimeout(()=>{el.textContent=text;el.title=text;el.classList.remove('fade')},400);
+}
+
+/* =====================================================================
+   受注キャパシティー（負荷ポイントマスター）旧版ロジックを移植
+   ===================================================================== */
+const SP_DAILY_CAPACITY=450;
+const SP_POINT_MASTER_FILENAME='負荷ポイントマスター.xlsx';
+let SP_POINT_RULES=[{"category":"ボックス","size":"600mm未満","process":"焼付","point":1.0},{"category":"ボックス","size":"600mm未満","process":"ダイマー","point":1.3},{"category":"ボックス","size":"600mm未満","process":"錆止め","point":1.0},{"category":"ボックス","size":"600mm未満","process":"SUS","point":1.0},{"category":"ボックス","size":"600mm未満","process":"ドブ・ZN","point":1.3},{"category":"ボックス","size":"600mm未満","process":"その他","point":1.0},{"category":"ボックス","size":"600mm以上","process":"焼付","point":1.5},{"category":"ボックス","size":"600mm以上","process":"ダイマー","point":1.8},{"category":"ボックス","size":"600mm以上","process":"錆止め","point":1.5},{"category":"ボックス","size":"600mm以上","process":"SUS","point":1.8},{"category":"ボックス","size":"600mm以上","process":"ドブ・ZN","point":1.5},{"category":"ボックス","size":"600mm以上","process":"その他","point":1.0},{"category":"ふた","size":"600mm未満","process":"焼付","point":1.0},{"category":"ふた","size":"600mm未満","process":"錆止め","point":1.0},{"category":"ふた","size":"600mm未満","process":"SUS","point":1.0},{"category":"ふた","size":"600mm未満","process":"ドブ・ZN","point":1.0},{"category":"ふた","size":"600mm以上","process":"ダイマー","point":1.5},{"category":"ふた","size":"600mm以上","process":"錆止め","point":1.5},{"category":"ふた","size":"600mm以上","process":"SUS","point":1.5},{"category":"ダクト","size":"600mm未満","process":"ダイマー","point":1.8},{"category":"ダクト","size":"600mm未満","process":"SUS","point":1.0},{"category":"ダクト","size":"600mm以上","process":"ダイマー","point":1.8},{"category":"ダクト","size":"600mm以上","process":"錆止め","point":1.5},{"category":"ダクト","size":"600mm以上","process":"SUS","point":1.5},{"category":"ダクト","size":"600mm以上","process":"ドブ・ZN","point":1.0},{"category":"架台","size":"600mm未満","process":"焼付","point":3.0},{"category":"架台","size":"600mm未満","process":"錆止め","point":3.0},{"category":"架台","size":"600mm未満","process":"SUS","point":4.0},{"category":"架台","size":"600mm未満","process":"ドブ・ZN","point":3.0},{"category":"架台","size":"600mm以上","process":"焼付","point":4.0},{"category":"架台","size":"600mm以上","process":"錆止め","point":3.0},{"category":"架台","size":"600mm以上","process":"SUS","point":4.0},{"category":"架台","size":"600mm以上","process":"ドブ・ZN","point":4.0},{"category":"貫通枠","size":"600mm未満","process":"ダイマー","point":2.5},{"category":"貫通枠","size":"600mm未満","process":"錆止め","point":1.5},{"category":"貫通枠","size":"600mm未満","process":"ドブ・ZN","point":1.5},{"category":"貫通枠","size":"600mm未満","process":"その他","point":1.5},{"category":"貫通枠","size":"600mm以上","process":"ダイマー","point":3.0},{"category":"貫通枠","size":"600mm以上","process":"錆止め","point":2.0},{"category":"貫通枠","size":"600mm以上","process":"ドブ・ZN","point":2.0},{"category":"貫通枠","size":"600mm以上","process":"その他","point":2.0},{"category":"防球ガード","size":"600mm未満","process":"錆止め","point":5.0},{"category":"防球ガード","size":"600mm以上","process":"錆止め","point":6.0},{"category":"プレート","size":"600mm未満","process":"焼付","point":0.3},{"category":"プレート","size":"600mm未満","process":"ダイマー","point":0.3},{"category":"プレート","size":"600mm未満","process":"錆止め","point":0.5},{"category":"プレート","size":"600mm未満","process":"SUS","point":0.5},{"category":"プレート","size":"600mm未満","process":"ドブ・ZN","point":0.3},{"category":"プレート","size":"600mm未満","process":"その他","point":0.3},{"category":"プレート","size":"600mm以上","process":"焼付","point":0.3},{"category":"プレート","size":"600mm以上","process":"ダイマー","point":0.3},{"category":"プレート","size":"600mm以上","process":"錆止め","point":0.3},{"category":"プレート","size":"600mm以上","process":"SUS","point":0.5},{"category":"プレート","size":"600mm以上","process":"ドブ・ZN","point":0.5},{"category":"プレート","size":"600mm以上","process":"その他","point":0.1},{"category":"切板","size":"600mm未満","process":"焼付","point":0.1},{"category":"切板","size":"600mm未満","process":"ダイマー","point":0.1},{"category":"切板","size":"600mm未満","process":"錆止め","point":0.1},{"category":"切板","size":"600mm未満","process":"SUS","point":0.5},{"category":"切板","size":"600mm未満","process":"その他","point":0.0},{"category":"切板","size":"600mm以上","process":"焼付","point":0.1},{"category":"切板","size":"600mm以上","process":"ダイマー","point":0.2},{"category":"切板","size":"600mm以上","process":"錆止め","point":0.2},{"category":"切板","size":"600mm以上","process":"SUS","point":0.2},{"category":"切板","size":"600mm以上","process":"ドブ・ZN","point":0.2},{"category":"切板","size":"600mm以上","process":"その他","point":0.3},{"category":"カバー","size":"600mm未満","process":"焼付","point":0.3},{"category":"カバー","size":"600mm未満","process":"ダイマー","point":2.0},{"category":"カバー","size":"600mm未満","process":"錆止め","point":1.5},{"category":"カバー","size":"600mm未満","process":"SUS","point":2.0},{"category":"カバー","size":"600mm以上","process":"焼付","point":2.0},{"category":"カバー","size":"600mm以上","process":"ダイマー","point":2.0},{"category":"カバー","size":"600mm以上","process":"錆止め","point":3.0},{"category":"カバー","size":"600mm以上","process":"SUS","point":2.0},{"category":"カバー","size":"600mm以上","process":"ドブ・ZN","point":3.0},{"category":"カバー","size":"600mm以上","process":"その他","point":2.0},{"category":"アングル","size":"600mm未満","process":"焼付","point":3.5},{"category":"アングル","size":"600mm未満","process":"ダイマー","point":4.0},{"category":"アングル","size":"600mm未満","process":"錆止め","point":3.5},{"category":"アングル","size":"600mm未満","process":"SUS","point":2.0},{"category":"アングル","size":"600mm未満","process":"ドブ・ZN","point":3.5},{"category":"アングル","size":"600mm未満","process":"その他","point":3.0},{"category":"アングル","size":"600mm以上","process":"焼付","point":5.0},{"category":"アングル","size":"600mm以上","process":"ダイマー","point":5.0},{"category":"アングル","size":"600mm以上","process":"錆止め","point":4.0},{"category":"アングル","size":"600mm以上","process":"SUS","point":5.0},{"category":"アングル","size":"600mm以上","process":"ドブ・ZN","point":5.0},{"category":"アングル","size":"600mm以上","process":"その他","point":6.0},{"category":"チャンネル","size":"600mm未満","process":"ドブ・ZN","point":5.0},{"category":"チャンネル","size":"600mm以上","process":"焼付","point":5.0},{"category":"チャンネル","size":"600mm以上","process":"錆止め","point":5.0},{"category":"チャンネル","size":"600mm以上","process":"SUS","point":7.0},{"category":"チャンネル","size":"600mm以上","process":"ドブ・ZN","point":5.0},{"category":"縞鋼板","size":"600mm未満","process":"焼付","point":2.0},{"category":"縞鋼板","size":"600mm未満","process":"SUS","point":2.0},{"category":"縞鋼板","size":"600mm未満","process":"ドブ・ZN","point":3.0},{"category":"縞鋼板","size":"600mm以上","process":"焼付","point":2.0},{"category":"縞鋼板","size":"600mm以上","process":"錆止め","point":2.0},{"category":"縞鋼板","size":"600mm以上","process":"SUS","point":4.0},{"category":"縞鋼板","size":"600mm以上","process":"ドブ・ZN","point":3.0},{"category":"金物","size":"600mm未満","process":"焼付","point":2.0},{"category":"金物","size":"600mm未満","process":"ダイマー","point":2.0},{"category":"金物","size":"600mm未満","process":"錆止め","point":1.5},{"category":"金物","size":"600mm未満","process":"SUS","point":1.5},{"category":"金物","size":"600mm未満","process":"ドブ・ZN","point":2.0},{"category":"金物","size":"600mm未満","process":"その他","point":2.0},{"category":"金物","size":"600mm以上","process":"焼付","point":2.0},{"category":"金物","size":"600mm以上","process":"ダイマー","point":2.0},{"category":"金物","size":"600mm以上","process":"錆止め","point":1.5},{"category":"金物","size":"600mm以上","process":"SUS","point":2.0},{"category":"金物","size":"600mm以上","process":"ドブ・ZN","point":1.5},{"category":"金物","size":"600mm以上","process":"その他","point":1.5},{"category":"その他・要確認","size":"600mm未満","process":"焼付","point":3.0},{"category":"その他・要確認","size":"600mm未満","process":"SUS","point":3.0},{"category":"その他・要確認","size":"600mm未満","process":"ドブ・ZN","point":3.0},{"category":"その他・要確認","size":"600mm未満","process":"その他","point":3.0},{"category":"その他・要確認","size":"600mm以上","process":"焼付","point":3.0},{"category":"その他・要確認","size":"600mm以上","process":"ドブ・ZN","point":3.0},{"category":"その他・要確認","size":"600mm以上","process":"その他","point":3.0}];
+const SP_EMBEDDED_ADOPTED_RULES={"ボックス|600mm未満|焼付":{"point":1.0,"setupPoint":2.0},"ボックス|600mm未満|ダイマー":{"point":1.3,"setupPoint":1.5},"ボックス|600mm未満|錆止め":{"point":1.0,"setupPoint":1.2},"ボックス|600mm未満|SUS":{"point":1.0,"setupPoint":1.0},"ボックス|600mm未満|ドブ・ZN":{"point":1.3,"setupPoint":1.5},"ボックス|600mm未満|その他":{"point":1.0,"setupPoint":1.0},"ボックス|600mm以上|焼付":{"point":1.5,"setupPoint":2.0},"ボックス|600mm以上|ダイマー":{"point":1.8,"setupPoint":2.5},"ボックス|600mm以上|錆止め":{"point":1.5,"setupPoint":2.0},"ボックス|600mm以上|SUS":{"point":1.8,"setupPoint":2.0},"ボックス|600mm以上|ドブ・ZN":{"point":1.5,"setupPoint":2.0},"ボックス|600mm以上|その他":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|焼付":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|錆止め":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|SUS":{"point":1.0,"setupPoint":2.0},"ふた|600mm未満|ドブ・ZN":{"point":1.0,"setupPoint":2.5},"ふた|600mm以上|ダイマー":{"point":1.5,"setupPoint":2.5},"ふた|600mm以上|錆止め":{"point":1.5,"setupPoint":2.0},"ふた|600mm以上|SUS":{"point":1.5,"setupPoint":1.5},"ダクト|600mm未満|ダイマー":{"point":1.8,"setupPoint":2.0},"ダクト|600mm未満|SUS":{"point":1.0,"setupPoint":2.0},"ダクト|600mm以上|ダイマー":{"point":1.8,"setupPoint":4.0},"ダクト|600mm以上|錆止め":{"point":1.5,"setupPoint":3.0},"ダクト|600mm以上|SUS":{"point":1.5,"setupPoint":4.0},"ダクト|600mm以上|ドブ・ZN":{"point":1.0,"setupPoint":4.0},"架台|600mm未満|焼付":{"point":3.0,"setupPoint":4.0},"架台|600mm未満|錆止め":{"point":3.0,"setupPoint":4.0},"架台|600mm未満|SUS":{"point":4.0,"setupPoint":4.0},"架台|600mm未満|ドブ・ZN":{"point":3.0,"setupPoint":3.0},"架台|600mm以上|焼付":{"point":4.0,"setupPoint":4.0},"架台|600mm以上|錆止め":{"point":3.0,"setupPoint":5.0},"架台|600mm以上|SUS":{"point":4.0,"setupPoint":6.0},"架台|600mm以上|ドブ・ZN":{"point":4.0,"setupPoint":5.0},"貫通枠|600mm未満|ダイマー":{"point":2.5,"setupPoint":4.0},"貫通枠|600mm未満|錆止め":{"point":1.5,"setupPoint":4.0},"貫通枠|600mm未満|ドブ・ZN":{"point":1.5,"setupPoint":4.0},"貫通枠|600mm未満|その他":{"point":1.5,"setupPoint":4.0},"貫通枠|600mm以上|ダイマー":{"point":3.0,"setupPoint":6.0},"貫通枠|600mm以上|錆止め":{"point":2.0,"setupPoint":5.0},"貫通枠|600mm以上|ドブ・ZN":{"point":2.0,"setupPoint":4.0},"貫通枠|600mm以上|その他":{"point":2.0,"setupPoint":6.0},"防球ガード|600mm未満|錆止め":{"point":5.0,"setupPoint":7.0},"防球ガード|600mm以上|錆止め":{"point":6.0,"setupPoint":6.0},"プレート|600mm未満|焼付":{"point":0.3,"setupPoint":2.0},"プレート|600mm未満|ダイマー":{"point":0.3,"setupPoint":1.0},"プレート|600mm未満|錆止め":{"point":0.5,"setupPoint":2.0},"プレート|600mm未満|SUS":{"point":0.5,"setupPoint":1.0},"プレート|600mm未満|ドブ・ZN":{"point":0.3,"setupPoint":2.0},"プレート|600mm未満|その他":{"point":0.3,"setupPoint":1.0},"プレート|600mm以上|焼付":{"point":0.3,"setupPoint":2.0},"プレート|600mm以上|ダイマー":{"point":0.3,"setupPoint":3.0},"プレート|600mm以上|錆止め":{"point":0.3,"setupPoint":2.0},"プレート|600mm以上|SUS":{"point":0.5,"setupPoint":2.0},"プレート|600mm以上|ドブ・ZN":{"point":0.5,"setupPoint":2.0},"プレート|600mm以上|その他":{"point":0.1,"setupPoint":2.0},"切板|600mm未満|焼付":{"point":0.1,"setupPoint":2.0},"切板|600mm未満|ダイマー":{"point":0.1,"setupPoint":1.0},"切板|600mm未満|錆止め":{"point":0.1,"setupPoint":2.0},"切板|600mm未満|SUS":{"point":0.5,"setupPoint":3.0},"切板|600mm未満|その他":{"point":0.0,"setupPoint":1.0},"切板|600mm以上|焼付":{"point":0.1,"setupPoint":2.0},"切板|600mm以上|ダイマー":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|錆止め":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|SUS":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|ドブ・ZN":{"point":0.2,"setupPoint":2.0},"切板|600mm以上|その他":{"point":0.3,"setupPoint":1.0},"カバー|600mm未満|焼付":{"point":0.3,"setupPoint":2.0},"カバー|600mm未満|ダイマー":{"point":2.0,"setupPoint":2.5},"カバー|600mm未満|錆止め":{"point":1.5,"setupPoint":2.5},"カバー|600mm未満|SUS":{"point":2.0,"setupPoint":2.0},"カバー|600mm以上|焼付":{"point":2.0,"setupPoint":4.0},"カバー|600mm以上|ダイマー":{"point":2.0,"setupPoint":3.5},"カバー|600mm以上|錆止め":{"point":3.0,"setupPoint":2.0},"カバー|600mm以上|SUS":{"point":2.0,"setupPoint":2.0},"カバー|600mm以上|ドブ・ZN":{"point":3.0,"setupPoint":2.0},"カバー|600mm以上|その他":{"point":2.0,"setupPoint":4.0},"アングル|600mm未満|焼付":{"point":3.5,"setupPoint":4.0},"アングル|600mm未満|ダイマー":{"point":4.0,"setupPoint":4.0},"アングル|600mm未満|錆止め":{"point":3.5,"setupPoint":4.0},"アングル|600mm未満|SUS":{"point":2.0,"setupPoint":5.0},"アングル|600mm未満|ドブ・ZN":{"point":3.5,"setupPoint":3.0},"アングル|600mm未満|その他":{"point":3.0,"setupPoint":4.0},"アングル|600mm以上|焼付":{"point":5.0,"setupPoint":3.5},"アングル|600mm以上|ダイマー":{"point":5.0,"setupPoint":5.0},"アングル|600mm以上|錆止め":{"point":4.0,"setupPoint":4.0},"アングル|600mm以上|SUS":{"point":5.0,"setupPoint":6.0},"アングル|600mm以上|ドブ・ZN":{"point":5.0,"setupPoint":5.0},"アングル|600mm以上|その他":{"point":6.0,"setupPoint":6.0},"チャンネル|600mm未満|ドブ・ZN":{"point":5.0,"setupPoint":3.0},"チャンネル|600mm以上|焼付":{"point":5.0,"setupPoint":3.0},"チャンネル|600mm以上|錆止め":{"point":5.0,"setupPoint":5.0},"チャンネル|600mm以上|SUS":{"point":7.0,"setupPoint":5.0},"チャンネル|600mm以上|ドブ・ZN":{"point":5.0,"setupPoint":5.0},"縞鋼板|600mm未満|焼付":{"point":2.0,"setupPoint":3.0},"縞鋼板|600mm未満|SUS":{"point":2.0,"setupPoint":3.0},"縞鋼板|600mm未満|ドブ・ZN":{"point":3.0,"setupPoint":3.0},"縞鋼板|600mm以上|焼付":{"point":2.0,"setupPoint":4.0},"縞鋼板|600mm以上|錆止め":{"point":2.0,"setupPoint":4.0},"縞鋼板|600mm以上|SUS":{"point":4.0,"setupPoint":5.0},"縞鋼板|600mm以上|ドブ・ZN":{"point":3.0,"setupPoint":4.0},"金物|600mm未満|焼付":{"point":2.0,"setupPoint":2.0},"金物|600mm未満|ダイマー":{"point":2.0,"setupPoint":1.0},"金物|600mm未満|錆止め":{"point":1.5,"setupPoint":2.0},"金物|600mm未満|SUS":{"point":1.5,"setupPoint":1.0},"金物|600mm未満|ドブ・ZN":{"point":2.0,"setupPoint":2.0},"金物|600mm未満|その他":{"point":2.0,"setupPoint":2.0},"金物|600mm以上|焼付":{"point":2.0,"setupPoint":3.0},"金物|600mm以上|ダイマー":{"point":2.0,"setupPoint":3.0},"金物|600mm以上|錆止め":{"point":1.5,"setupPoint":3.0},"金物|600mm以上|SUS":{"point":2.0,"setupPoint":3.0},"金物|600mm以上|ドブ・ZN":{"point":1.5,"setupPoint":3.0},"金物|600mm以上|その他":{"point":1.5,"setupPoint":3.0},"その他・要確認|600mm未満|焼付":{"point":3.0,"setupPoint":2.0},"その他・要確認|600mm未満|SUS":{"point":3.0,"setupPoint":3.0},"その他・要確認|600mm未満|ドブ・ZN":{"point":3.0,"setupPoint":3.0},"その他・要確認|600mm未満|その他":{"point":3.0,"setupPoint":3.0},"その他・要確認|600mm以上|焼付":{"point":3.0,"setupPoint":4.0},"その他・要確認|600mm以上|ドブ・ZN":{"point":3.0,"setupPoint":4.0},"その他・要確認|600mm以上|その他":{"point":3.0,"setupPoint":4.0}};
+SP_POINT_RULES=SP_POINT_RULES.map(item=>{
+  const adopted=SP_EMBEDDED_ADOPTED_RULES[`${item.category}|${item.size}|${item.process}`];
+  return adopted?{...item,...adopted}:{...item,setupPoint:0};
+});
+let SP_POINT_MASTER_SOURCE='内蔵マスター';
+let SP_POINT_MASTER_PROMISE=null;
+const SP_COLORS=['#3987e5','#d95926','#199e70','#c98500','#d55181','#0ca30c','#9085e9','#e66767'];
+
+function spNormalizeText(value){return String(value??'').normalize('NFKC').replace(/\s+/g,' ').trim()}
+function spDimensions(row){return String(row.sizeInfo||'').match(/\d+(?:\.\d+)?/g)?.map(Number).filter(Number.isFinite)||[]}
+function spSizeClass(row){return spDimensions(row).some(v=>v>=600)?'600mm以上':'600mm未満'}
+function spProductCategory(row){
+  const name=spNormalizeText(row.name).toUpperCase();
+  const part=spNormalizeText(row.part).toUpperCase();
+  if(/ふた|蓋/.test(name))return 'ふた';
+  if(/PBトク|\bPB\b/.test(name))return 'ボックス';
+  if(/防球/.test(name)||part.startsWith('IBG'))return '防球ガード';
+  if(/貫通枠/.test(name)||/^[ZID]KW/.test(part))return '貫通枠';
+  if(/架台|スタンション/.test(name))return '架台';
+  if(/ダクトカバー|カバー/.test(name)||/^(IDC|DDC|SDC|BDC|ZDC)/.test(part))return 'カバー';
+  if(/ダクト/.test(name))return 'ダクト';
+  if(/縞鋼板/.test(name)||/^[ISZ]CP/.test(part))return '縞鋼板';
+  if(/チャンネル|CHANNEL/.test(name)||/^[ISZ]CI/.test(part))return 'チャンネル';
+  if(/アングル|ANGLE/.test(name)||/^[ISZDA]AI/.test(part))return 'アングル';
+  if(/切板/.test(name))return '切板';
+  if(/プレート|PLATE/.test(name)||/^[ISZDBA]IP/.test(part))return 'プレート';
+  if(/金物/.test(name)||/^[ISZDBA](?:MK|KM)/.test(part))return '金物';
+  return 'その他・要確認';
+}
+function spProcessClass(row){
+  const name=spNormalizeText(row.name).toUpperCase();
+  const standard=spNormalizeText(row.standard).toUpperCase();
+  const part=spNormalizeText(row.part).toUpperCase();
+  const all=`${name} ${standard}`;
+  if(/SUS|ステンレス/.test(all)||part.startsWith('S'))return 'SUS';
+  if(/ドブ|溶融亜鉛|HDZT|\bZN\b/.test(all)||part.startsWith('Z'))return 'ドブ・ZN';
+  if(/ダイマー/.test(all)||part.startsWith('D'))return 'ダイマー';
+  if(/錆止め|さび止め|サビ止め/.test(all)||/G[A-Z0-9]*$/.test(part))return '錆止め';
+  if(/焼付/.test(all)||/C[A-Z0-9]*$/.test(part))return '焼付';
+  return 'その他';
+}
+function spRulePoint(row){
+  const category=spProductCategory(row),size=spSizeClass(row),process=spProcessClass(row);
+  const dimensions=spDimensions(row);
+  if(dimensions.length>=4&&dimensions.every(v=>v===0))return {category,size,process,unitPoint:0,setupPoint:0,match:'zero-size',loadPoints:0};
+  let rule=SP_POINT_RULES.find(item=>item.category===category&&item.size===size&&item.process===process);
+  let match='exact';
+  if(!rule){
+    const near=SP_POINT_RULES.filter(item=>item.category===category&&item.size===size);
+    if(near.length){rule={point:near.reduce((s,i)=>s+Number(i.point||0),0)/near.length,setupPoint:near.reduce((s,i)=>s+Number(i.setupPoint||0),0)/near.length};match='category'}
+  }
+  if(!rule){rule={point:3,setupPoint:0};match='unmatched'}
+  const unitPoint=Math.max(0,Number(rule.point)||0);
+  const setupPoint=Math.max(0,Number(rule.setupPoint)||0);
+  return {category,size,process,unitPoint,setupPoint,match,loadPoints:(Number(row.qty)||0)*unitPoint+setupPoint};
+}
+async function spLoadPointMaster(){
+  if(SP_POINT_MASTER_PROMISE)return SP_POINT_MASTER_PROMISE;
+  SP_POINT_MASTER_PROMISE=(async()=>{
+    try{
+      const response=await fetch(encodeURI(SP_POINT_MASTER_FILENAME)+'?ts='+Date.now(),{cache:'no-store'});
+      if(!response.ok)throw new Error('master not found');
+      const book=XLSX.read(await response.arrayBuffer(),{type:'array',raw:true});
+      const sheet=book.Sheets['評価入力'];
+      if(!sheet)throw new Error('評価入力 sheet not found');
+      const data=XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true});
+      const header=data.findIndex(row=>row[0]==='No.'&&row[1]==='品種');
+      if(header<0)throw new Error('master header not found');
+      const numberOr=(...values)=>{for(const v of values){const n=Number(v);if(v!==''&&v!=null&&Number.isFinite(n))return n}return 0};
+      const loaded=data.slice(header+1).map(row=>({category:String(row[1]||'').trim(),size:String(row[2]||'').trim(),process:String(row[3]||'').trim(),point:numberOr(row[14],row[11],row[10]),setupPoint:numberOr(row[15],row[13],row[12])}))
+        .filter(item=>item.category&&item.size&&item.process&&Number.isFinite(item.point)&&Number.isFinite(item.setupPoint));
+      if(!loaded.length)throw new Error('master empty');
+      SP_POINT_RULES=loaded;SP_POINT_MASTER_SOURCE='Excelマスター';
+    }catch(_){SP_POINT_MASTER_SOURCE='内蔵マスター'}
+    return SP_POINT_RULES;
+  })();
+  return SP_POINT_MASTER_PROMISE;
+}
+let SP_BRIDGE_DAYS=[];
+let SP_BRIDGE_ROW_MAP=new Map();
+let SP_SELECTED_DAY_KEY='';
+let SP_SELECTED_CATEGORIES=[];
+let SP_SUB=[];          /* 架台・ダクト・ボックス処理区分の一時リスト */
+let SP_SUB_PARENT=-1;
+let SP_BOX_SIZES=[];
+let SP_BOX_SIZE_INDEX=-1;
+
+function spCycleRange(){
+  const start=new Date();start.setHours(0,0,0,0);
+  const end=new Date(start);end.setDate(end.getDate()+15);end.setHours(0,0,0,0);
+  return {start,end};
+}
+const spIsCancel=row=>/ｷｬﾝｾﾙ|キャンセル/.test(String(row.status||''));
+const spShortDate=date=>`${date.getMonth()+1}/${date.getDate()}`;
+const spPointNumber=value=>{const n=Number(value)||0;return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')};
+function spCategoryLabel(row){
+  const name=String(row.name||'').normalize('NFKC').replace(/\s+/g,' ').trim();
+  const part=String(row.part||'').trim().toUpperCase();
+  if(name.includes('架台'))return '架台';
+  if(name.includes('ダクト'))return 'ダクト';
+  if(part.startsWith('ZKW'))return 'ドブ貫通枠';
+  if(part.startsWith('DD'))return 'ダイマーダクト';
+  if(part.startsWith('IDC'))return 'ダクトカバー';
+  if(part.startsWith('IKW'))return '鉄貫通枠';
+  if(part.startsWith('IBG'))return '防球ガード';
+  if(part.startsWith('SD'))return 'SUS ダクト';
+  if(part.startsWith('ID'))return '鉄ダクト';
+  return /PBトク|PB/i.test(name)?'ボックス':(name||String(row.part||'その他').trim()||'その他');
+}
+function spBoxTypeLabel(row){
+  const part=String(row.part||'').trim().toUpperCase();
+  if(part.startsWith('S'))return 'SUS';
+  if(part.includes('Z'))return 'ドブ';
+  if(part.includes('G'))return '錆止め';
+  if(part.includes('C'))return '焼付';
+  if(part.includes('D'))return 'ダイマー';
+  return 'その他';
+}
+const spBoxTypeRule=label=>({SUS:'品番が S で始まる',ドブ:'品番に Z を含む',錆止め:'品番に G を含む',焼付:'品番に C を含む',ダイマー:'品番に D を含む',その他:'上記以外'})[label]||'';
+const spIsLargeBox=row=>(String(row.sizeInfo||'').match(/\d+(?:\.\d+)?/g)||[]).some(v=>Number(v)>=600);
+function spRackTypeLabel(row){
+  const s=`${String(row.name||'')} ${String(row.part||'')}`.normalize('NFKC').replace(/\s+/g,' ').toUpperCase();
+  if(s.includes('先メッキ'))return '先メッキ';
+  if(s.includes('錆止め'))return '錆止め';
+  if(s.includes('焼付'))return '焼付';
+  if(s.includes('SUS'))return 'SUS';
+  if(s.includes('ZN'))return 'ZN';
+  return 'その他';
+}
+function spDuctTypeLabel(row){
+  const n=String(row.name||'').normalize('NFKC').replace(/\s+/g,'').toUpperCase();
+  if(n.includes('ダクトカバー'))return 'ダクトカバー';
+  if(n.includes('SUS'))return 'SUS';
+  if(n.includes('ダイマー'))return 'ダイマー';
+  if(n.includes('鉄'))return '鉄';
+  if(n.includes('ZN'))return 'ZN';
+  return 'その他';
+}
+function spGroup(list,labelFn,order){
+  const map=new Map();
+  list.forEach(row=>{
+    const label=labelFn(row);
+    if(!map.has(label))map.set(label,{label,qty:0,rows:[]});
+    const g=map.get(label);g.qty+=Number(row.qty)||0;g.rows.push(row);
+  });
+  const out=[...map.values()];
+  return order?out.sort((a,b)=>order.indexOf(a.label)-order.indexOf(b.label)):out.sort((a,b)=>b.qty-a.qty);
+}
+function spProductTableHtml(list){
+  return `<div class="table-wrap"><table class="list"><thead><tr><th>品番・品名 / 規格</th><th>サイズ</th><th>実数量</th><th>評価点/個</th><th>段取り点/件</th><th>合計負荷点</th></tr></thead><tbody>${list.map(row=>{
+    const actual=Number(row.rawQty)||0,unit=Number(row.unitPoint)||0,setup=Number(row.setupPoint)||0,total=Number(row.qty)||0;
+    return `<tr><td><b>${escapeHtml(row.part||'—')}　${escapeHtml(row.name||'—')}</b><small>規格：${escapeHtml(row.standard||'—')}</small></td><td>${escapeHtml(row.sizeInfo||'—')}</td><td class="num">${spPointNumber(actual)}</td><td class="num">${spPointNumber(unit)}点</td><td class="num">${spPointNumber(setup)}点</td><td class="num">${spPointNumber(actual)} × ${spPointNumber(unit)} ＋ ${spPointNumber(setup)} ＝ <b>${spPointNumber(total)}点</b></td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function openCapacityModal(){
+  showModal('capModal');
+  renderSalesProductionBridge();
+}
+function renderSalesProductionBridge(){
+  const {start,end}=spCycleRange();
+  const startKey=formatLocalDate(start),endKey=formatLocalDate(end);
+  const days=[];
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    const copy=new Date(d);
+    days.push({date:copy,key:formatLocalDate(copy),business:isSystemBusinessDay(copy),count:0});
+  }
+  const dayMap=new Map(days.map(day=>[day.key,day]));
+  SP_BRIDGE_ROW_MAP=new Map();
+  let unmatchedCount=0;
+  rows.filter(row=>!spIsCancel(row)).forEach(row=>{
+    if(row.due&&row.due>=startKey&&row.due<=endKey){
+      const score=spRulePoint(row);
+      const weighted={...row,rawQty:Number(row.qty)||0,qty:score.loadPoints,unitPoint:score.unitPoint,setupPoint:score.setupPoint,pointMatch:score.match};
+      if(score.match==='unmatched')unmatchedCount++;
+      const day=dayMap.get(row.due);
+      if(day)day.count+=score.loadPoints;
+      if(!SP_BRIDGE_ROW_MAP.has(row.due))SP_BRIDGE_ROW_MAP.set(row.due,[]);
+      SP_BRIDGE_ROW_MAP.get(row.due).push(weighted);
+    }
+  });
+  SP_BRIDGE_DAYS=days;
+  const business=days.filter(day=>day.business);
+  const peak=business.length?Math.max(...business.map(day=>day.count)):0;
+  const peakDay=business.find(day=>day.count===peak);
+  const remain=Math.max(0,SP_DAILY_CAPACITY-peak);
+  const overloaded=business.filter(day=>day.count>SP_DAILY_CAPACITY);
+  if(!$('spPeriod'))return;
+  $('spPeriod').textContent=`${spShortDate(start)} → ${spShortDate(end)}`;
+  $('spBooked').textContent=Math.round(peak);
+  $('spBookedSub').textContent=peakDay?`${spShortDate(peakDay.date)} 製造期限`:'製造期限';
+  $('spRemain').textContent=Math.round(remain);
+  $('spRisk').textContent=overloaded.length;
+  $('spRiskCard').className='kpi '+(overloaded.length?'danger':'good');
+  $('spRemainCard').className='kpi '+(peak>SP_DAILY_CAPACITY*.9?'danger':peak<SP_DAILY_CAPACITY*.7?'good':'');
+  const dataMax=Math.max(SP_DAILY_CAPACITY,550,...business.map(day=>day.count),1);
+  const step=dataMax<=600?100:dataMax<=1200?200:500;
+  const chartMax=Math.ceil((dataMax*1.12)/step)*step;
+  $('spFormula').textContent='負荷点 ＝ 数量 × 評価点 ＋ 段取り点（例：20台 × 4点 ＋ 2.5点 ＝ 82.5点）';
+  const wd=['日','月','火','水','木','金','土'];
+  $('spChart').innerHTML=days.map(day=>{
+    const h=day.business?Math.max(1,Math.min(100,day.count/chartMax*100)):0;
+    const n=(SP_BRIDGE_ROW_MAP.get(day.key)||[]).length;
+    const date=`<div class="cap-date"><b>${spShortDate(day.date)}</b>${wd[day.date.getDay()]}</div>`;
+    if(!day.business)return `<div class="cap-day off"><div class="cap-zone"></div>${date}</div>`;
+    return `<button type="button" class="cap-day" data-spday="${day.key}" title="${spShortDate(day.date)} 製造期限 ${n}件・合計負荷点 ${Math.round(day.count)}点">
+      <div class="cap-zone"><div class="cap-bar ${day.count>SP_DAILY_CAPACITY?'over':''}" style="height:${h}%"><span class="cap-val">${Math.round(day.count)}<small>${n}件</small></span></div></div>${date}</button>`;
+  }).join('')+[[SP_DAILY_CAPACITY,''],[500,'l60'],[550,'l80']].map(([v,c])=>`<span class="cap-line ${c}" data-cap-line="${v}"></span>`).join('');
+  /* 基準線は棒の領域の高さに合わせて配置 */
+  requestAnimationFrame(()=>{
+    const zone=$('spChart').querySelector('.cap-zone');
+    if(!zone)return;
+    const chartTop=$('spChart').getBoundingClientRect().top;
+    const zr=zone.getBoundingClientRect();
+    $('spChart').querySelectorAll('[data-cap-line]').forEach(line=>{
+      const v=Number(line.dataset.capLine);
+      line.style.top=`${zr.top-chartTop+(1-v/chartMax)*zr.height}px`;
+    });
+  });
+  const best=business.filter(day=>day.count<SP_DAILY_CAPACITY).sort((a,b)=>a.date-b.date).slice(0,5);
+  $('spAdvice').innerHTML=`<h4>投入可能日（450点未満）</h4>
+    <div class="reco">${best.map(day=>`<button type="button" data-spday="${day.key}">${spShortDate(day.date)}</button>`).join('')||'—'}</div>
+    <small>棒をタップすると、その日の品種別の内訳を表示します。</small>
+    <small>負荷点：数量 × 製品別評価点 ＋ 段取り点｜${SP_POINT_MASTER_SOURCE}${unmatchedCount?`｜未判定 ${unmatchedCount}件（3点/個・段取り0点）`:''}</small>`;
+}
+function spOpenDate(key){
+  const day=SP_BRIDGE_DAYS.find(item=>item.key===key);
+  if(!day)return;
+  $('spDecisionTitle').textContent=`${spShortDate(day.date)} 製造期限`;
+  $('spDecisionCurrent').textContent=Math.round(day.count||0);
+  let categories=spGroup(SP_BRIDGE_ROW_MAP.get(key)||[],spCategoryLabel);
+  if(categories.length>8){
+    const rest=categories.slice(7);
+    categories=categories.slice(0,7).concat({label:'その他',qty:rest.reduce((s,i)=>s+i.qty,0),rows:rest.flatMap(i=>i.rows)});
+  }
+  SP_SELECTED_DAY_KEY=key;
+  SP_SELECTED_CATEGORIES=categories;
+  const total=Math.max(1,categories.reduce((s,i)=>s+i.qty,0));
+  let cursor=0;
+  const slices=categories.map((item,i)=>{const s=cursor;cursor+=item.qty/total*100;return `${SP_COLORS[i%SP_COLORS.length]} ${s.toFixed(2)}% ${cursor.toFixed(2)}%`});
+  $('spDecisionOrders').innerHTML=categories.length?`<div class="sp-view">
+      <div class="sp-pie" style="background:conic-gradient(${slices.join(',')})"><div class="sp-pie-center"><b>${spPointNumber(total)}</b><small>負荷点</small></div></div>
+      <div><div class="sp-legend">${categories.map((item,i)=>`<button type="button" class="sp-cat" data-spcat="${i}"><i style="background:${SP_COLORS[i%SP_COLORS.length]}"></i><span title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</span><b>${Math.round(item.qty)}</b></button>`).join('')}</div>
+      <div class="sp-hint">品種を選択すると詳細を表示します</div></div>
+    </div>`:'<div class="empty">対象データなし</div>';
+  showModal('spModal');
+}
+function spTypeGrid(items,attr,ruleFn){
+  return `<div class="sp-type-grid">${items.map((item,i)=>`<button type="button" class="sp-type" ${attr}="${i}"><span><b>${escapeHtml(item.label)}</b><small>${escapeHtml(ruleFn(item))}</small></span><strong>${Math.round(item.qty)}<small> 点</small></strong></button>`).join('')}</div>`;
+}
+function spBackButton(label,action){return `<button type="button" class="btn" data-spback="${action}">← ${label}</button>`}
+function spOpenCategory(index){
+  const category=SP_SELECTED_CATEGORIES[index];
+  if(!category)return;
+  SP_SUB_PARENT=index;
+  const head=(total)=>`<div class="sp-detail-head">${spBackButton('品種別グラフ','date')}<b>${total}</b></div>`;
+  if(category.label==='架台'){
+    SP_SUB=spGroup(category.rows,spRackTypeLabel,['ZN','錆止め','SUS','焼付','先メッキ','その他']);
+    $('spDecisionOrders').innerHTML=head(`架台合計 ${Math.round(category.qty)} 点`)+'<p class="sp-guide">架台の材質・表面処理を選択してください</p>'+spTypeGrid(SP_SUB,'data-spsub',()=>'品名・品番で分類');
+    return;
+  }
+  if(category.label==='ダクト'){
+    SP_SUB=spGroup(category.rows,spDuctTypeLabel,['ダクトカバー','SUS','ダイマー','鉄','ZN','その他']);
+    $('spDecisionOrders').innerHTML=head(`ダクト合計 ${Math.round(category.qty)} 点`)+'<p class="sp-guide">品名によるダクト分類を選択してください</p>'+spTypeGrid(SP_SUB,'data-spsub',()=>'品名で分類');
+    return;
+  }
+  if(category.label==='ボックス'){
+    const large={label:'600mm以上',rule:'1面でも600mm以上',qty:0,rows:[]};
+    const small={label:'600mm未満',rule:'すべての面が600mm未満',qty:0,rows:[]};
+    category.rows.forEach(row=>{const b=spIsLargeBox(row)?large:small;b.qty+=Number(row.qty)||0;b.rows.push(row)});
+    SP_BOX_SIZES=[large,small];
+    $('spDecisionOrders').innerHTML=head(`ボックス合計 ${Math.round(category.qty)} 点`)+'<p class="sp-guide">最初にサイズ区分を選択してください</p>'+spTypeGrid(SP_BOX_SIZES,'data-spbox',i=>i.rule);
+    return;
+  }
+  const list=category.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
+  $('spDecisionOrders').innerHTML=head(`${escapeHtml(category.label)}　合計 ${spPointNumber(category.qty)}点`)+spProductTableHtml(list);
+}
+function spOpenSub(index){
+  const type=SP_SUB[index];
+  const parent=SP_SELECTED_CATEGORIES[SP_SUB_PARENT];
+  if(!type||!parent)return;
+  const list=type.rows.slice().sort((a,b)=>(Number(b.qty)||0)-(Number(a.qty)||0));
+  const isBoxType=parent.label==='ボックス';
+  const backLabel=isBoxType?'処理区分':parent.label==='架台'?'架台分類':'ダクト分類';
+  const path=isBoxType?`ボックス / ${SP_BOX_SIZES[SP_BOX_SIZE_INDEX]?.label||''} / ${type.label}`:`${parent.label} / ${type.label}`;
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head">${spBackButton(backLabel,isBoxType?'box':'cat')}<b>${escapeHtml(path)}　合計 ${spPointNumber(type.qty)}点</b></div>`+spProductTableHtml(list);
+}
+function spOpenBoxSize(index){
+  const bucket=SP_BOX_SIZES[index];
+  if(!bucket)return;
+  SP_BOX_SIZE_INDEX=index;
+  SP_SUB=spGroup(bucket.rows,spBoxTypeLabel,['SUS','ドブ','錆止め','焼付','ダイマー','その他']);
+  $('spDecisionOrders').innerHTML=`<div class="sp-detail-head">${spBackButton('サイズ区分','cat')}<b>${bucket.label} ${Math.round(bucket.qty)} 点</b></div><p class="sp-guide">次に処理区分を選択してください</p>`+spTypeGrid(SP_SUB,'data-spsub',i=>spBoxTypeRule(i.label));
+}
+
+/* =====================================================================
+   残業入力（Google Sheet 共有・旧版 v2 ロジック）
+   ===================================================================== */
+const OT_STORE='production-overtime-daily-v2';
+const SHEETS_API_URL='https://script.google.com/macros/s/AKfycbwrqLmvtkqj-ydfqwm3lJrgE0-MMAfPE0B7XhSFEi1bXqGxgZj21rLCiSfMR0ro36OZ/exec';
+const OT_INITIAL=[['CAD/CAM',360],['切断',380],['曲げ',410],['溶接',400],['特化',360],['塗装',350],['組立',370]];
+const OT_COLORS=['#3987e5','#d95926','#199e70','#c98500','#d55181','#0ca30c','#9085e9','#e66767'];
+let otSelectedDate=formatLocalDate(new Date());
+let otModel={capacity:OT_INITIAL.map(([process,capacity])=>({process,capacity})),overtimeByDate:{},dailyCapacityByDate:{}};
+function otCycle(){
+  const date=new Date(otSelectedDate+'T12:00:00');
+  const month=date.getMonth()-(date.getDate()<20?1:0);
+  return {start:formatLocalDate(new Date(date.getFullYear(),month,20)),end:formatLocalDate(new Date(date.getFullYear(),month+1,20))};
+}
+function otDayMap(date=otSelectedDate){return otModel.overtimeByDate[date]||(otModel.overtimeByDate[date]={})}
+function otNormalize(raw){
+  if(raw?.capacity&&raw?.overtimeByDate)return {capacity:raw.capacity.map(x=>({process:String(x.process||'工程'),capacity:Math.max(0,Number(x.capacity)||0)})),holidays:Array.isArray(raw.holidays)?raw.holidays:[],overtimeByDate:raw.overtimeByDate||{},dailyCapacityByDate:raw.dailyCapacityByDate||{}};
+  const legacy=Array.isArray(raw)?raw:raw?.processes;
+  if(Array.isArray(legacy)){
+    const cap=legacy.map(x=>({process:String(x.process||'工程'),capacity:Math.max(0,Number(x.processCapacity??x.orderCapacity)||0)}));
+    const daily={[otSelectedDate]:{}};
+    legacy.forEach(x=>daily[otSelectedDate][String(x.process||'工程')]=Math.max(0,Number(x.overtimeHours)||0));
+    return {capacity:cap,overtimeByDate:daily,dailyCapacityByDate:{}};
+  }
+  return {capacity:OT_INITIAL.map(([process,capacity])=>({process,capacity})),holidays:[],overtimeByDate:{},dailyCapacityByDate:{}};
+}
+function otPersist(){safeStore.set(OT_STORE,JSON.stringify(otModel))}
+function otLoadLocal(){
+  try{
+    const saved=safeStore.get(OT_STORE);
+    if(saved)otModel=otNormalize(JSON.parse(saved));
+    else{const legacy=safeStore.get('production-overtime-v1');if(legacy)otModel=otNormalize(JSON.parse(legacy))}
+  }catch(_){otModel=otNormalize(null)}
+}
+function otLoadGoogleSheet(showMessage=true){
+  return new Promise(resolve=>{
+    const callback='__overtimeGoogleCallback'+Date.now()+Math.floor(Math.random()*10000);
+    const script=document.createElement('script');
+    const cleanup=()=>{delete window[callback];script.remove()};
+    const timer=setTimeout(()=>{cleanup();resolve(false)},12000);
+    window[callback]=data=>{clearTimeout(timer);otModel=otNormalize(data);otPersist();otRenderAll();$('otDayStatus').textContent='共有データ更新済み';cleanup();resolve(true)};
+    script.onerror=()=>{clearTimeout(timer);cleanup();if(showMessage)showToast('Google Sheetからデータを取得できませんでした。',true);resolve(false)};
+    script.src=SHEETS_API_URL+'?callback='+callback+'&ts='+Date.now();
+    document.head.appendChild(script);
+  });
+}
+async function otSyncOrderCapacitySeries(){
+  renderSalesProductionBridge();
+  const dailyCapacities=SP_BRIDGE_DAYS.filter(d=>d.business).map(d=>({date:d.key,orderCapacity:Number(d.count)||0}));
+  if(!dailyCapacities.length)return;
+  try{
+    await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify({dailyCapacities})})});
+    setTimeout(()=>otLoadGoogleSheet(false),900);
+  }catch(_){}
+}
+function otCollect(){
+  const daily=otDayMap();
+  document.querySelectorAll('#otRows select').forEach(sel=>{
+    const p=otModel.capacity[Number(sel.dataset.i)];
+    if(p)daily[p.process]=Math.max(0,Number(sel.value)||0);
+  });
+  otPersist();
+}
+async function otSave(){
+  otCollect();
+  const button=$('otSave');
+  const original=button.textContent;
+  button.disabled=true;button.textContent='保存中…';
+  $('otDayStatus').textContent='Google Sheetへ保存中…';
+  renderSalesProductionBridge();
+  const daily=otDayMap();
+  const orderDay=SP_BRIDGE_DAYS.find(item=>item.key===otSelectedDate);
+  const saved=otModel.dailyCapacityByDate?.[otSelectedDate]||{};
+  const payload={date:otSelectedDate,orderCapacity:Number(orderDay?.count??saved.orderCapacity)||0,processCapacity:Number(saved.processCapacity)||0,entries:otModel.capacity.map(r=>({process:r.process,hours:Number(daily[r.process])||0}))};
+  try{
+    await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify(payload)})});
+    await new Promise(r=>setTimeout(r,900));
+    await otLoadGoogleSheet(false);
+    $('otDayStatus').textContent='Google Sheet保存済み';
+    button.textContent='✓ 保存しました';
+    showToast('✓ Google Sheetへ保存しました');
+    setTimeout(()=>{button.textContent=original;button.disabled=false},2200);
+  }catch(_){
+    $('otDayStatus').textContent='保存失敗';
+    button.textContent='保存失敗・もう一度押してください';
+    button.disabled=false;
+    showToast('保存できませんでした。接続を確認してください。',true);
+  }
+}
+function otHourLabel(v){const n=Number(v)||0;if(n===.5)return '30分';if(n%1===.5)return Math.floor(n)+'時間半';return n+'時間'}
+function otPeriodHours(){
+  const p=otCycle();
+  return Object.entries(otModel.overtimeByDate).filter(([d])=>d>=p.start&&d<=p.end).reduce((s,[,vals])=>s+Object.values(vals).reduce((a,v)=>a+(Number(v)||0),0),0);
+}
+function otRenderAll(){
+  const p=otCycle();
+  const daily=otModel.dailyCapacityByDate?.[otSelectedDate]||{};
+  $('otPeriod').textContent=`対象期間：${p.start.replaceAll('-','/')} ～ ${p.end.replaceAll('-','/')}`;
+  $('otDate').value=otSelectedDate;
+  $('otDayStatus').textContent=otSelectedDate===formatLocalDate(new Date())?'本日（20:00締め）':'確定履歴';
+  $('otOrderTotal').textContent=(Number(daily.orderCapacity)||0).toLocaleString()+' pt';
+  $('otCapacityTotal').textContent=(Number(daily.processCapacity)||0).toLocaleString()+' pt';
+  $('otHoursTotal').textContent=otPeriodHours().toLocaleString()+' h';
+  $('otHoursHeading').textContent=`${otSelectedDate.replaceAll('-','/')} の残業時間`;
+  const day=otDayMap();
+  const choices=Array.from({length:11},(_,i)=>i*.5);
+  $('otRows').innerHTML=otModel.capacity.map((r,i)=>{
+    const value=Number(day[r.process])||0;
+    return `<div class="ot-row"><label for="ot${i}"><i style="background:${OT_COLORS[i%OT_COLORS.length]}"></i>${escapeHtml(r.process)}</label>
+      <select id="ot${i}" data-i="${i}">${choices.map(n=>`<option value="${n}"${n===value?' selected':''}>${n} h</option>`).join('')}</select></div>`;
+  }).join('');
+  otRenderCharts();
+}
+function svgEl(name,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,v));if(text!=null)e.textContent=text;return e}
+function otRenderCharts(){
+  const p=otCycle();
+  const holidays=new Set(otModel.holidays||[]);
+  const days=[];
+  for(let c=new Date(p.start+'T12:00:00'),last=new Date(p.end+'T12:00:00');c<=last;c.setDate(c.getDate()+1)){
+    const key=formatLocalDate(c);
+    if(c.getDay()!==0&&c.getDay()!==6&&!holidays.has(key))days.push(key);
+  }
+  const W=900,H=220,L=44,R=10,T=14,B=26,pw=W-L-R,ph=H-T-B;
+  const group=pw/Math.max(days.length,1);
+  const axis=(svg,max,unit,decimals)=>{
+    for(let i=0;i<=4;i++){
+      const y=T+ph*i/4;
+      svg.append(svgEl('line',{x1:L,y1:y,x2:W-R,y2:y,class:'grid'}));
+      svg.append(svgEl('text',{x:L-6,y:y+4,'text-anchor':'end',class:'axis'},(max*(1-i/4)).toFixed(decimals)));
+    }
+    svg.append(svgEl('text',{x:4,y:10,class:'axis'},unit));
+    const every=Math.max(1,Math.ceil(days.length/12));days.forEach((d,i)=>{if(i%every===0)svg.append(svgEl('text',{x:L+group*(i+.5),y:H-8,'text-anchor':'middle',class:'lbl'},d.slice(5).replace('-','/')))});
+  };
+  /* キャパシティー（棒） */
+  const cap=$('otCapChart');cap.innerHTML='';
+  const caps=days.map(d=>otModel.dailyCapacityByDate?.[d]||{});
+  const maxPt=Math.max(100,...caps.flatMap(v=>[Number(v.orderCapacity)||0,Number(v.processCapacity)||0]))*1.12;
+  axis(cap,maxPt,'pt',0);
+  const bar=Math.max(3,Math.min(14,group*.3));
+  days.forEach((date,i)=>{
+    const cx=L+group*(i+.5),v=caps[i],o=Number(v.orderCapacity)||0,pr=Number(v.processCapacity)||0;
+    const oh=ph*o/maxPt,prh=ph*pr/maxPt;
+    cap.append(svgEl('rect',{x:cx-bar-1,y:T+ph-oh,width:bar,height:oh,rx:2,fill:OT_COLORS[0],'data-tip':`${date.replaceAll('-','/')}　受注キャパシティー ${o.toLocaleString()}点`}));
+    cap.append(svgEl('rect',{x:cx+1,y:T+ph-prh,width:bar,height:prh,rx:2,fill:OT_COLORS[2],'data-tip':`${date.replaceAll('-','/')}　工程キャパシティー ${pr.toLocaleString()}点`}));
+  });
+  $('otCapLegend').innerHTML=`<span><i style="background:${OT_COLORS[0]}"></i>受注キャパシティー</span><span><i style="background:${OT_COLORS[2]}"></i>工程キャパシティー</span>`;
+  /* 残業（線） */
+  const ot=$('otChart');ot.innerHTML='';
+  const maxH=Math.max(4,...days.flatMap(d=>otModel.capacity.map(r=>Number(otModel.overtimeByDate[d]?.[r.process])||0)))*1.15;
+  axis(ot,maxH,'h',1);
+  otModel.capacity.forEach((r,pi)=>{
+    const color=OT_COLORS[pi%OT_COLORS.length];
+    const pts=days.map((d,i)=>{const v=Number(otModel.overtimeByDate[d]?.[r.process])||0;return {x:L+group*(i+.5),y:T+ph-ph*v/maxH,v,d}});
+    if(pts.length)ot.append(svgEl('polyline',{points:pts.map(q=>`${q.x},${q.y}`).join(' '),fill:'none',stroke:color,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    pts.forEach(q=>{
+      ot.append(svgEl('circle',{cx:q.x,cy:q.y,r:10,fill:'transparent','data-tip':`${q.d.replaceAll('-','/')}　${r.process}　残業${otHourLabel(q.v)}`}));
+      if(q.v)ot.append(svgEl('circle',{cx:q.x,cy:q.y,r:4,fill:color,stroke:'var(--surface-2)','stroke-width':2,'pointer-events':'none'}));
+    });
+  });
+  $('otLegend').innerHTML=otModel.capacity.map((r,i)=>`<span><i style="background:${OT_COLORS[i%OT_COLORS.length]}"></i>${escapeHtml(r.process)}</span>`).join('');
+}
+function openOvertimeModal(){
+  showModal('otModal');
+  otRenderAll();
+  otSyncOrderCapacitySeries();
+  otLoadGoogleSheet(false);
+}
+
+/* =====================================================================
+   イベント
+   ===================================================================== */
+function selectShip(value){
+  shipFilter=value;
+  standardBreakdownFilter=null;
+  safeStore.set('shipFilter',shipFilter);
+  renderAll();
+  nextTickerMessage();
+}
+document.addEventListener('click',event=>{
+  const t=event.target;
+  const close=t.closest('[data-close]');
+  if(close){closeModal(close.dataset.close);if(close.dataset.close==='modal')standardBreakdownFilter=null,renderAll();return}
+
+  const tab=t.closest('[data-ship]');
+  if(tab&&!t.closest('input')){selectShip(tab.dataset.ship);return}
+
+  const bucket=t.closest('[data-bucket]');
+  if(bucket){openBucketPopup(bucket.dataset.bucket,bucket.dataset.unfinished==='true');return}
+  const mat=t.closest('[data-material]');
+  if(mat&&!mat.disabled){openMaterialPopup(mat.dataset.material);return}
+  const del=t.closest('[data-delivery]');
+  if(del){openDeliveryPopup(del.dataset.delivery);return}
+  const proc=t.closest('[data-process]');
+  if(proc&&!proc.disabled){openProcessPopup(proc.dataset.process);return}
+
+  const jkey=t.closest('[data-jkey]');
+  if(jkey){
+    const k=jkey.dataset.jkey;
+    if(k==='back')jDigits=jDigits.slice(0,-1);
+    else if(k==='clear')jDigits='';
+    else if(jDigits.length<15)jDigits+=k;
+    renderJResults();return;
+  }
+  const jres=t.closest('[data-jresult]');
+  if(jres){const target=rows.find(r=>r.id===jres.dataset.jresult);if(target)openJDetail(target);return}
+  if(t.closest('#jBack')){openJSearch();return}
+
+  const spday=t.closest('[data-spday]');
+  if(spday){spOpenDate(spday.dataset.spday);return}
+  const spcat=t.closest('[data-spcat]');
+  if(spcat){spOpenCategory(Number(spcat.dataset.spcat));return}
+  const spsub=t.closest('[data-spsub]');
+  if(spsub){spOpenSub(Number(spsub.dataset.spsub));return}
+  const spbox=t.closest('[data-spbox]');
+  if(spbox){spOpenBoxSize(Number(spbox.dataset.spbox));return}
+  const spback=t.closest('[data-spback]');
+  if(spback){
+    const a=spback.dataset.spback;
+    if(a==='date')spOpenDate(SP_SELECTED_DAY_KEY);
+    else if(a==='box')spOpenBoxSize(SP_BOX_SIZE_INDEX);
+    else spOpenCategory(SP_SUB_PARENT);
+    return;
+  }
+});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){
+    const open=['spModal','modal','capModal','otModal'].find(id=>$(id).classList.contains('show'));
+    if(open){closeModal(open);if(open==='modal'){standardBreakdownFilter=null;renderAll()}}
+    return;
+  }
+  if((event.key==='Enter'||event.key===' ')&&event.target.matches?.('.tab-specified')){
+    event.preventDefault();selectShip('specified');
+  }
+});
+$('specifiedDate').addEventListener('change',e=>{
+  specifiedShipDate=e.target.value||getShipDates().today;
+  safeStore.set('specifiedShipDate',specifiedShipDate);
+  selectShip('specified');
+});
+$('overdueAlert').addEventListener('click',()=>selectShip('overdue'));
+$('refresh').addEventListener('click',()=>{loadSharedCsv();loadBonusProgress();refreshTodayResultSetting()});
+$('openList').addEventListener('click',openListView);
+$('openCapacity').addEventListener('click',openCapacityModal);
+$('openOvertime').addEventListener('click',openOvertimeModal);
+$('openJSearch').addEventListener('click',openJSearch);
+$('openCalendar').addEventListener('click',()=>openModal({kicker:'本日製造期限の完成率',title:'16時 75％達成カレンダー',body:calendarHtml(),refresh:()=>{$('modalBody').innerHTML=calendarHtml()}}));
+$('otPrev').addEventListener('click',()=>{otCollect();const d=new Date(otSelectedDate+'T12:00:00');d.setDate(d.getDate()-1);otSelectedDate=formatLocalDate(d);otRenderAll()});
+$('otNext').addEventListener('click',()=>{otCollect();const d=new Date(otSelectedDate+'T12:00:00');d.setDate(d.getDate()+1);otSelectedDate=formatLocalDate(d);otRenderAll()});
+$('otDate').addEventListener('change',e=>{otCollect();if(e.target.value)otSelectedDate=e.target.value;otRenderAll()});
+$('otRows').addEventListener('change',()=>{otCollect();otRenderAll();$('otDayStatus').textContent='未保存'});
+$('otSave').addEventListener('click',otSave);
+(function bindOtTooltip(){
+  const wrap=document.querySelector('.ot-charts');
+  const tip=$('otTip');
+  wrap.addEventListener('mousemove',e=>{
+    const target=e.target.closest?.('[data-tip]');
+    if(!target){tip.style.display='none';return}
+    const box=wrap.getBoundingClientRect();
+    tip.textContent=target.getAttribute('data-tip');
+    tip.style.display='block';
+    tip.style.left=Math.max(8,Math.min(e.clientX-box.left+14,box.width-tip.offsetWidth-8))+'px';
+    tip.style.top=Math.max(8,e.clientY-box.top-tip.offsetHeight-12)+'px';
+  });
+  wrap.addEventListener('mouseleave',()=>{tip.style.display='none'});
+})();
+
+/* テーマ（既定はダーク。端末ごとに記憶） */
+function applyTheme(theme){
+  document.documentElement.dataset.theme=theme;
+  safeStore.set('dashTheme',theme);
+}
+$('themeToggle').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light'));
+
+/* =====================================================================
+   起動・自動更新
+   ===================================================================== */
+const visibleInterval=(task,delay)=>setInterval(()=>{if(!document.hidden)task()},delay);
+(function init(){
+  applyTheme(safeStore.get('dashTheme')==='light'?'light':'dark');
+  const valid=['today-ng','today','tomorrow','overdue','specified'];
+  const saved=safeStore.get('shipFilter');
+  shipFilter=valid.includes(saved)?saved:'today-ng';
+  document.body.classList.add(shipFilter==='today-ng'?'is-ng':'is-std');
+  specifiedShipDate=safeStore.get('specifiedShipDate')||getShipDates().today;
+  $('specifiedDate').value=specifiedShipDate;
+  otLoadLocal();
+  updateClock();
+  setLoadState('loading','SCV.csv を読み込んでいます…','データが表示されるまでお待ちください。');
+  updateBonusCampaignPanel();updateManufacturingPanel();updateClaim();
+  (async()=>{
+    await loadTodayResultSetting();
+    if(!safeStore.get('specifiedShipDate')){specifiedShipDate=getShipDates().today;$('specifiedDate').value=specifiedShipDate}
+    await loadSharedCsv();
+    nextTickerMessage();
+  })();
+  loadBonusProgress();
+})();
+visibleInterval(updateClock,1000);
+visibleInterval(updateClockAlert,15000);
+visibleInterval(()=>{if(!csvLoading&&!anyModalOpen())loadSharedCsv()},30000);
+visibleInterval(loadBonusProgress,30000);
+visibleInterval(refreshTodayResultSetting,10000);
+visibleInterval(()=>{try{updateDailyProcessTargets()}catch(e){console.warn('工程目標の更新失敗:',e)}},15000);
+visibleInterval(nextTickerMessage,12000);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  updateClock();loadBonusProgress();refreshTodayResultSetting();
+  if(!csvLoading&&!anyModalOpen())loadSharedCsv();
+});
+
+</script>
+</body>
+</html>
