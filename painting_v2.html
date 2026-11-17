@@ -1553,6 +1553,36 @@ body.bl-mode .deadline-tabs,body.bl-mode .process-deck,body.bl-mode .groups,body
   .bl-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bl-note{margin-left:0}
 }
+
+/* 見方・やること */
+.bl-help{margin-top:12px;border:1px solid var(--bl-line);border-radius:6px;background:rgba(2,14,25,.55)}
+.bl-help summary{padding:10px 14px;font-size:16px;font-weight:900;cursor:pointer;color:#bfefff}
+.bl-help-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:0 14px 6px}
+.bl-help h4{margin:0 0 6px;font-size:15px;color:#fff}
+.bl-help p{margin:0;font-size:13.5px;line-height:1.8;color:var(--bl-sub);font-weight:700}
+.bl-help p b{color:#fff}
+.bl-help .bl-b,.bl-help .bl-tag,.bl-help .bl-st{display:inline-block}
+.bl-help .bl-chip.demo{cursor:default;vertical-align:middle}
+.bl-demo.bar{display:inline-block;width:60px;height:8px;border-radius:4px;vertical-align:middle;background:linear-gradient(90deg,var(--bl-accent) 70%,rgba(255,255,255,.1) 70%)}
+.bl-help-flow{margin:8px 14px 12px!important;padding:9px 12px;border-left:4px solid var(--bl-accent);background:rgba(92,225,255,.07);font-size:14px!important}
+.bl-steps-wrap{margin-top:12px}
+.bl-focus{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:8px 12px;border:1px solid var(--bl-accent);border-radius:5px;background:rgba(92,225,255,.12);font-weight:800}
+.bl-focus button{margin-left:auto;padding:5px 12px;border:1px solid #fff;border-radius:4px;background:#0b6d97;color:#fff;font-weight:900;cursor:pointer}
+.bl-steps-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;padding:10px 14px;border:1px solid rgba(47,210,125,.55);border-bottom:0;border-radius:6px 6px 0 0;background:rgba(10,90,52,.35)}
+.bl-steps-head b{font-size:17px}
+.bl-steps-head span{color:#9ff0c4;font-weight:800;font-size:14px}
+.bl-steps{margin:0;padding:6px 14px 8px 40px;border:1px solid rgba(47,210,125,.55);border-radius:0 0 6px 6px;background:rgba(2,14,25,.55);max-height:300px;overflow:auto}
+.bl-steps li{padding:7px 4px;border-bottom:1px solid rgba(110,200,230,.14);font-size:15px;font-weight:700;cursor:pointer;line-height:1.6}
+.bl-steps li:last-child{border-bottom:0}
+.bl-steps li:hover{background:rgba(92,225,255,.07)}
+.bl-steps li.dim{opacity:.3}
+.bl-steps li .bl-sw{min-width:150px;vertical-align:middle}
+.bl-step-txt{margin:0 10px}
+.bl-step-txt b{color:#fff}
+.bl-step-txt b.to{color:#9ff0c4}
+.bl-steps-empty{padding:12px 14px;border:1px solid rgba(47,210,125,.5);border-radius:6px;background:rgba(10,90,52,.3);font-weight:800}
+@media(max-width:1300px){.bl-help-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.bl-help-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1584,7 +1614,18 @@ body.bl-mode .deadline-tabs,body.bl-mode .process-deck,body.bl-mode .groups,body
       <label>期限の最大移動<input id="blMaxShift" type="number" min="0" max="10" step="1"><span>営業日</span></label>
       <p class="bl-note">※ 完了チェック済みの指示は負荷から除外。本日・期限切れ分は移動対象外。</p>
     </div>
+    <details class="bl-help" open>
+      <summary>📖 この画面の見方（クリックで開閉）</summary>
+      <div class="bl-help-grid">
+        <div><h4>① 目的</h4><p>焼付は色を変えるたびに段取り（色替え）が発生します。<b>同じ色の製品を同じ日にまとめる</b>と色替えが減り、効率が上がります。この画面は、そのために<b>どの製造期限を何日に変えればよいか</b>を自動で提案します。</p></div>
+        <div><h4>② 日付カードの見方</h4><p><span class="bl-demo bar"></span> 棒グラフ＝その日の焼付量（点）÷ 1日の能力。<br><span class="bl-b crit">⛔ 能力超過 +○点</span> 能力を○点オーバー<br><span class="bl-b warn">⚠ 色替え ○色</span> その日の色数が上限を超えている<br><span class="bl-b today">本日・固定</span> 今日の分は動かさない</p></div>
+        <div><h4>③ 色ラベルの見方</h4><p><span class="bl-chip demo"><i style="background:#c9c6b8"></i><b>5Y7/1</b><span>17点</span></span> 色・その日の数量<br><em class="bl-tag out">→ 11/25</em>（現状表示）この色は 11/25 へ移す提案<br><em class="bl-tag in">＋ 11/26より</em>（提案後表示）11/26 から移ってきた分<br>色をクリック → その色だけ強調、もう一度で解除</p></div>
+        <div><h4>④ 提案のルール</h4><p>・その色が<b>既にある日</b>へ寄せる（新しい色替えを増やさない）<br>・<b>出荷日より後</b>には絶対に動かさない（出荷日未設定は前倒しのみ）<br>・動かすのは<b>「期限の最大移動」の営業日数まで</b>・移動先が能力を超えるなら動かさない<br>・今日・期限切れ・完了チェック済みは対象外<br>・未着手／CAD/CAM／切断を前倒しする場合は <span class="bl-st warn">⚠ 前工程を確認</span></p></div>
+      </div>
+      <p class="bl-help-flow"><b>使い方：</b> ① 下の「やること」を上から確認 → ② 「製造期限 変更ガイド」で J番号を確認（<b>一覧をコピー</b>で Excel に貼り付け可）→ ③ 前工程・お客様に問題なければ基幹システムで製造期限を変更 → ④ CSV更新後、この画面に反映されます。</p>
+    </details>
     <div class="bl-kpis" id="blKpis"></div>
+    <div class="bl-steps-wrap" id="blSteps"></div>
     <div class="bl-alerts" id="blAlerts"></div>
     <div class="bl-cal-wrap">
       <div class="bl-cal" id="blCal"></div>
@@ -2019,11 +2060,11 @@ document.addEventListener('DOMContentLoaded',()=>{
    completedJobs / shortJNumber / normalizedDate / esc / fmt を利用
    ========================================================= */
 (function(){
-const BL_STORE='bakeLoadSettingsV1';
+const BL_STORE='bakeLoadSettingsV2';
 const BL_DAYS=15;                       // 3週間 = 15営業日
 const BL_EARLY=['未着手','CAD/CAM','切断'];  // 前倒し時に前工程確認が必要な工程
 const BL_WEEK=['日','月','火','水','木','金','土'];
-let blSettings={cap:150,maxColors:3,maxShift:3};
+let blSettings={cap:160,maxColors:5,maxShift:3};
 try{Object.assign(blSettings,JSON.parse(localStorage.getItem(BL_STORE)||'{}'))}catch(_){}
 let blView='now',blFocus='',blLast=null;
 
@@ -2200,15 +2241,25 @@ function renderAlerts(p){
   if(over.length)items.push(['crit','⛔',`能力超過（提案後も）：${over.map(s=>`<b>${mdw(s.key)} ${fmt(s.qty)}点</b>`).join('・')}（能力 ${fmt(p.cap)}点/日）。残業、または前の日へ前倒しして平準化してください。`]);
   const many=p.plan.filter(s=>s.tooMany);
   if(many.length)items.push(['warn','⚠',`色数オーバー：${many.map(s=>`<b>${mdw(s.key)} ${s.nColors}色</b>`).join('・')}（上限 ${fmt(blSettings.maxColors)}色/日）。同じ日の色替えは「明るい色 → 暗い色」の順がおすすめです。`]);
-  // まとめ提案：色ごとに「どの日の分を → どの日へ」
-  const byColor=new Map();
-  p.moves.forEach(m=>{if(!byColor.has(m.ck))byColor.set(m.ck,{label:m.label,pairs:new Set(),n:0});const c=byColor.get(m.ck);c.pairs.add(`${md(m.due)}→${md(m.newDue)}`);c.n++});
-  const merged=[...byColor.entries()].map(([ck,c])=>({...c,info:p.colorInfo.find(x=>x.ck===ck)})).sort((a,b)=>(b.info.before.length-b.info.after.length)-(a.info.before.length-a.info.after.length));
-  if(merged.length)items.push(['good','💡',`まとめ提案：${merged.map(c=>`<b>${esc(c.label)}</b> ${c.info.before.length}日→${c.info.after.length}日（${[...c.pairs].join('、')}／${c.n}件）`).join('　')}。詳細は下の「製造期限 変更ガイド」。`]);
+  renderSteps(p);
   const stuck=p.colorInfo.filter(c=>c.after.length>1&&c.count<=8&&c.reasons.size);
   if(stuck.length)items.push(['info','ℹ',`まとめられない色：${stuck.map(c=>`<b>${esc(c.label)}</b> ${c.after.map(i=>md(p.days[i])).join('・')}（${[...c.reasons].map(r=>r==='cap'?'能力不足':'出荷日・移動幅の制約').join('・')}）`).join('　')}。出荷日の調整や移動幅の拡大で、まとめられる可能性があります。`]);
   if(!items.length)items.push(['good','✅','3週間の焼付は色ごとにまとまっています。能力・色数の警告もありません。']);
   $('blAlerts').innerHTML=items.map(([cls,icon,text])=>`<div class="bl-alert ${cls}"><i>${icon}</i><span>${text}</span></div>`).join('');
+}
+/* やること（ステップ）：「色 × まとめ先の日」ごとに1行 */
+function renderSteps(p){
+  const map=new Map();
+  p.moves.forEach(m=>{
+    const k=m.ck+'|'+m.newDue;
+    if(!map.has(k))map.set(k,{ck:m.ck,label:m.label,to:m.newDue,from:new Set(),n:0,qty:0,early:0,late:0,check:0});
+    const s=map.get(k);s.from.add(m.due);s.n++;s.qty+=m.qty;if(m.shift<0)s.early++;else s.late++;if(m.check)s.check++;
+  });
+  const steps=[...map.values()].sort((a,b)=>a.to.localeCompare(b.to)||b.qty-a.qty);
+  const focusBar=blFocus?`<div class="bl-focus">🔍 <b>${esc((p.colorInfo.find(c=>c.ck===blFocus)||{}).label||blFocus)}</b> だけを強調表示中（他の色は薄く表示）<button type="button" data-blcolor="">✕ 解除</button></div>`:'';
+  if(!steps.length){$('blSteps').innerHTML=focusBar+'<div class="bl-steps-empty">✅ 期限を変更しなくても、色はこれ以上まとめられません（または既にまとまっています）。</div>';return}
+  const dir=s=>s.early&&s.late?'前倒し／後ろ倒し':s.early?'前倒し':'後ろ倒し';
+  $('blSteps').innerHTML=focusBar+`<div class="bl-steps-head"><b>💡 やること：製造期限を変えて、同じ色を同じ日にまとめる</b><span>全${fmt(steps.length)}件のまとめ ・ 期限変更 ${fmt(p.moves.length)}件 ・ 色替え ${fmt(p.changesNow)}回 → ${fmt(p.changesPlan)}回</span></div><ol class="bl-steps">${steps.map(s=>`<li class="${blFocus&&blFocus!==s.ck?'dim':''}" data-blcolor="${esc(s.ck)}"><span class="bl-sw"><i style="background:${munsellColor(s.label)}"></i>${esc(s.label)}</span><span class="bl-step-txt">期限 <b>${[...s.from].sort().map(md).join('・')}</b> の分（${fmt(s.n)}件・${fmt(s.qty)}点）を <b class="to">${mdw(s.to)}</b> に${dir(s)} → ${md(s.to)}にまとめて焼付</span>${s.check?`<em class="bl-st warn">⚠ ${s.check}件 前工程を確認</em>`:''}</li>`).join('')}</ol>`;
 }
 function renderColors(p){
   if(!p.colorInfo.length){$('blColors').innerHTML='<div class="empty">対象の焼付はありません</div>';return}
