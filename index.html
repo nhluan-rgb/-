@@ -416,6 +416,110 @@ body.mfg-oku-day::after{content:"";position:fixed;inset:0;z-index:9990;pointer-e
   .mfg-historic-seal{transform:rotate(-14deg)}
   .mfg-fireworks,.mfg-beams{display:none}
 }
+/* ===== 史上初 一億円突破：鋼鉄の壁を打ち破る演出 ===== */
+.mfg-steel{background:#08090b!important;--hx-steel:radial-gradient(circle,#9aa2ab 0 3px,#2a2e33 3.6px 5px,transparent 5.6px) 0 0/140px 140px,
+  radial-gradient(circle at 22% 14%,rgba(255,255,255,.09),transparent 42%),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px),
+  repeating-linear-gradient(0deg,rgba(0,0,0,.2) 0 2px,transparent 2px 7px),
+  linear-gradient(160deg,#4d535b,#25292e 45%,#3b4047 70%,#1a1d21)}
+.mfg-steel.hx-impact{animation:hxBigShake .85s linear both!important}
+.mfg-steel.hx-count .hx-stage,.mfg-steel.hx-count .hx-embers,.mfg-steel.hx-count .hx-tape,.mfg-steel.hx-count .hx-furnace{display:none}
+.mfg-steel.hx-impact .hx-wall-face,.mfg-steel.hx-impact .hx-cracks{display:none}
+.mfg-steel.hx-impact .hx-wall{pointer-events:none}
+/* 溶鉱炉の光と火の粉 */
+.hx-furnace{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 50% 115%,rgba(255,110,0,.7),rgba(170,30,0,.35) 45%,transparent 75%),
+  radial-gradient(ellipse 60% 40% at 50% -10%,rgba(255,80,0,.25),transparent 70%),linear-gradient(#0b0c0f,#140a07);
+  animation:hxFurnace 1.6s ease-in-out infinite alternate}
+.hx-embers{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.hx-embers i{position:absolute;bottom:-12px;width:var(--s);height:var(--s);border-radius:50%;background:#ffc04d;box-shadow:0 0 6px #ff7a00,0 0 14px #ff4500;opacity:0;
+  animation:hxEmber var(--t) var(--d) linear infinite}
+.hx-sparks{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
+.mfg-steel.hx-settled .hx-sparks{z-index:2}
+/* 警告テープ風テロップ */
+.hx-tape{position:absolute;left:0;right:0;z-index:7;height:58px;display:flex;align-items:center;overflow:hidden;pointer-events:none;background:#0d0d0d;
+  box-shadow:0 0 20px rgba(0,0,0,.8)}
+.hx-tape::before,.hx-tape::after{content:"";position:absolute;left:0;right:0;height:10px;background:repeating-linear-gradient(-45deg,#ffcc00 0 16px,#111 16px 32px)}
+.hx-tape::before{top:0}.hx-tape::after{bottom:0}
+.hx-tape.hx-tape-top{top:0}.hx-tape.hx-tape-bottom{bottom:0}
+.hx-tape div{white-space:nowrap;font-size:22px;font-weight:1000;letter-spacing:.14em;color:#ffcc00;text-shadow:0 0 8px rgba(255,170,0,.6);animation:mfgTicker 16s linear infinite}
+.hx-tape.hx-tape-bottom div{animation-direction:reverse}
+/* 鋼鉄の壁 */
+.hx-wall{position:absolute;inset:0;z-index:5;perspective:1400px}
+.hx-shard{position:absolute;inset:0;background:var(--hx-steel);backface-visibility:hidden;will-change:transform}
+.mfg-steel.hx-impact .hx-shard{animation:hxShatter 1.15s var(--dl) cubic-bezier(.2,.55,.35,1) forwards}
+.hx-cracks{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.hx-cracks line{stroke:#fff6d0;stroke-width:.35;stroke-dasharray:1;stroke-dashoffset:1;
+  filter:drop-shadow(0 0 4px #ffb000) drop-shadow(0 0 10px #ff6a00);transition:stroke-dashoffset .75s cubic-bezier(.5,0,1,1)}
+.mfg-steel.hx-cracking .hx-cracks line{stroke-dashoffset:0}
+.mfg-steel.hx-cracking .hx-wall{animation:hxTremble .09s linear infinite}
+.hx-wall-face{position:absolute;inset:0;z-index:1;display:grid;place-content:center;justify-items:center;gap:20px;text-align:center}
+.hx-hazard{width:min(920px,88vw);height:26px;border-radius:3px;background:repeating-linear-gradient(-45deg,#ffcc00 0 22px,#111 22px 44px);box-shadow:0 2px 0 #000,inset 0 1px 0 rgba(255,255,255,.3)}
+.hx-count-label{font-size:clamp(20px,2vw,30px);font-weight:1000;letter-spacing:.35em;color:#c9ced4;text-shadow:0 2px 0 #000,0 -1px 0 rgba(255,255,255,.35)}
+.hx-count-value{font-size:clamp(60px,9vw,150px);font-weight:1000;font-variant-numeric:tabular-nums;color:#e8ecf0;
+  text-shadow:0 3px 0 #000,0 -2px 0 rgba(255,255,255,.35),0 0 0 transparent;transition:color .4s,text-shadow .4s}
+.mfg-steel.hx-cracking .hx-count-value{color:#ffe08a;text-shadow:0 3px 0 #000,0 0 22px #ff8a00,0 0 50px #ff4500}
+.hx-count-gauge{width:min(820px,80vw);height:18px;border-radius:4px;background:#0c0d0f;box-shadow:inset 0 2px 6px #000,0 1px 0 rgba(255,255,255,.2);overflow:hidden}
+.hx-count-gauge span{display:block;height:100%;width:0;background:linear-gradient(90deg,#7a1500,#ff5a00,#ffd34d,#fff);box-shadow:0 0 16px #ff7a00}
+.hx-count-target{font-size:clamp(15px,1.3vw,20px);font-weight:900;letter-spacing:.2em;color:#9aa2ab}
+.hx-flash{position:absolute;inset:0;z-index:8;background:#fff;opacity:0;pointer-events:none}
+.mfg-steel.hx-impact .hx-flash{animation:hxFlash .7s ease-out both}
+/* 本編 */
+.hx-stage{position:relative;z-index:3;width:min(1100px,calc(100vw - 32px));text-align:center;color:#fff;animation:hxThuds 1.4s .55s linear both}
+.hx-plate-factory,.hx-plate-main{position:relative;display:inline-flex;align-items:baseline;justify-content:center;background:var(--hx-steel,#33383e);
+  border:3px solid #8f979f;border-radius:6px;box-shadow:inset 0 0 0 3px #22262b,inset 0 2px 0 rgba(255,255,255,.3),0 14px 34px rgba(0,0,0,.75)}
+.mfg-steel .hx-plate-factory,.mfg-steel .hx-plate-main{background:radial-gradient(circle at 22% 14%,rgba(255,255,255,.12),transparent 45%),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px),linear-gradient(160deg,#575e66,#2b2f34 50%,#40454c)}
+.hx-plate-factory i,.hx-plate-main i{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e3e7eb,#7d858d 55%,#30353a)}
+.hx-plate-factory i:nth-of-type(1),.hx-plate-main i:nth-of-type(1){top:7px;left:9px}
+.hx-plate-factory i:nth-of-type(2),.hx-plate-main i:nth-of-type(2){bottom:7px;left:9px}
+.hx-plate-factory i:nth-of-type(3),.hx-plate-main i:nth-of-type(3){top:7px;right:9px}
+.hx-plate-factory i:nth-of-type(4),.hx-plate-main i:nth-of-type(4){bottom:7px;right:9px}
+.hx-plate-factory{padding:8px 56px;font-size:clamp(26px,2.8vw,46px);font-weight:1000;letter-spacing:.45em;color:#f1f3f5;text-shadow:0 2px 0 #000,0 -1px 0 rgba(255,255,255,.35);
+  animation:hxSlamDown .32s .25s cubic-bezier(.7,0,1,1) both}
+.hx-title{display:flex;justify-content:center;gap:.03em;line-height:1;margin-top:10px}
+.hx-title span{display:inline-block;font-family:"HGP創英角ｺﾞｼｯｸUB","HG創英角ｺﾞｼｯｸUB","Yu Gothic UI","Meiryo",sans-serif;font-weight:1000;font-size:clamp(110px,16vw,260px);
+  background:linear-gradient(180deg,#ffffff 0%,#e3e7eb 30%,#7d848c 50%,#f4f6f8 62%,#9aa1a8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 1px #000) drop-shadow(0 0 24px rgba(255,100,0,.85)) drop-shadow(0 10px 0 #000);
+  opacity:0;transform:scale(3.4);animation:hxPress .22s calc(.55s + var(--i)*.35s) cubic-bezier(.75,0,1,1) forwards,hxHotGlow 1.8s calc(2s + var(--i)*.2s) ease-in-out infinite alternate}
+.hx-plate-main{margin-top:14px;gap:.2em;padding:10px 54px 14px;border-width:4px;
+  box-shadow:inset 0 0 0 3px #22262b,inset 0 2px 0 rgba(255,255,255,.3),0 18px 40px rgba(0,0,0,.8),0 0 46px rgba(255,100,0,.5);
+  animation:hxSlamDown .3s 1.75s cubic-bezier(.75,0,1,1) both}
+.hx-oku{font-family:"HGP創英角ｺﾞｼｯｸUB","HG創英角ｺﾞｼｯｸUB","Yu Gothic UI","Meiryo",sans-serif;font-weight:1000;font-size:clamp(70px,8.5vw,140px);line-height:1.05;
+  background:linear-gradient(180deg,#fff8d6 0%,#ffd34d 38%,#ff7a00 72%,#c43c00 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 16px rgba(255,120,0,.9)) drop-shadow(0 5px 0 #2a0c00)}
+.hx-tail{font-family:"HGP創英角ｺﾞｼｯｸUB","HG創英角ｺﾞｼｯｸUB","Yu Gothic UI","Meiryo",sans-serif;font-weight:1000;font-size:clamp(52px,6vw,100px);color:#fff;
+  text-shadow:0 0 14px #ff7a00,0 5px 0 #000}
+.hx-amount{margin-top:12px;font-size:clamp(32px,3.6vw,58px);font-weight:1000;color:#ffe9b0;text-shadow:0 0 16px rgba(255,140,0,.75),0 3px 0 #000;font-variant-numeric:tabular-nums;
+  opacity:0;animation:mfgFadeUp .4s 2.2s forwards}
+.mfg-steel .hx-amount.done{opacity:1!important;animation:mfgAmountPulse 1.2s ease-in-out infinite alternate!important}
+.hx-date{margin-top:10px;font-size:clamp(16px,1.6vw,24px);font-weight:900;letter-spacing:.06em;color:#dfe3e7;text-shadow:0 2px 0 #000;opacity:0;animation:mfgFadeUp .5s 2.6s forwards}
+.hx-close{display:inline-block;margin-top:22px;padding:10px 26px;border:2px solid #ffcc00;border-radius:4px;background:rgba(0,0,0,.55);font-size:17px;font-weight:900;color:#ffcc00;
+  opacity:0;animation:mfgFadeUp .5s 7s forwards}
+.hx-seal{position:absolute;top:-6px;right:1%;width:clamp(130px,12.5vw,190px);aspect-ratio:1;border-radius:50%;display:grid;place-content:center;gap:2px;text-align:center;
+  border:8px double #d8141f;background:radial-gradient(circle,#fff6ea 55%,#efd6bb);color:#d8141f;font-weight:1000;
+  box-shadow:0 0 0 3px rgba(216,20,31,.4),0 0 40px rgba(255,40,40,.6),0 12px 24px rgba(0,0,0,.6);
+  opacity:0;transform:rotate(-14deg) scale(4.5);animation:hxSealSlam .26s 2.95s cubic-bezier(.75,0,1,1) forwards}
+.hx-seal em{font-style:normal;font-size:clamp(14px,1.15vw,18px);line-height:1}
+.hx-seal b{font-size:clamp(36px,3.5vw,54px);line-height:1}
+.hx-seal small{font-size:clamp(12px,1vw,15px);line-height:1.1}
+@keyframes hxShatter{0%{transform:none;opacity:1;filter:brightness(1.6)}100%{transform:translate3d(var(--tx),var(--ty),0) rotateZ(var(--rz)) rotateX(var(--rx)) scale(.85);opacity:0;filter:brightness(.7)}}
+@keyframes hxTremble{0%{transform:translate(0,0)}25%{transform:translate(2px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}100%{transform:translate(0,0)}}
+@keyframes hxBigShake{0%,100%{transform:translate(0,0)}8%{transform:translate(-22px,14px)}16%{transform:translate(20px,-16px)}26%{transform:translate(-16px,-10px)}36%{transform:translate(14px,12px)}48%{transform:translate(-9px,6px)}60%{transform:translate(7px,-5px)}74%{transform:translate(-4px,3px)}88%{transform:translate(2px,-1px)}}
+@keyframes hxThuds{0%,100%{transform:none}16%{transform:none}17%{transform:translateY(10px)}21%{transform:translateY(-3px)}25%{transform:none}43%{transform:none}44%{transform:translateY(12px)}48%{transform:translateY(-3px)}52%{transform:none}70%{transform:none}71%{transform:translateY(16px) scale(1.01)}76%{transform:translateY(-4px)}82%{transform:none}}
+@keyframes hxPress{0%{opacity:0;transform:scale(3.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes hxHotGlow{from{filter:drop-shadow(0 0 1px #000) drop-shadow(0 0 18px rgba(255,100,0,.6)) drop-shadow(0 10px 0 #000)}to{filter:drop-shadow(0 0 1px #000) drop-shadow(0 0 36px rgba(255,120,0,1)) drop-shadow(0 10px 0 #000)}}
+@keyframes hxSlamDown{0%{opacity:0;transform:translateY(-70vh)}100%{opacity:1;transform:none}}
+@keyframes hxSealSlam{0%{opacity:0;transform:rotate(-14deg) scale(4.5)}100%{opacity:1;transform:rotate(-14deg) scale(1)}}
+@keyframes hxFlash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
+@keyframes hxFurnace{from{filter:brightness(.85)}to{filter:brightness(1.15)}}
+@keyframes hxEmber{0%{transform:translate(0,0);opacity:0}10%{opacity:1}100%{transform:translate(var(--x),-110vh);opacity:0}}
+@media (max-width:640px){.hx-seal{top:-40px;right:-4px}.hx-plate-main,.hx-plate-factory{padding-left:28px;padding-right:28px}}
+@media (prefers-reduced-motion:reduce){
+  .mfg-steel *,.mfg-steel{animation:none!important;transition:none!important}
+  .mfg-steel .hx-wall{display:none}
+  .hx-title span,.hx-plate-factory,.hx-plate-main,.hx-amount,.hx-date,.hx-close,.hx-seal{opacity:1;transform:none}
+  .hx-seal{transform:rotate(-14deg)}
+}
 @keyframes mfgBadgeBlink{from{filter:brightness(1)}to{filter:brightness(1.35)}}
 @keyframes mfgCardGold{from{box-shadow:inset 0 2px 0 #fff3,0 0 18px rgba(255,190,40,.45)}to{box-shadow:inset 0 2px 0 #fff3,0 0 44px rgba(255,190,40,.95)}}
 
@@ -1376,59 +1480,159 @@ function startMfgFireworks(canvas){
   spawn();loop();
   return ()=>{running=false;clearTimeout(timer);cancelAnimationFrame(raf);window.removeEventListener('resize',resize);};
 }
+/* ===== 史上初 製造高1億円突破：鋼鉄の壁を打ち破る演出 =====
+   ① 画面全体が鋼鉄の壁。刻印された製造高メーターが 1億円 へ加速し、亀裂が走る
+   ② 1億到達の瞬間：壁が粉砕して破片が飛び散り、溶接の火花が爆発、画面が激しく揺れる
+   ③ 「史・上・初」がプレス機のように1文字ずつ叩きつけられる → 鋼板「一億円突破」が落ちてくる
+      → 朱色の落款がドンと押される
+   ④ その後：溶鉱炉の赤い光、舞い上がる火の粉、グラインダーの火花、警告テープ風テロップ */
+function startMfgSparks(canvas){
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return {stop(){},burst(){}};
+  let w=0,h=0,raf=0,timer=0,running=true;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const resize=()=>{w=canvas.clientWidth;h=canvas.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);};
+  resize();window.addEventListener('resize',resize);
+  const parts=[];
+  const colors=['#ffffff','#fff3b0','#ffd34d','#ffa000','#ff6a00'];
+  // 1点から放射状に火花を飛ばす（angle/spread はラジアン）
+  const burst=(x,y,count,speed,angle=null,spread=Math.PI*2)=>{
+    for(let i=0;i<count;i++){
+      const a=angle===null?Math.random()*Math.PI*2:angle+(Math.random()-.5)*spread;
+      const s=speed*(0.35+Math.random()*.9);
+      parts.push({x,y,px:x,py:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,decay:.007+Math.random()*.018,
+        color:colors[Math.floor(Math.random()*colors.length)],width:1+Math.random()*2.4});
+    }
+  };
+  // グラインダーのように画面下から火花を噴き上げる
+  const grind=()=>{
+    if(!running)return;
+    const left=Math.random()<.5;
+    const x=left?w*(.04+Math.random()*.2):w*(.76+Math.random()*.2);
+    burst(x,h+4,26,11,-Math.PI/2+(left?.5:-.5),.5);
+    timer=setTimeout(grind,650+Math.random()*700);
+  };
+  const loop=()=>{
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='rgba(0,0,0,.32)';ctx.fillRect(0,0,w,h);
+    ctx.globalCompositeOperation='lighter';
+    ctx.lineCap='round';
+    for(let i=parts.length-1;i>=0;i--){
+      const p=parts[i];
+      p.px=p.x;p.py=p.y;
+      p.vx*=.982;p.vy=p.vy*.982+.32;p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;
+      if(p.life<=0||p.y>h+40){parts.splice(i,1);continue;}
+      ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=p.width;
+      ctx.beginPath();ctx.moveTo(p.px-p.vx*1.6,p.py-p.vy*1.6);ctx.lineTo(p.x,p.y);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    if(running)raf=requestAnimationFrame(loop);
+  };
+  loop();
+  return {
+    burst:(x,y,count,speed)=>burst(x*w,y*h,count,speed),
+    startGrind:()=>grind(),
+    stop:()=>{running=false;clearTimeout(timer);cancelAnimationFrame(raf);window.removeEventListener('resize',resize);}
+  };
+}
 function showHistoricOkuCelebration(key,amount,compare){
   const reduceMotion=Boolean(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const now=new Date();
   const dateText=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
   const yen=v=>'¥'+Math.floor(v).toLocaleString('ja-JP');
   const countFrom=Math.max(MANUFACTURING_OKU_YEN*0.9,Math.min(MANUFACTURING_OKU_YEN-1,compare&&compare.pastBest?compare.pastBest:MANUFACTURING_OKU_YEN*0.9));
-  const ticker='九州工場 ・ 史上初 ・ 製造高 1億円 突破 ・ KYUSHU FACTORY ・ HISTORIC RECORD ・ ALL-TIME FIRST ¥100,000,000 ・ ';
-  const sparkles=reduceMotion?'':Array.from({length:120},()=>{
-    const x=(Math.random()*100).toFixed(1),delay=(Math.random()*3).toFixed(2),duration=(2.6+Math.random()*3).toFixed(2);
-    const size=(6+Math.random()*12).toFixed(0),drift=(Math.random()*200-100).toFixed(0);
+  const ticker='九州工場 ▶ 史上初 ▶ 製造高 一億円 突破 ▶ KYUSHU FACTORY ▶ 100,000,000 YEN BREAKTHROUGH ▶ ';
+
+  // 壁の破片：中心から画面の縁へ放射状に切る（clip-path の三角形）
+  const cx=50+(Math.random()*6-3),cy=47+(Math.random()*6-3);
+  const edge=[];
+  const N=18;
+  for(let i=0;i<N;i++){
+    const t=(i+Math.random()*.6)/N; // 縁を一周するパラメータ
+    const d=t*4;
+    const side=Math.floor(d),f=(d-side)*100;
+    edge.push(side===0?[f,0]:side===1?[100,f]:side===2?[100-f,100]:[0,100-f]);
+  }
+  const shards=edge.map((p,i)=>{
+    const q=edge[(i+1)%N];
+    // 角を含める（三角形が角をまたぐ時）
+    const corners=[[100,0],[100,100],[0,100],[0,0]];
+    const sideOf=pt=>pt[1]===0?0:pt[0]===100?1:pt[1]===100?2:3;
+    const pts=[[cx,cy],p];
+    let s=sideOf(p);const e=sideOf(q);
+    while(s!==e){pts.push(corners[s]);s=(s+1)%4;}
+    pts.push(q);
+    const mid=pts.slice(1).reduce((a,b)=>[a[0]+b[0],a[1]+b[1]],[0,0]).map(v=>v/(pts.length-1));
+    const ang=Math.atan2(mid[1]-cy,mid[0]-cx);
+    const dist=70+Math.random()*60;
+    const style=`clip-path:polygon(${pts.map(v=>`${v[0].toFixed(2)}% ${v[1].toFixed(2)}%`).join(',')});`+
+      `--tx:${(Math.cos(ang)*dist).toFixed(1)}vw;--ty:${(Math.sin(ang)*dist+25).toFixed(1)}vh;`+
+      `--rz:${(Math.random()*160-80).toFixed(0)}deg;--rx:${(Math.random()*120-60).toFixed(0)}deg;--dl:${(Math.random()*.08).toFixed(2)}s`;
+    return `<div class="hx-shard" style="${style}"></div>`;
+  }).join('');
+  const cracks=edge.map(p=>`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(2)}" y2="${p[1].toFixed(2)}" pathLength="1"></line>`).join('');
+  const embers=reduceMotion?'':Array.from({length:70},()=>{
+    const x=(Math.random()*100).toFixed(1),delay=(Math.random()*4).toFixed(2),duration=(3+Math.random()*4).toFixed(2);
+    const size=(2+Math.random()*4).toFixed(1),drift=(Math.random()*120-60).toFixed(0);
     return `<i style="left:${x}%;--d:${delay}s;--t:${duration}s;--s:${size}px;--x:${drift}px"></i>`;
   }).join('');
+
   const overlay=document.createElement('div');
-  overlay.className='mfg-celebration-overlay level-oku-first mfg-historic'+(reduceMotion?' phase-impact':' phase-count');
+  overlay.className='mfg-celebration-overlay mfg-steel'+(reduceMotion?' hx-impact':' hx-count');
   overlay.setAttribute('role','button');
   overlay.setAttribute('tabindex','0');
-  overlay.setAttribute('aria-label','史上初 製造高1億円突破の演出を閉じる');
+  overlay.setAttribute('aria-label','九州工場 史上初 製造高一億円突破の演出を閉じる');
   overlay.innerHTML=`
-    <canvas class="mfg-fireworks" aria-hidden="true"></canvas>
-    <div class="mfg-beams" aria-hidden="true"><span></span><span></span></div>
-    <div class="mfg-rays" aria-hidden="true"></div>
-    <div class="mfg-shock" aria-hidden="true"><span></span><span></span><span></span></div>
-    <div class="mfg-particles" aria-hidden="true">${sparkles}</div>
-    <div class="mfg-ticker mfg-ticker-top" aria-hidden="true"><div>${ticker.repeat(6)}</div></div>
-    <div class="mfg-ticker mfg-ticker-bottom" aria-hidden="true"><div>${ticker.repeat(6)}</div></div>
-    <div class="mfg-countdown" aria-hidden="true">
-      <div class="mfg-count-label">製造高 LIVE ・ 史上初の瞬間まで…</div>
-      <div class="mfg-count-value">${yen(countFrom)}</div>
-      <div class="mfg-count-bar"><span></span></div>
+    <div class="hx-furnace" aria-hidden="true"></div>
+    <div class="hx-embers" aria-hidden="true">${embers}</div>
+    <canvas class="hx-sparks" aria-hidden="true"></canvas>
+    <div class="hx-tape hx-tape-top" aria-hidden="true"><div>${ticker.repeat(6)}</div></div>
+    <div class="hx-tape hx-tape-bottom" aria-hidden="true"><div>${ticker.repeat(6)}</div></div>
+    <div class="hx-stage">
+      <div class="hx-plate-factory"><i></i><i></i>九州工場<i></i><i></i></div>
+      <div class="hx-title" aria-label="史上初">${['史','上','初'].map((c,i)=>`<span style="--i:${i}">${c}</span>`).join('')}</div>
+      <div class="hx-plate-main"><i></i><i></i><i></i><i></i><span class="hx-oku">一億円</span><span class="hx-tail">突破</span></div>
+      <div class="hx-amount">${formatManufacturingYen(reduceMotion?amount:MANUFACTURING_OKU_YEN)}</div>
+      <div class="hx-date">${dateText} 達成 ／ 九州工場 全員で打ち破った史上初の壁</div>
+      <div class="hx-seal" aria-hidden="true"><em>九州工場</em><b>史上初</b><small>製造高一億円</small></div>
+      <div class="hx-close">画面をクリックして閉じる</div>
     </div>
-    <div class="mfg-flash" aria-hidden="true"></div>
-    <div class="mfg-historic-stage">
-      <div class="mfg-historic-factory">🏭 九州工場</div><div class="mfg-historic-kicker">製造高 HISTORIC RECORD</div>
-      <div class="mfg-historic-title" aria-label="史上初">${['史','上','初'].map((c,i)=>`<span style="--i:${i}">${c}</span>`).join('')}</div>
-      <div class="mfg-historic-main"><span class="mfg-oku">1億円</span><span class="mfg-main-tail">突破！</span></div>
-      <div class="mfg-amount mfg-historic-amount">${formatManufacturingYen(reduceMotion?amount:MANUFACTURING_OKU_YEN)}</div>
-      <div class="mfg-historic-date">${dateText} 達成 ・ 九州工場 全員でつかんだ史上初の記録</div>
-      <div class="mfg-historic-seal" aria-hidden="true"><em>九州工場</em><b>史上初</b><small>製造高1億円</small></div>
-      <div class="mfg-close">画面をクリックして閉じる</div>
-    </div>`;
+    <div class="hx-wall" aria-hidden="true">
+      ${shards}
+      <svg class="hx-cracks" viewBox="0 0 100 100" preserveAspectRatio="none">${cracks}</svg>
+      <div class="hx-wall-face">
+        <div class="hx-hazard"></div>
+        <div class="hx-count-label">製造高 ／ 九州工場</div>
+        <div class="hx-count-value">${yen(countFrom)}</div>
+        <div class="hx-count-gauge"><span></span></div>
+        <div class="hx-count-target">TARGET ¥100,000,000 ・ 史上初の壁</div>
+        <div class="hx-hazard"></div>
+      </div>
+    </div>
+    <div class="hx-flash" aria-hidden="true"></div>`;
   document.body.appendChild(overlay);
 
-  let raf=0,stopFireworks=()=>{},timers=[];
-  const countEl=overlay.querySelector('.mfg-count-value');
-  const barEl=overlay.querySelector('.mfg-count-bar span');
-  const amountEl=overlay.querySelector('.mfg-historic-amount');
-  const countDuration=2600;
+  let raf=0,timers=[];
+  let sparks={stop(){},burst(){},startGrind(){}};
+  if(!reduceMotion)sparks=startMfgSparks(overlay.querySelector('.hx-sparks'));
+  const countEl=overlay.querySelector('.hx-count-value');
+  const gaugeEl=overlay.querySelector('.hx-count-gauge span');
+  const amountEl=overlay.querySelector('.hx-amount');
+  const countDuration=2800;
+  const later=(fn,ms)=>timers.push(setTimeout(fn,ms));
   const impact=()=>{
-    overlay.classList.remove('phase-count');
-    overlay.classList.add('phase-impact');
-    stopFireworks=startMfgFireworks(overlay.querySelector('.mfg-fireworks'));
-    // 1億 → 実際の金額へカウントアップ
-    const begin=performance.now()+1900,duration=1800;
+    overlay.classList.remove('hx-count','hx-cracking');
+    overlay.classList.add('hx-impact');
+    sparks.burst(cx/100,cy/100,260,26);
+    later(()=>sparks.burst(cx/100,cy/100,140,18),120);
+    sparks.startGrind();
+    // 史・上・初 が叩きつけられるタイミングで火花
+    [700,1050,1400].forEach((ms,i)=>later(()=>sparks.burst(.5+(i-1)*.17,.36,70,13),ms));
+    later(()=>overlay.classList.add('hx-settled'),1300); // 以降は火花を文字の後ろへ
+    later(()=>sparks.burst(.5,.6,120,16),1900); // 鋼板の着地
+    later(()=>sparks.burst(.86,.2,60,10),2950);  // 落款
+    // 一億 → 実際の金額へ
+    const begin=performance.now()+2200,duration=1600;
     const step=time=>{
       const p=Math.max(0,Math.min(1,(time-begin)/duration));
       amountEl.textContent=formatManufacturingYen(MANUFACTURING_OKU_YEN+(amount-MANUFACTURING_OKU_YEN)*(1-Math.pow(1-p,4)));
@@ -1439,30 +1643,29 @@ function showHistoricOkuCelebration(key,amount,compare){
   if(reduceMotion){
     amountEl.classList.add('done');
   }else{
-    // ① 加速しながら 1億 へ
     const start=performance.now();
     const count=time=>{
       const p=Math.min(1,(time-start)/countDuration);
       const eased=p*p*p;
-      const value=p>=1?MANUFACTURING_OKU_YEN:countFrom+(MANUFACTURING_OKU_YEN-countFrom)*eased;
-      countEl.textContent=yen(value);
-      barEl.style.width=`${(eased*100).toFixed(1)}%`;
+      countEl.textContent=yen(p>=1?MANUFACTURING_OKU_YEN:countFrom+(MANUFACTURING_OKU_YEN-countFrom)*eased);
+      gaugeEl.style.width=`${(eased*100).toFixed(1)}%`;
+      if(p>.72&&!overlay.classList.contains('hx-cracking'))overlay.classList.add('hx-cracking');
       if(p<1)raf=requestAnimationFrame(count);
-      else timers.push(setTimeout(impact,180));
+      else later(impact,220);
     };
     raf=requestAnimationFrame(count);
   }
   const openedAt=performance.now();
   const closeCelebration=(remember=true)=>{
     if(remember){try{localStorage.setItem(`manufacturingCelebrationDismissed:${key}`,'1');}catch(_){}}
-    cancelAnimationFrame(raf);timers.forEach(clearTimeout);stopFireworks();
+    cancelAnimationFrame(raf);timers.forEach(clearTimeout);sparks.stop();
     overlay.removeEventListener('click',onClick);
     document.removeEventListener('keydown',closeOnKey);
     overlay.remove();
     if(activeManufacturingCelebration&&activeManufacturingCelebration.key===key)activeManufacturingCelebration=null;
   };
-  // 見せ場の途中で誤って閉じないよう、最初の6秒はクリックを無視する
-  const canClose=()=>reduceMotion||performance.now()-openedAt>6000;
+  // 見せ場の途中で誤って閉じないよう、最初の7秒はクリックを無視する
+  const canClose=()=>reduceMotion||performance.now()-openedAt>7000;
   const onClick=()=>{if(canClose())closeCelebration(true);};
   const closeOnKey=event=>{
     if(event.key==='Escape'||event.key==='Enter'||event.key===' '){
