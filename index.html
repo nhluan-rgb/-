@@ -314,6 +314,86 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 .capacity-modal-card .sp-bar-orders{color:#8fffd3;font-size:.62em;font-weight:1000;white-space:nowrap;text-shadow:0 1px 2px #000}
 .capacity-modal-card .sp-bar-points{display:block;color:#fff;font-size:1em;font-weight:1000;white-space:nowrap}
 </style>
+<style id="manufacturing-history-and-celebration">
+/* ===== 製造高カード：前月比・バッジ ===== */
+.manufacturing-compare{font-size:clamp(15px,1.15vw,19px);font-weight:900;color:#b8eaff;white-space:nowrap;line-height:1.2}
+.manufacturing-compare b{color:#e9fbff;margin:0 6px}
+.manufacturing-compare .up{color:#7dffb6;text-shadow:0 0 10px rgba(80,255,170,.5)}
+.manufacturing-compare .down{color:#ff8f8f}
+.manufacturing-label .mfg-badges{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle}
+.mfg-badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:14px;font-weight:1000;line-height:1.5;letter-spacing:.04em}
+.mfg-badge.record{background:linear-gradient(135deg,#ff4d6d,#ff9f32);color:#fff;box-shadow:0 0 12px rgba(255,90,90,.6);animation:mfgBadgeBlink 1.2s ease-in-out infinite alternate}
+.mfg-badge.oku{background:linear-gradient(135deg,#fff4b0,#ffc531 45%,#c47a00);color:#3b1d00;box-shadow:0 0 14px rgba(255,200,40,.8);animation:mfgBadgeBlink 1s ease-in-out infinite alternate}
+.manufacturing-card.is-achieved{border-color:#7dffb6!important;box-shadow:inset 0 2px 0 #ffffff33,0 0 26px rgba(90,255,170,.45)!important}
+.manufacturing-card.is-oku{border-color:#ffd34d!important;background:radial-gradient(circle at 50% 24%,#5a3d06,#2a1a02 67%,#140c00)!important;box-shadow:inset 0 2px 0 #fff3,0 0 34px rgba(255,190,40,.7)!important;animation:mfgCardGold 1.6s ease-in-out infinite alternate}
+.manufacturing-card.is-oku .manufacturing-value{color:#ffe27a!important;text-shadow:0 0 18px #ffb300!important}
+@keyframes mfgBadgeBlink{from{filter:brightness(1)}to{filter:brightness(1.35)}}
+@keyframes mfgCardGold{from{box-shadow:inset 0 2px 0 #fff3,0 0 18px rgba(255,190,40,.45)}to{box-shadow:inset 0 2px 0 #fff3,0 0 44px rgba(255,190,40,.95)}}
+
+/* ===== 製造高の達成演出オーバーレイ ===== */
+.mfg-celebration-overlay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;overflow:hidden;cursor:pointer;isolation:isolate;
+  --mfg-a:#55e9ff;--mfg-b:#7dffb6;--mfg-ray:rgba(85,233,255,.18);
+  background:radial-gradient(circle at 50% 45%,rgba(4,40,60,.92),rgba(0,4,12,.97) 70%);animation:mfgOverlayIn .4s ease-out both}
+.mfg-celebration-overlay.level-oku,.mfg-celebration-overlay.level-oku-first{--mfg-a:#ffd34d;--mfg-b:#fff3b0;--mfg-ray:rgba(255,200,60,.22);
+  background:radial-gradient(circle at 50% 45%,rgba(70,40,0,.94),rgba(8,3,0,.98) 72%)}
+.mfg-celebration-overlay.level-oku-first{--mfg-ray:rgba(255,170,40,.3);animation:mfgOverlayIn .4s ease-out both,mfgShake .55s .25s linear both}
+
+.mfg-flash{position:absolute;inset:0;z-index:5;background:#fff;pointer-events:none;opacity:0;animation:mfgFlash .9s ease-out both}
+.mfg-rays{position:absolute;inset:-60%;z-index:0;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,var(--mfg-ray) 0 6deg,transparent 6deg 18deg);
+  -webkit-mask:radial-gradient(circle,#000 0,#000 25%,transparent 62%);mask:radial-gradient(circle,#000 0,#000 25%,transparent 62%);
+  animation:mfgSpin 24s linear infinite}
+.mfg-shock{position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none}
+.mfg-shock span{grid-area:1/1;width:40px;height:40px;border-radius:50%;border:6px solid var(--mfg-a);box-shadow:0 0 30px var(--mfg-a),inset 0 0 30px var(--mfg-a);opacity:0;animation:mfgShock 2.4s cubic-bezier(.1,.7,.3,1) infinite}
+.mfg-shock span:nth-child(2){animation-delay:.8s}
+.mfg-shock span:nth-child(3){animation-delay:1.6s}
+.mfg-particles{position:absolute;inset:0;z-index:2;pointer-events:none}
+.mfg-particles i{position:absolute;top:-20px;width:var(--s);height:calc(var(--s)*.45);border-radius:2px;
+  background:linear-gradient(90deg,var(--mfg-a),var(--mfg-b));box-shadow:0 0 8px var(--mfg-a);opacity:0;
+  animation:mfgFall var(--t) var(--d) linear infinite}
+.mfg-particles i:nth-child(3n){background:#fff;box-shadow:0 0 10px #fff}
+.mfg-particles i:nth-child(4n){background:#ff5f7e;box-shadow:0 0 8px #ff5f7e}
+
+.mfg-card{position:relative;z-index:3;width:min(860px,calc(100vw - 40px));box-sizing:border-box;padding:44px 48px 34px;border-radius:30px;text-align:center;color:#fff;font-weight:1000;
+  background:linear-gradient(150deg,rgba(6,40,70,.92),rgba(4,20,40,.94));border:4px solid var(--mfg-a);
+  box-shadow:0 0 0 8px rgba(255,255,255,.06),0 0 50px var(--mfg-a),inset 0 0 40px rgba(255,255,255,.06);
+  transform:scale(.4);opacity:0;animation:mfgCardPop .9s .15s cubic-bezier(.2,1.4,.35,1) forwards}
+.level-oku .mfg-card,.level-oku-first .mfg-card{background:linear-gradient(150deg,rgba(80,40,0,.94),rgba(30,12,0,.96));animation-delay:.45s}
+.mfg-kicker{font-size:clamp(16px,1.6vw,24px);letter-spacing:.18em;color:var(--mfg-b);text-shadow:0 0 12px var(--mfg-a)}
+.mfg-main{display:flex;align-items:baseline;justify-content:center;gap:.15em;margin-top:8px;line-height:1;white-space:nowrap}
+.mfg-main-tail{font-size:clamp(46px,6vw,92px);color:#fff;text-shadow:0 0 22px var(--mfg-a),0 5px 0 rgba(0,0,0,.45)}
+.mfg-oku{font-size:clamp(96px,13vw,200px);letter-spacing:-.02em;
+  background:linear-gradient(100deg,#8a5200 0%,#ffe680 22%,#fffbe6 32%,#ffc531 45%,#b46b00 62%,#fff3b0 78%,#c98a00 100%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 18px rgba(255,190,40,.85)) drop-shadow(0 6px 0 #3b1d00);
+  animation:mfgShine 2.6s linear infinite,mfgOkuSlam .7s .5s cubic-bezier(.2,1.6,.4,1) both}
+.mfg-amount{margin-top:14px;font-size:clamp(34px,4vw,62px);color:var(--mfg-b);text-shadow:0 0 16px var(--mfg-a);font-variant-numeric:tabular-nums}
+.mfg-amount.done{animation:mfgAmountPulse 1.2s ease-in-out infinite alternate}
+.mfg-target{margin-top:10px;font-size:clamp(16px,1.6vw,24px);color:#e9fbff;letter-spacing:.06em;opacity:.9}
+.mfg-sub{margin-top:12px;font-size:clamp(16px,1.5vw,22px);color:#fff;line-height:1.5}
+.mfg-close{display:inline-block;margin-top:24px;padding:10px 24px;border:2px solid currentColor;border-radius:999px;background:rgba(0,0,0,.35);font-size:17px;color:#fff}
+.mfg-stamp{position:absolute;z-index:4;top:-34px;right:-22px;padding:8px 22px;border:6px double #ff3048;border-radius:14px;
+  background:rgba(40,0,6,.85);color:#ff4d63;font-size:clamp(34px,4vw,58px);letter-spacing:.08em;text-shadow:0 0 14px rgba(255,40,70,.85);
+  box-shadow:0 0 26px rgba(255,40,70,.7);transform:rotate(12deg) scale(4);opacity:0;animation:mfgStamp .5s 1.6s cubic-bezier(.3,1.6,.5,1) forwards}
+
+@keyframes mfgOverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes mfgFlash{0%{opacity:0}12%{opacity:.85}100%{opacity:0}}
+@keyframes mfgSpin{to{transform:rotate(360deg)}}
+@keyframes mfgShock{0%{transform:scale(.2);opacity:.95}100%{transform:scale(28);opacity:0}}
+@keyframes mfgFall{0%{transform:translate3d(0,0,0) rotate(0);opacity:0}8%{opacity:1}100%{transform:translate3d(var(--x),110vh,0) rotate(720deg);opacity:.9}}
+@keyframes mfgCardPop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes mfgShine{from{background-position:200% 0}to{background-position:-50% 0}}
+@keyframes mfgOkuSlam{0%{transform:scale(3);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes mfgAmountPulse{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes mfgStamp{0%{transform:rotate(12deg) scale(4);opacity:0}100%{transform:rotate(12deg) scale(1);opacity:1}}
+@keyframes mfgShake{0%,100%{transform:translate(0,0)}15%{transform:translate(-14px,8px)}30%{transform:translate(12px,-10px)}45%{transform:translate(-10px,-6px)}60%{transform:translate(8px,10px)}75%{transform:translate(-5px,4px)}90%{transform:translate(3px,-2px)}}
+@media (max-width:640px){.mfg-card{padding:36px 20px 26px}.mfg-stamp{top:-26px;right:-6px}}
+@media (prefers-reduced-motion:reduce){
+  .mfg-celebration-overlay,.mfg-card,.mfg-oku,.mfg-stamp,.mfg-amount.done,.mfg-rays,.mfg-badge,.manufacturing-card.is-oku{animation:none!important}
+  .mfg-card,.mfg-stamp{opacity:1;transform:none}.mfg-stamp{transform:rotate(12deg)}
+  .mfg-flash,.mfg-shock,.mfg-particles{display:none}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -939,6 +1019,11 @@ async function loadBonusProgress(){
       closingDate:manufacturingClosingDate,
       amount:Number.isFinite(manufacturingAmount)&&manufacturingAmount>=0?Math.trunc(manufacturingAmount):null
     };
+    // 過去の製造高（任意）："history":{"2026-10-20":85000000, ...} を端末の履歴へ取り込む。
+    mergeManufacturingHistory(manufacturing.history);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(manufacturingClosingDate)&&manufacturingProgress.amount!==null){
+      recordManufacturingHistory(manufacturingClosingDate,manufacturingProgress.amount);
+    }
     const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
     const rawClaimClosingDate=String(claim.closingDate||'').trim();
     claimRemoteData={
@@ -964,27 +1049,230 @@ function claimCycleInfo(now=new Date()){
   const end=new Date(start.getFullYear(),start.getMonth()+1,20);
   return {start,end};
 }
-function formatManufacturingYen(value){
-  const man=Math.floor(value/10000);
-  const sen=Math.floor(man/1000);
-  const rest=man%1000;
-  return (sen?sen+'千':'')+(rest?String(rest).replace(/[0-9]/g,d=>String.fromCharCode(d.charCodeAt(0)+0xFEE0)):'')+'万円';
+const MANUFACTURING_TARGET_YEN=86000000;
+/* 百分率を小数第1位で切り捨てる（浮動小数点の誤差対策つき）。 */
+function floorPercent1(value){
+  const n=Number(value);
+  if(!Number.isFinite(n))return 0;
+  return Math.floor(Math.round(n*1e6)/1e5)/10;
 }
+const MANUFACTURING_OKU_YEN=100000000;
+function toZenkakuDigits(value){
+  return String(value).replace(/[0-9]/g,d=>String.fromCharCode(d.charCodeAt(0)+0xFEE0));
+}
+/* 例：94,040,000 → 9千４０４万円 ／ 105,000,000 → 1億５００万円 ／ 100,000,000 → 1億円 */
+function formatManufacturingYen(value){
+  const man=Math.floor(Math.max(0,Number(value)||0)/10000);
+  const oku=Math.floor(man/10000);
+  const underOku=man%10000;
+  const sen=Math.floor(underOku/1000);
+  const rest=underOku%1000;
+  if(!oku&&!sen&&!rest)return '0円';
+  return (oku?oku+'億':'')+(sen?sen+'千':'')+(rest?toZenkakuDigits(rest):'')+((sen||rest)?'万円':'円');
+}
+
+/* ===== 製造高の履歴（締日ごと） =====
+   localStorage「manufacturingHistory」に {"2026-11-20":94040000, ...} の形で保存する。
+   締日ごとに最新値で上書きされる（期中は毎回更新、締日後は確定値として残る）。 */
+const MANUFACTURING_HISTORY_KEY='manufacturingHistory';
+function readManufacturingHistory(){
+  try{
+    const data=JSON.parse(localStorage.getItem(MANUFACTURING_HISTORY_KEY)||'{}');
+    return data&&typeof data==='object'?data:{};
+  }catch(_){return {};}
+}
+function writeManufacturingHistory(history){
+  try{localStorage.setItem(MANUFACTURING_HISTORY_KEY,JSON.stringify(history));}catch(_){}
+}
+function recordManufacturingHistory(closingKey,amount){
+  const history=readManufacturingHistory();
+  if(history[closingKey]===amount)return;
+  history[closingKey]=amount;
+  writeManufacturingHistory(history);
+}
+/* bonus-progress.json の manufacturing.history（過去の確定値）を取り込む。JSON側を優先。 */
+function mergeManufacturingHistory(source){
+  if(!source||typeof source!=='object')return;
+  const history=readManufacturingHistory();
+  let changed=false;
+  Object.keys(source).forEach(key=>{
+    const value=Number(source[key]);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(key)||!Number.isFinite(value)||value<0)return;
+    const amount=Math.trunc(value);
+    if(history[key]!==amount){history[key]=amount;changed=true;}
+  });
+  if(changed)writeManufacturingHistory(history);
+}
+/* 前月（1つ前の締日）を基準にした比較と、過去最高との比較 */
+function manufacturingComparison(closingDate,amount){
+  const history=readManufacturingHistory();
+  const closingKey=localDateKey(closingDate);
+  const prevKey=localDateKey(new Date(closingDate.getFullYear(),closingDate.getMonth()-1,20));
+  const prevAmount=Number.isFinite(history[prevKey])?history[prevKey]:null;
+  const pastValues=Object.keys(history)
+    .filter(key=>key<closingKey&&Number.isFinite(history[key]))
+    .map(key=>history[key]);
+  const pastBest=pastValues.length?Math.max(...pastValues):null;
+  return {
+    prevKey,
+    prevAmount,
+    // 今期の目標＝前月（1つ前の締日）の製造高。前月データが無い時だけ初期目標を使う。
+    target:prevAmount!==null&&prevAmount>0?prevAmount:MANUFACTURING_TARGET_YEN,
+    targetFromPrev:prevAmount!==null&&prevAmount>0,
+    diff:prevAmount===null?null:amount-prevAmount,
+    // 前月比（%）は小数第1位で切り捨て
+    diffRate:prevAmount?floorPercent1((amount-prevAmount)/prevAmount*100):null,
+    pastBest,
+    isRecord:pastBest!==null&&amount>pastBest,
+    // 過去に1億以上の記録が1件もなければ「史上初」
+    isFirstOku:amount>=MANUFACTURING_OKU_YEN&&!pastValues.some(value=>value>=MANUFACTURING_OKU_YEN)
+  };
+}
+
 function updateClaimSummaryPanel(){
   const box=$('claimSummaryPanel');
   if(!box)return;
   const amount=manufacturingProgress?.amount;
-  const current=manufacturingProgress?.closingDate===localDateKey(bonusCycleInfo(new Date()).end)
-    &&amount!==null;
-  const rate=current?Math.min(100,amount/86000000*100):0;
-  box.innerHTML=`<div class="manufacturing-card" aria-label="製造高 8千600万円目標">
-    <div class="manufacturing-title">🏭 8千６００万円目標</div>
-    <div class="manufacturing-label">今期の製造高</div>
+  // 締日が休みで結果表示が延長される間は、前期（締日）のデータを表示し続ける。
+  const now=new Date();
+  const targetEnd=closingDateForResultWindow(now)||bonusCycleInfo(now).end;
+  const current=manufacturingProgress?.closingDate===localDateKey(targetEnd)
+    &&amount!==null&&amount!==undefined;
+  // 整数演算で小数第1位まで切り捨て（例：94,040,000円 → 109.3%）。
+  // 四捨五入しないので、未達（99.96%など）が100.0%と表示されることはない。
+  // 目標は前月の製造高（入力前でも目標は表示できるよう amount=0 で計算）
+  const compare=manufacturingComparison(targetEnd,current?amount:0);
+  const target=compare.target;
+  const rate=current?Math.floor(amount*1000/target)/10:0;
+  let compareHtml='';
+  if(current){
+    const gap=amount-target;
+    compareHtml=gap>=0
+      ? `<div class="manufacturing-compare">目標を <span class="up">▲${formatManufacturingYen(gap)}</span> 超過</div>`
+      : `<div class="manufacturing-compare">目標まで あと <b>${formatManufacturingYen(-gap)}</b></div>`;
+  }
+  const targetNote=compare.targetFromPrev?'前月実績':'初期目標';
+  const badges=[];
+  if(current&&amount>=MANUFACTURING_OKU_YEN)badges.push(`<span class="mfg-badge oku">${compare.isFirstOku?'史上初 ':''}1億突破</span>`);
+  if(current&&compare.isRecord)badges.push('<span class="mfg-badge record">記録更新</span>');
+  const stateClass=current&&amount>=MANUFACTURING_OKU_YEN?' is-oku':(current&&amount>=target?' is-achieved':'');
+  box.innerHTML=`<div class="manufacturing-card${stateClass}" aria-label="製造高 ${formatManufacturingYen(target)}目標（${targetNote}）">
+    <div class="manufacturing-title">🏭 ${formatManufacturingYen(target)}目標</div>
+    <div class="manufacturing-label">今期の製造高（目標＝${targetNote}）${badges.length?`<span class="mfg-badges">${badges.join('')}</span>`:''}</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
-    <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="86000000" aria-valuenow="${current?amount:0}"><span style="width:${rate}%"></span></div>
+    <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${current?amount:0}"><span style="width:${Math.min(100,rate)}%"></span></div>
     <div class="manufacturing-foot"><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
+    ${compareHtml}
   </div>`;
   refreshClaimMissionText();
+  syncManufacturingCelebration(current?amount:null,targetEnd,compare);
+}
+
+/* ===== 製造高の達成演出 =====
+   目標＝前月の製造高（前月を超えたら達成）。
+   ・史上初1億突破：期中でも初めて1億を超えたら表示（締日ごとに1回）
+   ・締日演出：大入りと同じ演出日（20日、休みなら次の営業日）に、目標達成なら表示
+     （史上初1億なら史上初演出、それ以外は目標達成演出／1億以上は金色）
+   ・大入り演出が表示中なら、閉じた後に表示する */
+let activeManufacturingCelebration=null; // {key, close}
+function syncManufacturingCelebration(amount,closingDate,compare){
+  let level='';
+  let key='';
+  if(amount!==null&&compare){
+    const closingKey=localDateKey(closingDate);
+    const celebrationClosing=closingDateForTodayCelebration(new Date());
+    const isCelebrationDay=Boolean(celebrationClosing&&localDateKey(celebrationClosing)===closingKey);
+    if(isCelebrationDay&&amount>=compare.target){
+      level=compare.isFirstOku?'oku-first':(amount>=MANUFACTURING_OKU_YEN?'oku':'target');
+      key=`${closingKey}:final:${level}`;
+    }else if(compare.isFirstOku){
+      level='oku-first';
+      key=`${closingKey}:live:oku`;
+    }
+  }
+  if(activeManufacturingCelebration&&activeManufacturingCelebration.key!==key){
+    activeManufacturingCelebration.close(false);
+  }
+  if(!key||activeManufacturingCelebration)return;
+  if(typeof activeBonusCelebration!=='undefined'&&activeBonusCelebration)return;
+  try{if(localStorage.getItem(`manufacturingCelebrationDismissed:${key}`)==='1')return;}catch(_){}
+  showManufacturingCelebration(level,key,amount,compare);
+}
+function showManufacturingCelebration(level,key,amount,compare){
+  const reduceMotion=Boolean(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const overlay=document.createElement('div');
+  overlay.className=`mfg-celebration-overlay level-${level}`;
+  overlay.setAttribute('role','button');
+  overlay.setAttribute('tabindex','0');
+  overlay.setAttribute('aria-label','製造高の達成演出を閉じる');
+  const isOku=level!=='target';
+  const isFirst=level==='oku-first';
+  const targetAmount=compare&&compare.target?compare.target:MANUFACTURING_TARGET_YEN;
+  const startValue=compare&&compare.prevAmount!==null&&compare.prevAmount<amount?compare.prevAmount:Math.floor(amount*0.6);
+  const subParts=[];
+  if(compare&&compare.prevAmount!==null){
+    const up=compare.diff>=0;
+    subParts.push(`前月 ${formatManufacturingYen(compare.prevAmount)}　${up?'▲':'▼'} ${formatManufacturingYen(Math.abs(compare.diff))}`);
+  }
+  if(compare&&compare.isRecord)subParts.push('過去最高を更新！');
+  const particles=reduceMotion?'':Array.from({length:isOku?90:50},()=>{
+    const x=(Math.random()*100).toFixed(1);
+    const delay=(Math.random()*2.4).toFixed(2);
+    const duration=(2.4+Math.random()*2.6).toFixed(2);
+    const size=(6+Math.random()*10).toFixed(0);
+    const drift=(Math.random()*160-80).toFixed(0);
+    return `<i style="left:${x}%;--d:${delay}s;--t:${duration}s;--s:${size}px;--x:${drift}px"></i>`;
+  }).join('');
+  overlay.innerHTML=`
+    <div class="mfg-flash" aria-hidden="true"></div>
+    <div class="mfg-rays" aria-hidden="true"></div>
+    ${isOku?'<div class="mfg-shock" aria-hidden="true"><span></span><span></span><span></span></div>':''}
+    <div class="mfg-particles" aria-hidden="true">${particles}</div>
+    <div class="mfg-card">
+      ${isFirst?'<div class="mfg-stamp">史上初</div>':''}
+      <div class="mfg-kicker">${isFirst?'🏭 製造高 BREAKING RECORD':'🏭 製造高 MISSION COMPLETE'}</div>
+      <div class="mfg-main">${isFirst?'<span class="mfg-oku">1億</span><span class="mfg-main-tail">突破！</span>':'<span class="mfg-main-tail">目標達成！</span>'}</div>
+      <div class="mfg-amount" data-from="${startValue}" data-to="${amount}">${formatManufacturingYen(reduceMotion?amount:startValue)}</div>
+      <div class="mfg-target">${isFirst?'ALL-TIME FIRST ¥100,000,000':`目標 ${formatManufacturingYen(targetAmount)}（${compare&&compare.targetFromPrev?'前月実績':'初期目標'}） ／ 達成率 ${(Math.floor(amount*1000/targetAmount)/10).toFixed(1)}%`}</div>
+      ${subParts.length?`<div class="mfg-sub">${subParts.join('<br>')}</div>`:''}
+      <div class="mfg-close">画面をクリックして閉じる</div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  // 金額のカウントアップ
+  const amountEl=overlay.querySelector('.mfg-amount');
+  let raf=0;
+  if(!reduceMotion&&amountEl){
+    const from=Number(amountEl.dataset.from),to=Number(amountEl.dataset.to);
+    const begin=performance.now()+(isOku?900:500),duration=isOku?2600:1800;
+    const step=time=>{
+      const p=Math.max(0,Math.min(1,(time-begin)/duration));
+      const eased=1-Math.pow(1-p,4);
+      amountEl.textContent=formatManufacturingYen(from+(to-from)*eased);
+      if(p<1)raf=requestAnimationFrame(step);
+      else amountEl.classList.add('done');
+    };
+    raf=requestAnimationFrame(step);
+  }
+
+  const closeCelebration=(remember=true)=>{
+    if(remember){try{localStorage.setItem(`manufacturingCelebrationDismissed:${key}`,'1');}catch(_){}}
+    cancelAnimationFrame(raf);
+    overlay.removeEventListener('click',onClick);
+    document.removeEventListener('keydown',closeOnKey);
+    overlay.remove();
+    if(activeManufacturingCelebration&&activeManufacturingCelebration.key===key)activeManufacturingCelebration=null;
+  };
+  const onClick=()=>closeCelebration(true);
+  const closeOnKey=event=>{
+    if(event.key==='Escape'||event.key==='Enter'||event.key===' '){
+      event.preventDefault();
+      closeCelebration(true);
+    }
+  };
+  overlay.addEventListener('click',onClick);
+  document.addEventListener('keydown',closeOnKey);
+  activeManufacturingCelebration={key,close:closeCelebration};
 }
 
 function currentClaimMissionText(){
@@ -1059,13 +1347,22 @@ function bonusDailyWestTarget(now,cycle){
   return Math.min(100,elapsed/total*100);
 }
 
-const shownBonusCelebrations=new Set();
+/* 達成演出は常に1枚だけ表示する。
+   level が空（演出日でない・未達）なら表示中の演出を消す。
+   2万→3万に上がった場合は2万の演出を消して3万を表示する。 */
+let activeBonusCelebration=null; // {key, close}
+function syncBonusCelebration(level,closingKey){
+  const celebrationKey=level?`${closingKey}:${level}`:'';
+  if(activeBonusCelebration&&activeBonusCelebration.key!==celebrationKey){
+    activeBonusCelebration.close(false);
+  }
+  if(!celebrationKey||activeBonusCelebration)return;
+  showBonusCelebration(level,closingKey);
+}
 function showBonusCelebration(level,closingKey){
   const celebrationKey=`${closingKey}:${level}`;
   const dismissedKey=`bonusCelebrationDismissed:${celebrationKey}`;
-  if(localStorage.getItem(dismissedKey)==='1')return;
-  if(shownBonusCelebrations.has(celebrationKey))return;
-  shownBonusCelebrations.add(celebrationKey);
+  try{if(localStorage.getItem(dismissedKey)==='1')return;}catch(_){}
   const overlay=document.createElement('div');
   overlay.className=`bonus-celebration-overlay level-${level}`;
   overlay.setAttribute('role','button');
@@ -1078,20 +1375,26 @@ function showBonusCelebration(level,closingKey){
     <div class="bonus-sub">${isThree?'全世界100％ COMPLETE！':'西半球100％ CLEAR！'}</div>
   </div>`;
   document.body.appendChild(overlay);
-  const closeCelebration=()=>{
-    localStorage.setItem(dismissedKey,'1');
-    overlay.removeEventListener('click',closeCelebration);
+  // remember=true：利用者が閉じた（この端末では再表示しない）
+  // remember=false：日付変更・データ訂正などで自動的に消した
+  const closeCelebration=(remember=true)=>{
+    if(remember){try{localStorage.setItem(dismissedKey,'1');}catch(_){}}
+    overlay.removeEventListener('click',onClick);
     document.removeEventListener('keydown',closeOnKey);
     overlay.remove();
+    if(activeBonusCelebration&&activeBonusCelebration.key===celebrationKey)activeBonusCelebration=null;
+    if(remember)setTimeout(()=>{try{updateClaimSummaryPanel();}catch(_){}} ,400);
   };
+  const onClick=()=>closeCelebration(true);
   const closeOnKey=(event)=>{
     if(event.key==='Escape'||event.key==='Enter'||event.key===' '){
       event.preventDefault();
-      closeCelebration();
+      closeCelebration(true);
     }
   };
-  overlay.addEventListener('click',closeCelebration);
+  overlay.addEventListener('click',onClick);
   document.addEventListener('keydown',closeOnKey);
+  activeBonusCelebration={key:celebrationKey,close:closeCelebration};
 }
 
 function updateBonusCampaignPanel(){
@@ -1110,7 +1413,7 @@ function updateBonusCampaignPanel(){
   const progressHtml=rows.map(item=>{
     const rate=Math.max(0,Number(progress[item.key])||0);
     return `<div class="bonus-progress-row" style="--bonus:${item.color};--rate:${Math.min(rate,100)}%">
-      <div class="bonus-progress-head"><span>${item.label}</span><b>${rate.toFixed(1)}%</b></div>
+      <div class="bonus-progress-head"><span>${item.label}</span><b>${floorPercent1(rate).toFixed(1)}%</b></div>
       <div class="bonus-progress-track"><div class="bonus-progress-fill"></div></div>
     </div>`;
   }).join('');
@@ -1127,9 +1430,9 @@ function updateBonusCampaignPanel(){
   );
   const payDate=nextBonusBusinessDay(lastClosedEnd);
   const reward=bonusReward(lastProgress);
-  const westActual=Math.max(0,Number(progress.west)||0);
-  const westTarget=bonusDailyWestTarget(now,cycle);
-  const westGap=westActual-westTarget;
+  const westActual=floorPercent1(Math.max(0,Number(progress.west)||0));
+  const westTarget=floorPercent1(bonusDailyWestTarget(now,cycle));
+  const westGap=Math.round((westActual-westTarget)*10)/10;
   const westComparison=westGap>=0
     ? `<span class="target-compare ahead">現在 ${westActual.toFixed(1)}% ／ 目標より ${westGap.toFixed(1)}ポイント先行</span>`
     : `<span class="target-compare behind">現在 ${westActual.toFixed(1)}% ／ 目標まであと ${Math.abs(westGap).toFixed(1)}ポイント</span>`;
@@ -1164,22 +1467,19 @@ function updateBonusCampaignPanel(){
   box.classList.remove('bonus-2man','bonus-3man','bonus-miss');
   document.body.classList.remove('bonus-day-2man','bonus-day-3man','bonus-day-miss');
 
+  let celebrationLevel='';
+  let celebrationKey='';
   if(celebrationClosingDate){
-    const closingKey=localDateKey(celebrationClosingDate);
-
-    if(celebrationReward>=30000){
-      box.classList.add('bonus-3man');
-      document.body.classList.add('bonus-day-3man');
-      showBonusCelebration('3man',closingKey);
-    }else if(celebrationReward>=20000){
-      box.classList.add('bonus-2man');
-      document.body.classList.add('bonus-day-2man');
-      showBonusCelebration('2man',closingKey);
-    }else if(isNotAchievedDay){
-      box.classList.add('bonus-miss');
-      document.body.classList.add('bonus-day-miss');
-    }
+    celebrationKey=localDateKey(celebrationClosingDate);
+    if(celebrationReward>=30000)celebrationLevel='3man';
+    else if(celebrationReward>=20000)celebrationLevel='2man';
   }
+  if(celebrationLevel){
+    box.classList.add(`bonus-${celebrationLevel}`);
+    document.body.classList.add(`bonus-day-${celebrationLevel}`);
+  }
+  // 演出日でなくなった／レベルが変わった／データ訂正で未達になった場合は古い演出を消す。
+  syncBonusCelebration(celebrationLevel,celebrationKey);
   if(isNotAchievedDay){
     box.classList.add('bonus-miss');
     document.body.classList.add('bonus-day-miss');
