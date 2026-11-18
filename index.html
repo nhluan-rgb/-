@@ -1151,14 +1151,14 @@ function updateClaimSummaryPanel(){
       ? `<div class="manufacturing-compare">目標を <span class="up">▲${formatManufacturingYen(gap)}</span> 超過</div>`
       : `<div class="manufacturing-compare">目標まで あと <b>${formatManufacturingYen(-gap)}</b></div>`;
   }
-  const targetNote=compare.targetFromPrev?'前月実績':'初期目標';
+  const targetNote=compare.targetFromPrev?'前月実績':'初期設定値';
   const badges=[];
   if(current&&amount>=MANUFACTURING_OKU_YEN)badges.push(`<span class="mfg-badge oku">${compare.isFirstOku?'史上初 ':''}1億突破</span>`);
   if(current&&compare.isRecord)badges.push('<span class="mfg-badge record">記録更新</span>');
   const stateClass=current&&amount>=MANUFACTURING_OKU_YEN?' is-oku':(current&&amount>=target?' is-achieved':'');
   box.innerHTML=`<div class="manufacturing-card${stateClass}" aria-label="製造高 ${formatManufacturingYen(target)}目標（${targetNote}）">
     <div class="manufacturing-title">🏭 ${formatManufacturingYen(target)}目標</div>
-    <div class="manufacturing-label">今期の製造高（目標＝${targetNote}）${badges.length?`<span class="mfg-badges">${badges.join('')}</span>`:''}</div>
+    <div class="manufacturing-label">今期の製造高（目標：${targetNote}）${badges.length?`<span class="mfg-badges">${badges.join('')}</span>`:''}</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
     <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${current?amount:0}"><span style="width:${Math.min(100,rate)}%"></span></div>
     <div class="manufacturing-foot"><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
@@ -1233,7 +1233,7 @@ function showManufacturingCelebration(level,key,amount,compare){
       <div class="mfg-kicker">${isFirst?'🏭 製造高 BREAKING RECORD':'🏭 製造高 MISSION COMPLETE'}</div>
       <div class="mfg-main">${isFirst?'<span class="mfg-oku">1億</span><span class="mfg-main-tail">突破！</span>':'<span class="mfg-main-tail">目標達成！</span>'}</div>
       <div class="mfg-amount" data-from="${startValue}" data-to="${amount}">${formatManufacturingYen(reduceMotion?amount:startValue)}</div>
-      <div class="mfg-target">${isFirst?'ALL-TIME FIRST ¥100,000,000':`目標 ${formatManufacturingYen(targetAmount)}（${compare&&compare.targetFromPrev?'前月実績':'初期目標'}） ／ 達成率 ${(Math.floor(amount*1000/targetAmount)/10).toFixed(1)}%`}</div>
+      <div class="mfg-target">${isFirst?'ALL-TIME FIRST ¥100,000,000':`目標 ${formatManufacturingYen(targetAmount)}（${compare&&compare.targetFromPrev?'前月実績':'初期設定値'}） ／ 達成率 ${(Math.floor(amount*1000/targetAmount)/10).toFixed(1)}%`}</div>
       ${subParts.length?`<div class="mfg-sub">${subParts.join('<br>')}</div>`:''}
       <div class="mfg-close">画面をクリックして閉じる</div>
     </div>`;
