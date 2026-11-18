@@ -327,6 +327,95 @@ body.overdue-critical-active::before{content:"期限切れ発生中";position:fi
 .manufacturing-card.is-achieved{border-color:#7dffb6!important;box-shadow:inset 0 2px 0 #ffffff33,0 0 26px rgba(90,255,170,.45)!important}
 .manufacturing-card.is-oku{border-color:#ffd34d!important;background:radial-gradient(circle at 50% 24%,#5a3d06,#2a1a02 67%,#140c00)!important;box-shadow:inset 0 2px 0 #fff3,0 0 34px rgba(255,190,40,.7)!important;animation:mfgCardGold 1.6s ease-in-out infinite alternate}
 .manufacturing-card.is-oku .manufacturing-value{color:#ffe27a!important;text-shadow:0 0 18px #ffb300!important}
+/* 大入り達成日：「残り実働」の代わりの「達成！」 */
+body .bonus-campaign-panel .bonus-result.remaining-days-only.achieved{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;height:auto!important;padding-bottom:16px!important}
+/* 達成時のねぎらいメッセージ（旧「おめでとうございます！」を置き換え、読みやすく） */
+body .bonus-campaign-panel .bonus-result.remaining-days-only.achieved::after{content:"お疲れ様でした！\A みんな、よく頑張ってくれて\A 本当にありがとう！"!important;white-space:pre-line!important;word-break:normal!important;overflow-wrap:anywhere!important;display:block!important;width:92%!important;margin:12px auto 0!important;padding-top:10px!important;border-top:2px solid rgba(255,255,255,.35)!important;font-size:clamp(17px,1.2vw,22px)!important;line-height:1.55!important;font-weight:900!important;letter-spacing:.04em!important;text-align:center!important;color:#ffffff!important;opacity:1!important;filter:none!important;-webkit-text-stroke:0!important;-webkit-text-fill-color:#ffffff!important;background:none!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 12px rgba(85,233,255,.55)!important;animation:none!important}
+body .bonus-campaign-panel.bonus-3man .bonus-result.remaining-days-only.achieved::after{text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 12px rgba(255,200,60,.6)!important}
+body .bonus-campaign-panel .bonus-result.remaining-days-only.achieved strong{display:block!important;width:100%!important;text-align:center!important;justify-content:center!important;font-size:clamp(34px,2.8vw,50px)!important;font-weight:1000!important;letter-spacing:.12em!important;line-height:1.2!important;color:#eafcff!important;text-shadow:0 0 14px #55e9ff,0 0 30px rgba(85,233,255,.6)!important;animation:bonusAchievedGlow 1.4s ease-in-out infinite alternate}
+body .bonus-campaign-panel.bonus-3man .bonus-result.remaining-days-only.achieved strong{color:#fff7a8!important;text-shadow:0 0 14px #ffd34d,0 0 32px rgba(255,170,0,.75)!important}
+@keyframes bonusAchievedGlow{from{filter:brightness(1)}to{filter:brightness(1.3)}}
+@media (prefers-reduced-motion:reduce){.bonus-campaign-panel .bonus-result.achieved strong{animation:none!important}}
+/* ===== 史上初 製造高1億円突破：特別演出 ===== */
+.mfg-historic{background:radial-gradient(circle at 50% 45%,rgba(60,8,0,.95),rgba(4,0,0,.985) 72%)!important}
+.mfg-historic.phase-impact{animation:mfgShake .75s linear both!important}
+.mfg-historic.phase-count .mfg-historic-stage,.mfg-historic.phase-count .mfg-rays,.mfg-historic.phase-count .mfg-shock,
+.mfg-historic.phase-count .mfg-particles,.mfg-historic.phase-count .mfg-beams,.mfg-historic.phase-count .mfg-ticker,
+.mfg-historic.phase-count .mfg-flash,.mfg-historic.phase-count .mfg-fireworks{display:none}
+.mfg-historic.phase-impact .mfg-countdown{display:none}
+.mfg-fireworks{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+/* ① カウントダウン */
+.mfg-countdown{position:absolute;inset:0;z-index:4;display:grid;place-content:center;justify-items:center;gap:22px;text-align:center;
+  background:radial-gradient(circle,rgba(120,0,0,.0) 30%,rgba(160,0,0,.35) 100%);animation:mfgAlertPulse .5s ease-in-out infinite alternate}
+.mfg-count-label{font-size:clamp(18px,1.8vw,28px);font-weight:1000;letter-spacing:.3em;color:#ff7a7a;text-shadow:0 0 14px #ff2a2a}
+.mfg-count-value{font-size:clamp(52px,8vw,128px);font-weight:1000;font-variant-numeric:tabular-nums;letter-spacing:.02em;color:#fff3b0;
+  text-shadow:0 0 18px #ffb000,0 0 44px rgba(255,140,0,.7),0 6px 0 #4b1b00}
+.mfg-count-bar{width:min(760px,80vw);height:14px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;box-shadow:0 0 0 2px rgba(255,210,80,.5)}
+.mfg-count-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5a00,#ffd34d,#fff);box-shadow:0 0 18px #ffd34d}
+/* 光の柱 */
+.mfg-beams{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.mfg-beams span{position:absolute;bottom:-20%;left:50%;width:22vw;height:150vh;transform-origin:50% 100%;
+  background:linear-gradient(to top,rgba(255,220,120,.55),rgba(255,220,120,0) 80%);filter:blur(6px);mix-blend-mode:screen;animation:mfgBeamL 4s ease-in-out infinite alternate}
+.mfg-beams span:nth-child(2){animation-name:mfgBeamR;animation-delay:-2s}
+/* テロップ */
+.mfg-ticker{position:absolute;left:0;right:0;z-index:4;height:46px;overflow:hidden;display:flex;align-items:center;pointer-events:none;
+  background:linear-gradient(90deg,#7a3c00,#ffcf3f 25%,#fff3b0 50%,#ffcf3f 75%,#7a3c00);box-shadow:0 0 24px rgba(255,190,40,.8);border-block:2px solid #fff6c8}
+.mfg-ticker.mfg-ticker-top{top:0}.mfg-ticker.mfg-ticker-bottom{bottom:0}
+.mfg-ticker div{white-space:nowrap;font-size:22px;font-weight:1000;letter-spacing:.12em;color:#3b1100;animation:mfgTicker 18s linear infinite}
+.mfg-ticker.mfg-ticker-bottom div{animation-direction:reverse}
+/* ③ 本編 */
+.mfg-historic-stage{position:relative;z-index:3;width:min(1040px,calc(100vw - 32px));text-align:center;color:#fff;font-weight:1000}
+.mfg-historic-factory{display:inline-block;padding:6px 34px;border:3px solid #ffd34d;border-radius:999px;background:linear-gradient(180deg,rgba(90,40,0,.85),rgba(40,15,0,.85));font-size:clamp(28px,3vw,48px);font-weight:1000;letter-spacing:.3em;color:#fff3b0;text-shadow:0 0 14px #ffb000,0 3px 0 #3b1100;box-shadow:0 0 26px rgba(255,190,40,.7);opacity:0;animation:mfgFadeUp .5s .1s forwards}
+.mfg-historic-seal em,.mfg-card-seal em{font-style:normal;font-weight:1000;line-height:1;letter-spacing:.04em}
+.mfg-historic-seal em{font-size:clamp(13px,1.1vw,17px)}
+.mfg-card-seal em{font-size:11px}
+.mfg-historic-kicker{margin-top:8px;font-size:clamp(16px,1.6vw,24px);letter-spacing:.35em;color:#fff3b0;text-shadow:0 0 12px #ffb000;opacity:0;animation:mfgFadeUp .5s .2s forwards}
+.mfg-historic-title{display:flex;justify-content:center;gap:.04em;line-height:1;margin-top:6px}
+.mfg-historic-title span{display:inline-block;font-size:clamp(96px,15vw,240px);font-weight:1000;
+  background:linear-gradient(180deg,#fffbe6 0%,#ffe680 30%,#ffb000 55%,#a85b00 80%,#ffd34d 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(255,60,0,.85)) drop-shadow(0 8px 0 #3b0d00);
+  opacity:0;transform:translateY(-120vh) scale(1.6);animation:mfgKanjiDrop .55s calc(.35s + var(--i)*.28s) cubic-bezier(.3,1.5,.5,1) forwards}
+.mfg-historic-main{display:flex;align-items:baseline;justify-content:center;gap:.15em;margin-top:6px;white-space:nowrap}
+.mfg-historic .mfg-oku{font-size:clamp(64px,8vw,130px);background:linear-gradient(100deg,#ffd34d 0%,#fff3b0 20%,#ffffff 30%,#ffd34d 45%,#ffb000 62%,#fff3b0 80%,#ffd34d 100%)!important;background-size:250% 100%!important;-webkit-background-clip:text!important;background-clip:text!important;animation:mfgShine 2.6s linear infinite,mfgOkuSlam .6s 1.35s cubic-bezier(.2,1.6,.4,1) both}
+.mfg-historic .mfg-main-tail{font-size:clamp(46px,5.5vw,90px);opacity:0;animation:mfgFadeUp .4s 1.6s forwards}
+.mfg-historic-amount{margin-top:6px!important;opacity:0;animation:mfgFadeUp .4s 1.8s forwards}
+.mfg-historic .mfg-historic-amount.done{opacity:1!important;animation:mfgAmountPulse 1.2s ease-in-out infinite alternate!important}
+.mfg-historic-date{margin-top:12px;font-size:clamp(17px,1.6vw,24px);color:#ffe9b0;letter-spacing:.08em;opacity:0;animation:mfgFadeUp .5s 2.3s forwards}
+.mfg-historic .mfg-close{opacity:0;animation:mfgFadeUp .5s 6s forwards}
+/* 落款（演出内） */
+.mfg-historic-seal{position:absolute;top:-10px;right:2%;width:clamp(120px,12vw,180px);aspect-ratio:1;border-radius:50%;display:grid;place-content:center;gap:2px;
+  border:7px double #d8141f;background:radial-gradient(circle,#fff6ea 55%,#f3dcc4);color:#d8141f;box-shadow:0 0 0 3px rgba(216,20,31,.35),0 0 40px rgba(255,40,40,.65);
+  opacity:0;transform:rotate(-14deg) scale(4);animation:mfgSealSlam .45s 2.7s cubic-bezier(.3,1.7,.5,1) forwards}
+.mfg-historic-seal b{font-size:clamp(34px,3.4vw,52px);line-height:1;letter-spacing:.02em}
+.mfg-historic-seal small{font-size:clamp(14px,1.2vw,18px);line-height:1.15;font-weight:1000}
+/* ===== 記念日：一日中残る落款と金の額縁 ===== */
+.manufacturing-card{position:relative}
+.manufacturing-card.is-historic{border-color:#ffd34d!important;animation:mfgCardGold 1.6s ease-in-out infinite alternate}
+.mfg-card-seal{position:absolute;z-index:5;bottom:10px;right:10px;width:104px;height:104px;border-radius:50%;display:grid;place-content:center;gap:1px;text-align:center;pointer-events:auto;
+  border:5px double #ff3b4a;background:radial-gradient(circle,rgba(255,40,60,.10) 60%,rgba(255,40,60,.18));color:#ff4d5c;text-shadow:0 0 6px rgba(0,0,0,.9),0 0 10px rgba(255,60,80,.7);
+  transform:rotate(-14deg);box-shadow:0 0 0 2px rgba(224,36,46,.35),0 0 22px rgba(255,60,60,.6);animation:mfgSealGlow 2s ease-in-out infinite alternate}
+.mfg-card-seal b{font-size:28px;line-height:1;font-weight:1000}
+.mfg-card-seal small{font-size:12px;font-weight:1000;line-height:1.1}
+.mfg-card-seal i{font-style:normal;font-size:11px;font-weight:900;line-height:1}
+.mfg-card-seal.fresh{animation:mfgSealSlamSmall .5s .2s cubic-bezier(.3,1.7,.5,1) both,mfgSealGlow 2s .7s ease-in-out infinite alternate}
+body.mfg-oku-day::after{content:"";position:fixed;inset:0;z-index:9990;pointer-events:none;border:5px solid #ffcf3f;
+  box-shadow:inset 0 0 26px rgba(255,190,40,.75),0 0 0 2px #fff3b0;animation:mfgFramePulse 1.8s ease-in-out infinite alternate}
+@keyframes mfgAlertPulse{from{box-shadow:inset 0 0 80px rgba(255,0,0,.25)}to{box-shadow:inset 0 0 180px rgba(255,0,0,.6)}}
+@keyframes mfgBeamL{from{transform:translateX(-50%) rotate(-38deg)}to{transform:translateX(-50%) rotate(-8deg)}}
+@keyframes mfgBeamR{from{transform:translateX(-50%) rotate(38deg)}to{transform:translateX(-50%) rotate(8deg)}}
+@keyframes mfgTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes mfgKanjiDrop{0%{opacity:0;transform:translateY(-120vh) scale(1.6)}70%{opacity:1;transform:translateY(0) scale(.92)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes mfgFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes mfgSealSlam{0%{opacity:0;transform:rotate(-14deg) scale(4)}100%{opacity:1;transform:rotate(-14deg) scale(1)}}
+@keyframes mfgSealSlamSmall{0%{opacity:0;transform:rotate(-14deg) scale(3.2)}100%{opacity:1;transform:rotate(-14deg) scale(1)}}
+@keyframes mfgSealGlow{from{box-shadow:0 0 0 2px rgba(224,36,46,.35),0 0 12px rgba(255,60,60,.4)}to{box-shadow:0 0 0 2px rgba(224,36,46,.5),0 0 28px rgba(255,60,60,.85)}}
+@keyframes mfgFramePulse{from{opacity:.55}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .mfg-historic *,.mfg-card-seal,body.mfg-oku-day::after,.manufacturing-card.is-historic{animation:none!important}
+  .mfg-historic-title span,.mfg-historic-kicker,.mfg-historic .mfg-main-tail,.mfg-historic-amount,.mfg-historic-date,.mfg-historic .mfg-close,.mfg-historic-seal{opacity:1;transform:none}
+  .mfg-historic-seal{transform:rotate(-14deg)}
+  .mfg-fireworks,.mfg-beams{display:none}
+}
 @keyframes mfgBadgeBlink{from{filter:brightness(1)}to{filter:brightness(1.35)}}
 @keyframes mfgCardGold{from{box-shadow:inset 0 2px 0 #fff3,0 0 18px rgba(255,190,40,.45)}to{box-shadow:inset 0 2px 0 #fff3,0 0 44px rgba(255,190,40,.95)}}
 
@@ -973,24 +1062,41 @@ function bonusCelebrationBusinessDay(closingDate){
   return day;
 }
 
-/* 今日がどの締日の演出日かを判定する */
-function closingDateForTodayCelebration(now=new Date()){
-  const todayKey=localDateKey(now);
-  const candidates=[
+/* 判定日：演出日（20日 or 休み明け）の「次の営業日」。
+   演出日に未達でも、判定日に数値を更新して達成すれば達成扱い。判定日も未達なら「未達成」。 */
+function bonusVerdictBusinessDay(closingDate){
+  const day=bonusCelebrationBusinessDay(closingDate);
+  day.setDate(day.getDate()+1);
+  while(!isBonusBusinessDay(day))day.setDate(day.getDate()+1);
+  return day;
+}
+function bonusClosingCandidates(now){
+  return [
     new Date(now.getFullYear(),now.getMonth(),20),
     new Date(now.getFullYear(),now.getMonth()-1,20)
   ];
-  return candidates.find(closing=>localDateKey(bonusCelebrationBusinessDay(closing))===todayKey)||null;
 }
 
-/* 結果表示は締日から、休み明け最初の営業日が終わるまで続ける。 */
+/* 今日がどの締日の演出日（演出日 または 判定日）かを判定する。
+   達成していれば、演出日・判定日のどちらでも達成演出を出す。 */
+function closingDateForTodayCelebration(now=new Date()){
+  const todayKey=localDateKey(now);
+  return bonusClosingCandidates(now).find(closing=>
+    localDateKey(bonusCelebrationBusinessDay(closing))===todayKey||
+    localDateKey(bonusVerdictBusinessDay(closing))===todayKey
+  )||null;
+}
+
+/* 結果表示は締日から、判定日（演出日の次の営業日）が終わるまで続ける。 */
 function closingDateForResultWindow(now=new Date()){
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const candidates=[
-    new Date(now.getFullYear(),now.getMonth(),20),
-    new Date(now.getFullYear(),now.getMonth()-1,20)
-  ];
-  return candidates.find(closing=>today>=closing&&today<=bonusCelebrationBusinessDay(closing))||null;
+  return bonusClosingCandidates(now).find(closing=>today>=closing&&today<=bonusVerdictBusinessDay(closing))||null;
+}
+
+/* 判定日に入ったか（＝未達なら「未達成」を出してよいか） */
+function isBonusVerdictDay(now,closingDate){
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return today>=bonusVerdictBusinessDay(closingDate);
 }
 
 let bonusRemoteProgress=null;
@@ -1129,6 +1235,24 @@ function manufacturingComparison(closingDate,amount){
   };
 }
 
+let mfgSealStamped=false; // 落款の「押す」アニメーションは画面を開いて最初の1回だけ
+/* 史上初1億の記念日か判定する。初めて1億を確認した日を締日ごとに記録しておく。 */
+function historicOkuDayInfo(current,amount,closingDate,compare,now){
+  if(!current||!compare||!compare.isFirstOku||amount<MANUFACTURING_OKU_YEN)return null;
+  const closingKey=localDateKey(closingDate);
+  const storeKey=`manufacturingOkuFirstDate:${closingKey}`;
+  const todayKey=localDateKey(now);
+  let firstDate='';
+  try{
+    firstDate=localStorage.getItem(storeKey)||'';
+    if(!firstDate){firstDate=todayKey;localStorage.setItem(storeKey,firstDate);}
+  }catch(_){firstDate=todayKey;}
+  const celebrationClosing=closingDateForTodayCelebration(now);
+  const isCelebrationDay=Boolean(celebrationClosing&&localDateKey(celebrationClosing)===closingKey);
+  if(firstDate!==todayKey&&!isCelebrationDay)return null;
+  const [y,m,d]=firstDate.split('-').map(Number);
+  return {label:`${y}.${m}.${d}`};
+}
 function updateClaimSummaryPanel(){
   const box=$('claimSummaryPanel');
   if(!box)return;
@@ -1156,7 +1280,15 @@ function updateClaimSummaryPanel(){
   if(current&&amount>=MANUFACTURING_OKU_YEN)badges.push(`<span class="mfg-badge oku">${compare.isFirstOku?'史上初 ':''}1億突破</span>`);
   if(current&&compare.isRecord)badges.push('<span class="mfg-badge record">記録更新</span>');
   const stateClass=current&&amount>=MANUFACTURING_OKU_YEN?' is-oku':(current&&amount>=target?' is-achieved':'');
-  box.innerHTML=`<div class="manufacturing-card${stateClass}" aria-label="製造高 ${formatManufacturingYen(target)}目標（${targetNote}）">
+  // 史上初1億の「記念日」：初めて1億を超えた日＋演出日・判定日は、一日中落款と金の額縁を表示
+  const historicDay=historicOkuDayInfo(current,amount,targetEnd,compare,now);
+  document.body.classList.toggle('mfg-oku-day',Boolean(historicDay));
+  const sealHtml=historicDay
+    ? `<div class="mfg-card-seal${mfgSealStamped?'':' fresh'}" title="九州工場 史上初 製造高1億円突破 ${historicDay.label}"><em>九州工場</em><b>史上初</b><small>1億円突破</small><i>${historicDay.label}</i></div>`
+    : '';
+  if(historicDay)mfgSealStamped=true;
+  box.innerHTML=`<div class="manufacturing-card${stateClass}${historicDay?' is-historic':''}" aria-label="製造高 ${formatManufacturingYen(target)}目標（${targetNote}）">
+    ${sealHtml}
     <div class="manufacturing-title">🏭 ${formatManufacturingYen(target)}目標</div>
     <div class="manufacturing-label">今期の製造高（目標：${targetNote}）${badges.length?`<span class="mfg-badges">${badges.join('')}</span>`:''}</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
@@ -1198,7 +1330,153 @@ function syncManufacturingCelebration(amount,closingDate,compare){
   try{if(localStorage.getItem(`manufacturingCelebrationDismissed:${key}`)==='1')return;}catch(_){}
   showManufacturingCelebration(level,key,amount,compare);
 }
+/* ===== 史上初 製造高1億円突破：特別演出 =====
+   ① カウントダウン：製造高メーターが 1億円 へ向かって加速
+   ② 1億到達の瞬間：白フラッシュ＋画面振動＋衝撃波
+   ③ 「史上初」の文字が1文字ずつ落下 → 「製造高 1億円 突破」 → 朱色の落款がドンと押される
+   ④ その後：花火（canvas）・金の紙吹雪・光の柱・上下のテロップが流れ続ける */
+function startMfgFireworks(canvas){
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return ()=>{};
+  let w=0,h=0,raf=0,timer=0,running=true;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const resize=()=>{w=canvas.clientWidth;h=canvas.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);};
+  resize();window.addEventListener('resize',resize);
+  const colors=['#ffd34d','#fff3b0','#ffffff','#ff5f7e','#ffb000','#7dffb6','#8fe8ff'];
+  const parts=[];
+  const burst=(x,y,big)=>{
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    const count=big?140:80;
+    for(let i=0;i<count;i++){
+      const a=Math.PI*2*i/count+Math.random()*.1;
+      const s=(big?7.5:5)*(0.55+Math.random()*.6);
+      parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,decay:.008+Math.random()*.012,color:Math.random()<.2?'#fff':color,size:big?3:2.2});
+    }
+  };
+  const spawn=()=>{
+    if(!running)return;
+    burst(w*(.12+Math.random()*.76),h*(.12+Math.random()*.4),Math.random()<.25);
+    timer=setTimeout(spawn,420+Math.random()*420);
+  };
+  const loop=()=>{
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(0,0,w,h);
+    ctx.globalCompositeOperation='lighter';
+    for(let i=parts.length-1;i>=0;i--){
+      const p=parts[i];
+      p.vx*=.985;p.vy=p.vy*.985+.06;p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;
+      if(p.life<=0){parts.splice(i,1);continue;}
+      ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.color;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    if(running)raf=requestAnimationFrame(loop);
+  };
+  burst(w*.5,h*.38,true);burst(w*.25,h*.3,true);burst(w*.75,h*.3,true);
+  spawn();loop();
+  return ()=>{running=false;clearTimeout(timer);cancelAnimationFrame(raf);window.removeEventListener('resize',resize);};
+}
+function showHistoricOkuCelebration(key,amount,compare){
+  const reduceMotion=Boolean(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const now=new Date();
+  const dateText=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  const yen=v=>'¥'+Math.floor(v).toLocaleString('ja-JP');
+  const countFrom=Math.max(MANUFACTURING_OKU_YEN*0.9,Math.min(MANUFACTURING_OKU_YEN-1,compare&&compare.pastBest?compare.pastBest:MANUFACTURING_OKU_YEN*0.9));
+  const ticker='九州工場 ・ 史上初 ・ 製造高 1億円 突破 ・ KYUSHU FACTORY ・ HISTORIC RECORD ・ ALL-TIME FIRST ¥100,000,000 ・ ';
+  const sparkles=reduceMotion?'':Array.from({length:120},()=>{
+    const x=(Math.random()*100).toFixed(1),delay=(Math.random()*3).toFixed(2),duration=(2.6+Math.random()*3).toFixed(2);
+    const size=(6+Math.random()*12).toFixed(0),drift=(Math.random()*200-100).toFixed(0);
+    return `<i style="left:${x}%;--d:${delay}s;--t:${duration}s;--s:${size}px;--x:${drift}px"></i>`;
+  }).join('');
+  const overlay=document.createElement('div');
+  overlay.className='mfg-celebration-overlay level-oku-first mfg-historic'+(reduceMotion?' phase-impact':' phase-count');
+  overlay.setAttribute('role','button');
+  overlay.setAttribute('tabindex','0');
+  overlay.setAttribute('aria-label','史上初 製造高1億円突破の演出を閉じる');
+  overlay.innerHTML=`
+    <canvas class="mfg-fireworks" aria-hidden="true"></canvas>
+    <div class="mfg-beams" aria-hidden="true"><span></span><span></span></div>
+    <div class="mfg-rays" aria-hidden="true"></div>
+    <div class="mfg-shock" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="mfg-particles" aria-hidden="true">${sparkles}</div>
+    <div class="mfg-ticker mfg-ticker-top" aria-hidden="true"><div>${ticker.repeat(6)}</div></div>
+    <div class="mfg-ticker mfg-ticker-bottom" aria-hidden="true"><div>${ticker.repeat(6)}</div></div>
+    <div class="mfg-countdown" aria-hidden="true">
+      <div class="mfg-count-label">製造高 LIVE ・ 史上初の瞬間まで…</div>
+      <div class="mfg-count-value">${yen(countFrom)}</div>
+      <div class="mfg-count-bar"><span></span></div>
+    </div>
+    <div class="mfg-flash" aria-hidden="true"></div>
+    <div class="mfg-historic-stage">
+      <div class="mfg-historic-factory">🏭 九州工場</div><div class="mfg-historic-kicker">製造高 HISTORIC RECORD</div>
+      <div class="mfg-historic-title" aria-label="史上初">${['史','上','初'].map((c,i)=>`<span style="--i:${i}">${c}</span>`).join('')}</div>
+      <div class="mfg-historic-main"><span class="mfg-oku">1億円</span><span class="mfg-main-tail">突破！</span></div>
+      <div class="mfg-amount mfg-historic-amount">${formatManufacturingYen(reduceMotion?amount:MANUFACTURING_OKU_YEN)}</div>
+      <div class="mfg-historic-date">${dateText} 達成 ・ 九州工場 全員でつかんだ史上初の記録</div>
+      <div class="mfg-historic-seal" aria-hidden="true"><em>九州工場</em><b>史上初</b><small>製造高1億円</small></div>
+      <div class="mfg-close">画面をクリックして閉じる</div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let raf=0,stopFireworks=()=>{},timers=[];
+  const countEl=overlay.querySelector('.mfg-count-value');
+  const barEl=overlay.querySelector('.mfg-count-bar span');
+  const amountEl=overlay.querySelector('.mfg-historic-amount');
+  const countDuration=2600;
+  const impact=()=>{
+    overlay.classList.remove('phase-count');
+    overlay.classList.add('phase-impact');
+    stopFireworks=startMfgFireworks(overlay.querySelector('.mfg-fireworks'));
+    // 1億 → 実際の金額へカウントアップ
+    const begin=performance.now()+1900,duration=1800;
+    const step=time=>{
+      const p=Math.max(0,Math.min(1,(time-begin)/duration));
+      amountEl.textContent=formatManufacturingYen(MANUFACTURING_OKU_YEN+(amount-MANUFACTURING_OKU_YEN)*(1-Math.pow(1-p,4)));
+      if(p<1)raf=requestAnimationFrame(step);else amountEl.classList.add('done');
+    };
+    raf=requestAnimationFrame(step);
+  };
+  if(reduceMotion){
+    amountEl.classList.add('done');
+  }else{
+    // ① 加速しながら 1億 へ
+    const start=performance.now();
+    const count=time=>{
+      const p=Math.min(1,(time-start)/countDuration);
+      const eased=p*p*p;
+      const value=p>=1?MANUFACTURING_OKU_YEN:countFrom+(MANUFACTURING_OKU_YEN-countFrom)*eased;
+      countEl.textContent=yen(value);
+      barEl.style.width=`${(eased*100).toFixed(1)}%`;
+      if(p<1)raf=requestAnimationFrame(count);
+      else timers.push(setTimeout(impact,180));
+    };
+    raf=requestAnimationFrame(count);
+  }
+  const openedAt=performance.now();
+  const closeCelebration=(remember=true)=>{
+    if(remember){try{localStorage.setItem(`manufacturingCelebrationDismissed:${key}`,'1');}catch(_){}}
+    cancelAnimationFrame(raf);timers.forEach(clearTimeout);stopFireworks();
+    overlay.removeEventListener('click',onClick);
+    document.removeEventListener('keydown',closeOnKey);
+    overlay.remove();
+    if(activeManufacturingCelebration&&activeManufacturingCelebration.key===key)activeManufacturingCelebration=null;
+  };
+  // 見せ場の途中で誤って閉じないよう、最初の6秒はクリックを無視する
+  const canClose=()=>reduceMotion||performance.now()-openedAt>6000;
+  const onClick=()=>{if(canClose())closeCelebration(true);};
+  const closeOnKey=event=>{
+    if(event.key==='Escape'||event.key==='Enter'||event.key===' '){
+      event.preventDefault();
+      if(canClose())closeCelebration(true);
+    }
+  };
+  overlay.addEventListener('click',onClick);
+  document.addEventListener('keydown',closeOnKey);
+  activeManufacturingCelebration={key,close:closeCelebration};
+}
+
 function showManufacturingCelebration(level,key,amount,compare){
+  if(level==='oku-first')return showHistoricOkuCelebration(key,amount,compare);
   const reduceMotion=Boolean(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const overlay=document.createElement('div');
   overlay.className=`mfg-celebration-overlay level-${level}`;
@@ -1449,10 +1727,18 @@ function updateBonusCampaignPanel(){
     localStorage.getItem(`bonusProgress:${resultKey}`)
   ));
   const resultProgress=resultClosingDate?bonusProgressFor(resultClosingDate):null;
-  const isNotAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)<20000);
-  const resultHtml=isNotAchievedDay
-    ? `<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">みんなでここまで頑張ってきたからこそ、あと一歩届かなかったことが悔しい。この悔しさを次の力に変えて、次こそ一緒に達成しよう。</div></div>`
-    : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${remainingBonusBusinessDays(now,cycle.end)}</span> 日</strong></div>`;
+  // 結果表示期間中（20日～判定日）に達成していれば「残り実働」の代わりに「達成！」
+  const isAchievedDay=Boolean(hasResultData&&bonusReward(resultProgress)>=20000);
+  // 「未達成」は判定日（演出日の次の営業日）になっても未達の時だけ。
+  // 20日（演出日）に未達なら、まだ「残り実働 1日」を表示して更新を待つ。
+  const isVerdictPhase=Boolean(resultClosingDate&&isBonusVerdictDay(now,resultClosingDate));
+  const isNotAchievedDay=Boolean(hasResultData&&!isAchievedDay&&isVerdictPhase);
+  const isPendingDay=Boolean(resultClosingDate&&!isAchievedDay&&!isVerdictPhase);
+  const resultHtml=isAchievedDay
+    ? `<div class="bonus-result waiting remaining-days-only achieved" role="status" aria-live="polite"><strong>達成！</strong></div>`
+    : isNotAchievedDay
+    ?`<div class="bonus-result not-achieved" role="status" aria-live="polite"><div class="bonus-failure-message">みんなでここまで頑張ってきたからこそ、あと一歩届かなかったことが悔しい。この悔しさを次の力に変えて、次こそ一緒に達成しよう。</div></div>`
+    : `<div class="bonus-result waiting remaining-days-only"><strong>残り実働 <span>${isPendingDay?1:remainingBonusBusinessDays(now,cycle.end)}</span> 日</strong></div>`;
 
   box.innerHTML=`
     <div class="bonus-title">
