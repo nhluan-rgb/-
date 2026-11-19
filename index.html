@@ -5588,7 +5588,7 @@ const MEMBERS=[
   ['坂元博文','坂元 博文'],['山口','山口 和明'],['樋口','樋口 正男'],['三澄','三澄 昌弘'],['柴崎','柴崎 一輝'],['熊谷','熊谷 健一'],['井上理枝','井上 理枝'],['服部','服部 千香'],['恒川','恒川 竜'],['増井','増井 祐斗'],
   ['樫原','樫原 秀太'],['奈木野','奈木野 裕次'],['古川','古川 剛史'],['田中','田中 海斗'],['岩本','岩本 昇'],['志田','志田 竜也'],['倉重','倉重 有道'],['坂元亮祐','坂元 亮祐'],['柳屋','柳屋 大貴'],['森山','森山 智貴'],['福島','福島 遼'],['横澤','横澤 洋直'],
   ['大島','大島 悦子'],['林裕子','林 裕子'],['岡','岡 利恵'],['金光','金光 彰'],['井上隆二','井上 隆二'],['水口','水口 峰一'],['桑原','桑原 一機'],
-  ['バン Bang','NGUYEN BANG'],['ロン Long','HOANG DINH LONG'],['ラム Lam','HOANG TIEN LAM'],['カイ Khai','NGUYEN QUANG KHAI'],['ティン Tinh','HUYNH DO THANH TINH'],['バック Bac','DANG PHUONG BAC'],['フイ Huy','TRAN QUANG HUY'],['マイン Manh','TA DUC MANH'],['クイ Quy','NGUYEN VAN QUY'],['ナム Nam','NGUYEN HOAI NAM'],['ズオン Duong','NGUYEN MINH DUONG'],['ルアン Luan','NGUYEN HOANG LUAN']
+  ['バン Bang','NGUYEN BANG'],['ロン Long','HOANG DINH LONG'],['ラム Lam','HOANG TIEN LAM'],['カイ Khai','NGUYEN QUANG KHAI'],['ティン Tinh','HUYNH DO THANH TINH'],['バック Bac','DANG PHUONG BAC'],['フイ Huy','TRAN QUANG HUY'],['マイン Manh','TA DUC MANH'],['ゴック Ngoc','NGUYEN HONG NGOC'],['ナム Nam','NGUYEN HOAI NAM'],['ズオン Duong','NGUYEN MINH DUONG'],['ルアン Luan','NGUYEN HOANG LUAN']
 ].map(([name,full,role])=>({name,full,role:role||'',vn:/^[A-Z ]+$/.test(full)}));
 const ROLE_OF=Object.fromEntries(MEMBERS.filter(m=>m.role).map(m=>[m.name,m.role]));
 const ROLE_CLS={'工場長':'r1','副工場長':'r2','課長':'r3','リーダー':'r4','リーダー代行':'r5'};
@@ -5670,9 +5670,9 @@ const eventsOn=k=>state.events.filter(e=>e.date===k).sort((a,b)=>(a.name||'').lo
 let today=new Date();today.setHours(0,0,0,0);
 let todayKey=keyOf(today);
 let view='month';
-let cur=new Date(today.getFullYear(),today.getMonth(),1);
+let cur=today.getDate()>20?new Date(today.getFullYear(),today.getMonth()+1,1):new Date(today.getFullYear(),today.getMonth(),1);
 /* 開くたびに「今日」と「今月」を取り直す（ページを開きっぱなしで月が変わっても今月を表示） */
-function syncToday(){today=new Date();today.setHours(0,0,0,0);todayKey=keyOf(today);cur=new Date(today.getFullYear(),today.getMonth(),1);view='month';}
+function syncToday(){today=new Date();today.setHours(0,0,0,0);todayKey=keyOf(today);cur=periodMonth(today);view='month';}
 let armed='';          // タップで選んだ名前（ドラッグできない端末用）
 let freeNames=[];      // 自由入力で追加した名前
 let Q=null;            // クイック入力の状態 {name,date,type,time,memo,step,edit}
@@ -5708,19 +5708,26 @@ function renderYear(){
 function chipHtml(e){
   return `<span class="chip k-${e.type}" draggable="true" data-ev="${esc(e.id)}" title="${esc(e.name)} ${esc(what(e))}${e.memo?' / '+esc(e.memo):''}（クリックで削除・ドラッグで移動）">${TI(e.type)}<span><b>${esc(e.name)}</b> ${esc(what(e))}${e.memo?`<i class="mm">${esc(e.memo)}</i>`:''}</span></span>`;
 }
+/* 月度表示：20日締め（例 12月度 = 11/21〜12/20）。cur は締め月の1日 */
+const CLOSE_DAY=20;
+const periodMonth=d=>d.getDate()>CLOSE_DAY?new Date(d.getFullYear(),d.getMonth()+1,1):new Date(d.getFullYear(),d.getMonth(),1);
 function renderMonth(){
-  const y=cur.getFullYear(),m=cur.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate();
-  let w=0;for(let d=1;d<=days;d++)if(!isOff(dayInfo(new Date(y,m,d)).type))w++;
-  const pc=state.events.filter(e=>e.date.startsWith(`${y}-${pad(m+1)}-`)).length;
-  let h=`<div class="kc-mhead"><button class="kc-b" data-nav="-1" type="button" title="前月">${I('left')}</button><h3>${m+1}月</h3><button class="kc-b" data-nav="1" type="button" title="次月">${I('right')}</button><div class="sub"><span style="background:#16a34a" title="稼働日">${I('factory')}${w}</span><span style="background:#dc2626" title="休日">${I('off')}${days-w}</span>${pc?`<span style="background:#1d4ed8" title="不在・遅刻">${I('users')}${pc}</span>`:''}</div></div><div class="kc-month">`;
+  const y=cur.getFullYear(),m=cur.getMonth(),start=new Date(y,m-1,CLOSE_DAY+1),end=new Date(y,m,CLOSE_DAY);
+  const days=Math.round((end-start)/864e5)+1,sk=keyOf(start),ek=keyOf(end);
+  const dates=[];for(let i=0;i<days;i++)dates.push(new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
+  let w=0;for(const dt of dates)if(!isOff(dayInfo(dt).type))w++;
+  const pc=state.events.filter(e=>e.date>=sk&&e.date<=ek).length;
+  const md=d=>`${d.getMonth()+1}/${d.getDate()}`;
+  let h=`<div class="kc-mhead"><button class="kc-b" data-nav="-1" type="button" title="前月度">${I('left')}</button><h3>${m+1}月度<small style="font-size:.5em;margin-left:10px;opacity:.75">${md(start)}〜${md(end)}</small></h3><button class="kc-b" data-nav="1" type="button" title="次月度">${I('right')}</button><div class="sub"><span style="background:#16a34a" title="稼働日">${I('factory')}${w}</span><span style="background:#dc2626" title="休日">${I('off')}${days-w}</span>${pc?`<span style="background:#1d4ed8" title="不在・遅刻">${I('users')}${pc}</span>`:''}</div></div><div class="kc-month">`;
   h+=DOW.map((x,i)=>`<div class="dow${i===0?' sun':i===6?' sat':''}">${x}</div>`).join('');
-  h+='<div class="kc-day e"></div>'.repeat(first.getDay());
-  for(let d=1;d<=days;d++){
-    const dt=new Date(y,m,d),k=keyOf(dt),inf=dayInfo(dt),evs=eventsOn(k);
+  h+='<div class="kc-day e"></div>'.repeat(start.getDay());
+  for(const dt of dates){
+    const d=dt.getDate(),k=keyOf(dt),inf=dayInfo(dt),evs=eventsOn(k);
+    const dn=(d===1||k===sk)?`<small style="font-size:.6em">${dt.getMonth()+1}/</small>${d}`:d;
     const chips=evs.map(chipHtml).join('');
     const lt=inf.type==='worksat'?'出勤':inf.type==='inventory'?'棚卸':(inf.type!=='weekend'?inf.label:'');
     const lbl=lt?`<div class="lbl${lt.length<=2?' xl':''}" style="--len:${lt.length<=2?2.6:lt.length};--max:${lt.length<=2?46:32}px">${esc(lt)}</div>`:'';
-    h+=`<div class="kc-day t-${inf.type}${evs.length?' has-ev':''}${Q&&Q.date===k?' sel':''}${k===todayKey?' today':''}" data-key="${k}" title="${esc(inf.label||TYPE_TEXT[inf.type])}"><div class="n">${d}<span class="ico">${DI(inf.type)}</span></div><div class="bd">${DAY_ICON[inf.type]?`<span class="wm">${DI(inf.type)}</span>`:''}${lbl}${chips}</div></div>`;
+    h+=`<div class="kc-day t-${inf.type}${evs.length?' has-ev':''}${Q&&Q.date===k?' sel':''}${k===todayKey?' today':''}" data-key="${k}" title="${esc(inf.label||TYPE_TEXT[inf.type])}"><div class="n">${dn}<span class="ico">${DI(inf.type)}</span></div><div class="bd">${DAY_ICON[inf.type]?`<span class="wm">${DI(inf.type)}</span>`:''}${lbl}${chips}</div></div>`;
   }
   $('kcMain').innerHTML=h+'</div>';
 }
@@ -5744,7 +5751,7 @@ const PROC_ORDER=['業務','設計','切断','曲げ','溶接','仕上げ','塗�
 const PROC_COLOR={'業務':'#475569','設計':'#0891b2','切断':'#dc2626','曲げ':'#ea580c','溶接':'#1d4ed8','仕上げ':'#16a34a','塗装':'#9333ea','組立':'#a16207','その他':'#64748b'};
 const PROC={'坂元博文':'組立','山口':'塗装','樋口':'組立','三澄':'仕上げ','柴崎':'塗装','熊谷':'設計','井上理枝':'組立','服部':'組立','恒川':'溶接','増井':'塗装',
   '樫原':'塗装','奈木野':'溶接','古川':'組立','田中':'溶接','岩本':'切断','志田':'曲げ','倉重':'組立','坂元亮祐':'塗装','柳屋':'溶接','森山':'切断','福島':'溶接','横澤':'溶接',
-  'バン Bang':'溶接','ロン Long':'溶接','ラム Lam':'曲げ','カイ Khai':'溶接','ティン Tinh':'溶接','バック Bac':'切断','フイ Huy':'溶接','マイン Manh':'溶接','クイ Quy':'溶接',
+  'バン Bang':'溶接','ロン Long':'溶接','ラム Lam':'曲げ','カイ Khai':'溶接','ティン Tinh':'溶接','バック Bac':'切断','フイ Huy':'溶接','マイン Manh':'溶接','ゴック Ngoc':'溶接',
   'ナム Nam':'塗装','ズオン Duong':'溶接','ルアン Luan':'業務','大島':'業務','林裕子':'設計','岡':'組立','金光':'組立','井上隆二':'切断','水口':'仕上げ','桑原':'組立'};
 function renderMembers(){
   const used=new Set(MEMBERS.map(m=>m.name));
@@ -5889,6 +5896,7 @@ if(KCAL_SHEETS_URL)setInterval(()=>{if(!document.hidden&&!Q&&!dragData)fetchShar
 })();
 </script>
 <!-- ===== 会社カレンダー (kcal) END ===== -->
+
 
 
 
