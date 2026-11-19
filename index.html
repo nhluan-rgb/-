@@ -1376,7 +1376,7 @@ function updateClaimSummaryPanel(){
   if(current){
     const gap=amount-target;
     compareHtml=gap>=0
-      ? `<div class="manufacturing-compare">目標を <span class="up">▲${formatManufacturingYen(gap)}</span> 超過</div>`
+      ? `<div class="manufacturing-compare">目標を <span class="up">＋${formatManufacturingYen(gap)}</span> 上回りました</div>`
       : `<div class="manufacturing-compare">目標まで あと <b>${formatManufacturingYen(-gap)}</b></div>`;
   }
   const targetNote=compare.targetFromPrev?'前月実績':'初期設定値';
@@ -1693,7 +1693,7 @@ function showManufacturingCelebration(level,key,amount,compare){
   const subParts=[];
   if(compare&&compare.prevAmount!==null){
     const up=compare.diff>=0;
-    subParts.push(`前月 ${formatManufacturingYen(compare.prevAmount)}　${up?'▲':'▼'} ${formatManufacturingYen(Math.abs(compare.diff))}`);
+    subParts.push(`前月 ${formatManufacturingYen(compare.prevAmount)}　${up?'↑ ＋':'↓ －'}${formatManufacturingYen(Math.abs(compare.diff))}`);
   }
   if(compare&&compare.isRecord)subParts.push('過去最高を更新！');
   const particles=reduceMotion?'':Array.from({length:isOku?90:50},()=>{
@@ -5523,8 +5523,14 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
 <script>
 (function(){
 'use strict';
-/* ---- 2027年 休日カレンダー（PDFより） ---- */
+/* ---- 休日カレンダー（2026年は国民の祝日＋年末休暇、2027年はPDFより） ---- */
 const KC_DATA={
+  2026:{
+    holiday:{'01-01':'元日','01-12':'成人の日','02-11':'建国記念の日','02-23':'天皇誕生日','03-20':'春分の日','04-29':'昭和の日','05-03':'憲法記念日','05-04':'みどりの日','05-05':'こどもの日','05-06':'振替休日','07-20':'海の日','08-11':'山の日','09-21':'敬老の日','09-22':'国民の休日','09-23':'秋分の日','10-12':'スポーツの日','11-03':'文化の日','11-23':'勤労感謝の日'},
+    company:{'12-29':'年末休暇','12-30':'年末休暇','12-31':'年末休暇'},
+    worksat:{'11-28':'出勤土曜','12-19':'出勤土曜'},
+    inventory:{}
+  },
   2027:{
     holiday:{'01-01':'元日','01-11':'成人の日','02-11':'建国記念の日','02-23':'天皇誕生日','03-21':'春分の日','03-22':'振替休日','04-29':'昭和の日','05-03':'憲法記念日','05-04':'みどりの日','05-05':'こどもの日','07-19':'海の日','08-11':'山の日','09-20':'敬老の日','09-23':'秋分の日','10-11':'スポーツの日','11-03':'文化の日','11-23':'勤労感謝の日'},
     company:{'01-02':'年始休暇','01-03':'年始休暇','01-04':'年始休暇','08-12':'夏季休暇','08-13':'夏季休暇','08-14':'夏季休暇','08-15':'夏季休暇','08-16':'夏季休暇','12-29':'年末休暇','12-30':'年末休暇','12-31':'年末休暇'},
@@ -5661,10 +5667,12 @@ function renderSync(){
 const eventsOn=k=>state.events.filter(e=>e.date===k).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ja'));
 
 /* ---- UI state ---- */
-const today=new Date();today.setHours(0,0,0,0);
-const todayKey=keyOf(today);
+let today=new Date();today.setHours(0,0,0,0);
+let todayKey=keyOf(today);
 let view='month';
-let cur=KC_DATA[today.getFullYear()]?new Date(today.getFullYear(),today.getMonth(),1):new Date(YEARS[0],0,1);
+let cur=new Date(today.getFullYear(),today.getMonth(),1);
+/* 開くたびに「今日」と「今月」を取り直す（ページを開きっぱなしで月が変わっても今月を表示） */
+function syncToday(){today=new Date();today.setHours(0,0,0,0);todayKey=keyOf(today);cur=new Date(today.getFullYear(),today.getMonth(),1);view='month';}
 let armed='';          // タップで選んだ名前（ドラッグできない端末用）
 let freeNames=[];      // 自由入力で追加した名前
 let Q=null;            // クイック入力の状態 {name,date,type,time,memo,step,edit}
@@ -5824,7 +5832,7 @@ function moveEvent(id,date){
 }
 
 /* ---- events ---- */
-function open(){$('kcal').classList.add('on');$('kcal').setAttribute('aria-hidden','false');render();fetchShared();}
+function open(){syncToday();$('kcal').classList.add('on');$('kcal').setAttribute('aria-hidden','false');render();fetchShared();}
 function close(){Q=null;armed='';$('kcQuick').hidden=true;$('kcal').classList.remove('on');$('kcal').setAttribute('aria-hidden','true');}
 document.addEventListener('click',ev=>{
   const t=ev.target;
@@ -5881,6 +5889,8 @@ if(KCAL_SHEETS_URL)setInterval(()=>{if(!document.hidden&&!Q&&!dragData)fetchShar
 })();
 </script>
 <!-- ===== 会社カレンダー (kcal) END ===== -->
+
+
 
 
 
