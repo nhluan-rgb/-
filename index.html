@@ -5492,6 +5492,91 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
 #kcal .kc-quick .qmemo{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:14px;font-weight:700;color:#334155}
 #kcal .kc-quick.k-off{--c:#dc2626}#kcal .kc-quick.k-am{--c:#ea580c}#kcal .kc-quick.k-pm{--c:#9a3412}#kcal .kc-quick.k-late{--c:#b45309}#kcal .kc-quick.k-early{--c:#7c3aed}#kcal .kc-quick.k-trip{--c:#0369a1}#kcal .kc-quick.k-other{--c:#334155}
 #kcal .kc-quick .qtypes button.k-off{--c:#dc2626}#kcal .kc-quick .qtypes button.k-am{--c:#ea580c}#kcal .kc-quick .qtypes button.k-pm{--c:#9a3412}#kcal .kc-quick .qtypes button.k-late{--c:#b45309}#kcal .kc-quick .qtypes button.k-early{--c:#7c3aed}#kcal .kc-quick .qtypes button.k-trip{--c:#0369a1}#kcal .kc-quick .qtypes button.k-other{--c:#334155}
+/* ===== 残業モード ===== */
+#kcal .kc-tools{display:flex;align-items:center;gap:12px}
+#kcal .kc-head .kc-mode button.kc-b{display:inline-flex;align-items:center;gap:8px}
+#kcal .kc-head .kc-mode button.kc-b svg.ki{font-size:24px}
+#kcal .kc-head .kc-mode #kcModeAbs.on{background:#1d4ed8;color:#fff}
+#kcal .kc-head .kc-mode #kcModeOt.on{background:#ea580c;color:#fff}
+#kcal.ot .kc-win{box-shadow:0 0 0 4px #ea580c,0 30px 80px rgba(0,0,0,.5)}
+#kcal.ot .kc-mhead h3{color:#c2410c}
+#kcal .kc-apv{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 18px;border:3px solid #16a34a;border-radius:4px;background:#16a34a;color:#fff;font:900 20px "Yu Gothic UI",sans-serif;cursor:pointer;box-shadow:3px 3px 0 #0f172a}
+#kcal .kc-apv svg.ki{font-size:22px}
+#kcal .kc-apv.live{background:#fff;color:#b91c1c;border-color:#b91c1c}
+#kcal .kc-apv .cnt{font:900 14px Bahnschrift,sans-serif;background:#dc2626;color:#fff;border-radius:999px;padding:2px 8px}
+#kcal .kc-apv .tm{font:900 15px Bahnschrift,sans-serif;color:#64748b}
+/* セル内の残業表示 */
+#kcal .kc-day .otc{display:flex;align-items:center;justify-content:center;gap:4px;margin:auto 0;padding:4px 6px;border-radius:4px;background:color-mix(in srgb,#ea580c calc(25% + var(--heat)*75%),#fff);color:#fff;font:900 15px "Yu Gothic UI",sans-serif;position:relative;z-index:1;box-shadow:2px 2px 0 rgba(15,23,42,.6)}
+#kcal .kc-day .otc b{font:900 26px/1 Bahnschrift,sans-serif}
+#kcal .kc-day .otc svg.ki{font-size:20px}
+#kcal .kc-day .otc.light{color:#7c2d12}
+#kcal .kc-day .otw{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:3px;position:relative;z-index:1;font:900 12px "Yu Gothic UI",sans-serif}
+#kcal .kc-day .otw .p{background:#fff;border:2px dashed #ea580c;color:#c2410c;padding:0 6px;border-radius:3px}
+#kcal .kc-day .otw .x{background:#e2e8f0;color:#64748b;padding:0 6px;border-radius:3px;text-decoration:line-through}
+#kcal.ot .kc-day[data-key]{cursor:pointer}
+/* はんこ */
+#kcal .hanko{display:inline-grid;place-items:center;width:30px;height:30px;border:2.5px solid #dc2626;border-radius:50%;color:#dc2626;font:900 10px/1 "Yu Mincho","MS Mincho",serif;writing-mode:vertical-rl;letter-spacing:-.05em;background:rgba(255,255,255,.85);transform:rotate(-8deg);flex:none}
+#kcal .hanko.lg{width:42px;height:42px;font-size:14px;border-width:3px}
+/* 45h バー */
+#kcal.ot .kc-members button.mrow{grid-template-columns:60px minmax(0,1fr);row-gap:3px}
+#kcal.ot .kc-members button.mrow .ep,#kcal.ot .kc-members button.mrow .pt{grid-row:span 2}
+#kcal .hb{grid-column:2;position:relative;display:block;height:17px;border:2px solid #0f172a;border-radius:3px;background:#f1f5f9;overflow:hidden}
+#kcal .hb i{position:absolute;top:0;bottom:0;left:0}
+#kcal .hb i.a{background:var(--hc)}
+#kcal .hb i.w{background:repeating-linear-gradient(45deg,var(--hc) 0 4px,transparent 4px 8px);opacity:.75}
+#kcal .hb em{position:absolute;inset:0;display:grid;place-items:center;font:900 12px Bahnschrift,sans-serif;font-style:normal;color:#0f172a;text-shadow:0 0 3px #fff,0 0 3px #fff}
+#kcal .hb.g{--hc:#16a34a}#kcal .hb.y{--hc:#eab308}#kcal .hb.r{--hc:#dc2626}
+#kcal .hb.r{border-color:#dc2626;animation:kcPulse 2s infinite}
+#kcal .kc-members button.mrow.on .hb{border-color:#0f172a}
+/* 残業クイック */
+#kcal .kc-quick.k-ot,#kcal .kc-quick.k-hot{--c:#ea580c}
+#kcal .kc-quick.wide{width:440px}
+#kcal .kc-quick .qnames{display:flex;flex-wrap:wrap;gap:4px;padding:8px 10px 0}
+#kcal .kc-quick .qnames span{font:900 13px "Yu Gothic UI",sans-serif;background:#fff7ed;border:2px solid #ea580c;color:#9a3412;padding:1px 8px;border-radius:3px}
+#kcal .kc-quick .qtimes.big{grid-template-columns:repeat(4,1fr)}
+#kcal .kc-quick .qtimes.big button{padding:12px 2px;font-size:18px;font-family:Bahnschrift,"Yu Gothic UI",sans-serif}
+#kcal .kc-quick .qtimes.big button small{display:block;font-size:11px;color:#64748b;font-weight:800}
+#kcal .kc-quick .qtimes.span{grid-template-columns:1fr}
+#kcal .kc-quick .qtimes.span button{font-size:18px}
+#kcal .kc-quick .qrow label{display:flex;align-items:center;font:900 13px "Yu Gothic UI",sans-serif;color:#334155}
+/* 一覧（日別・承認待ち） */
+#kcal .kc-quick .ql{max-height:46vh;overflow:auto;padding:6px 10px 0;display:flex;flex-direction:column;gap:6px}
+#kcal .kc-quick .ql h6{margin:6px 0 0;font:900 13px "Yu Gothic UI",sans-serif;color:#0f172a;display:flex;align-items:center;gap:8px;border-bottom:2px solid #0f172a;padding-bottom:2px}
+#kcal .kc-quick .ql h6 button{margin-left:auto}
+#kcal .kc-quick .qi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px;border:2px solid #cbd5e1;border-left:6px solid #ea580c;border-radius:3px}
+#kcal .kc-quick .qi.wait{border-style:dashed;border-left-style:solid}
+#kcal .kc-quick .qi.ng{opacity:.6;border-left-color:#94a3b8}
+#kcal .kc-quick .qi.ng .qn{text-decoration:line-through}
+#kcal .kc-quick .qi .qn{font:900 17px "Yu Gothic UI",sans-serif;color:#0f172a}
+#kcal .kc-quick .qi .qd{font:800 13px "Yu Gothic UI",sans-serif;color:#9a3412}
+#kcal .kc-quick .qi .qd i{font-style:normal;color:#64748b;margin-left:6px}
+#kcal .kc-quick .qi .qb{display:flex;align-items:center;gap:6px}
+#kcal .kc-quick .st{font:900 12px "Yu Gothic UI",sans-serif;padding:3px 8px;border-radius:3px;white-space:nowrap}
+#kcal .kc-quick .st.wait{background:#fff7ed;color:#c2410c;border:2px dashed #ea580c}
+#kcal .kc-quick .st.ng{background:#e2e8f0;color:#475569}
+#kcal .kc-quick .ib{display:inline-grid;place-items:center;width:40px;height:40px;border:2px solid #0f172a;border-radius:3px;font-size:20px;box-shadow:2px 2px 0 #0f172a;background:#fff;color:#0f172a}
+#kcal .kc-quick .ib.ok{background:#16a34a;color:#fff;border-color:#14532d}
+#kcal .kc-quick .ib.ng{background:#dc2626;color:#fff;border-color:#7f1d1d}
+#kcal .kc-quick .ib.un{width:auto;padding:0 8px;font-size:12px;font-weight:900;height:30px}
+#kcal .kc-quick .ib.dl{width:34px;height:34px;font-size:16px}
+#kcal .kc-quick .qall{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:2px solid #14532d;border-radius:3px;background:#16a34a;color:#fff;font:900 13px "Yu Gothic UI",sans-serif;box-shadow:2px 2px 0 #0f172a}
+#kcal .kc-quick .qempty{padding:18px 10px;text-align:center;font:900 15px "Yu Gothic UI",sans-serif;color:#64748b}
+/* PIN ログイン */
+#kcal .kc-quick.k-apv{--c:#15803d;width:360px}
+#kcal .kc-quick .qwho{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+#kcal .kc-quick .qwho button{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 4px;border:3px solid #cbd5e1;border-radius:4px;background:#fff;font:900 22px "Yu Gothic UI",sans-serif;color:#0f172a}
+#kcal .kc-quick .qwho button.on{border-color:#15803d;background:#dcfce7;box-shadow:3px 3px 0 #0f172a}
+#kcal .kc-quick .qwho button .ep{width:46px;height:22px}
+#kcal .kc-quick .qdots{display:flex;justify-content:center;gap:14px;padding:6px 0 10px}
+#kcal .kc-quick .qdots i{width:18px;height:18px;border-radius:50%;border:3px solid #0f172a}
+#kcal .kc-quick .qdots i.f{background:#0f172a}
+#kcal .kc-quick .qpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px}
+#kcal .kc-quick .qpad button{height:54px;border:2px solid #0f172a;border-radius:4px;background:#fff;font:900 26px Bahnschrift,sans-serif;color:#0f172a;box-shadow:2px 2px 0 #0f172a}
+#kcal .kc-quick .qpad button:active{transform:translate(2px,2px);box-shadow:none}
+#kcal .kc-quick .qpad button.go{background:#15803d;color:#fff;font-size:20px;font-family:"Yu Gothic UI",sans-serif}
+#kcal .kc-quick .qerr{margin:8px 14px 0;padding:6px 8px;background:#fee2e2;color:#b91c1c;font:900 13px "Yu Gothic UI",sans-serif;border-radius:3px;text-align:center}
+#kcal .kc-legend .ot-l{display:inline-flex;align-items:center;gap:6px;background:#fff7ed;color:#c2410c;border:2px solid #ea580c;padding:2px 10px 2px 7px}
+#kcal .hanko{font-style:normal}
 @media (max-width:1100px){#kcal .kc-body{grid-template-columns:1fr}#kcal .kc-year{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:700px){#kcal .kc-year{grid-template-columns:repeat(2,1fr)}#kcal .kc-day{min-height:72px}#kcal .kc-tools{margin-left:0}}
 </style>
@@ -5502,6 +5587,8 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
       <div class="kc-title"><span class="tic" data-ic="cal"></span><span id="kcTitle">2027</span></div>
       <div class="kc-stats" id="kcStats"></div>
       <div class="kc-tools">
+        <button class="kc-apv" id="kcApv" type="button" hidden></button>
+        <div class="kc-seg kc-mode"><button class="kc-b" id="kcModeAbs" type="button" title="不在・遅刻・早退"><span data-ic="home"></span>不在</button><button class="kc-b" id="kcModeOt" type="button" title="残業・休日出勤"><span data-ic="fire"></span>残業</button></div>
         <div class="kc-seg"><button class="kc-b" id="kcViewMonth" type="button" title="月表示">月</button><button class="kc-b" id="kcViewYear" type="button" title="年間表示">年間</button></div>
       </div>
     </div>
@@ -5567,6 +5654,9 @@ const ICONS={
   x:'<path d="M5 5l14 14M19 5 5 19"/>',
   plus:'<path d="M12 4v16M4 12h16"/>',
   star:'<path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8z" fill="currentColor"/>',
+  fire:'<path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-3-1-6 1-9z" fill="currentColor"/>',
+  hour:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+  lock:'<rect x="4" y="11" width="16" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
   left:'<path d="M15 4l-8 8 8 8"/>',right:'<path d="M9 4l8 8-8 8"/>'
 };
 const I=k=>`<svg class="ki" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${ICONS[k]||''}</svg>`;
@@ -5576,7 +5666,8 @@ const TYPE_ICON=Object.fromEntries(TYPES.map(t=>[t[0],t[2]]));
 const TI=t=>I(TYPE_ICON[t]||'other');
 const jt=t=>{const [h,m]=String(t||'').split(':').map(Number);return isNaN(h)?'':`${h}時${m?m+'分':''}`;};
 /* 「早退 12時から」「遅刻 9時30分出社」のような表示 */
-const what=e=>{const t=jt(e.time),l=TYPE_LABEL[e.type]||'その他';return e.type==='early'&&t?`${l} ${t}から`:e.type==='late'&&t?`${l} ${t}出社`:l;};
+const what=e=>{if(e.type==='ot')return `残業 ${jt(e.time)}まで`;if(e.type==='hot'){const [s,f]=String(e.time||'').split('-');return `休日出勤 ${jt(s)}〜${jt(f)}`;}
+  const t=jt(e.time),l=TYPE_LABEL[e.type]||'その他';return e.type==='early'&&t?`${l} ${t}から`:e.type==='late'&&t?`${l} ${t}出社`:l;};
 const TYPE_TEXT={work:'稼働日',weekend:'休日',holiday:'祝日',company:'会社休日',worksat:'出勤土曜',inventory:'棚卸'};
 const DAY_ICON={work:'',weekend:'',holiday:'flag',company:'umbrella',worksat:'wrench',inventory:'box'};
 const DI=t=>DAY_ICON[t]?I(DAY_ICON[t]):'';
@@ -5664,7 +5755,14 @@ function renderSync(){
   el.innerHTML=syncState.ok===false?I('warn')+'同期エラー':I('cloud')+t;
   el.title='Google Sheetで全員と共有・30秒ごとに自動更新';
 }
-const eventsOn=k=>state.events.filter(e=>e.date===k).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ja'));
+/* 応答を読める POST（PIN確認・承認用。PINはURLに載せない） */
+async function postJson(payload){
+  const r=await fetch(KCAL_SHEETS_URL,{method:'POST',body:JSON.stringify(payload)});
+  return r.json();
+}
+const isOT=e=>e.type==='ot'||e.type==='hot';
+/* m: 'ot'=残業・休出だけ / 'abs'=不在だけ（省略時は今の表示モード） */
+const eventsOn=(k,m)=>state.events.filter(e=>e.date===k&&isOT(e)===((m||mode)==='ot')).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ja'));
 
 /* ---- UI state ---- */
 let today=new Date();today.setHours(0,0,0,0);
@@ -5679,6 +5777,32 @@ let Q=null;            // クイック入力の状態 {name,date,type,time,memo,
 const LATE_TIMES=['08:30','09:00','09:30','10:00','10:30','11:00','13:00'];
 const EARLY_TIMES=['10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
 const MEMOS=['通院','私用','体調不良','家庭の事情','役所'];
+/* ---- 残業 ---- */
+let mode='abs';        // 'abs'=不在 / 'ot'=残業
+let sel=new Set();     // 残業モードで複数選択した名前
+let APV=null;          // 承認モード {by,pin,until}
+const APV_MS=5*60*1000;// 承認モードは5分で自動ロック（操作するたびに延長）
+const APPROVERS=[['荻原','工場長'],['平澤','副工場長']];
+const DEMO_PIN='0000'; // Google Sheet 未接続（デモ）のときだけ使う。本番の PIN は Google 側でのみ確認。
+const BASE_END=17*60+30;                 // 定時 17:30
+const OT_END=['18:00','18:30','19:00','19:30','20:00','20:30','21:00','22:00'];
+const HOT_SPANS=[['08:30','17:30'],['08:30','12:00'],['13:00','17:30']];
+const OT_LIMIT=45;
+const toMin=t=>{const [h,m]=String(t||'').split(':').map(Number);return isNaN(h)?NaN:h*60+(m||0);};
+function otHours(e){
+  if(e.type==='ot'){const m=toMin(e.time);return isNaN(m)?0:Math.max(0,m-BASE_END)/60;}
+  if(e.type==='hot'){const [s,f]=String(e.time||'').split('-').map(toMin);if(isNaN(s)||isNaN(f))return 0;let m=f-s;if(s<=720&&f>=780)m-=60;return Math.max(0,m)/60;}
+  return 0;
+}
+const fmtH=h=>(Math.round(h*10)/10).toString();
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const hanko=(n,lg)=>`<i class="hanko${lg?' lg':''}" title="${esc(n)} 承認">${esc(n)}</i>`;
+const periodKeys=()=>{const y=cur.getFullYear(),m=cur.getMonth();return [keyOf(new Date(y,m-1,21)),keyOf(new Date(y,m,20))];};
+function hoursOf(name){const [sk,ek]=periodKeys();let ok=0,wait=0;
+  for(const e of state.events)if(e.name===name&&isOT(e)&&e.date>=sk&&e.date<=ek&&e.status!=='ng'){const h=otHours(e);if(e.status==='ok')ok+=h;else wait+=h;}
+  return{ok,wait};}
+const apvLive=()=>APV&&APV.until>Date.now();
+const touchApv=()=>{if(APV)APV.until=Date.now()+APV_MS;};
 
 function stats(year){
   let work=0,off=0,sat=0;
@@ -5711,20 +5835,36 @@ function chipHtml(e){
 /* 月度表示：20日締め（例 12月度 = 11/21〜12/20）。cur は締め月の1日 */
 const CLOSE_DAY=20;
 const periodMonth=d=>d.getDate()>CLOSE_DAY?new Date(d.getFullYear(),d.getMonth()+1,1):new Date(d.getFullYear(),d.getMonth(),1);
+/* 残業モードのセル：人数を大きく、承認待ち・却下は小さく、全員承認済みならはんこ */
+function otCell(evs){
+  if(!evs.length)return '';
+  const live=evs.filter(e=>e.status!=='ng'),wait=live.filter(e=>!e.status).length,ng=evs.length-live.length;
+  let h='';
+  if(live.length){const heat=Math.min(1,live.length/8);
+    const by=[...new Set(live.filter(e=>e.status==='ok').map(e=>e.approver).filter(Boolean))];
+    h+=`<div class="otc${heat<.3?' light':''}" style="--heat:${heat}" title="${esc(live.map(e=>e.name+' '+what(e)).join('\n'))}">${I('fire')}<b>${live.length}</b>人${!wait&&by.length?by.map(b=>hanko(b)).join(''):''}</div>`;}
+  if(wait||ng)h+=`<div class="otw">${wait?`<span class="p">${I('hour')}待ち${wait}</span>`:''}${ng?`<span class="x">却下${ng}</span>`:''}</div>`;
+  return h;
+}
 function renderMonth(){
   const y=cur.getFullYear(),m=cur.getMonth(),start=new Date(y,m-1,CLOSE_DAY+1),end=new Date(y,m,CLOSE_DAY);
   const days=Math.round((end-start)/864e5)+1,sk=keyOf(start),ek=keyOf(end);
   const dates=[];for(let i=0;i<days;i++)dates.push(new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
   let w=0;for(const dt of dates)if(!isOff(dayInfo(dt).type))w++;
-  const pc=state.events.filter(e=>e.date>=sk&&e.date<=ek).length;
+  const inP=state.events.filter(e=>e.date>=sk&&e.date<=ek&&isOT(e)===(mode==='ot'));
+  const pc=inP.length;
   const md=d=>`${d.getMonth()+1}/${d.getDate()}`;
-  let h=`<div class="kc-mhead"><button class="kc-b" data-nav="-1" type="button" title="前月度">${I('left')}</button><h3>${m+1}月度<small style="font-size:.5em;margin-left:10px;opacity:.75">${md(start)}〜${md(end)}</small></h3><button class="kc-b" data-nav="1" type="button" title="次月度">${I('right')}</button><div class="sub"><span style="background:#16a34a" title="稼働日">${I('factory')}${w}</span><span style="background:#dc2626" title="休日">${I('off')}${days-w}</span>${pc?`<span style="background:#1d4ed8" title="不在・遅刻">${I('users')}${pc}</span>`:''}</div></div><div class="kc-month">`;
+  let extra='';
+  if(mode==='ot'){const live=inP.filter(e=>e.status!=='ng'),tot=live.reduce((s,e)=>s+otHours(e),0),wt=live.filter(e=>!e.status).length;
+    extra=`<span style="background:#ea580c" title="残業 合計時間">${I('fire')}${fmtH(tot)}h</span>${wt?`<span style="background:#fff;color:#c2410c;border:2px dashed #ea580c" title="承認待ち">${I('hour')}${wt}</span>`:''}`;}
+  else if(pc)extra=`<span style="background:#1d4ed8" title="不在・遅刻">${I('users')}${pc}</span>`;
+  let h=`<div class="kc-mhead"><button class="kc-b" data-nav="-1" type="button" title="前月度">${I('left')}</button><h3>${m+1}月度<small style="font-size:.5em;margin-left:10px;opacity:.75">${md(start)}〜${md(end)}</small></h3><button class="kc-b" data-nav="1" type="button" title="次月度">${I('right')}</button><div class="sub"><span style="background:#16a34a" title="稼働日">${I('factory')}${w}</span><span style="background:#dc2626" title="休日">${I('off')}${days-w}</span>${extra}</div></div><div class="kc-month">`;
   h+=DOW.map((x,i)=>`<div class="dow${i===0?' sun':i===6?' sat':''}">${x}</div>`).join('');
   h+='<div class="kc-day e"></div>'.repeat(start.getDay());
   for(const dt of dates){
     const d=dt.getDate(),k=keyOf(dt),inf=dayInfo(dt),evs=eventsOn(k);
     const dn=(d===1||k===sk)?`<small style="font-size:.6em">${dt.getMonth()+1}/</small>${d}`:d;
-    const chips=evs.map(chipHtml).join('');
+    const chips=mode==='ot'?otCell(evs):evs.map(chipHtml).join('');
     const lt=inf.type==='worksat'?'出勤':inf.type==='inventory'?'棚卸':(inf.type!=='weekend'?inf.label:'');
     const lbl=lt?`<div class="lbl${lt.length<=2?' xl':''}" style="--len:${lt.length<=2?2.6:lt.length};--max:${lt.length<=2?46:32}px">${esc(lt)}</div>`:'';
     h+=`<div class="kc-day t-${inf.type}${evs.length?' has-ev':''}${Q&&Q.date===k?' sel':''}${k===todayKey?' today':''}" data-key="${k}" title="${esc(inf.label||TYPE_TEXT[inf.type])}"><div class="n">${dn}<span class="ico">${DI(inf.type)}</span></div><div class="bd">${DAY_ICON[inf.type]?`<span class="wm">${DI(inf.type)}</span>`:''}${lbl}${chips}</div></div>`;
@@ -5757,7 +5897,11 @@ function renderMembers(){
   const used=new Set(MEMBERS.map(m=>m.name));
   const others=[...new Set([...freeNames,...state.events.map(e=>e.name).filter(n=>n&&!used.has(n))])];
   const nm=m=>{const [a,b]=m.vn?m.name.split(' '):[m.name,''];return `<span class="nm">${esc(a)}${b?`<small>${esc(b)}</small>`:''}</span>`;};
-  const row=(m,left,cls,tip)=>`<button type="button" draggable="true" data-member="${esc(m.name)}" class="mrow ${cls}${armed===m.name?' on':''}" title="${esc(tip)}">${left}${nm(m)}</button>`;
+  const ot=mode==='ot';
+  const bar=n=>{if(!ot)return '';const {ok,wait}=hoursOf(n),t=ok+wait,c=t>=40?'r':t>=30?'y':'g',pc=v=>Math.min(100,v/OT_LIMIT*100);
+    return `<span class="hb ${c}" title="今月度 承認済 ${fmtH(ok)}h / 承認待ち ${fmtH(wait)}h（上限 ${OT_LIMIT}h）"><i class="a" style="width:${pc(ok)}%"></i><i class="w" style="left:${pc(ok)}%;width:${Math.max(0,pc(t)-pc(ok))}%"></i><em>${fmtH(t)}h</em></span>`;};
+  const isOn=n=>ot?sel.has(n):armed===n;
+  const row=(m,left,cls,tip)=>`<button type="button" draggable="true" data-member="${esc(m.name)}" class="mrow ${cls}${isOn(m.name)?' on':''}" title="${esc(tip)}">${left}${nm(m)}${bar(m.name)}</button>`;
   let h='';
   const leaders=MEMBERS.filter(m=>m.role);
   h+=`<div class="list">${leaders.map(m=>row(m,boardSvg(m.role),RANK[m.role].cls,`${m.full} / ${m.role}`)).join('')}</div>`;
@@ -5767,18 +5911,31 @@ function renderMembers(){
   }
   if(others.length)h+=`<h6>${I('other')}自由入力</h6><div class="list">${others.map(n=>row({name:n},`<span class="pt" style="--pc:#334155">${I('user')}</span>`,'pr',n)).join('')}</div>`;
   $('kcMembers').innerHTML=h;
-  $('kcHint').innerHTML=armed?`<b>${esc(armed)}</b> → 日付をクリック`:'名前を日付へドラッグ';
-  $('kcHint').classList.toggle('armed',!!armed);
+  if(ot){$('kcHint').innerHTML=sel.size?`<b>${sel.size}人</b> 選択中 → 日付をクリック <button type="button" data-clrsel style="margin-left:6px;border:2px solid #92400e;background:#fff;color:#92400e;font-weight:900;border-radius:3px;padding:0 6px;cursor:pointer">解除</button>`:`${I('fire')}名前を日付へドラッグ（タップで複数選択OK）`;$('kcHint').classList.toggle('armed',sel.size>0);}
+  else{$('kcHint').innerHTML=armed?`<b>${esc(armed)}</b> → 日付をクリック`:'名前を日付へドラッグ';$('kcHint').classList.toggle('armed',!!armed);}
 }
-function renderLegend(){const el=$('kcLegend');if(el.childElementCount)return;
+function renderLegend(){const el=$('kcLegend');if(el.dataset.mode===mode)return;el.dataset.mode=mode;
+  const base=[['holiday','祝日'],['company','会社休日'],['worksat','出勤土曜'],['inventory','棚卸']].map(([t,l])=>`<span class="t-${t}">${DI(t)}${l}</span>`).join('')+'<span class="sep"></span>';
+  if(mode==='ot'){el.innerHTML=base+`<span class="ot-l">${I('fire')}残業・休日出勤（定時17:30）</span><span class="ot-l" style="border-style:dashed">${I('hour')}承認待ち</span><span class="ot-l">${hanko('荻原')}${hanko('平澤')}承認済み</span><span class="ot-l" style="background:#e2e8f0;color:#64748b;border-color:#94a3b8;text-decoration:line-through">却下</span>`;return;}
   el.innerHTML=[['holiday','祝日'],['company','会社休日'],['worksat','出勤土曜'],['inventory','棚卸']].map(([t,l])=>`<span class="t-${t}">${DI(t)}${l}</span>`).join('')+'<span class="sep"></span>'+TYPES.map(([k,l,i])=>`<span class="k-${k}">${I(i)}${l}</span>`).join('');}
 function render(){
   if(!$('kcal').classList.contains('on'))return updateBadge();
   renderLegend();renderStats();view==='year'?renderYear():renderMonth();renderMembers();renderSync();
   $('kcViewYear').classList.toggle('on',view==='year');$('kcViewMonth').classList.toggle('on',view==='month');
+  $('kcal').classList.toggle('ot',mode==='ot');$('kcModeAbs').classList.toggle('on',mode==='abs');$('kcModeOt').classList.toggle('on',mode==='ot');
+  renderApv();
   if(Q)placeQuick();
 }
-function updateBadge(){const b=document.querySelector('.kcal-open-btn .kcal-badge');if(!b)return;const n=eventsOn(todayKey).length;b.textContent=n;b.classList.toggle('on',n>0);b.title=`今日の不在 ${n}件`;}
+/* 承認ボタン（残業モードだけ表示） */
+function renderApv(){
+  const b=$('kcApv');b.hidden=mode!=='ot';if(b.hidden)return;
+  const wait=state.events.filter(e=>isOT(e)&&!e.status).length;
+  if(apvLive()){const s=Math.max(0,Math.ceil((APV.until-Date.now())/1000));
+    b.className='kc-apv live';b.title='承認待ち一覧を開く';
+    b.innerHTML=`${hanko(APV.by)}承認中${wait?`<span class="cnt">${wait}</span>`:''}<span class="tm">${Math.floor(s/60)}:${pad(s%60)}</span><span data-apvend title="承認モードを終了" style="display:inline-grid;place-items:center;margin-left:4px;color:#0f172a">${I('lock')}</span>`;}
+  else{b.className='kc-apv';b.title='工場長・副工場長の承認';b.innerHTML=`${I('check')}承認${wait?`<span class="cnt">${wait}</span>`:''}`;}
+}
+function updateBadge(){const b=document.querySelector('.kcal-open-btn .kcal-badge');if(!b)return;const n=eventsOn(todayKey,'abs').length;b.textContent=n;b.classList.toggle('on',n>0);b.title=`今日の不在 ${n}件`;}
 
 /* ---- クイック入力（ドロップ後の小窓） ---- */
 function fmtDate(k){const d=parse(k);return `${d.getMonth()+1}/${d.getDate()}（${DOW[d.getDay()]}）`;}
@@ -5796,6 +5953,7 @@ function placeQuick(){
 function renderQuick(){
   const box=$('kcQuick');if(!Q){box.hidden=true;return;}
   box.hidden=false;let body='';
+  if(Q.kind){box.innerHTML=otQuickHtml(box);placeQuick();return;}
   if(Q.step===0){
     const e=Q.edit;
     box.className='kc-quick k-'+e.type;
@@ -5838,6 +5996,129 @@ function moveEvent(id,date){
   pushSheet({action:'delete',ids:[id]});pushSheet({action:'add',events:[n]});render();flash(date);
 }
 
+/* ---- 残業：登録・一覧・承認 ---- */
+function openOT(names,date){armed='';Q={kind:'ot',names:[...names],date,memo:''};render();renderQuick();}
+function openDay(date){Q={kind:'day',date};render();renderQuick();}
+function openPend(){Q={kind:'pend'};render();renderQuick();}
+function openLogin(then){Q={kind:'login',by:'',pin:'',err:'',busy:false,then};render();renderQuick();}
+const otHead=(icon,title,sub)=>`<div class="qh"><span class="qav">${I(icon)}</span><div><b>${title}</b><small>${sub}</small></div><button type="button" class="qx" data-q="close" title="閉じる (Esc)">${I('x')}</button></div>`;
+function otItem(e,showDate){
+  const st=e.status==='ok'?hanko(e.approver||'承認',true):e.status==='ng'?'<span class="st ng">却下</span>':`<span class="st wait">${I('hour')}承認待ち</span>`;
+  let btn='';
+  if(apvLive()){btn=!e.status?`<button type="button" class="ib ok" data-oapv="${esc(e.id)}" data-st="ok" title="承認">${I('check')}</button><button type="button" class="ib ng" data-oapv="${esc(e.id)}" data-st="ng" title="却下">${I('x')}</button>`
+    :`<button type="button" class="ib un" data-oapv="${esc(e.id)}" data-st="" title="承認を取り消す">取消</button>`;}
+  if(apvLive()||e.status!=='ok')btn+=`<button type="button" class="ib dl" data-odel="${esc(e.id)}" title="削除">${I('x')}</button>`;
+  if(!apvLive()&&e.status!=='ok')btn=`<button type="button" class="ib dl" data-odel="${esc(e.id)}" title="削除">${I('x')}</button>`;
+  return `<div class="qi${e.status==='ng'?' ng':!e.status?' wait':''}"><div><div class="qn">${esc(e.name)}${showDate?` <small style="font-size:12px;color:#64748b">${fmtDate(e.date)}</small>`:''}</div><div class="qd">${esc(what(e))}（+${fmtH(otHours(e))}h）${e.memo?`<i>${esc(e.memo)}</i>`:''}</div></div><div class="qb">${st}${btn}</div></div>`;
+}
+function otQuickHtml(box){
+  if(Q.kind==='ot'){
+    const hol=isOff(dayInfo(parse(Q.date)).type),n=Q.names;
+    box.className='kc-quick k-ot';
+    let h=otHead(hol?'factory':'fire',n.length===1?esc(n[0]):`${n.length}人まとめて`,`${fmtDate(Q.date)}　${hol?'休日出勤':'残業'}`);
+    if(n.length>1)h+=`<div class="qnames">${n.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`;
+    h+=`<div class="qrow"><input id="kqOtMemo" placeholder="工番・作業内容（任意）" value="${esc(Q.memo)}"></div>`;
+    if(!hol){
+      h+=`<div class="qtitle">何時まで？<small style="color:#64748b;margin-left:6px">定時 17:30</small></div><div class="qtimes big">${OT_END.map(t=>`<button type="button" data-otend="${t}">${t}<small>+${fmtH((toMin(t)-BASE_END)/60)}h</small></button>`).join('')}</div>
+        <div class="qrow"><label>その他</label><input type="time" id="kqOtEnd" step="300"><button type="button" class="qok" data-o="otend">登録</button></div>`;
+    }else{
+      h+=`<div class="qtitle">休日出勤　何時から何時まで？</div><div class="qtimes span">${HOT_SPANS.map(([s,f])=>`<button type="button" data-otspan="${s}-${f}">${s} 〜 ${f}<small style="display:inline;margin-left:8px;color:#64748b">${fmtH(otHours({type:'hot',time:s+'-'+f}))}h</small></button>`).join('')}</div>
+        <div class="qrow"><input type="time" id="kqHs" step="300" value="08:30"><label>〜</label><input type="time" id="kqHf" step="300"><button type="button" class="qok" data-o="otspan">登録</button></div>`;
+    }
+    return h;
+  }
+  if(Q.kind==='day'){
+    const evs=eventsOn(Q.date,'ot'),wait=evs.filter(e=>!e.status);
+    box.className='kc-quick k-ot wide';
+    let h=otHead('fire',`${fmtDate(Q.date)}の残業`,`${evs.filter(e=>e.status!=='ng').length}人${wait.length?`・承認待ち ${wait.length}`:''}`);
+    if(apvLive()&&wait.length)h+=`<div style="padding:8px 10px 0"><button type="button" class="qall" data-o="allday">${I('check')}この日を全部承認（${wait.length}件）</button></div>`;
+    h+=`<div class="ql">${evs.length?evs.map(e=>otItem(e)).join(''):'<div class="qempty">まだ登録がありません<br>名前をこの日へドラッグ</div>'}</div>`;
+    if(!apvLive()&&wait.length)h+=`<div style="padding:10px 10px 0"><button type="button" class="qok" data-o="gologin">${I('lock')}承認する（工場長・副工場長）</button></div>`;
+    return h;
+  }
+  if(Q.kind==='pend'){
+    const list=state.events.filter(e=>isOT(e)&&!e.status).sort((a,b)=>a.date.localeCompare(b.date)||a.name.localeCompare(b.name,'ja'));
+    box.className='kc-quick k-ot wide';
+    let h=otHead('check','承認待ち一覧',`${list.length}件　${APV?esc(APV.by)+' で承認中':''}`);
+    if(!list.length)return h+`<div class="qempty">${I('check')} 承認待ちはありません</div>`;
+    const by={};list.forEach(e=>(by[e.date]=by[e.date]||[]).push(e));
+    h+='<div class="ql">'+Object.keys(by).map(d=>`<h6>${fmtDate(d)}<span style="color:#c2410c">${by[d].length}件</span><button type="button" class="qall" data-oall="${d}">${I('check')}全部承認</button></h6>${by[d].map(e=>otItem(e)).join('')}`).join('')+'</div>';
+    return h;
+  }
+  if(Q.kind==='login'){
+    box.className='kc-quick k-apv';
+    let h=otHead('lock','残業の承認','名前を選んで PIN を入力');
+    h+=`<div class="qwho">${APPROVERS.map(([n,r])=>`<button type="button" data-who="${n}" class="${Q.by===n?'on':''}">${boardSvg(r)}${n}</button>`).join('')}</div>`;
+    h+=`<div class="qdots">${[0,1,2,3].map(i=>`<i class="${i<Q.pin.length?'f':''}"></i>`).join('')}</div>`;
+    h+=`<div class="qpad">${['1','2','3','4','5','6','7','8','9','bs','0','go'].map(k=>k==='bs'?`<button type="button" data-pin="bs">${I('left')}</button>`:k==='go'?`<button type="button" class="go" data-o="login">${Q.busy?'確認中…':'OK'}</button>`:`<button type="button" data-pin="${k}">${k}</button>`).join('')}</div>`;
+    if(Q.err)h+=`<div class="qerr">${esc(Q.err)}</div>`;
+    return h;
+  }
+  return '';
+}
+function saveOT(time){
+  const m=$('kqOtMemo');if(m)Q.memo=m.value.trim();
+  const hol=isOff(dayInfo(parse(Q.date)).type),add=[],del=[],skip=[];
+  for(const n of Q.names){
+    const ex=state.events.filter(x=>x.name===n&&x.date===Q.date&&isOT(x)&&x.status!=='ng');
+    if(ex.some(x=>x.status==='ok')){skip.push(n);continue;}
+    ex.forEach(x=>del.push(x.id));
+    add.push({id:newId(),date:Q.date,name:n,type:hol?'hot':'ot',time,memo:Q.memo,status:''});
+  }
+  if(del.length){state.events=state.events.filter(x=>!del.includes(x.id));state.deleted.push(...del);pushSheet({action:'delete',ids:del});}
+  if(add.length){state.events.push(...add);pushSheet({action:'add',events:add});}
+  save();sel.clear();
+  const k=Q.date;Q=null;$('kcQuick').hidden=true;render();flash(k);
+  if(skip.length)alert(`${skip.join('、')} はこの日すでに承認済みのため変更していません。\n変更は工場長・副工場長に依頼してください。`);
+}
+function delOT(id){
+  const e=state.events.find(x=>x.id===id);if(!e)return;
+  if(e.status==='ok'&&!apvLive())return;
+  state.events=state.events.filter(x=>x.id!==id);state.deleted.push(id);save();
+  pushSheet(Object.assign({action:'delete',ids:[id]},apvLive()?{by:APV.by,pin:APV.pin}:{}));
+  if(apvLive())touchApv();
+  render();renderQuick();
+}
+function approveIds(ids,status){
+  if(!ids.length)return;
+  if(!apvLive())return openLogin(()=>approveIds(ids,status));
+  touchApv();
+  const by=APV.by,pin=APV.pin;
+  state.events.forEach(e=>{if(ids.includes(e.id)){e.status=status;e.approver=status?by:'';}});save();
+  render();if(Q)renderQuick();
+  if(!KCAL_SHEETS_URL)return;
+  postJson({action:'approve',ids,status,by,pin}).then(r=>{
+    if(!r||!r.ok){if(r&&(r.error==='pin'||r.error==='locked'))APV=null;alert('承認できませんでした。もう一度 PIN を入力してください。');}
+    fetchShared();
+  }).catch(()=>{alert('Google Sheet に接続できませんでした。ネット接続を確認してください。');fetchShared();});
+}
+function pinKey(k){
+  if(!Q||Q.kind!=='login'||Q.busy)return;
+  if(k==='bs')Q.pin=Q.pin.slice(0,-1);else if(/^\d$/.test(k)&&Q.pin.length<4)Q.pin+=k;
+  Q.err='';renderQuick();
+  if(Q.pin.length===4&&Q.by)submitLogin();
+}
+function submitLogin(){
+  if(!Q||Q.kind!=='login'||Q.busy)return;
+  if(!Q.by){Q.err='名前（荻原・平澤）を選んでください';return renderQuick();}
+  if(Q.pin.length<4){Q.err='PIN は4桁です';return renderQuick();}
+  const by=Q.by,pin=Q.pin,then=Q.then;
+  const ok=()=>{APV={by,pin,until:Date.now()+APV_MS};Q=null;$('kcQuick').hidden=true;render();if(then)then();else openPend();};
+  const ng=msg=>{if(!Q||Q.kind!=='login')return;Q.busy=false;Q.pin='';Q.err=msg;renderQuick();};
+  if(!KCAL_SHEETS_URL)return pin===DEMO_PIN?ok():ng('PINが違います（デモは 0000）');
+  Q.busy=true;renderQuick();
+  postJson({action:'verify',by,pin}).then(r=>{
+    if(r&&r.ok&&r.v===2)return ok();
+    if(r&&r.ok)return ng('Google 側のスクリプトが古いです。更新（新バージョン）してください');
+    ng(r&&r.error==='locked'?'ミスが続いたためロック中です（10分後に再試行）':`PINが違います（残り${r&&r.left!=null?r.left:'-'}回）`);
+  }).catch(()=>ng('通信エラー：ネット接続を確認してください'));
+}
+setInterval(()=>{
+  if(!APV)return;
+  if(!apvLive()){APV=null;if(Q&&(Q.kind==='pend'||Q.kind==='day'))renderQuick();}
+  if($('kcal').classList.contains('on'))renderApv();
+},1000);
+
 /* ---- events ---- */
 function open(){syncToday();$('kcal').classList.add('on');$('kcal').setAttribute('aria-hidden','false');render();fetchShared();}
 function close(){Q=null;armed='';$('kcQuick').hidden=true;$('kcal').classList.remove('on');$('kcal').setAttribute('aria-hidden','true');}
@@ -5847,6 +6128,24 @@ document.addEventListener('click',ev=>{
   if(!t.closest('#kcal'))return;
   // クイック窓の中
   if(t.closest('#kcQuick')){
+    if(Q&&Q.kind){
+      const mm=$('kqOtMemo');if(mm)Q.memo=mm.value.trim();
+      let x;
+      if((x=t.closest('[data-otend]')))return saveOT(x.dataset.otend);
+      if((x=t.closest('[data-otspan]')))return saveOT(x.dataset.otspan);
+      if((x=t.closest('[data-who]'))){Q.by=x.dataset.who;Q.err='';renderQuick();if(Q.pin.length===4)submitLogin();return;}
+      if((x=t.closest('[data-pin]')))return pinKey(x.dataset.pin);
+      if((x=t.closest('[data-oapv]')))return approveIds([x.dataset.oapv],x.dataset.st);
+      if((x=t.closest('[data-odel]'))){const e=state.events.find(z=>z.id===x.dataset.odel);if(e&&confirm(`${e.name} ${fmtDate(e.date)} ${what(e)} を削除しますか？`))delOT(e.id);return;}
+      if((x=t.closest('[data-oall]')))return approveIds(state.events.filter(e=>isOT(e)&&!e.status&&e.date===x.dataset.oall).map(e=>e.id),'ok');
+      if((x=t.closest('[data-o]'))){const o=x.dataset.o;
+        if(o==='allday')return approveIds(eventsOn(Q.date,'ot').filter(e=>!e.status).map(e=>e.id),'ok');
+        if(o==='gologin')return openLogin(()=>openDay(Q&&Q.date||todayKey));
+        if(o==='login')return submitLogin();
+        if(o==='otend'){const v=$('kqOtEnd').value;if(!v||toMin(v)<=BASE_END){alert('17:30 より後の時刻を入れてください');return;}return saveOT(v);}
+        if(o==='otspan'){const s=$('kqHs').value,f=$('kqHf').value;if(!s||!f||toMin(f)<=toMin(s)){alert('開始と終了の時刻を正しく入れてください');return;}return saveOT(`${s}-${f}`);}
+      }
+    }
     const qt=t.closest('[data-qtype]');if(qt){Q.type=qt.dataset.qtype;Q.time='';Q.step=(Q.type==='late'||Q.type==='early')?2:3;return renderQuick();}
     const qm=t.closest('[data-qtime]');if(qm){Q.time=qm.dataset.qtime;Q.step=3;return renderQuick();}
     const qo=t.closest('[data-qmemo]');if(qo){const i=$('kqMemo');i.value=i.value===qo.dataset.qmemo?'':qo.dataset.qmemo;Q.memo=i.value;return renderQuick();}
@@ -5859,9 +6158,14 @@ document.addEventListener('click',ev=>{
     return;
   }
   if(t.closest('[data-kc-close]'))return close();
+  const mo=t.closest('#kcModeAbs,#kcModeOt');if(mo){const m=mo.id==='kcModeOt'?'ot':'abs';if(m!==mode){mode=m;Q=null;$('kcQuick').hidden=true;armed='';sel.clear();render();}return;}
+  if(t.closest('#kcApv')){if(t.closest('[data-apvend]')){APV=null;Q=null;$('kcQuick').hidden=true;return render();}return apvLive()?openPend():openLogin();}
+  if(t.closest('[data-clrsel]')){sel.clear();return renderMembers();}
   const chip=t.closest('.chip[data-ev]');if(chip)return openEdit(chip.dataset.ev);
-  const mb=t.closest('[data-member]');if(mb){armed=armed===mb.dataset.member?'':mb.dataset.member;return renderMembers();}
-  const day=t.closest('.kc-day[data-key]');if(day){if(armed)return openQuick(armed,day.dataset.key);if(Q)closeQuick();return;}
+  const mb=t.closest('[data-member]');if(mb){const n=mb.dataset.member;if(mode==='ot'){sel.has(n)?sel.delete(n):sel.add(n);}else armed=armed===n?'':n;return renderMembers();}
+  const day=t.closest('.kc-day[data-key]');if(day){const k=day.dataset.key;
+    if(mode==='ot'){if(sel.size)return openOT([...sel],k);return openDay(k);}
+    if(armed)return openQuick(armed,k);if(Q)closeQuick();return;}
   const mini=t.closest('.kc-mini');if(mini){cur=new Date(cur.getFullYear(),+mini.dataset.month,1);view='month';return render();}
   const nav=t.closest('[data-nav]');if(nav){Q=null;$('kcQuick').hidden=true;cur=new Date(cur.getFullYear(),cur.getMonth()+Number(nav.dataset.nav),1);return render();}
   if(t.closest('#kcViewYear')){Q=null;$('kcQuick').hidden=true;view='year';return render();}
@@ -5873,7 +6177,7 @@ let dragData=null;
 document.addEventListener('dragstart',ev=>{
   const mb=ev.target.closest&&ev.target.closest('#kcal [data-member]'),ch=ev.target.closest&&ev.target.closest('#kcal .chip[data-ev]');
   if(!mb&&!ch)return;
-  dragData=mb?{name:mb.dataset.member}:{id:ch.dataset.ev};
+  dragData=mb?{name:mb.dataset.member,names:mode==='ot'&&sel.has(mb.dataset.member)&&sel.size>1?[...sel]:[mb.dataset.member]}:{id:ch.dataset.ev};
   ev.dataTransfer.effectAllowed=mb?'copy':'move';ev.dataTransfer.setData('text/plain',mb?mb.dataset.member:'');
   document.getElementById('kcal').classList.add('dragging');
 });
@@ -5882,10 +6186,12 @@ document.addEventListener('dragover',ev=>{if(!dragData)return;const c=ev.target.
   document.querySelectorAll('#kcal .kc-day.drop').forEach(x=>x!==c&&x.classList.remove('drop'));c.classList.add('drop');});
 document.addEventListener('drop',ev=>{if(!dragData)return;const c=ev.target.closest&&ev.target.closest('#kcal .kc-day[data-key]');if(!c)return;ev.preventDefault();c.classList.remove('drop');
   const d=dragData;dragData=null;document.getElementById('kcal').classList.remove('dragging');
-  if(d.name)openQuick(d.name,c.dataset.key);else if(d.id)moveEvent(d.id,c.dataset.key);});
+  if(d.name){if(mode==='ot')openOT(d.names,c.dataset.key);else openQuick(d.name,c.dataset.key);}else if(d.id)moveEvent(d.id,c.dataset.key);});
 document.addEventListener('keydown',ev=>{
   if(!$('kcal').classList.contains('on'))return;
-  if(ev.key==='Escape'){if(Q)closeQuick();else if(armed){armed='';renderMembers();}else close();return;}
+  if(ev.key==='Escape'){if(Q)closeQuick();else if(armed||sel.size){armed='';sel.clear();renderMembers();}else close();return;}
+  if(Q&&Q.kind==='login'){if(/^\d$/.test(ev.key)){ev.preventDefault();return pinKey(ev.key);}if(ev.key==='Backspace'){ev.preventDefault();return pinKey('bs');}if(ev.key==='Enter'){ev.preventDefault();return submitLogin();}}
+  if(ev.key==='Enter'&&Q&&Q.kind==='ot'&&ev.target.id==='kqOtEnd'){ev.preventDefault();const v=ev.target.value;if(v&&toMin(v)>BASE_END)saveOT(v);return;}
   if(ev.key==='Enter'&&Q){if(ev.target.id==='kqMemo'){ev.preventDefault();saveQuick();}else if(ev.target.id==='kqTime'){ev.preventDefault();const v=ev.target.value;if(v){Q.time=v;Q.step=3;renderQuick();}}}
   if(ev.key==='Enter'&&ev.target.id==='kcName'){ev.preventDefault();const v=ev.target.value.trim();if(v){if(!freeNames.includes(v))freeNames.unshift(v);armed=v;ev.target.value='';renderMembers();}}
 });
@@ -5896,6 +6202,10 @@ if(KCAL_SHEETS_URL)setInterval(()=>{if(!document.hidden&&!Q&&!dragData)fetchShar
 })();
 </script>
 <!-- ===== 会社カレンダー (kcal) END ===== -->
+
+
+
+
 
 
 
