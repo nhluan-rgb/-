@@ -591,7 +591,7 @@ body.mfg-oku-day::after{content:"";position:fixed;inset:0;z-index:9990;pointer-e
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="csv-update-status" id="csvUpdateStatus" title="SCV.csv のGitHub最終更新時刻"><span class="csv-update-dot"></span><div class="csv-update-copy"><span class="csv-update-label">CSV 最終更新</span><b id="csvUpdated">--/-- --:--:--</b></div></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
+  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="csv-update-status" id="csvUpdateStatus" title="SCV.csv のGitHub最終更新時刻"><span class="csv-update-dot"></span><div class="csv-update-copy"><span class="csv-update-label">CSV 最終更新</span><b id="csvUpdated">--/-- --:--:--</b></div></div><div class="actions"><button class="btn kcal-open-btn" type="button" title="会社カレンダー">📅 会社カレンダー<span class="kcal-badge"></span></button><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a><button class="btn primary" id="refresh">更新</button></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
@@ -5242,7 +5242,472 @@ window.exportOvertimeJson=function(){collect();const data={version:4,periodRule:
 window.importOvertimeJson=function(ev){const f=ev.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{model=normalize(JSON.parse(reader.result));persist();renderAll();}catch(_){alert('JSON形式を確認してください。');}ev.target.value='';};reader.readAsText(f,'utf-8');};
 $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();renderChart();$('overtimeDayStatus').textContent='未保存';});loadDaily();loadGoogleSheet(false);
 })();
-</script><script src="date-overrides.js"></script></body>
+</script><script src="date-overrides.js"></script><!-- ===== 会社カレンダー (kcal) START ===== -->
+<style id="kcal-style">
+.kcal-open-btn{position:relative;white-space:nowrap;background:linear-gradient(135deg,#0b3b5c,#0e6e8f)!important;border-color:#3fe0ff!important;box-shadow:0 0 16px rgba(63,224,255,.35),inset 0 1px 0 rgba(255,255,255,.3)!important}
+.kcal-open-btn .kcal-badge{position:absolute;top:4px;right:6px;min-width:20px;height:20px;padding:0 5px;border-radius:3px;background:#dc2626;color:#fff;font-size:12px;font-weight:900;line-height:20px;text-align:center;text-shadow:none;display:none}
+.kcal-open-btn .kcal-badge.on{display:block}
+#kcal{position:fixed;inset:0;z-index:2000000;display:none;align-items:center;justify-content:center;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#0f172a;--ink:#0f172a;--line:#cbd5e1;--muted:#475569}
+#kcal.on{display:flex}
+#kcal *{box-sizing:border-box}
+#kcal svg.ki{width:1.15em;height:1.15em;flex:none;vertical-align:-.18em}
+#kcal .kc-backdrop{position:absolute;inset:0;background:rgba(2,6,23,.7)}
+#kcal .kc-win{position:relative;width:min(1480px,96vw);height:min(920px,94vh);display:grid;grid-template-rows:auto auto 1fr;background:#eef1f5;border:3px solid var(--ink);border-radius:6px;box-shadow:12px 12px 0 rgba(2,6,23,.55);overflow:hidden;animation:kcIn .25s ease-out}
+@keyframes kcIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes kcPulse{0%,100%{box-shadow:inset 0 0 0 3px #2563eb}50%{box-shadow:inset 0 0 0 5px #2563eb}}
+/* header band */
+#kcal .kc-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;background:var(--ink);color:#fff;border-bottom:4px solid #f59e0b}
+#kcal .kc-title{display:flex;align-items:center;gap:10px;font:900 34px/1 Bahnschrift,"Yu Gothic UI",sans-serif;letter-spacing:.02em;margin-right:8px}
+#kcal .kc-title .tic{display:grid;place-items:center;width:44px;height:44px;background:#f59e0b;color:var(--ink);border-radius:4px;font-size:24px}
+#kcal .kc-stats{display:flex;gap:8px;flex-wrap:wrap}
+#kcal .kc-stat{display:flex;align-items:center;gap:0;background:#1e293b;border:2px solid #334155;border-radius:4px;overflow:hidden}
+#kcal .kc-stat .ic{width:44px;align-self:stretch;display:grid;place-items:center;font-size:22px;color:#fff}
+#kcal .kc-stat>div:last-child{padding:5px 12px}
+#kcal .kc-stat b{display:block;font:900 26px/1 Bahnschrift,sans-serif;color:#fff}
+#kcal .kc-stat small{display:block;font-size:10px;font-weight:700;color:#94a3b8;letter-spacing:.06em;margin-top:2px}
+#kcal .kc-stat.work .ic{background:#16a34a}#kcal .kc-stat.off .ic{background:#dc2626}#kcal .kc-stat.sat .ic{background:#d97706}#kcal .kc-stat.next .ic{background:#2563eb}
+#kcal .kc-stat.next b{font-size:22px}
+#kcal .kc-tools{margin-left:auto;display:flex;gap:6px;align-items:center}
+#kcal button.kc-b,#kcal label.kc-b{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;min-width:40px;padding:0 12px;border:2px solid var(--ink);background:#fff;color:var(--ink);font:800 14px "Yu Gothic UI",sans-serif;border-radius:4px;cursor:pointer;transition:transform .08s,box-shadow .08s;text-shadow:none;box-shadow:3px 3px 0 var(--ink);clip-path:none;letter-spacing:0;width:auto;min-height:0}
+#kcal button.kc-b:hover,#kcal label.kc-b:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+#kcal button.kc-b:active,#kcal label.kc-b:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+#kcal .kc-head button.kc-b,#kcal .kc-head label.kc-b{background:#1e293b;color:#fff;border-color:#475569;box-shadow:none}
+#kcal .kc-head button.kc-b:hover,#kcal .kc-head label.kc-b:hover{background:#334155;transform:none}
+#kcal .kc-seg{display:flex;border:2px solid #475569;border-radius:4px;overflow:hidden}
+#kcal .kc-head .kc-seg button.kc-b{border:0;border-radius:0;height:52px;min-width:96px;padding:0 22px;font:900 22px "Yu Gothic UI",sans-serif;letter-spacing:.06em}
+#kcal .kc-seg{border-width:3px!important}
+#kcal .kc-head .kc-seg button.kc-b.on{background:#f59e0b;color:var(--ink)}
+#kcal .kc-head button.kc-x:hover{background:#dc2626;border-color:#dc2626}
+#kcal .kc-sync{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;padding:5px 10px;border-radius:3px;white-space:nowrap}
+#kcal .kc-sync.ok{color:#fff;background:#16a34a}
+#kcal .kc-sync.local{color:#fff;background:#475569}
+#kcal .kc-sync.err{color:#fff;background:#dc2626}
+/* legend */
+#kcal .kc-legend{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 18px 0}
+#kcal .kc-legend span{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 7px;border-radius:3px;font-size:12px;font-weight:800;background:var(--c);color:#fff}
+#kcal .kc-legend .sep{width:3px;height:22px;background:var(--ink);margin:0 6px;padding:0}
+/* day types: --c = solid band color, --tint = cell body */
+#kcal .t-work{--c:#0f172a;--tint:#fff}
+#kcal .t-weekend{--c:#64748b;--tint:#e2e8f0}
+#kcal .t-holiday{--c:#dc2626;--tint:#fee2e2}
+#kcal .t-company{--c:#7c3aed;--tint:#ede9fe}
+#kcal .t-worksat{--c:#d97706;--tint:#fef3c7}
+#kcal .t-inventory{--c:#0d9488;--tint:#ccfbf1}
+/* absence types */
+#kcal .k-off{--c:#dc2626}#kcal .k-am{--c:#ea580c}#kcal .k-pm{--c:#9a3412}#kcal .k-late{--c:#b45309}#kcal .k-early{--c:#7c3aed}#kcal .k-trip{--c:#0369a1}#kcal .k-other{--c:#334155}
+/* body */
+#kcal .kc-body{min-height:0;display:grid;grid-template-columns:1fr 340px;gap:16px;padding:10px 18px 18px}
+#kcal .kc-main{min-height:0;overflow:auto;padding:2px 6px 6px 2px}
+#kcal .kc-main::-webkit-scrollbar,#kcal .kc-side::-webkit-scrollbar,#kcal .kc-members::-webkit-scrollbar{width:10px}
+#kcal .kc-main::-webkit-scrollbar-thumb,#kcal .kc-side::-webkit-scrollbar-thumb,#kcal .kc-members::-webkit-scrollbar-thumb{background:#64748b;border-radius:2px}
+/* month */
+#kcal .kc-mhead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#kcal .kc-mhead h3{margin:0;font:900 34px/1 Bahnschrift,sans-serif;color:var(--ink);min-width:110px;text-align:center}
+#kcal .kc-mhead .sub{display:flex;gap:6px;margin-left:8px}
+#kcal .kc-mhead .sub span{display:inline-flex;align-items:center;gap:5px;font:900 15px Bahnschrift,"Yu Gothic UI",sans-serif;padding:5px 10px;border-radius:3px;color:#fff}
+#kcal .kc-month{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+#kcal .kc-month .dow{text-align:center;font-weight:900;font-size:13px;color:#fff;background:var(--ink);padding:5px 0;border-radius:3px}
+#kcal .kc-month .dow.sun{background:#dc2626}#kcal .kc-month .dow.sat{background:#1d4ed8}
+#kcal .kc-day{min-height:110px;background:var(--tint);border:2px solid #94a3b8;border-radius:4px;cursor:pointer;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .08s,box-shadow .08s}
+#kcal .kc-day:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);border-color:var(--ink)}
+#kcal .kc-day.e{background:none;border:0;cursor:default;box-shadow:none;transform:none}
+#kcal .kc-day.sel{border-color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+#kcal .kc-day.today{animation:kcPulse 1.6s infinite}
+#kcal .kc-day .n{display:flex;justify-content:space-between;align-items:center;padding:4px 7px;font:900 22px/1 Bahnschrift,sans-serif;color:var(--c)}
+#kcal .kc-day:not(.t-work):not(.t-weekend) .n{background:var(--c);color:#fff}
+#kcal .kc-day.t-weekend .n{color:#64748b}
+#kcal .kc-day .n .ico{font-size:18px;display:flex}
+#kcal .kc-day .bd{flex:1;display:flex;flex-direction:column;gap:3px;padding:4px 5px 5px;min-width:0;position:relative}
+#kcal .kc-day .lbl{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font:900 clamp(15px,1.55vw,28px)/1.1 "Yu Gothic UI","Meiryo",sans-serif;letter-spacing:.04em;color:var(--c);word-break:keep-all;overflow-wrap:anywhere;position:relative;z-index:1}
+#kcal .kc-day .wm{position:absolute;right:-6px;bottom:-10px;font-size:72px;color:var(--c);opacity:.12;pointer-events:none;display:flex}
+#kcal .kc-day{container-type:inline-size}
+#kcal .kc-day .lbl{font-size:min(calc(86cqw / var(--len,4)),var(--max,30px));letter-spacing:0}
+#kcal .kc-day .lbl.xl{letter-spacing:.1em}
+#kcal .kc-day.has-ev .lbl{flex:none;font-size:13px;justify-content:flex-start}
+#kcal .kc-day.has-ev .wm{opacity:.07}
+#kcal .kc-day .chip{position:relative;z-index:1}
+#kcal .chip{display:flex;align-items:flex-start;gap:4px;font-size:12px;font-weight:700;line-height:1.25;padding:2px 6px 2px 4px;border-radius:3px;background:var(--c);color:#fff;min-width:0}
+#kcal .chip svg.ki{margin-top:1px}
+#kcal .chip b{font-weight:900}
+#kcal .chip small{font-weight:900;opacity:.85}
+#kcal .chip.more{--c:#0f172a;justify-content:center}
+/* year */
+#kcal .kc-year{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+#kcal .kc-mini{background:#fff;border:2px solid var(--ink);border-radius:4px;cursor:pointer;transition:transform .08s,box-shadow .08s;overflow:hidden}
+#kcal .kc-mini:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+#kcal .kc-mini h4{margin:0;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;font:900 20px Bahnschrift,sans-serif;color:#fff;background:var(--ink)}
+#kcal .kc-mini h4 small{display:inline-flex;align-items:center;gap:4px;font:900 13px Bahnschrift,sans-serif;color:#fff;background:#16a34a;padding:2px 7px;border-radius:3px}
+#kcal .kc-mini .g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px}
+#kcal .kc-mini .g span{font:800 12px Bahnschrift,sans-serif;text-align:center;padding:4px 0;color:var(--ink);border-radius:2px;position:relative}
+#kcal .kc-mini .g span.t-weekend{background:#e2e8f0;color:#64748b}
+#kcal .kc-mini .g span.t-holiday,#kcal .kc-mini .g span.t-company,#kcal .kc-mini .g span.t-worksat,#kcal .kc-mini .g span.t-inventory{background:var(--c);color:#fff}
+#kcal .kc-mini .g span.dow{color:#64748b;font-size:10px;background:none}
+#kcal .kc-mini .g span.has:after{content:"";position:absolute;right:1px;top:1px;width:6px;height:6px;background:#dc2626;border:1px solid #fff}
+#kcal .kc-mini .g span.today{outline:3px solid #2563eb;outline-offset:-1px}
+/* side */
+#kcal .kc-side{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:2px 6px 6px 2px}
+#kcal .kc-card{background:#fff;border:2px solid var(--ink);border-radius:4px;padding:12px;box-shadow:4px 4px 0 rgba(15,23,42,.18)}
+#kcal .kc-card h5{margin:-12px -12px 10px;padding:7px 12px;font-size:14px;font-weight:900;color:#fff;background:var(--ink);display:flex;align-items:center;gap:6px}
+#kcal .kc-card h5 .cnt{margin-left:auto;font-size:12px;color:#fff;background:#dc2626;border-radius:3px;padding:1px 8px}
+#kcal .kc-dayhead{display:flex;align-items:center;gap:12px}
+#kcal .kc-dayhead .big{width:64px;height:64px;border-radius:4px;background:var(--c);display:flex;flex-direction:column;align-items:center;justify-content:center;font:900 30px/1 Bahnschrift,sans-serif;color:#fff}
+#kcal .kc-dayhead.t-work .big{background:var(--ink)}
+#kcal .kc-dayhead .big small{font-size:18px;margin-top:3px;display:flex}
+#kcal .kc-dayhead b{display:block;font-size:17px;font-weight:900}
+#kcal .kc-dayhead span{display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:12px;font-weight:900;padding:2px 9px;border-radius:3px;background:var(--c);color:#fff}
+#kcal .kc-dayhead.t-work span{background:#16a34a}
+#kcal .kc-list{display:flex;flex-direction:column;gap:5px;margin-top:12px}
+#kcal .kc-item{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:0 6px 0 0;border:2px solid var(--c);border-radius:4px;background:#fff;overflow:hidden}
+#kcal .kc-item .av{width:38px;align-self:stretch;min-height:38px;display:grid;place-items:center;font-size:20px;background:var(--c);color:#fff}
+#kcal .kc-item .who{font-weight:900;font-size:14px;padding-top:3px}
+#kcal .kc-item .who small{font-weight:900;color:var(--c);margin-left:5px;font-size:12px}
+#kcal .kc-item .meta{font-size:11px;font-weight:700;color:var(--muted);padding-bottom:3px}
+#kcal .kc-item button{appearance:none;display:grid;place-items:center;border:0;background:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:4px;border-radius:3px;min-height:0;box-shadow:none;text-shadow:none;width:auto;height:auto}
+#kcal .kc-item button:hover{color:#fff;background:#dc2626}
+#kcal .kc-empty{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:#16a34a;padding:8px 2px}
+#kcal .kc-empty svg{font-size:22px;background:#16a34a;color:#fff;border-radius:3px;padding:2px}
+#kcal form.kc-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#kcal form.kc-form .full{grid-column:1/-1}
+#kcal form.kc-form label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:900;color:var(--ink)}
+#kcal form.kc-form label .lb{display:flex;align-items:center;gap:4px}
+#kcal form.kc-form input{appearance:auto;width:100%;height:auto;padding:8px 10px;background:#fff;border:2px solid #94a3b8;border-radius:3px;color:var(--ink);font:700 14px "Yu Gothic UI",sans-serif;color-scheme:light}
+#kcal form.kc-form input:focus{outline:none;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+#kcal form.kc-form input:disabled{opacity:.35}
+#kcal .kc-types{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+#kcal .kc-types button{appearance:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 5px;border:2px solid var(--c);border-radius:3px;background:#fff;color:var(--c);font:900 11px "Yu Gothic UI",sans-serif;cursor:pointer;transition:transform .08s;min-height:0;box-shadow:none;text-shadow:none;width:auto;height:auto}
+#kcal .kc-types button svg{font-size:22px}
+#kcal .kc-types button:hover{transform:translateY(-1px)}
+#kcal .kc-types button.on{background:var(--c);color:#fff;box-shadow:3px 3px 0 var(--ink)}
+#kcal .kc-save{grid-column:1/-1;height:46px!important;font-size:16px!important;font-weight:900!important;background:#f59e0b!important;color:var(--ink)!important}
+/* members */
+#kcal .kc-pickhead{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:900;color:var(--ink)}
+#kcal .kc-pickhead b{font-size:12px;color:#fff;background:#2563eb;border-radius:3px;padding:0 8px}
+#kcal .kc-pickhead b:empty{display:none}
+#kcal .kc-pickhead button{appearance:none;margin-left:auto;display:inline-flex;align-items:center;gap:3px;border:0;background:none;color:#64748b;font:800 11px "Yu Gothic UI",sans-serif;cursor:pointer;min-height:0;box-shadow:none;text-shadow:none;width:auto;height:auto;padding:2px 4px}
+#kcal .kc-pickhead button:hover{color:#dc2626}
+#kcal .kc-members{max-height:250px;overflow:auto;display:flex;flex-direction:column;gap:6px;border:2px solid #94a3b8;border-radius:3px;padding:6px;background:#f1f5f9}
+#kcal .kc-members h6{margin:2px 0 0;display:flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.12em;color:#475569}
+#kcal .kc-members h6:after{content:"";flex:1;height:2px;background:#cbd5e1}
+#kcal .kc-members .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+#kcal .kc-members button{appearance:none;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;min-height:34px;padding:4px 6px;border:2px solid #cbd5e1;border-radius:3px;background:#fff;color:var(--ink);font:800 12px/1.15 "Yu Gothic UI",sans-serif;cursor:pointer;text-align:left;box-shadow:none;text-shadow:none;width:auto;height:auto;overflow:hidden}
+#kcal .kc-members button:hover{border-color:var(--ink)}
+#kcal .kc-members button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+#kcal .kc-members button.on:after{content:"";position:absolute;right:0;top:0;border-style:solid;border-width:0 14px 14px 0;border-color:transparent #f59e0b transparent transparent}
+#kcal .kc-role{font-style:normal;display:inline-block;font-size:9px;font-weight:900;padding:0 5px;border-radius:2px;color:#fff;white-space:nowrap;vertical-align:1px}
+#kcal .kc-role.r1{background:#dc2626}#kcal .kc-role.r2{background:#ea580c}#kcal .kc-role.r3{background:#7c3aed}#kcal .kc-role.r4{background:#1d4ed8}#kcal .kc-role.r5{background:#0d9488}
+#kcal .kc-members button.on .kc-role{outline:1px solid #fff}
+#kcal .kc-item .who .kc-role{margin-left:5px}
+@media (max-width:1100px){#kcal .kc-body{grid-template-columns:1fr}#kcal .kc-year{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:700px){#kcal .kc-year{grid-template-columns:repeat(2,1fr)}#kcal .kc-day{min-height:72px}#kcal .kc-tools{margin-left:0}}
+</style>
+<div id="kcal" aria-hidden="true">
+  <div class="kc-backdrop" data-kc-close></div>
+  <div class="kc-win" role="dialog" aria-label="会社カレンダー">
+    <div class="kc-head">
+      <div class="kc-title"><span class="tic" data-ic="cal"></span><span id="kcTitle">2027</span></div>
+      <div class="kc-stats" id="kcStats"></div>
+      <div class="kc-tools">
+        <div class="kc-seg"><button class="kc-b" id="kcViewMonth" type="button" title="月表示">月</button><button class="kc-b" id="kcViewYear" type="button" title="年間表示">年間</button></div>
+      </div>
+    </div>
+    <div class="kc-legend" id="kcLegend"></div>
+    <div class="kc-body">
+      <div class="kc-main" id="kcMain"></div>
+      <div class="kc-side">
+        <div class="kc-card" id="kcDayCard"></div>
+        <div class="kc-card">
+          <h5><span data-ic="plus"></span>登録</h5>
+          <form class="kc-form" id="kcForm" autocomplete="off">
+            <div class="full kc-pickhead"><span data-ic="user"></span><span>だれ？</span><b id="kcPickCount"></b><button type="button" id="kcPickClear" title="選択解除"><span data-ic="x"></span>リセット</button></div>
+            <div class="full kc-members" id="kcMembers"></div>
+            <label class="full"><span class="lb"><span data-ic="other"></span>自由入力</span><input id="kcName" list="kcNames" placeholder="名前を入力"></label>
+            <datalist id="kcNames"></datalist>
+            <div class="full kc-types" id="kcTypes"></div>
+            <label class="full"><span class="lb"><span data-ic="cal"></span>日付</span><input type="date" id="kcFrom" required><input type="hidden" id="kcTo"></label>
+            <label class="full" id="kcTimeWrap"><span class="lb"><span data-ic="late"></span><span id="kcTimeLbl">時刻</span></span><input type="time" id="kcTime" step="900"></label>
+            <label class="full"><span class="lb"><span data-ic="other"></span>メモ</span><input id="kcMemo" placeholder="通院"></label>
+            <button class="kc-b kc-save" type="submit"><span data-ic="plus"></span>登録</button>
+          </form>
+        </div>
+        <div class="kc-card"><h5><span data-ic="users"></span>今月 <span class="cnt" id="kcMonthCount"></span></h5><div class="kc-list" id="kcMonthList"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+/* ---- 2027年 休日カレンダー（PDFより） ---- */
+const KC_DATA={
+  2027:{
+    holiday:{'01-01':'元日','01-11':'成人の日','02-11':'建国記念の日','02-23':'天皇誕生日','03-21':'春分の日','03-22':'振替休日','04-29':'昭和の日','05-03':'憲法記念日','05-04':'みどりの日','05-05':'こどもの日','07-19':'海の日','08-11':'山の日','09-20':'敬老の日','09-23':'秋分の日','10-11':'スポーツの日','11-03':'文化の日','11-23':'勤労感謝の日'},
+    company:{'01-02':'年始休暇','01-03':'年始休暇','01-04':'年始休暇','08-12':'夏季休暇','08-13':'夏季休暇','08-14':'夏季休暇','08-15':'夏季休暇','08-16':'夏季休暇','12-29':'年末休暇','12-30':'年末休暇','12-31':'年末休暇'},
+    worksat:{'01-16':'出勤土曜','02-13':'出勤土曜','10-16':'出勤土曜','11-06':'出勤土曜','12-18':'出勤土曜'},
+    inventory:{'03-20':'決算棚卸（出勤）','09-25':'半期棚卸（出勤）'}
+  }
+};
+const YEARS=Object.keys(KC_DATA).map(Number).sort();
+/* ---- アイコン（SVG・太線） ---- */
+const ICONS={
+  home:'<path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/>',
+  am:'<path d="M12 3v3M4.6 7.6l2.1 2.1M19.4 7.6l-2.1 2.1M2 18h20M6 18a6 6 0 0 1 12 0"/><path d="M9 22h6"/>',
+  pm:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z" fill="currentColor"/>',
+  late:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M5 3 2 6M19 3l3 3"/>',
+  early:'<path d="M10 3H4v18h6"/><path d="M15 7l5 5-5 5M20 12H9"/>',
+  trip:'<path d="M2 16l20-9-4 13-5-5-3 4v-6z" fill="currentColor"/>',
+  other:'<path d="M4 20h4L20 8l-4-4L4 16z"/><path d="M14 6l4 4"/>',
+  flag:'<path d="M5 22V3"/><path d="M5 4h13l-3 4.5L18 13H5z" fill="currentColor"/>',
+  umbrella:'<path d="M2 12a10 10 0 0 1 20 0z" fill="currentColor"/><path d="M12 12v7a2 2 0 0 0 4 0"/>',
+  wrench:'<path d="M14.5 6.5a4.5 4.5 0 0 1 6-1.5l-3 3 .5 2.5 2.5.5 3-3a4.5 4.5 0 0 1-6 6L8 23.5 3.5 19 13 9.5a4.5 4.5 0 0 1 1.5-3z" transform="translate(-1.5 -1.5)"/>',
+  box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+  factory:'<path d="M2 21V10l6 4v-4l6 4V3h6v18z" fill="currentColor"/>',
+  off:'<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4M9 14l6 5M15 14l-6 5"/>',
+  next:'<path d="M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4"/>',
+  cal:'<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>',
+  user:'<circle cx="12" cy="8" r="4.5"/><path d="M3.5 22a8.5 8.5 0 0 1 17 0"/>',
+  check:'<path d="M4 12.5l5 5L20 6"/>',
+  cloud:'<path d="M7 19a5 5 0 1 1 .9-9.9A6.5 6.5 0 0 1 20 11a4 4 0 0 1-1 8z"/>',
+  disk:'<path d="M4 3h13l4 4v14H4z"/><path d="M8 3v6h8V3M8 21v-7h9v7"/>',
+  warn:'<path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.5"/>',
+  down:'<path d="M12 3v13M6 11l6 6 6-6M4 21h16"/>',
+  up:'<path d="M12 17V4M6 9l6-6 6 6M4 21h16"/>',
+  x:'<path d="M5 5l14 14M19 5 5 19"/>',
+  plus:'<path d="M12 4v16M4 12h16"/>',
+  star:'<path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8z" fill="currentColor"/>',
+  left:'<path d="M15 4l-8 8 8 8"/>',right:'<path d="M9 4l8 8-8 8"/>'
+};
+const I=k=>`<svg class="ki" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${ICONS[k]||''}</svg>`;
+const TYPES=[['off','休み','home'],['am','午前休','am'],['pm','午後休','pm'],['late','遅刻','late'],['early','早退','early'],['trip','出張','trip'],['other','その他','other']];
+const TYPE_LABEL=Object.fromEntries(TYPES.map(t=>[t[0],t[1]]));
+const TYPE_ICON=Object.fromEntries(TYPES.map(t=>[t[0],t[2]]));
+const TI=t=>I(TYPE_ICON[t]||'other');
+const jt=t=>{const [h,m]=String(t||'').split(':').map(Number);return isNaN(h)?'':`${h}時${m?m+'分':''}`;};
+/* 「早退 12時から」「遅刻 9時30分出社」のような表示 */
+const what=e=>{const t=jt(e.time),l=TYPE_LABEL[e.type]||'その他';return e.type==='early'&&t?`${l} ${t}から`:e.type==='late'&&t?`${l} ${t}出社`:l;};
+const TYPE_TEXT={work:'稼働日',weekend:'休日',holiday:'祝日',company:'会社休日',worksat:'出勤土曜',inventory:'棚卸'};
+const DAY_ICON={work:'',weekend:'',holiday:'flag',company:'umbrella',worksat:'wrench',inventory:'box'};
+const DI=t=>DAY_ICON[t]?I(DAY_ICON[t]):'';
+const DOW=['日','月','火','水','木','金','土'];
+/* ---- メンバー（表示名, フルネーム, 役職） 同姓は名前まで表示。ベトナム人は カタカナ＋名 ---- */
+const MEMBERS=[
+  ['荻原','荻原 弘義','工場長'],['平澤','平澤 克己','副工場長'],['林秀人','林 秀人','課長'],
+  ['林浩二','林 浩二','リーダー'],['道上','道上 学','リーダー'],['ハイ Hai','HO HUU HAI','リーダー'],['白濱','白濱 勲','リーダー'],['森田','森田 亮一','リーダー'],['石松','石松 拓也','リーダー代行'],
+  ['坂元博文','坂元 博文'],['山口','山口 和明'],['樋口','樋口 正男'],['三澄','三澄 昌弘'],['柴崎','柴崎 一輝'],['熊谷','熊谷 健一'],['井上理枝','井上 理枝'],['服部','服部 千香'],['恒川','恒川 竜'],['増井','増井 祐斗'],
+  ['樫原','樫原 秀太'],['奈木野','奈木野 裕次'],['古川','古川 剛史'],['田中','田中 海斗'],['岩本','岩本 昇'],['志田','志田 竜也'],['倉重','倉重 有道'],['坂元亮祐','坂元 亮祐'],['柳屋','柳屋 大貴'],['森山','森山 智貴'],['福島','福島 遼'],['横澤','横澤 洋直'],
+  ['大島','大島 悦子'],['林裕子','林 裕子'],['岡','岡 利恵'],['金光','金光 彰'],['井上隆二','井上 隆二'],['水口','水口 峰一'],['桑原','桑原 一機'],
+  ['バン Bang','NGUYEN BANG'],['ロン Long','HOANG DINH LONG'],['ラム Lam','HOANG TIEN LAM'],['カイ Khai','NGUYEN QUANG KHAI'],['ティン Tinh','HUYNH DO THANH TINH'],['バック Bac','DANG PHUONG BAC'],['フイ Huy','TRAN QUANG HUY'],['マイン Manh','TA DUC MANH'],['クイ Quy','NGUYEN VAN QUY'],['ゴック Ngoc','NGUYEN HONG NGOC'],['ナム Nam','NGUYEN HOAI NAM'],['ズオン Duong','NGUYEN MINH DUONG'],['ルアン Luan','NGUYEN HOANG LUAN']
+].map(([name,full,role])=>({name,full,role:role||'',vn:/^[A-Z ]+$/.test(full)}));
+const ROLE_OF=Object.fromEntries(MEMBERS.filter(m=>m.role).map(m=>[m.name,m.role]));
+const ROLE_CLS={'工場長':'r1','副工場長':'r2','課長':'r3','リーダー':'r4','リーダー代行':'r5'};
+const roleHtml=n=>ROLE_OF[n]?`<i class="kc-role ${ROLE_CLS[ROLE_OF[n]]}">${ROLE_OF[n]}</i>`:'';
+let picked=new Set();
+const STORE='companyCalendarEvents:v1';
+/* ▼ Google Apps Script（calendar-sheets-script.gs）を「ウェブアプリ」としてデプロイしたURLをここに貼る。空ならこのPCだけに保存。 */
+const KCAL_SHEETS_URL='https://script.google.com/macros/s/AKfycbx6SVvArbbE0x2xn2WSG_X8aOfS1Y-3GVGezc245YH6skfOe4ZrUJqkrzF_OApe-1Y/exec';
+const SYNC_MS=30000;
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function dayInfo(d){
+  const y=d.getFullYear(),md=`${pad(d.getMonth()+1)}-${pad(d.getDate())}`,dow=d.getDay(),D=KC_DATA[y];
+  if(D){
+    if(D.holiday[md])return{type:'holiday',label:D.holiday[md]};
+    if(D.inventory[md])return{type:'inventory',label:D.inventory[md]};
+    if(D.company[md])return{type:'company',label:D.company[md]};
+    if(D.worksat[md])return{type:'worksat',label:D.worksat[md]};
+  }
+  if(dow===0||dow===6)return{type:'weekend',label:dow===0?'日曜':'土曜'};
+  return{type:'work',label:''};
+}
+const isOff=t=>t==='weekend'||t==='holiday'||t==='company';
+
+/* ---- 不在データ ---- */
+let state={events:[],deleted:[]};
+function loadLocal(){try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(s&&Array.isArray(s.events))state={events:s.events,deleted:s.deleted||[]};}catch(_){}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}updateBadge();}
+function mergeShared(list){
+  if(!Array.isArray(list))return 0;let n=0;const ids=new Set(state.events.map(e=>e.id)),del=new Set(state.deleted);
+  list.forEach(e=>{if(e&&e.id&&e.date&&!ids.has(e.id)&&!del.has(e.id)){state.events.push(e);ids.add(e.id);n++;}});
+  if(n)save();return n;
+}
+/* ---- Google Sheets 同期 ---- */
+const pending={add:new Map(),del:new Map()};// id -> 送信時刻（反映待ちの間、画面から消えないように保持）
+let syncState={ok:null,at:null,busy:false};
+function jsonp(url){return new Promise((resolve,reject)=>{const cb='__kcalCb'+Date.now()+Math.floor(Math.random()*1e4),s=document.createElement('script');const done=()=>{delete window[cb];s.remove();clearTimeout(tm);};const tm=setTimeout(()=>{done();reject(new Error('timeout'));},15000);window[cb]=d=>{done();resolve(d);};s.onerror=()=>{done();reject(new Error('load'));};s.src=url+(url.includes('?')?'&':'?')+'callback='+cb+'&ts='+Date.now();document.head.appendChild(s);});}
+async function fetchShared(){
+  if(!KCAL_SHEETS_URL){
+    try{const r=await fetch('calendar-events.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)return;const j=await r.json();if(mergeShared(Array.isArray(j)?j:j.events))render();}catch(_){}
+    return;
+  }
+  if(syncState.busy)return;syncState.busy=true;
+  try{
+    const d=await jsonp(KCAL_SHEETS_URL);const list=Array.isArray(d)?d:(d&&d.events)||[];
+    const now=Date.now(),ids=new Set(list.map(e=>e.id));
+    for(const [id,t] of pending.add)if(ids.has(id)||now-t>60000)pending.add.delete(id);
+    for(const [id,t] of pending.del)if(!ids.has(id)||now-t>60000)pending.del.delete(id);
+    const keep=state.events.filter(e=>pending.add.has(e.id)&&!ids.has(e.id));
+    state.events=list.filter(e=>e&&e.id&&e.date&&!pending.del.has(e.id)).concat(keep);
+    try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}
+    syncState.ok=true;syncState.at=new Date();
+  }catch(_){syncState.ok=false;}
+  finally{syncState.busy=false;}
+  render();
+}
+function pushSheet(payload){
+  if(!KCAL_SHEETS_URL)return;
+  const now=Date.now();
+  (payload.events||[]).forEach(e=>pending.add.set(e.id,now));(payload.ids||[]).forEach(id=>pending.del.set(id,now));
+  fetch(KCAL_SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify(payload)})})
+    .then(()=>setTimeout(fetchShared,1500)).catch(()=>{syncState.ok=false;renderSync();alert('Google Sheetへ保存できませんでした。ネット接続を確認してください。');});
+}
+function renderSync(){
+  const el=$('kcSync');if(!el)return;
+  if(!KCAL_SHEETS_URL){el.className='kc-sync local';el.innerHTML=I('disk')+'このPC';el.title='このPCのブラウザだけに保存';return;}
+  const t=syncState.at?`${pad(syncState.at.getHours())}:${pad(syncState.at.getMinutes())}`:'--:--';
+  el.className='kc-sync '+(syncState.ok===false?'err':'ok');
+  el.innerHTML=syncState.ok===false?I('warn')+'同期エラー':I('cloud')+t;
+  el.title='Google Sheetで全員と共有・30秒ごとに自動更新';
+}
+const eventsOn=k=>state.events.filter(e=>e.date===k).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ja'));
+
+/* ---- UI state ---- */
+const today=new Date();today.setHours(0,0,0,0);
+const todayKey=keyOf(today);
+let view='month';
+let cur=KC_DATA[today.getFullYear()]?new Date(today.getFullYear(),today.getMonth(),1):new Date(YEARS[0],0,1);
+let selKey=KC_DATA[today.getFullYear()]?todayKey:keyOf(cur);
+let selType='off';
+
+function stats(year){
+  let work=0,off=0,sat=0;
+  for(let d=new Date(year,0,1);d.getFullYear()===year;d.setDate(d.getDate()+1)){const t=dayInfo(d).type;if(isOff(t))off++;else work++;if(t==='worksat')sat++;}
+  // 次の祝日・会社休日
+  let next=null;
+  for(const y of YEARS){const D=KC_DATA[y];const ks=[...Object.keys(D.holiday),...Object.keys(D.company)].map(md=>`${y}-${md}`).sort();
+    for(const k of ks){if(k>=todayKey){next=k;break;}}if(next)break;}
+  return{work,off,sat,next};
+}
+function renderStats(){
+  const y=cur.getFullYear(),s=stats(y);let next='';
+  if(s.next){const days=Math.round((parse(s.next)-today)/864e5);const inf=dayInfo(parse(s.next));next=`<div class="kc-stat next" title="次の休み"><div class="ic">${I('next')}</div><div><b>${days===0?'今日':days+'日'}</b><small>${esc(inf.label)} ${s.next.slice(5).replace('-','/')}</small></div></div>`;}
+  $('kcStats').innerHTML=`<div class="kc-stat work" title="稼働日"><div class="ic">${I('factory')}</div><div><b>${s.work}</b><small>稼働日</small></div></div><div class="kc-stat off" title="休日"><div class="ic">${I('off')}</div><div><b>${s.off}</b><small>休日</small></div></div><div class="kc-stat sat" title="出勤土曜"><div class="ic">${I('wrench')}</div><div><b>${s.sat}</b><small>出勤土曜</small></div></div>${next}`;
+  $('kcTitle').textContent=y;
+}
+function renderYear(){
+  const y=cur.getFullYear();let h='<div class="kc-year">';
+  for(let m=0;m<12;m++){
+    const first=new Date(y,m,1),days=new Date(y,m+1,0).getDate();let w=0,cnt=0;
+    let g=DOW.map(x=>`<span class="dow">${x}</span>`).join('')+'<span class="e"></span>'.repeat(first.getDay());
+    for(let d=1;d<=days;d++){const dt=new Date(y,m,d),k=keyOf(dt),inf=dayInfo(dt),ev=eventsOn(k).length;if(!isOff(inf.type))w++;cnt+=ev;
+      g+=`<span class="t-${inf.type}${ev?' has':''}${k===todayKey?' today':''}" title="${esc(inf.label||TYPE_TEXT[inf.type])}${ev?' / 不在'+ev+'件':''}">${d}</span>`;}
+    h+=`<div class="kc-mini" data-month="${m}"><h4>${m+1}月<small title="稼働日">${I('factory')}${w}</small></h4><div class="g">${g}</div></div>`;
+  }
+  $('kcMain').innerHTML=h+'</div>';
+}
+function renderMonth(){
+  const y=cur.getFullYear(),m=cur.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate();
+  let w=0;for(let d=1;d<=days;d++)if(!isOff(dayInfo(new Date(y,m,d)).type))w++;
+  const pc=state.events.filter(e=>e.date.startsWith(`${y}-${pad(m+1)}-`)).length;
+  let h=`<div class="kc-mhead"><button class="kc-b" data-nav="-1" type="button" title="前月">${I('left')}</button><h3>${m+1}月</h3><button class="kc-b" data-nav="1" type="button" title="次月">${I('right')}</button><div class="sub"><span style="background:#16a34a" title="稼働日">${I('factory')}${w}</span><span style="background:#dc2626" title="休日">${I('off')}${days-w}</span>${pc?`<span style="background:#1d4ed8" title="不在・遅刻">${I('users')}${pc}</span>`:''}</div></div><div class="kc-month">`;
+  h+=DOW.map((x,i)=>`<div class="dow${i===0?' sun':i===6?' sat':''}">${x}</div>`).join('');
+  h+='<div class="kc-day e"></div>'.repeat(first.getDay());
+  for(let d=1;d<=days;d++){
+    const dt=new Date(y,m,d),k=keyOf(dt),inf=dayInfo(dt),evs=eventsOn(k);
+    let chips=evs.slice(0,3).map(e=>`<span class="chip k-${e.type}" title="${esc(TYPE_LABEL[e.type]||'')}${e.memo?' / '+esc(e.memo):''}">${TI(e.type)}<span><b>${esc(e.name)}</b> ${esc(what(e))}</span></span>`).join('');
+    if(evs.length>3)chips+=`<span class="chip more">+${evs.length-3}</span>`;
+    const lt=inf.type==='worksat'?'出勤':inf.type==='inventory'?'棚卸':(inf.type!=='weekend'?inf.label:'');
+    const lbl=lt?`<div class="lbl${lt.length<=2?' xl':''}" style="--len:${lt.length<=2?2.6:lt.length};--max:${lt.length<=2?46:32}px">${esc(lt)}</div>`:'';
+    h+=`<div class="kc-day t-${inf.type}${evs.length?' has-ev':''}${k===selKey?' sel':''}${k===todayKey?' today':''}" data-key="${k}" title="${esc(inf.label||TYPE_TEXT[inf.type])}"><div class="n">${d}<span class="ico">${DI(inf.type)}</span></div><div class="bd">${DAY_ICON[inf.type]?`<span class="wm">${DI(inf.type)}</span>`:''}${lbl}${chips}</div></div>`;
+  }
+  $('kcMain').innerHTML=h+'</div>';
+}
+function renderDay(){
+  const dt=parse(selKey),inf=dayInfo(dt),evs=eventsOn(selKey);
+  const tl=inf.type==='work'?'稼働日':inf.type==='weekend'?'休日':esc(inf.label||TYPE_TEXT[inf.type]);
+  let h=`<div class="kc-dayhead t-${inf.type}"><div class="big">${dt.getDate()}${DAY_ICON[inf.type]?`<small>${DI(inf.type)}</small>`:''}</div><div><b>${dt.getMonth()+1}月${dt.getDate()}日（${DOW[dt.getDay()]}）</b><span>${tl}</span></div></div>`;
+  h+='<div class="kc-list">'+(evs.length?evs.map(e=>itemHtml(e)).join(''):`<div class="kc-empty">${I('check')}全員出勤</div>`)+'</div>';
+  $('kcDayCard').innerHTML=h;
+}
+function itemHtml(e,showDate){
+  const meta=[showDate?esc(e.date.slice(5).replace('-','/')):'',esc(e.memo||'')].filter(Boolean).join(' ・ ');
+  return `<div class="kc-item k-${e.type}"><div class="av" title="${esc(TYPE_LABEL[e.type]||'その他')}">${TI(e.type)}</div><div><div class="who">${esc(e.name)}${roleHtml(e.name)}<small>${esc(what(e))}</small></div>${meta?`<div class="meta">${meta}</div>`:''}</div><button type="button" data-del="${esc(e.id)}" title="削除">${I('x')}</button></div>`;
+}
+function renderMonthList(){
+  const p=`${cur.getFullYear()}-${pad(cur.getMonth()+1)}-`,evs=state.events.filter(e=>e.date.startsWith(p)).sort((a,b)=>a.date.localeCompare(b.date)||(a.name||'').localeCompare(b.name||'','ja'));
+  $('kcMonthCount').textContent=evs.length||'';$('kcMonthCount').style.display=evs.length?'':'none';
+  $('kcMonthList').innerHTML=evs.length?evs.map(e=>itemHtml(e,true)).join(''):`<div class="kc-empty">${I('check')}登録なし</div>`;
+}
+function renderTypes(){$('kcTypes').innerHTML=TYPES.map(([k,l,i])=>`<button type="button" class="k-${k}${k===selType?' on':''}" data-type="${k}">${I(i)}${l}</button>`).join('');
+  const tm=selType==='late'||selType==='early';$('kcTime').disabled=!tm;$('kcTimeWrap').style.display=tm?'':'none';
+  $('kcTimeLbl').textContent=selType==='early'?'何時から早退？':'何時に出社？';}
+function renderLegend(){const el=$('kcLegend');if(el.childElementCount)return;
+  el.innerHTML=[['holiday','祝日'],['company','会社休日'],['worksat','出勤土曜'],['inventory','棚卸']].map(([t,l])=>`<span class="t-${t}">${DI(t)}${l}</span>`).join('')+'<span class="sep"></span>'+TYPES.map(([k,l,i])=>`<span class="k-${k}">${I(i)}${l}</span>`).join('');}
+function renderMembers(){
+  const btn=m=>`<button type="button" data-member="${esc(m.name)}" class="${picked.has(m.name)?'on':''}" title="${esc(m.full)}">${esc(m.name.split(' ')[0])}${m.vn?`<small style="font-size:10px;opacity:.75">${esc(m.name.split(' ')[1]||'')}</small>`:''}${m.role?roleHtml(m.name):''}</button>`;
+  const g=(t,list)=>`<h6>${t}</h6><div class="grid">${list.map(btn).join('')}</div>`;
+  $('kcMembers').innerHTML=g(I('star')+'役職',MEMBERS.filter(m=>m.role))+g('JAPAN',MEMBERS.filter(m=>!m.role&&!m.vn))+g('VIETNAM',MEMBERS.filter(m=>!m.role&&m.vn));
+  $('kcPickCount').textContent=picked.size||'';
+}
+function renderNames(){const known=new Set(MEMBERS.map(m=>m.name));const names=[...new Set(state.events.map(e=>e.name).filter(n=>n&&!known.has(n)))].sort((a,b)=>a.localeCompare(b,'ja'));$('kcNames').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');}
+function render(){
+  if(!$('kcal').classList.contains('on'))return updateBadge();
+  renderLegend();renderStats();view==='year'?renderYear():renderMonth();renderDay();renderMonthList();renderNames();renderSync();
+  $('kcViewYear').classList.toggle('on',view==='year');$('kcViewMonth').classList.toggle('on',view==='month');
+}
+function updateBadge(){const b=document.querySelector('.kcal-open-btn .kcal-badge');if(!b)return;const n=eventsOn(todayKey).length;b.textContent=n;b.classList.toggle('on',n>0);b.title=`今日の不在 ${n}件`;}
+function select(k){selKey=k;$('kcFrom').value=k;if(!$('kcTo').value||$('kcTo').value<k)$('kcTo').value=k;render();}
+
+/* ---- events ---- */
+function open(){$('kcal').classList.add('on');$('kcal').setAttribute('aria-hidden','false');if(!$('kcFrom').value){$('kcFrom').value=selKey;$('kcTo').value=selKey;}renderTypes();renderMembers();render();fetchShared();}
+function close(){$('kcal').classList.remove('on');$('kcal').setAttribute('aria-hidden','true');}
+document.addEventListener('click',ev=>{
+  const t=ev.target;
+  if(t.closest('.kcal-open-btn')){ev.preventDefault();open();return;}
+  if(!t.closest('#kcal'))return;
+  if(t.closest('[data-kc-close]'))return close();
+  const mini=t.closest('.kc-mini');if(mini){cur=new Date(cur.getFullYear(),+mini.dataset.month,1);view='month';const k=keyOf(cur);selKey=k;$('kcFrom').value=k;$('kcTo').value=k;return render();}
+  const nav=t.closest('[data-nav]');if(nav){cur=new Date(cur.getFullYear(),cur.getMonth()+Number(nav.dataset.nav),1);return render();}
+  const day=t.closest('.kc-day[data-key]');if(day)return select(day.dataset.key);
+  const ty=t.closest('[data-type]');if(ty){selType=ty.dataset.type;return renderTypes();}
+  const mb=t.closest('[data-member]');if(mb){const n=mb.dataset.member;picked.has(n)?picked.delete(n):picked.add(n);return renderMembers();}
+  if(t.closest('#kcPickClear')){picked.clear();return renderMembers();}
+  const del=t.closest('[data-del]');if(del){const id=del.dataset.del,e=state.events.find(x=>x.id===id);if(e&&confirm(`${e.date} ${e.name}（${TYPE_LABEL[e.type]||''}）を削除しますか？`)){state.events=state.events.filter(x=>x.id!==id);state.deleted.push(id);save();render();pushSheet({action:'delete',ids:[id]});}return;}
+  if(t.closest('#kcViewYear')){view='year';return render();}
+  if(t.closest('#kcViewMonth')){view='month';return render();}
+  if(t.closest('#kcExport')){const blob=new Blob([JSON.stringify({updated:new Date().toISOString(),events:state.events},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='calendar-events.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('kcal').classList.contains('on'))close();});
+$('kcImport')&&$('kcImport').addEventListener('change',ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);const before=new Set(state.events.map(e=>e.id));const n=mergeShared(Array.isArray(j)?j:j.events);const added=state.events.filter(e=>!before.has(e.id));if(added.length)pushSheet({action:'add',events:added});alert(`${n}件 読み込みました。`);render();}catch(_){alert('JSON形式を確認してください。');}ev.target.value='';};r.readAsText(f,'utf-8');});
+$('kcForm').addEventListener('submit',ev=>{
+  ev.preventDefault();
+  const extra=$('kcName').value.trim(),names=[...picked,...(extra?[extra]:[])],from=$('kcFrom').value,to=from;
+  if(!names.length){alert('👤 名前を選んでください');return;}if(!from)return;
+  if(to<from){alert('終了日は開始日以降にしてください。');return;}
+  const time=$('kcTime').disabled?'':$('kcTime').value,memo=$('kcMemo').value.trim();
+  let n=0;const single=from===to,added=[];
+  for(let d=parse(from);keyOf(d)<=to;d.setDate(d.getDate()+1)){
+    const k=keyOf(d);if(!single&&isOff(dayInfo(d).type))continue;
+    for(const name of names){
+      const e={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),date:k,name,type:selType,time,memo};
+      state.events.push(e);added.push(e);n++;
+    }
+    if(n>2000)break;
+  }
+  save();pushSheet({action:'add',events:added});$('kcMemo').value='';$('kcTime').value='';$('kcName').value='';picked.clear();renderMembers();
+  const d0=parse(from);cur=new Date(d0.getFullYear(),d0.getMonth(),1);selKey=from;view='month';render();
+});
+document.querySelectorAll('#kcal [data-ic]').forEach(el=>{el.insertAdjacentHTML('afterbegin',I(el.dataset.ic));});
+loadLocal();updateBadge();fetchShared().then(updateBadge);
+if(KCAL_SHEETS_URL)setInterval(()=>{if(!document.hidden)fetchShared();},SYNC_MS);
+})();
+</script>
+<!-- ===== 会社カレンダー (kcal) END ===== -->
+
+</body>
 </html>
 
 
