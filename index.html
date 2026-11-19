@@ -5421,6 +5421,24 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
 #kcal .kc-members button.mrow.g5{--rc:#0f766e;border-left-color:#0d9488}
 #kcal .kc-members button.mrow.on{background:#f59e0b;border-color:var(--ink);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
 #kcal .kc-members button.mrow.on .nm small{color:var(--ink)}
+#kcal .kc-members button.mrow .rk{display:inline-flex;align-items:center;gap:2px;font:900 14px/1 "Yu Gothic UI","Meiryo",sans-serif;letter-spacing:.06em;color:#fff;padding:7px 10px 7px 16px;border-radius:0;clip-path:polygon(10px 0,100% 0,100% 100%,10px 100%,0 50%);background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 70%,#fff) 0%,var(--rc) 45%,color-mix(in srgb,var(--rc) 65%,#000) 100%);text-shadow:0 1px 0 rgba(0,0,0,.45);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),inset 0 2px 0 rgba(255,255,255,.35)}
+#kcal .kc-members button.mrow .rk svg.ki{color:#fde047;width:.95em;height:.95em;vertical-align:0;filter:drop-shadow(0 1px 0 rgba(0,0,0,.5))}
+#kcal .kc-members button.mrow.g1 .rk,#kcal .kc-members button.mrow.g2 .rk{font-size:15px;padding:8px 11px 8px 17px;box-shadow:inset 0 0 0 2px #fbbf24,inset 0 -4px 0 rgba(0,0,0,.25)}
+#kcal .kc-members button.mrow.g1 .rk{--rc:#b91c1c}
+#kcal .kc-members button.mrow.g2 .rk{--rc:#c2410c}
+#kcal .kc-members button.mrow{grid-template-columns:56px minmax(0,1fr) auto}
+#kcal .kc-members button.mrow.g5 .rk{font-size:12px;letter-spacing:0;padding:7px 8px 7px 14px}
+#kcal .kc-members button.mrow:hover .rk{filter:brightness(1.12)}
+/* v4: 工程ラベル・大きい名前 */
+#kcal .kc-members button.mrow{grid-template-columns:60px minmax(0,1fr);min-height:48px;font-size:23px;letter-spacing:.06em}
+#kcal .kc-members button.mrow.g1,#kcal .kc-members button.mrow.g2{font-size:24px}
+#kcal .kc-members button.mrow .ep{width:60px;height:28px}
+#kcal .kc-members button.mrow.pr{border-left-width:2px}
+#kcal .kc-members button.mrow .pt{display:grid;place-items:center;width:60px;height:32px;background:var(--pc);color:#fff;font:900 15px/1 "Yu Gothic UI","Meiryo",sans-serif;letter-spacing:.04em;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,0 100%);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),inset 0 2px 0 rgba(255,255,255,.25);text-shadow:0 1px 0 rgba(0,0,0,.35)}
+#kcal .kc-members button.mrow .pt svg.ki{font-size:18px}
+#kcal .kc-members h6.ph{margin-top:6px;padding:4px 8px;background:var(--pc);color:#fff;font-size:13px;letter-spacing:.2em;border-radius:2px}
+#kcal .kc-members h6.ph:after{display:none}
+#kcal .kc-members h6.ph b{margin-left:auto;font:900 12px Bahnschrift,sans-serif;letter-spacing:0;background:rgba(0,0,0,.25);padding:1px 7px;border-radius:2px}
 #kcal .kc-members h6 svg.flag{height:13px;display:inline-block}
 #kcal .kc-members button.mrow .ep.flag{filter:drop-shadow(1px 1px 0 rgba(0,0,0,.18))}
 #kcal .kc-hint{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:900;color:#475569;padding:6px 8px;border:2px dashed #94a3b8;border-radius:3px;justify-content:center}
@@ -5564,11 +5582,11 @@ const MEMBERS=[
   ['坂元博文','坂元 博文'],['山口','山口 和明'],['樋口','樋口 正男'],['三澄','三澄 昌弘'],['柴崎','柴崎 一輝'],['熊谷','熊谷 健一'],['井上理枝','井上 理枝'],['服部','服部 千香'],['恒川','恒川 竜'],['増井','増井 祐斗'],
   ['樫原','樫原 秀太'],['奈木野','奈木野 裕次'],['古川','古川 剛史'],['田中','田中 海斗'],['岩本','岩本 昇'],['志田','志田 竜也'],['倉重','倉重 有道'],['坂元亮祐','坂元 亮祐'],['柳屋','柳屋 大貴'],['森山','森山 智貴'],['福島','福島 遼'],['横澤','横澤 洋直'],
   ['大島','大島 悦子'],['林裕子','林 裕子'],['岡','岡 利恵'],['金光','金光 彰'],['井上隆二','井上 隆二'],['水口','水口 峰一'],['桑原','桑原 一機'],
-  ['バン Bang','NGUYEN BANG'],['ロン Long','HOANG DINH LONG'],['ラム Lam','HOANG TIEN LAM'],['カイ Khai','NGUYEN QUANG KHAI'],['ティン Tinh','HUYNH DO THANH TINH'],['バック Bac','DANG PHUONG BAC'],['フイ Huy','TRAN QUANG HUY'],['マイン Manh','TA DUC MANH'],['クイ Quy','NGUYEN VAN QUY'],['ゴック Ngoc','NGUYEN HONG NGOC'],['ナム Nam','NGUYEN HOAI NAM'],['ズオン Duong','NGUYEN MINH DUONG'],['ルアン Luan','NGUYEN HOANG LUAN']
+  ['バン Bang','NGUYEN BANG'],['ロン Long','HOANG DINH LONG'],['ラム Lam','HOANG TIEN LAM'],['カイ Khai','NGUYEN QUANG KHAI'],['ティン Tinh','HUYNH DO THANH TINH'],['バック Bac','DANG PHUONG BAC'],['フイ Huy','TRAN QUANG HUY'],['マイン Manh','TA DUC MANH'],['クイ Quy','NGUYEN VAN QUY'],['ナム Nam','NGUYEN HOAI NAM'],['ズオン Duong','NGUYEN MINH DUONG'],['ルアン Luan','NGUYEN HOANG LUAN']
 ].map(([name,full,role])=>({name,full,role:role||'',vn:/^[A-Z ]+$/.test(full)}));
 const ROLE_OF=Object.fromEntries(MEMBERS.filter(m=>m.role).map(m=>[m.name,m.role]));
 const ROLE_CLS={'工場長':'r1','副工場長':'r2','課長':'r3','リーダー':'r4','リーダー代行':'r5'};
-const roleHtml=n=>ROLE_OF[n]?`<i class="kc-role ${ROLE_CLS[ROLE_OF[n]]}">${ROLE_OF[n]}</i>`:'';
+const roleHtml=()=>'';/* 役職ラベルは表示しない（肩章のみ） */
 let picked=new Set();
 const STORE='companyCalendarEvents:v1';
 /* ▼ Google Apps Script（calendar-sheets-script.gs）を「ウェブアプリ」としてデプロイしたURLをここに貼る。空ならこのPCだけに保存。 */
@@ -5713,13 +5731,27 @@ function boardSvg(role,nat){
   for(let i=0;i<r.star;i++){const cx=6,cy=r.star===2?(i?18:8):13;s+=`<path transform="translate(${cx-4.5} ${cy-4.5}) scale(.375)" d="M12 1l3.2 7 7.6.8-5.7 5.1 1.6 7.5L12 17.6 5.3 21.4l1.6-7.5L1.2 8.8 8.8 8z" fill="#fbbf24"/>`;}
   return s+'</svg>';
 }
+/* 工程（担当） */
+const PROC_ORDER=['業務','設計','切断','曲げ','溶接','仕上げ','塗装','組立','その他'];
+const PROC_COLOR={'業務':'#475569','設計':'#0891b2','切断':'#dc2626','曲げ':'#ea580c','溶接':'#1d4ed8','仕上げ':'#16a34a','塗装':'#9333ea','組立':'#a16207','その他':'#64748b'};
+const PROC={'坂元博文':'組立','山口':'塗装','樋口':'組立','三澄':'仕上げ','柴崎':'塗装','熊谷':'設計','井上理枝':'組立','服部':'組立','恒川':'溶接','増井':'塗装',
+  '樫原':'塗装','奈木野':'溶接','古川':'組立','田中':'溶接','岩本':'切断','志田':'曲げ','倉重':'組立','坂元亮祐':'塗装','柳屋':'溶接','森山':'切断','福島':'溶接','横澤':'溶接',
+  'バン Bang':'溶接','ロン Long':'溶接','ラム Lam':'曲げ','カイ Khai':'溶接','ティン Tinh':'溶接','バック Bac':'切断','フイ Huy':'溶接','マイン Manh':'溶接','クイ Quy':'溶接',
+  'ナム Nam':'塗装','ズオン Duong':'溶接','ルアン Luan':'業務','大島':'業務','林裕子':'設計','岡':'組立','金光':'組立','井上隆二':'切断','水口':'仕上げ','桑原':'組立'};
 function renderMembers(){
   const used=new Set(MEMBERS.map(m=>m.name));
   const others=[...new Set([...freeNames,...state.events.map(e=>e.name).filter(n=>n&&!used.has(n))])];
-  const btn=m=>{const r=RANK[m.role],[a,b]=m.vn?m.name.split(' '):[m.name,''];
-    return `<button type="button" draggable="true" data-member="${esc(m.name)}" class="mrow${r?' '+r.cls:''}${armed===m.name?' on':''}" title="${esc(m.full||m.name)}${m.role?' / '+m.role:''}">${boardSvg(m.role,m.full?(m.vn?'vn':'jp'):'')}<span class="nm">${esc(a)}${b?`<small>${esc(b)}</small>`:''}</span>${m.role?`<span class="rk">${esc(m.role)}</span>`:''}</button>`;};
-  const g=(t,list)=>list.length?`<h6>${t}</h6><div class="list">${list.map(btn).join('')}</div>`:'';
-  $('kcMembers').innerHTML=g(I('star')+'役職',MEMBERS.filter(m=>m.role))+g(flagSvg('jp',26)+flagSvg('vn',26)+'TEAM',(()=>{const jp=MEMBERS.filter(m=>!m.role&&!m.vn),vn=MEMBERS.filter(m=>!m.role&&m.vn),out=[];for(let i=0;i<Math.max(jp.length,vn.length);i++){if(jp[i])out.push(jp[i]);if(vn[i])out.push(vn[i]);}return out;})())+g(I('other')+'自由入力',others.map(n=>({name:n})));
+  const nm=m=>{const [a,b]=m.vn?m.name.split(' '):[m.name,''];return `<span class="nm">${esc(a)}${b?`<small>${esc(b)}</small>`:''}</span>`;};
+  const row=(m,left,cls,tip)=>`<button type="button" draggable="true" data-member="${esc(m.name)}" class="mrow ${cls}${armed===m.name?' on':''}" title="${esc(tip)}">${left}${nm(m)}</button>`;
+  let h='';
+  const leaders=MEMBERS.filter(m=>m.role);
+  h+=`<div class="list">${leaders.map(m=>row(m,boardSvg(m.role),RANK[m.role].cls,`${m.full} / ${m.role}`)).join('')}</div>`;
+  for(const p of PROC_ORDER){
+    const list=MEMBERS.filter(m=>!m.role&&(PROC[m.name]||'その他')===p);if(!list.length)continue;
+    h+=`<h6 class="ph" style="--pc:${PROC_COLOR[p]}"><span>${p}</span><b>${list.length}</b></h6><div class="list">${list.map(m=>row(m,`<span class="pt" style="--pc:${PROC_COLOR[p]}">${p}</span>`,'pr',`${m.full} / ${p}`)).join('')}</div>`;
+  }
+  if(others.length)h+=`<h6>${I('other')}自由入力</h6><div class="list">${others.map(n=>row({name:n},`<span class="pt" style="--pc:#334155">${I('user')}</span>`,'pr',n)).join('')}</div>`;
+  $('kcMembers').innerHTML=h;
   $('kcHint').innerHTML=armed?`<b>${esc(armed)}</b> → 日付をクリック`:'名前を日付へドラッグ';
   $('kcHint').classList.toggle('armed',!!armed);
 }
@@ -5849,6 +5881,10 @@ if(KCAL_SHEETS_URL)setInterval(()=>{if(!document.hidden&&!Q&&!dragData)fetchShar
 })();
 </script>
 <!-- ===== 会社カレンダー (kcal) END ===== -->
+
+
+
+
 
 
 
