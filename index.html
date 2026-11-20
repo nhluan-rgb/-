@@ -591,7 +591,7 @@ body.mfg-oku-day::after{content:"";position:fixed;inset:0;z-index:9990;pointer-e
 <body>
 <div class="app">
   <aside class="side"><div class="brand"><div class="mark">K</div><div><b>九州工場</b><small>生産進捗管理</small></div></div><nav class="nav"><button class="active"><span class="ico">▦</span><span class="txt">ダッシュボード</span></button><button><span class="ico">▤</span><span class="txt">製造指示一覧</span></button><button><span class="ico">◫</span><span class="txt">工程ボード</span></button><button><span class="ico">▥</span><span class="txt">納期カレンダー</span></button><button><span class="ico">♙</span><span class="txt">担当者別負荷</span></button></nav><div class="side-foot">最終更新<br><b id="updated">2026/07/20 19:41</b></div></aside>
-  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="csv-update-status" id="csvUpdateStatus" title="SCV.csv のGitHub最終更新時刻"><span class="csv-update-dot"></span><div class="csv-update-copy"><span class="csv-update-label">CSV 最終更新</span><b id="csvUpdated">--/-- --:--:--</b></div></div><div class="actions"><button class="btn kcal-open-btn" type="button" title="会社カレンダー">📅 会社カレンダー<span class="kcal-badge"></span></button><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a></div></header>
+  <main class="main"><header class="top"><div class="world-title-row"><h1>新世界</h1></div><div class="csv-update-status" id="csvUpdateStatus" title="SCV.csv のGitHub最終更新時刻"><span class="csv-update-dot"></span><div class="csv-update-copy"><span class="csv-update-label">CSV 最終更新</span><b id="csvUpdated">--/-- --:--:--</b></div></div><div class="actions"><a class="btn" href="painting.html" style="text-decoration:none;background:#6d28d9;color:#fff;border-color:#6d28d9">🎨 塗装工程へ</a><a class="btn" href="welding.html" style="text-decoration:none;background:#263b4a;color:#fff;border-color:#4f7085;box-shadow:0 3px 0 #14232d">🛠 工程管理</a></div></header>
   <div class="content"><div class="notice" id="notice"><span>ℹ SCV.csv を自動読込しています。30秒ごとに更新します。</span><button onclick="this.parentElement.remove()">×</button></div>
     <section class="ship-summary"><button class="ship-card ng" data-ship="today-ng"><div class="day">⚠ 本日出荷・未完成</div><div class="ship-value" id="shipNg">0件（0点）</div><div class="ship-sub">本日出荷で進捗が「完成」以外</div></button><button class="ship-card" data-ship="today"><div class="day">本日 製造期限</div><div class="ship-value" id="shipToday">0件（0点）</div><div class="ship-sub">製造期限が本日の製造指示</div></button><button class="ship-card" data-ship="tomorrow"><div class="day">明日 出荷</div><div class="ship-value" id="shipTomorrow">0件（0点）</div><div class="ship-sub">クリックして一覧表示</div></button><button class="ship-card overdue" data-ship="overdue"><div class="day">⚠ 製造期限切れ</div><div class="ship-value" id="shipOverdue">0件（0点）</div><div class="ship-sub">製造期限が本日より前で未完成</div></button><button class="ship-card" data-ship="specified"><div class="day">指定日 製造期限</div><div class="ship-value" id="shipSpecified">0件（0点）</div><div class="ship-sub"><input id="specifiedDate" type="date" style="width:100%;margin-top:4px;border:1px solid var(--line);border-radius:5px;padding:6px" /></div></button></section>
     <section class="kpis"><div class="kpi" style="--k:var(--blue)"><div class="label">製造指示件数</div><div class="value" id="kTotal">3,602</div><div class="sub">九州工場</div></div><div class="kpi" style="--k:var(--green)"><div class="label">完成</div><div class="value" id="kDone">2,661</div><div class="sub" id="kRate">完了率 73.9%</div></div><div class="kpi" style="--k:var(--orange)"><div class="label">進行中</div><div class="value" id="kActive">630</div><div class="sub">各工程で作業中</div></div><div class="kpi" style="--k:#8b98a3"><div class="label">未着手</div><div class="value" id="kNew">218</div><div class="sub">早期着手が必要</div></div><div class="kpi" style="--k:var(--red)"><div class="label">担当者未設定</div><div class="value" id="kEmpty">232</div><div class="sub">要割り当て</div></div></section>
@@ -2266,9 +2266,9 @@ function updateDailyProcessTargets(){
     <span class="capacity-launch-icon" aria-hidden="true">☢</span>
     <span><strong>受注キャパシティー</strong><small>生産余力を確認</small></span>
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
-  </button><button type="button" class="capacity-launch-button overtime-launch-button" onclick="openOvertimeModal()">
-    <span class="capacity-launch-icon" aria-hidden="true">⏱</span>
-    <span><strong>残業入力</strong><small>工程別の月間残業を確認</small></span>
+  </button><button type="button" class="capacity-launch-button overtime-launch-button kcal-open-btn" title="会社カレンダー（休み・残業）">
+    <span class="capacity-launch-icon" aria-hidden="true">📅</span>
+    <span><strong>会社カレンダー</strong><small>休み・残業の申請／承認</small></span><span class="kcal-badge"></span>
     <span class="capacity-launch-arrow" aria-hidden="true">›</span>
   </button></div><div class="process-target-upper"><div class="process-target-head">
     <div class="process-target-title">🎯 本日の工程目標</div>
@@ -5138,7 +5138,7 @@ updateClaimSummaryPanel();
 @media(max-width:760px){.ng-game .process-target-capacity{grid-template-columns:1fr!important}.overtime-modal{padding:8px}.overtime-card{padding:15px}.overtime-summary{grid-template-columns:1fr}.overtime-chart{height:390px}.overtime-head h2{font-size:24px}}
 .overtime-table select{width:100%;min-width:90px;padding:8px;border:1px solid #55cce955;border-radius:7px;background:#041b2d;color:#fff;text-align:right;cursor:pointer;font-weight:800}
 .overtime-chart-wrap{position:relative}.overtime-tooltip{position:absolute;z-index:5;display:none;pointer-events:none;max-width:420px;padding:13px 18px;border:2px solid #7ee9ff;border-radius:11px;background:rgba(2,22,37,.96);color:#fff;font-size:21px;font-weight:900;line-height:1.35;letter-spacing:.02em;white-space:nowrap;box-shadow:0 8px 28px #000b,0 0 18px #2fdcff66}.overtime-chart [data-tip]{cursor:crosshair}
-.overtime-table{display:block;background:transparent!important}.overtime-table thead{display:none}.overtime-table tbody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}.overtime-table tbody tr{display:grid;grid-template-columns:minmax(180px,.9fr) minmax(180px,1.1fr);gap:14px;align-items:end;padding:16px;border:2px solid #38bfe366;border-radius:14px;background:#08243a}.overtime-table tbody td{display:block;padding:0!important;border:0!important;background:transparent!important}.overtime-table tbody td::before{display:block;margin:0 0 7px 3px;color:#9ee9f8;font-size:16px;font-weight:900}.overtime-table tbody td:first-child::before{content:'工程'}.overtime-table tbody td:nth-child(2)::before{content:'残業時間'}.overtime-table input.process,.overtime-table select{min-height:60px!important;padding:11px 15px!important;border-width:2px!important;border-color:#58d6f188!important;border-radius:11px!important;font-size:24px!important;font-weight:900!important}.overtime-table input.process{color:#fff!important}.overtime-table select{text-align:center!important;color:#fff59c!important}.overtime-actions .save{min-height:58px;padding:12px 24px;font-size:20px}.overtime-note{font-size:15px!important}.overtime-table tbody tr:focus-within{border-color:#fff16c;box-shadow:0 0 0 3px #fff16c33}
+.overtime-table{display:block;background:transparent!important}.overtime-table thead{display:none}.overtime-table tbody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}.overtime-table tbody tr{display:grid;grid-template-columns:minmax(180px,.9fr) minmax(180px,1.1fr);gap:14px;align-items:end;padding:16px;border:2px solid #38bfe366;border-radius:14px;background:#08243a}.overtime-table tbody td{display:block;padding:0!important;border:0!important;background:transparent!important}.overtime-table tbody td::before{display:block;margin:0 0 7px 3px;color:#9ee9f8;font-size:16px;font-weight:900}.overtime-table tbody td:first-child::before{content:'工程'}.overtime-table tbody td:nth-child(2)::before{content:'残業時間'}.overtime-table input.process,.overtime-table select{min-height:60px!important;padding:11px 15px!important;border-width:2px!important;border-color:#58d6f188!important;border-radius:11px!important;font-size:24px!important;font-weight:900!important}.overtime-table input.process{color:#fff!important}.overtime-table input.ot-ro{width:100%;min-height:60px;padding:11px 15px;border:2px solid #58d6f188;border-radius:11px;background:#041b2d;color:#fff59c;font-size:24px;font-weight:900;text-align:center}.overtime-table select{text-align:center!important;color:#fff59c!important}.overtime-actions .save{min-height:58px;padding:12px 24px;font-size:20px}.overtime-note{font-size:15px!important}.overtime-table tbody tr:focus-within{border-color:#fff16c;box-shadow:0 0 0 3px #fff16c33}
 @media(max-width:920px){.overtime-table tbody{grid-template-columns:1fr}.overtime-table tbody tr{grid-template-columns:minmax(150px,.9fr) minmax(150px,1.1fr)}}
 @media(max-width:560px){.overtime-table tbody tr{grid-template-columns:1fr}.overtime-table input.process,.overtime-table select{font-size:21px!important}}
 .overtime-save-toast{position:fixed;z-index:11000;left:50%;bottom:34px;display:none;transform:translateX(-50%);padding:18px 30px;border:3px solid #74f2bd;border-radius:14px;background:#073d30;color:#fff;font-size:24px;font-weight:1000;box-shadow:0 12px 38px #000b,0 0 25px #35e5a066}.overtime-save-toast.show{display:block;animation:overtimeToastIn .25s ease-out}.overtime-save-toast.error{border-color:#ff8799;background:#5b1825}@keyframes overtimeToastIn{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}.overtime-actions .save:disabled{opacity:.75;cursor:wait}
@@ -5146,14 +5146,14 @@ updateClaimSummaryPanel();
 
 <div id="overtimeModal" class="overtime-modal" role="dialog" aria-modal="true" aria-labelledby="overtimeTitle">
   <section class="overtime-card">
-    <header class="overtime-head"><div><h2 id="overtimeTitle">⏱ 残業入力</h2><div id="overtimePeriod" class="overtime-period"></div></div><button class="overtime-close" type="button" onclick="closeOvertimeModal()" aria-label="閉じる">×</button></header>
-    <div class="overtime-datebar"><button type="button" onclick="moveOvertimeDate(-1)" aria-label="前日">‹</button><label>入力日 <input id="overtimeDate" type="date" onchange="changeOvertimeDate(this.value)"></label><button type="button" onclick="moveOvertimeDate(1)" aria-label="翌日">›</button><strong id="overtimeDayStatus"></strong><small>日付ごとに自動保存</small></div>
+    <header class="overtime-head"><div><h2 id="overtimeTitle">⏱ 残業グラフ</h2><div id="overtimePeriod" class="overtime-period"></div></div><button class="overtime-close" type="button" onclick="closeOvertimeModal()" aria-label="閉じる">×</button></header>
+    <div class="overtime-datebar"><button type="button" onclick="moveOvertimeDate(-1)" aria-label="前日">‹</button><label>表示日 <input id="overtimeDate" type="date" onchange="changeOvertimeDate(this.value)"></label><button type="button" onclick="moveOvertimeDate(1)" aria-label="翌日">›</button><strong id="overtimeDayStatus"></strong><small>承認済みの残業を自動集計</small></div>
     <div class="overtime-summary"><div class="overtime-kpi"><span>受注キャパシティー</span><b id="otOrderTotal">0 pt</b></div><div class="overtime-kpi"><span>工程キャパシティー</span><b id="otCapacityTotal">0 pt</b></div><div class="overtime-kpi"><span>期間内の累計残業時間</span><b id="otHoursTotal">0 h</b></div></div>
     <div class="overtime-chart-wrap"><svg id="overtimeChart" class="overtime-chart" viewBox="0 0 1400 460" preserveAspectRatio="none" aria-label="期間内のキャパシティーと工程別残業時間のグラフ"></svg><div id="overtimeTooltip" class="overtime-tooltip"></div></div>
     <div id="overtimeLegend" class="overtime-legend"></div>
     <table class="overtime-table"><thead><tr><th>工程</th><th id="overtimeHoursHeading">選択日の残業時間 (h)</th></tr></thead><tbody id="overtimeRows"></tbody></table>
-    <div class="overtime-actions"><button class="save" type="button" onclick="saveOvertimeData()">保存</button></div>
-    <div class="overtime-note">毎日、入力日を確認して各工程の残業時間を入力し、「保存」を押してください。履歴はGoogle Sheetに日付別で保存され、同じページを開くすべてのPCで共有されます。</div>
+    <div class="overtime-actions"><button class="save" type="button" onclick="closeOvertimeModal();window.kcalOpen&&kcalOpen('ot')">📅 カレンダーで残業を申請・承認</button></div>
+    <div class="overtime-note">残業時間は「会社カレンダー」で工場長・副工場長が承認した分を、工程別・日別に自動で集計しています（入力は不要）。承認待ち・却下は含みません。グラフの点にマウスを乗せると内訳が出ます。</div>
   </section>
 </div>
 <div id="overtimeSaveToast" class="overtime-save-toast" role="status" aria-live="polite"></div>
@@ -5215,7 +5215,7 @@ function loadGoogleSheet(showMessage=true){return new Promise(resolve=>{const ca
 async function syncOrderCapacitySeries(){renderSalesProductionBridge();const dailyCapacities=SP_BRIDGE_DAYS.filter(day=>day.business).map(day=>({date:day.key,orderCapacity:Number(day.count)||0}));if(!dailyCapacities.length)return;try{await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify({dailyCapacities})})});setTimeout(()=>loadGoogleSheet(false),900)}catch(_){}}
 function showOvertimeSaveToast(message,error=false){const toast=$('overtimeSaveToast');toast.textContent=message;toast.className='overtime-save-toast show'+(error?' error':'');clearTimeout(showOvertimeSaveToast.timer);showOvertimeSaveToast.timer=setTimeout(()=>{toast.className='overtime-save-toast'},3000)}
 async function saveGoogleSheet(){collect();const button=document.querySelector('.overtime-actions .save'),original=button.textContent;button.disabled=true;button.textContent='保存中…';$('overtimeDayStatus').textContent='Google Sheetへ保存中…';renderSalesProductionBridge();const daily=dayMap(),orderDay=SP_BRIDGE_DAYS.find(item=>item.key===selectedDate),saved=model.dailyCapacityByDate?.[selectedDate]||{},payload={date:selectedDate,orderCapacity:Number(orderDay?.count??saved.orderCapacity)||0,processCapacity:Number(saved.processCapacity)||0,entries:model.capacity.map(r=>({process:r.process,hours:Number(daily[r.process])||0}))};try{await fetch(SHEETS_API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:new URLSearchParams({payload:JSON.stringify(payload)})});await new Promise(resolve=>setTimeout(resolve,900));await loadGoogleSheet(false);$('overtimeDayStatus').textContent='Google Sheet保存済み';button.textContent='✓ 保存しました';showOvertimeSaveToast('✓ Google Sheetへ保存しました');setTimeout(()=>{button.textContent=original;button.disabled=false},2200)}catch(error){$('overtimeDayStatus').textContent='保存失敗';button.textContent='保存失敗・もう一度押してください';button.disabled=false;showOvertimeSaveToast('保存できませんでした。接続を確認してください。',true)}}
-function renderTable(){const daily=dayMap(),choices=Array.from({length:11},(_,i)=>i*.5),body=$('overtimeRows');body.innerHTML=model.capacity.map((r,i)=>{const value=Number(daily[r.process])||0;return `<tr><td><input class="process" data-i="${i}" data-k="process" value="${esc(r.process)}" readonly></td><td><select data-i="${i}" data-k="hours">${choices.map(n=>`<option value="${n}"${n===value?' selected':''}>${n} h</option>`).join('')}</select></td></tr>`}).join('');$('overtimeHoursHeading').textContent=`${selectedDate.replaceAll('-','/')} の残業時間 (h)`;}
+function renderTable(){const daily=model.overtimeByDate[selectedDate]||{},body=$('overtimeRows');body.innerHTML=model.capacity.map((r,i)=>{const value=Number(daily[r.process])||0,names=(model.calNames||{})[selectedDate+'|'+r.process]||[];return `<tr title="${esc(names.join('\n'))}"><td><input class="process" value="${esc(r.process)}" readonly></td><td><input class="ot-ro" value="${value} h" readonly style="${value?'':'opacity:.55'}"></td></tr>`}).join('');$('overtimeHoursHeading').textContent=`${selectedDate.replaceAll('-','/')} の残業時間 (h)`;}
 function svg(name,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs||{}).forEach(([k,v])=>e.setAttribute(k,v));if(text!=null)e.textContent=text;return e;}
 function overtimeDateLabel(date){return date.replaceAll('-','/');}
 function overtimeHourLabel(value){const n=Number(value)||0;if(n===.5)return '30分';if(n%1===.5)return Math.floor(n)+'時間半';return n+'時間';}
@@ -5230,8 +5230,22 @@ function renderChart(){
  const legend=$('overtimeLegend');legend.innerHTML=`<span><i style="background:#54d8ff"></i>受注キャパシティー（pt）</span><span><i style="background:#56e39f"></i>工程キャパシティー（pt）</span>`+model.capacity.map((r,i)=>`<span class="overtime-line-key"><i style="background:${colors[i%colors.length]}"></i>${esc(r.process)} 残業（h）</span>`).join('');bindOvertimeTooltip();
 }
 function periodHours(){const p=cycle();return Object.entries(model.overtimeByDate).filter(([d])=>d>=p.start&&d<=p.end).reduce((sum,[,vals])=>sum+Object.values(vals).reduce((a,v)=>a+(Number(v)||0),0),0);}
-function renderSummary(){const p=cycle(),daily=model.dailyCapacityByDate?.[selectedDate]||{};$('overtimePeriod').textContent=`対象期間：${p.start.replaceAll('-','/')} ～ ${p.end.replaceAll('-','/')}`;$('overtimeDate').value=selectedDate;$('overtimeDayStatus').textContent=selectedDate===localDate(new Date())?'本日（20:00締め）':'確定履歴';$('otOrderTotal').textContent=(Number(daily.orderCapacity)||0).toLocaleString()+' pt';$('otCapacityTotal').textContent=(Number(daily.processCapacity)||0).toLocaleString()+' pt';$('otHoursTotal').textContent=periodHours().toLocaleString()+' h';}
-function renderAll(){renderSummary();renderTable();renderChart();}
+function renderSummary(){const p=cycle(),daily=model.dailyCapacityByDate?.[selectedDate]||{};$('overtimePeriod').textContent=`対象期間：${p.start.replaceAll('-','/')} ～ ${p.end.replaceAll('-','/')}`;$('overtimeDate').value=selectedDate;$('overtimeDayStatus').textContent=selectedDate===localDate(new Date())?'本日':'承認済みを自動集計';$('otOrderTotal').textContent=(Number(daily.orderCapacity)||0).toLocaleString()+' pt';$('otCapacityTotal').textContent=(Number(daily.processCapacity)||0).toLocaleString()+' pt';$('otHoursTotal').textContent=periodHours().toLocaleString()+' h';}
+/* 残業時間は会社カレンダーで承認された分を工程別に自動集計（手入力なし） */
+const CAL_PROC_MAP={'設計':'CAD/CAM'};/* 特化＝溶接の一部。仕上げは別系列で表示 */
+function applyCalendarOT(){
+ if(typeof window.kcalApprovedOT!=='function')return;
+ const map={},names={};
+ window.kcalApprovedOT().forEach(e=>{
+  let p=CAL_PROC_MAP[e.process]||e.process;
+  if(!p||p==='業務')p='その他';
+  if(!model.capacity.some(c=>c.process===p))model.capacity.push({process:p,capacity:0});
+  const d=map[e.date]||(map[e.date]={});d[p]=Math.round(((d[p]||0)+e.hours)*10)/10;
+  (names[e.date+'|'+p]=names[e.date+'|'+p]||[]).push(e.name+' '+e.hours+'h');
+ });
+ model.calNames=names;model.overtimeByDate=map;
+}
+function renderAll(){applyCalendarOT();renderSummary();renderTable();renderChart();}
 function collect(){const oldNames=model.capacity.map(x=>x.process),newRows=model.capacity.map(x=>({...x})),newHours={};document.querySelectorAll('#overtimeRows input,#overtimeRows select').forEach(input=>{const i=Number(input.dataset.i),k=input.dataset.k;if(!newRows[i])return;if(k==='process')newRows[i].process=input.value.trim()||'工程';else if(k==='capacity')newRows[i].capacity=Math.max(0,Number(input.value)||0);else newHours[i]=Math.max(0,Number(input.value)||0);});const oldDaily=dayMap();newRows.forEach((r,i)=>{oldNames.forEach((old,j)=>{if(j===i&&old!==r.process)Object.values(model.overtimeByDate).forEach(day=>{if(Object.prototype.hasOwnProperty.call(day,old)){day[r.process]=day[old];delete day[old];}});});oldDaily[r.process]=newHours[i]??oldDaily[r.process]??0;});model.capacity=newRows;persist();}
 window.openOvertimeModal=function(){$('overtimeModal').classList.add('show');renderAll();syncOrderCapacitySeries();loadGoogleSheet(false);};
 window.reloadOvertimeJson=function(){loadGoogleSheet(true);};
@@ -5244,7 +5258,9 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
 })();
 </script><script src="date-overrides.js"></script><!-- ===== 会社カレンダー (kcal) START ===== -->
 <style id="kcal-style">
-.kcal-open-btn{position:relative;white-space:nowrap;background:linear-gradient(135deg,#0b3b5c,#0e6e8f)!important;border-color:#3fe0ff!important;box-shadow:0 0 16px rgba(63,224,255,.35),inset 0 1px 0 rgba(255,255,255,.3)!important}
+.kcal-open-btn{position:relative}
+.kcal-open-btn .kcal-badge{font-size:14px!important;min-width:26px!important;height:26px!important;line-height:26px!important;top:8px!important;right:10px!important}
+.btn.kcal-open-btn{white-space:nowrap;background:linear-gradient(135deg,#0b3b5c,#0e6e8f)!important;border-color:#3fe0ff!important;box-shadow:0 0 16px rgba(63,224,255,.35),inset 0 1px 0 rgba(255,255,255,.3)!important}
 .kcal-open-btn .kcal-badge{position:absolute;top:4px;right:6px;min-width:20px;height:20px;padding:0 5px;border-radius:3px;background:#dc2626;color:#fff;font-size:12px;font-weight:900;line-height:20px;text-align:center;text-shadow:none;display:none}
 .kcal-open-btn .kcal-badge.on{display:block}
 #kcal{position:fixed;inset:0;z-index:2000000;display:none;align-items:center;justify-content:center;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#0f172a;--ink:#0f172a;--line:#cbd5e1;--muted:#475569}
@@ -5502,6 +5518,7 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
 #kcal.ot .kc-mhead h3{color:#c2410c}
 #kcal .kc-apv{display:inline-flex;align-items:center;gap:8px;height:52px;padding:0 18px;border:3px solid #16a34a;border-radius:4px;background:#16a34a;color:#fff;font:900 20px "Yu Gothic UI",sans-serif;cursor:pointer;box-shadow:3px 3px 0 #0f172a}
 #kcal .kc-apv svg.ki{font-size:22px}
+#kcal .kc-apv.kc-chartbtn{background:#0e7490;border-color:#0e7490}
 #kcal .kc-apv.live{background:#fff;color:#b91c1c;border-color:#b91c1c}
 #kcal .kc-apv .cnt{font:900 14px Bahnschrift,sans-serif;background:#dc2626;color:#fff;border-radius:999px;padding:2px 8px}
 #kcal .kc-apv .tm{font:900 15px Bahnschrift,sans-serif;color:#64748b}
@@ -5587,6 +5604,7 @@ $('overtimeRows').addEventListener('change',()=>{collect();renderSummary();rende
       <div class="kc-title"><span class="tic" data-ic="cal"></span><span id="kcTitle">2027</span></div>
       <div class="kc-stats" id="kcStats"></div>
       <div class="kc-tools">
+        <button class="kc-apv kc-chartbtn" id="kcChart" type="button" hidden title="工程別の残業グラフ（承認済みを自動集計）"><span data-ic="chart"></span>グラフ</button>
         <button class="kc-apv" id="kcApv" type="button" hidden></button>
         <div class="kc-seg kc-mode"><button class="kc-b" id="kcModeAbs" type="button" title="不在・遅刻・早退"><span data-ic="home"></span>不在</button><button class="kc-b" id="kcModeOt" type="button" title="残業・休日出勤"><span data-ic="fire"></span>残業</button></div>
         <div class="kc-seg"><button class="kc-b" id="kcViewMonth" type="button" title="月表示">月</button><button class="kc-b" id="kcViewYear" type="button" title="年間表示">年間</button></div>
@@ -5655,6 +5673,7 @@ const ICONS={
   plus:'<path d="M12 4v16M4 12h16"/>',
   star:'<path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8z" fill="currentColor"/>',
   fire:'<path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-3-1-6 1-9z" fill="currentColor"/>',
+  chart:'<path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" fill="currentColor"/><rect x="12" y="8" width="3" height="10" fill="currentColor"/><rect x="17" y="5" width="3" height="13" fill="currentColor"/>',
   hour:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
   lock:'<rect x="4" y="11" width="16" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
   left:'<path d="M15 4l-8 8 8 8"/>',right:'<path d="M9 4l8 8-8 8"/>'
@@ -5928,6 +5947,7 @@ function render(){
 }
 /* 承認ボタン（残業モードだけ表示） */
 function renderApv(){
+  $('kcChart').hidden=mode!=='ot'||typeof window.openOvertimeModal!=='function';
   const b=$('kcApv');b.hidden=mode!=='ot';if(b.hidden)return;
   const wait=state.events.filter(e=>isOT(e)&&!e.status).length;
   if(apvLive()){const s=Math.max(0,Math.ceil((APV.until-Date.now())/1000));
@@ -6160,6 +6180,7 @@ document.addEventListener('click',ev=>{
   if(t.closest('[data-kc-close]'))return close();
   const mo=t.closest('#kcModeAbs,#kcModeOt');if(mo){const m=mo.id==='kcModeOt'?'ot':'abs';if(m!==mode){mode=m;Q=null;$('kcQuick').hidden=true;armed='';sel.clear();render();}return;}
   if(t.closest('#kcApv')){if(t.closest('[data-apvend]')){APV=null;Q=null;$('kcQuick').hidden=true;return render();}return apvLive()?openPend():openLogin();}
+  if(t.closest('#kcChart')){close();window.openOvertimeModal();return;}
   if(t.closest('[data-clrsel]')){sel.clear();return renderMembers();}
   const chip=t.closest('.chip[data-ev]');if(chip)return openEdit(chip.dataset.ev);
   const mb=t.closest('[data-member]');if(mb){const n=mb.dataset.member;if(mode==='ot'){sel.has(n)?sel.delete(n):sel.add(n);}else armed=armed===n?'':n;return renderMembers();}
@@ -6197,11 +6218,16 @@ document.addEventListener('keydown',ev=>{
 });
 window.addEventListener('resize',()=>{if(Q)placeQuick();});
 document.querySelectorAll('#kcal [data-ic]').forEach(el=>{el.insertAdjacentHTML('afterbegin',I(el.dataset.ic));});
+/* 残業グラフ（overtime-daily-history）へ：承認済みの残業を工程別に渡す */
+window.kcalApprovedOT=()=>state.events.filter(e=>isOT(e)&&e.status==='ok').map(e=>({date:e.date,name:e.name,process:PROC[e.name]||'',role:ROLE_OF[e.name]||'',hours:otHours(e)}));
+window.kcalOpen=m=>{open();if(m&&m!==mode){mode=m;sel.clear();armed='';render();}};
+setInterval(updateBadge,5000);/* カードは定期的に描き直されるのでバッジを付け直す */
 loadLocal();updateBadge();fetchShared().then(updateBadge);
 if(KCAL_SHEETS_URL)setInterval(()=>{if(!document.hidden&&!Q&&!dragData)fetchShared();},SYNC_MS);
 })();
 </script>
 <!-- ===== 会社カレンダー (kcal) END ===== -->
+
 
 
 
