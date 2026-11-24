@@ -1,8 +1,8 @@
 {
   "closingDate": "auto",
-  "east":95.1,
-  "west": 102.0,
-  "national": 94.6,
+  "east":24.1,
+  "west": 36.3,
+  "national": 32.7,
   "claim": {
     "closingDate": "2026-11-20",
     "count": 3,
@@ -10,6 +10,6 @@
   },
   "manufacturing": {
     "closingDate": "2026-11-20",
-    "amount": 103900000
+    "amount": 4060000
   }
 }
