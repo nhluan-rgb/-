@@ -1386,7 +1386,7 @@ function updateClaimSummaryPanel(){
     <div class="manufacturing-label">今期の製造高（目標：${targetNote}）${badges.length?`<span class="mfg-badges">${badges.join('')}</span>`:''}</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
     <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${current?amount:0}"><span style="width:${Math.min(100,rate)}%"></span></div>
-    <div class="manufacturing-foot"><span>目標 ${target.toLocaleString('ja-JP')}円</span><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
+    <div class="manufacturing-foot"><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
     ${compareHtml}
   </div>`;
   refreshClaimMissionText();
