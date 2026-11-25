@@ -1231,9 +1231,6 @@ async function loadBonusProgress(){
     };
     // 過去の製造高（任意）："history":{"2026-10-20":85000000, ...} を端末の履歴へ取り込む。
     mergeManufacturingHistory(manufacturing.history);
-    if(/^\d{4}-\d{2}-\d{2}$/.test(manufacturingClosingDate)&&manufacturingProgress.amount!==null){
-      recordManufacturingHistory(manufacturingClosingDate,manufacturingProgress.amount);
-    }
     const claim=(data.claim&&typeof data.claim==='object')?data.claim:{};
     const rawClaimClosingDate=String(claim.closingDate||'').trim();
     claimRemoteData={
@@ -1285,33 +1282,24 @@ function formatManufacturingYen(value){
    localStorage「manufacturingHistory」に {"2026-11-20":94040000, ...} の形で保存する。
    締日ごとに最新値で上書きされる（期中は毎回更新、締日後は確定値として残る）。 */
 const MANUFACTURING_HISTORY_KEY='manufacturingHistory';
+/* 履歴は bonus-progress.json の manufacturing.history だけを使う（端末ごとの自動記録・上書きはしない）。
+   これにより、入力した今期の数値が前月実績（目標）に混ざることはない。 */
+let manufacturingHistoryStore={};
 function readManufacturingHistory(){
-  try{
-    const data=JSON.parse(localStorage.getItem(MANUFACTURING_HISTORY_KEY)||'{}');
-    return data&&typeof data==='object'?data:{};
-  }catch(_){return {};}
+  return Object.assign({},manufacturingHistoryStore);
 }
-function writeManufacturingHistory(history){
-  try{localStorage.setItem(MANUFACTURING_HISTORY_KEY,JSON.stringify(history));}catch(_){}
-}
-function recordManufacturingHistory(closingKey,amount){
-  const history=readManufacturingHistory();
-  if(history[closingKey]===amount)return;
-  history[closingKey]=amount;
-  writeManufacturingHistory(history);
-}
+function recordManufacturingHistory(){/* 自動記録は廃止 */}
 /* bonus-progress.json の manufacturing.history（過去の確定値）を取り込む。JSON側を優先。 */
 function mergeManufacturingHistory(source){
-  if(!source||typeof source!=='object')return;
-  const history=readManufacturingHistory();
-  let changed=false;
-  Object.keys(source).forEach(key=>{
-    const value=Number(source[key]);
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(key)||!Number.isFinite(value)||value<0)return;
-    const amount=Math.trunc(value);
-    if(history[key]!==amount){history[key]=amount;changed=true;}
-  });
-  if(changed)writeManufacturingHistory(history);
+  const history={};
+  if(source&&typeof source==='object'){
+    Object.keys(source).forEach(key=>{
+      const value=Number(source[key]);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(key)||!Number.isFinite(value)||value<0)return;
+      history[key]=Math.trunc(value);
+    });
+  }
+  manufacturingHistoryStore=history;
 }
 /* 前月（1つ前の締日）を基準にした比較と、過去最高との比較 */
 function manufacturingComparison(closingDate,amount){
@@ -1379,7 +1367,8 @@ function updateClaimSummaryPanel(){
       ? `<div class="manufacturing-compare">目標を <span class="up">＋${formatManufacturingYen(gap)}</span> 上回りました</div>`
       : `<div class="manufacturing-compare">目標まで あと <b>${formatManufacturingYen(-gap)}</b></div>`;
   }
-  const targetNote=compare.targetFromPrev?'前月実績':'初期設定値';
+  const prevParts=compare.prevKey.split('-').map(Number);
+  const targetNote=compare.targetFromPrev?`${prevParts[1]}/${prevParts[2]}締め 前月実績`:'初期設定値（前月データなし）';
   const badges=[];
   if(current&&amount>=MANUFACTURING_OKU_YEN)badges.push(`<span class="mfg-badge oku">${compare.isFirstOku?'史上初 ':''}1億突破</span>`);
   if(current&&compare.isRecord)badges.push('<span class="mfg-badge record">記録更新</span>');
@@ -1397,7 +1386,7 @@ function updateClaimSummaryPanel(){
     <div class="manufacturing-label">今期の製造高（目標：${targetNote}）${badges.length?`<span class="mfg-badges">${badges.join('')}</span>`:''}</div>
     <div class="manufacturing-value">${current?formatManufacturingYen(amount):'未入力'}</div>
     <div class="manufacturing-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${current?amount:0}"><span style="width:${Math.min(100,rate)}%"></span></div>
-    <div class="manufacturing-foot"><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
+    <div class="manufacturing-foot"><span>目標 ${target.toLocaleString('ja-JP')}円</span><span>達成率 <strong>${rate.toFixed(1)}%</strong></span></div>
     ${compareHtml}
   </div>`;
   refreshClaimMissionText();
