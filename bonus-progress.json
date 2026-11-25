@@ -1,6 +1,6 @@
 {
   "closingDate": "auto",
-  "east":24.1,
+  "east": 24.1,
   "west": 36.3,
   "national": 32.7,
   "claim": {
@@ -9,7 +9,8 @@
     "info": "穴位置、足の穴径が間違っている（8台中3台）"
   },
   "manufacturing": {
-  "closingDate": "2026-12-20",
-  "amount": 4060000,
-  "history": { "2026-11-20": 109060000 }
+    "closingDate": "2026-12-20",
+    "amount": 4060000,
+    "history": { "2026-11-20": 109060000 }
+  }
 }
