@@ -4,9 +4,9 @@
   "west": 39.9,
   "national": 36.5,
   "claim": {
-    "closingDate": "2026-11-20",
-    "count": 3,
-    "info": "穴位置、足の穴径が間違っている（8台中3台）"
+    "closingDate": "2026-12-20",
+    "count": 1,
+    "info": "Ｃ鋼の板厚側に溶接するプレートの溶接位置が製作図面と違う位置に溶接されている"
   },
   "manufacturing": {
     "closingDate": "2026-12-20",
