@@ -5565,6 +5565,11 @@ loadDaily();loadGoogleSheet(false);
 #kcal .kc-quick .qrow{display:flex;gap:6px;padding:8px 10px 0}
 #kcal .kc-quick .qrow input{flex:1;padding:9px 10px;border:2px solid #94a3b8;border-radius:3px;font:700 15px "Yu Gothic UI",sans-serif;color:var(--ink);color-scheme:light}
 #kcal .kc-quick .qrow input:focus{outline:none;border-color:var(--ink)}
+#kcal .kc-quick .qmemos{max-height:150px;overflow:auto}
+#kcal .kc-quick .qrange{margin:2px 10px 4px;padding:4px 8px;background:#f1f5f9;border-left:5px solid var(--c);font:800 13px "Yu Gothic UI",sans-serif;color:#334155}
+#kcal .kc-quick .qrange b{color:var(--c);font-weight:900}
+#kcal .kc-quick .qrow input[type=date]{min-width:0}
+#kcal .kc-quick .qrow label{white-space:nowrap;margin-right:2px}
 #kcal .kc-quick .qok,#kcal .kc-quick .qsave,#kcal .kc-quick .qdel{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:9px 14px;border:2px solid var(--ink);border-radius:3px;font-weight:900;font-size:14px;box-shadow:3px 3px 0 var(--ink)}
 #kcal .kc-quick .qok{background:#fff;color:var(--ink)}
 #kcal .kc-quick .qsave{flex:1;background:#f59e0b;color:var(--ink);font-size:16px}
@@ -5865,6 +5870,34 @@ let Q=null;            // クイック入力の状態 {name,date,type,time,memo,
 const LATE_TIMES=['08:30','09:00','09:30','10:00','10:30','11:00','13:00'];
 const EARLY_TIMES=['10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
 const MEMOS=['通院','私用','体調不良','家庭の事情','役所'];
+/* 種類ごとの「よくある理由」 */
+const MEMOS_BY={
+  off:['通院','私用','体調不良','家庭の事情','役所','有給','冠婚葬祭','忌引','子供の学校行事','子供の看病','介護','健康診断','引越し','一時帰国','在留手続き','旅行・帰省'],
+  am:['通院','私用','役所','銀行','子供の行事','健康診断','手続き'],
+  pm:['通院','私用','役所','銀行','子供の行事','健康診断','手続き'],
+  late:['通院','電車遅延','子供の送迎','私用','役所','体調不良'],
+  early:['通院','私用','子供のお迎え','役所','家庭の事情','体調不良'],
+  trip:['大阪本社','客先訪問','納品立会い','現場作業','展示会','研修','設備メーカー打合せ','他工場','監査対応','関東出張'],
+  other:['研修','会議','面談','資格試験','来客対応','健康診断','訓練','私用']
+};
+const PERIOD_TYPES=['off','trip','other'];   // 期間（複数日）を選べる種類
+const MAX_SPAN=62;                            // 最長日数（誤入力防止）
+/* 開始日〜終了日の登録対象日。開始日は必ず含み、土日祝・会社休日は除く */
+function periodKeys2(a,b){
+  const out=[a];if(!b||b<=a)return out;
+  const d=parse(a);
+  for(let i=1;i<MAX_SPAN;i++){d.setDate(d.getDate()+1);const k=keyOf(d);if(k>b)break;if(!isOff(dayInfo(d).type))out.push(k);}
+  return out;
+}
+/* 同じ人・同じ種類・同じメモで日付が続いているまとまり（間の休日は飛ばす） */
+function runOf(e){
+  const by=new Map(state.events.filter(x=>x.name===e.name&&x.type===e.type&&(x.memo||'')===(e.memo||'')&&!isOT(x)).map(x=>[x.date,x]));
+  const out=[e];
+  for(const dir of [1,-1]){const d=parse(e.date);let gap=0;
+    for(let i=0;i<MAX_SPAN;i++){d.setDate(d.getDate()+dir);const k=keyOf(d);
+      if(by.has(k)){out.push(by.get(k));gap=0;}else if(isOff(dayInfo(d).type)&&++gap<=10)continue;else break;}}
+  return out.sort((a,b)=>a.date<b.date?-1:1);
+}
 /* ---- 残業 ---- */
 let mode='abs';        // 'abs'=不在 / 'ot'=残業
 let sel=new Set();     // 残業モードで複数選択した名前
@@ -6045,26 +6078,32 @@ function renderQuick(){
   box.hidden=false;let body='';
   if(Q.kind){box.innerHTML=otQuickHtml(box);placeQuick();return;}
   if(Q.step===0){
-    const e=Q.edit;
+    const e=Q.edit,run=PERIOD_TYPES.includes(e.type)?runOf(e):[e];
     box.className='kc-quick k-'+e.type;
     body=`<div class="qh"><span class="qav">${TI(e.type)}</span><div><b>${esc(e.name)}${roleHtml(e.name)}</b><small>${fmtDate(e.date)}</small></div><button type="button" class="qx" data-q="close">${I('x')}</button></div>
-      <div class="qinfo"><div class="qwhat">${esc(what(e))}</div>${e.memo?`<div class="qmemo">${I('other')}${esc(e.memo)}</div>`:''}</div>
-      <div class="qact"><button type="button" class="qdel" data-q="del">${I('x')}削除</button><button type="button" class="qok" data-q="close">閉じる</button></div>`;
+      <div class="qinfo"><div class="qwhat">${esc(what(e))}</div>${run.length>1?`<div class="qmemo">${I('hour')}${fmtDate(run[0].date)}〜${fmtDate(run[run.length-1].date)}（${run.length}日分）</div>`:''}${e.memo?`<div class="qmemo">${I('other')}${esc(e.memo)}</div>`:''}</div>
+      <div class="qact" style="flex-wrap:wrap"><button type="button" class="qdel" data-q="del">${I('x')}${run.length>1?'この日だけ削除':'削除'}</button>${run.length>1?`<button type="button" class="qdel" data-q="delrun">${I('x')}全${run.length}日削除</button>`:''}<button type="button" class="qok" data-q="close">閉じる</button></div>`;
   }else{
     box.className='kc-quick'+(Q.type?' k-'+Q.type:'');
     const needTime=Q.type==='late'||Q.type==='early';
-    const steps=[['1','種類'],...(needTime||!Q.type?[['2','時刻']]:[]),['3','メモ']];
+    const needPeriod=PERIOD_TYPES.includes(Q.type);
+    const steps=[['1','種類'],...(needTime?[['2','時刻']]:needPeriod?[['2','期間']]:!Q.type?[['2','時刻・期間']]:[]),['3','メモ']];
     body=`<div class="qh"><span class="qav">${Q.type?TI(Q.type):I('user')}</span><div><b>${esc(Q.name)}${roleHtml(Q.name)}</b><small>${fmtDate(Q.date)}</small></div><button type="button" class="qx" data-q="close" title="キャンセル (Esc)">${I('x')}</button></div>
       <div class="qsteps">${steps.map(([n,l],i)=>`<span class="${+n===Q.step?'on':+n<Q.step?'done':''}">${i+1}. ${l}</span>`).join('')}</div>`;
     if(Q.step===1){
       body+=`<div class="qtypes">${TYPES.map(([k,l,i])=>`<button type="button" class="k-${k}" data-qtype="${k}">${I(i)}<span>${l}</span></button>`).join('')}</div>`;
+    }else if(Q.step===2&&needPeriod){
+      body+=`<div class="qtitle">いつまで？ <small style="color:#64748b;font-weight:800">開始 ${fmtDate(Q.date)}</small></div>
+        <div class="qtimes" style="grid-template-columns:repeat(3,1fr)">${[[1,'1日だけ'],[2,'2日間'],[3,'3日間'],[5,'5日間'],[7,'1週間'],[14,'2週間']].map(([n,l])=>`<button type="button" data-qlen="${n}">${l}</button>`).join('')}</div>
+        <div class="qrow"><label>終了日</label><input type="date" id="kqEnd" min="${Q.date}" value="${Q.end||Q.date}"><button type="button" class="qok" data-q="end">OK</button></div>
+        <button type="button" class="qback" data-q="back">${I('left')}戻る</button>`;
     }else if(Q.step===2){
       const list=Q.type==='early'?EARLY_TIMES:LATE_TIMES;
       body+=`<div class="qtitle">${Q.type==='early'?'何時から早退？':'何時に出社？'}</div><div class="qtimes">${list.map(t=>`<button type="button" data-qtime="${t}">${jt(t)}</button>`).join('')}</div>
         <div class="qrow"><input type="time" id="kqTime" step="300" value="${Q.time||''}"><button type="button" class="qok" data-q="time">OK</button></div>
         <button type="button" class="qback" data-q="back">${I('left')}戻る</button>`;
     }else{
-      body+=`<div class="qtitle"><b class="qsum">${esc(what(Q))}</b> メモ（任意）</div><div class="qmemos">${MEMOS.map(m=>`<button type="button" data-qmemo="${m}" class="${Q.memo===m?'on':''}">${m}</button>`).join('')}</div>
+      body+=`<div class="qtitle"><b class="qsum">${esc(what(Q))}</b> メモ（任意）</div>${(()=>{const n=periodKeys2(Q.date,Q.end).length;return PERIOD_TYPES.includes(Q.type)&&n>1?`<div class="qrange"><b>${fmtDate(Q.date)}〜${fmtDate(Q.end)}</b>　${n}日分を登録<br><small>土日祝・会社休日は除く</small></div>`:'';})()}<div class="qmemos">${(MEMOS_BY[Q.type]||MEMOS).map(m=>`<button type="button" data-qmemo="${m}" class="${Q.memo===m?'on':''}">${m}</button>`).join('')}</div>
         <div class="qrow"><input id="kqMemo" placeholder="内容を入力" value="${esc(Q.memo)}"></div>
         <div class="qact"><button type="button" class="qback" data-q="back">${I('left')}戻る</button><button type="button" class="qsave" data-q="save">${I('check')}登録</button></div>`;
     }
@@ -6074,8 +6113,9 @@ function renderQuick(){
 }
 function saveQuick(){
   const m=$('kqMemo');if(m)Q.memo=m.value.trim();
-  const e={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),date:Q.date,name:Q.name,type:Q.type,time:(Q.type==='late'||Q.type==='early')?Q.time:'',memo:Q.memo};
-  state.events.push(e);save();pushSheet({action:'add',events:[e]});
+  const keys=PERIOD_TYPES.includes(Q.type)?periodKeys2(Q.date,Q.end):[Q.date];
+  const evs=keys.map((date,i)=>({id:Date.now().toString(36)+i.toString(36)+Math.random().toString(36).slice(2,7),date,name:Q.name,type:Q.type,time:(Q.type==='late'||Q.type==='early')?Q.time:'',memo:Q.memo}));
+  state.events.push(...evs);save();pushSheet({action:'add',events:evs});
   const k=Q.date;Q=null;$('kcQuick').hidden=true;render();flash(k);
 }
 function flash(k){const c=document.querySelector(`#kcal .kc-day[data-key="${k}"]`);if(c){c.classList.remove('flash');void c.offsetWidth;c.classList.add('flash');}}
@@ -6236,12 +6276,15 @@ document.addEventListener('click',ev=>{
         if(o==='otspan'){const s=$('kqHs').value,f=$('kqHf').value;if(!s||!f||toMin(f)<=toMin(s)){alert('開始と終了の時刻を正しく入れてください');return;}return saveOT(`${s}-${f}`);}
       }
     }
-    const qt=t.closest('[data-qtype]');if(qt){Q.type=qt.dataset.qtype;Q.time='';Q.step=(Q.type==='late'||Q.type==='early')?2:3;return renderQuick();}
+    const qt=t.closest('[data-qtype]');if(qt){Q.type=qt.dataset.qtype;Q.time='';Q.end='';Q.step=(Q.type==='late'||Q.type==='early'||PERIOD_TYPES.includes(Q.type))?2:3;return renderQuick();}
+    const ql=t.closest('[data-qlen]');if(ql){const d=parse(Q.date);d.setDate(d.getDate()+Number(ql.dataset.qlen)-1);Q.end=keyOf(d);Q.step=3;return renderQuick();}
     const qm=t.closest('[data-qtime]');if(qm){Q.time=qm.dataset.qtime;Q.step=3;return renderQuick();}
     const qo=t.closest('[data-qmemo]');if(qo){const i=$('kqMemo');i.value=i.value===qo.dataset.qmemo?'':qo.dataset.qmemo;Q.memo=i.value;return renderQuick();}
     const a=t.closest('[data-q]');if(!a)return;const act=a.dataset.q;
     if(act==='close')return closeQuick();
-    if(act==='back'){const m=$('kqMemo');if(m)Q.memo=m.value.trim();Q.step=Q.step===3&&(Q.type==='late'||Q.type==='early')?2:1;return renderQuick();}
+    if(act==='back'){const m=$('kqMemo');if(m)Q.memo=m.value.trim();Q.step=Q.step===3&&(Q.type==='late'||Q.type==='early'||PERIOD_TYPES.includes(Q.type))?2:1;return renderQuick();}
+    if(act==='end'){const v=$('kqEnd').value;if(!v){$('kqEnd').focus();return;}if(v<Q.date){alert('終了日は開始日以降にしてください');return;}Q.end=v;Q.step=3;return renderQuick();}
+    if(act==='delrun'){const ids=runOf(Q.edit).map(x=>x.id);if(!confirm(`${ids.length}日分をまとめて削除します。よろしいですか？`))return;state.events=state.events.filter(x=>!ids.includes(x.id));state.deleted.push(...ids);save();pushSheet({action:'delete',ids});return closeQuick();}
     if(act==='time'){const v=$('kqTime').value;if(!v){$('kqTime').focus();return;}Q.time=v;Q.step=3;return renderQuick();}
     if(act==='save')return saveQuick();
     if(act==='del'){const id=Q.edit.id;state.events=state.events.filter(x=>x.id!==id);state.deleted.push(id);save();pushSheet({action:'delete',ids:[id]});return closeQuick();}
@@ -6283,7 +6326,7 @@ document.addEventListener('keydown',ev=>{
   if(ev.key==='Escape'){if(Q)closeQuick();else if(armed||sel.size){armed='';sel.clear();renderMembers();}else close();return;}
   if(Q&&Q.kind==='login'){if(/^\d$/.test(ev.key)){ev.preventDefault();return pinKey(ev.key);}if(ev.key==='Backspace'){ev.preventDefault();return pinKey('bs');}if(ev.key==='Enter'){ev.preventDefault();return submitLogin();}}
   if(ev.key==='Enter'&&Q&&Q.kind==='ot'&&ev.target.id==='kqOtEnd'){ev.preventDefault();const v=ev.target.value;if(v&&toMin(v)>BASE_END)saveOT(v);return;}
-  if(ev.key==='Enter'&&Q){if(ev.target.id==='kqMemo'){ev.preventDefault();saveQuick();}else if(ev.target.id==='kqTime'){ev.preventDefault();const v=ev.target.value;if(v){Q.time=v;Q.step=3;renderQuick();}}}
+  if(ev.key==='Enter'&&Q){if(ev.target.id==='kqMemo'){ev.preventDefault();saveQuick();}else if(ev.target.id==='kqEnd'){ev.preventDefault();const v=ev.target.value;if(v&&v>=Q.date){Q.end=v;Q.step=3;renderQuick();}}else if(ev.target.id==='kqTime'){ev.preventDefault();const v=ev.target.value;if(v){Q.time=v;Q.step=3;renderQuick();}}}
   if(ev.key==='Enter'&&ev.target.id==='kcName'){ev.preventDefault();const v=ev.target.value.trim();if(v){if(!freeNames.includes(v))freeNames.unshift(v);armed=v;ev.target.value='';renderMembers();}}
 });
 window.addEventListener('resize',()=>{if(Q)placeQuick();});
